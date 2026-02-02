@@ -5,9 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yagubogu.data.dto.response.member.BadgeResponse
 import com.yagubogu.data.repository.member.MemberRepository
-import com.yagubogu.presentation.mapper.toUiModel
 import com.yagubogu.ui.badge.model.BadgeInfoUiModel
 import com.yagubogu.ui.badge.model.BadgeUiModel
+import com.yagubogu.ui.mapper.toUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import timber.log.Timber

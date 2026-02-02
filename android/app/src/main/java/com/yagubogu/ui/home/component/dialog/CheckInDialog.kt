@@ -8,8 +8,8 @@ import com.yagubogu.R
 import com.yagubogu.domain.model.Coordinate
 import com.yagubogu.domain.model.Latitude
 import com.yagubogu.domain.model.Longitude
-import com.yagubogu.presentation.dialog.DefaultDialogUiModel
 import com.yagubogu.ui.common.component.DefaultDialog
+import com.yagubogu.ui.common.model.DefaultDialogUiModel
 import com.yagubogu.ui.home.HomeViewModel
 import com.yagubogu.ui.home.model.StadiumWithGame
 

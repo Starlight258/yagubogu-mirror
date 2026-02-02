@@ -1,4 +1,4 @@
-package com.yagubogu.presentation.util
+package com.yagubogu.ui.util
 
 import java.time.format.DateTimeFormatter
 import java.util.Locale

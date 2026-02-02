@@ -23,7 +23,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.firebase.Firebase
 import com.google.firebase.analytics.analytics
-import com.yagubogu.presentation.util.DateFormatter
 import com.yagubogu.ui.attendance.model.AttendanceHistoryItem
 import com.yagubogu.ui.theme.EsamanruBold
 import com.yagubogu.ui.theme.Gray500
@@ -34,6 +33,7 @@ import com.yagubogu.ui.theme.PretendardSemiBold16
 import com.yagubogu.ui.theme.PretendardSemiBold20
 import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.theme.dpToSp
+import com.yagubogu.ui.util.DateFormatter
 import com.yagubogu.ui.util.noRippleClickable
 
 @Composable

@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import com.yagubogu.R
-import com.yagubogu.presentation.dialog.DefaultDialogUiModel
+import com.yagubogu.ui.common.model.DefaultDialogUiModel
 import com.yagubogu.ui.theme.EsamanruMedium20
 import com.yagubogu.ui.theme.Gray200
 import com.yagubogu.ui.theme.Gray500

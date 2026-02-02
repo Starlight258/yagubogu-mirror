@@ -1,4 +1,4 @@
-package com.yagubogu.presentation.dialog
+package com.yagubogu.ui.common.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
