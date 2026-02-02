@@ -55,6 +55,7 @@ fun SettingScreen(
                 }
                 entry<SettingNavKey.SettingAccount> {
                     SettingAccountScreen(
+                        snackbarHostState = snackbarHostState,
                         onDeleteAccountClick = { navigator.navigate(SettingNavKey.SettingDeleteAccount) },
                         onLogout = onLogout,
                     )
