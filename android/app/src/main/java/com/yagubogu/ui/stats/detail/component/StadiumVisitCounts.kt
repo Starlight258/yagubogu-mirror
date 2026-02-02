@@ -41,7 +41,7 @@ fun StadiumVisitCounts(
         AnimatedBarChart(
             strokeVerticalGap = 16.dp,
             durationMillis = 700,
-            strokeWidth = 18.dp,
+            strokeWidth = 20.dp,
             items = stadiumVisitCounts.toBarChartItems(),
         )
     }

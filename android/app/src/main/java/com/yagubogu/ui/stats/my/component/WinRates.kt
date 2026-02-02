@@ -42,6 +42,7 @@ import com.yagubogu.ui.theme.Red
 import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.util.noRippleClickable
 import com.yagubogu.ui.util.rememberBalloonBuilder
+import kotlin.math.roundToInt
 
 @Composable
 fun WinRates(
@@ -98,7 +99,7 @@ private fun WinRatePieChart(
                 text =
                     stringResource(
                         R.string.all_rounded_win_rate,
-                        statsMyUiModel.winningPercentage.toInt(),
+                        statsMyUiModel.winningPercentage.roundToInt(),
                     ),
                 style = PretendardBold,
                 fontSize = 40.sp,
