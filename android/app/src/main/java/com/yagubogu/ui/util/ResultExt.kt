@@ -1,4 +1,4 @@
-package com.yagubogu.presentation.util
+package com.yagubogu.ui.util
 
 inline fun <T, R> Result<List<T>>.mapList(transform: (T) -> R): Result<List<R>> =
     this.map { list: List<T> ->

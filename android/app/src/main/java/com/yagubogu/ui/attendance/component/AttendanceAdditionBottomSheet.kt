@@ -39,7 +39,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yagubogu.R
-import com.yagubogu.presentation.util.DateFormatter
 import com.yagubogu.ui.attendance.model.PastGameUiModel
 import com.yagubogu.ui.attendance.model.PastGameUiState
 import com.yagubogu.ui.theme.EsamanruBold32
@@ -51,6 +50,7 @@ import com.yagubogu.ui.theme.PretendardMedium24
 import com.yagubogu.ui.theme.PretendardRegular12
 import com.yagubogu.ui.theme.PretendardSemiBold16
 import com.yagubogu.ui.theme.White
+import com.yagubogu.ui.util.DateFormatter
 import com.yagubogu.ui.util.color
 import com.yagubogu.ui.util.shimmerLoading
 

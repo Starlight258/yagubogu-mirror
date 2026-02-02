@@ -10,13 +10,13 @@ import com.yagubogu.data.repository.game.GameRepository
 import com.yagubogu.data.repository.member.MemberRepository
 import com.yagubogu.data.repository.talk.TalkRepository
 import com.yagubogu.data.util.ApiException
-import com.yagubogu.presentation.mapper.toUiModel
 import com.yagubogu.ui.common.model.MemberProfile
 import com.yagubogu.ui.livetalk.chat.model.LivetalkChatBubbleItem
 import com.yagubogu.ui.livetalk.chat.model.LivetalkChatItem
 import com.yagubogu.ui.livetalk.chat.model.LivetalkChatUiState
 import com.yagubogu.ui.livetalk.chat.model.LivetalkResponseItem
 import com.yagubogu.ui.livetalk.chat.model.LivetalkTeams
+import com.yagubogu.ui.mapper.toUiModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject

@@ -8,7 +8,7 @@ import com.yagubogu.data.repository.member.MemberRepository
 import com.yagubogu.data.repository.member.NicknameUpdateError
 import com.yagubogu.data.repository.member.NicknameUpdateException
 import com.yagubogu.data.repository.thirdparty.ThirdPartyRepository
-import com.yagubogu.presentation.mapper.toUiModel
+import com.yagubogu.ui.mapper.toUiModel
 import com.yagubogu.ui.setting.model.MemberInfoItem
 import com.yagubogu.ui.setting.model.PresignedUrlCompleteItem
 import com.yagubogu.ui.setting.model.PresignedUrlItem

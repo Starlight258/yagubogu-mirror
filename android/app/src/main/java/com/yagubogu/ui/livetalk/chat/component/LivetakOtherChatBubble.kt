@@ -24,7 +24,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.yagubogu.R
-import com.yagubogu.presentation.util.formatTimestamp
 import com.yagubogu.ui.common.component.profile.ProfileImage
 import com.yagubogu.ui.livetalk.chat.model.LivetalkChatItem
 import com.yagubogu.ui.theme.Black
@@ -36,6 +35,7 @@ import com.yagubogu.ui.theme.PretendardMedium12
 import com.yagubogu.ui.theme.PretendardRegular12
 import com.yagubogu.ui.theme.PretendardRegular16
 import com.yagubogu.ui.theme.White
+import com.yagubogu.ui.util.formatTimestamp
 import com.yagubogu.ui.util.noRippleClickable
 import java.time.LocalDateTime
 

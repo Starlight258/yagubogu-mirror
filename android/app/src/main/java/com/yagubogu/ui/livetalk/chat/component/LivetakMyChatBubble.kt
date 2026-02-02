@@ -21,13 +21,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.yagubogu.R
-import com.yagubogu.presentation.util.formatTimestamp
 import com.yagubogu.ui.livetalk.chat.model.LivetalkChatItem
 import com.yagubogu.ui.theme.PretendardRegular12
 import com.yagubogu.ui.theme.PretendardRegular16
 import com.yagubogu.ui.theme.Primary050
 import com.yagubogu.ui.theme.Primary700
 import com.yagubogu.ui.theme.Primary900
+import com.yagubogu.ui.util.formatTimestamp
 import java.time.LocalDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
