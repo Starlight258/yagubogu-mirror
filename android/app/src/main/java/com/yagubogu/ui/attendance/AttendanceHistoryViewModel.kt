@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.yagubogu.data.dto.response.game.GameWithCheckInDto
 import com.yagubogu.data.repository.checkin.CheckInRepository
 import com.yagubogu.data.repository.game.GameRepository
-import com.yagubogu.presentation.util.mapList
 import com.yagubogu.ui.attendance.model.AttendanceHistoryFilter
 import com.yagubogu.ui.attendance.model.AttendanceHistoryItem
 import com.yagubogu.ui.attendance.model.AttendanceHistorySort
@@ -13,6 +12,7 @@ import com.yagubogu.ui.attendance.model.PastGameUiModel
 import com.yagubogu.ui.attendance.model.PastGameUiState
 import com.yagubogu.ui.mapper.toAttendanceUiModel
 import com.yagubogu.ui.mapper.toUiModel
+import com.yagubogu.ui.util.mapList
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow

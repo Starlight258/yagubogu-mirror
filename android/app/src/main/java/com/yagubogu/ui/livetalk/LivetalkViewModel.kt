@@ -3,9 +3,9 @@ package com.yagubogu.ui.livetalk
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yagubogu.data.repository.game.GameRepository
-import com.yagubogu.presentation.util.mapList
 import com.yagubogu.ui.livetalk.model.LivetalkStadiumItem
 import com.yagubogu.ui.mapper.toLivetalkUiModel
+import com.yagubogu.ui.util.mapList
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
