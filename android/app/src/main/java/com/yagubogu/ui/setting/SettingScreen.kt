@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -22,7 +21,6 @@ import com.yagubogu.ui.theme.Gray050
 @Composable
 fun SettingScreen(
     navigator: Navigator,
-    snackbarHostState: SnackbarHostState,
     onBackClick: () -> Unit,
     onDeleteAccountCancel: () -> Unit,
     onFavoriteTeamEditClick: () -> Unit,
@@ -48,21 +46,18 @@ fun SettingScreen(
             entryProvider {
                 entry<SettingNavKey.SettingMain> {
                     SettingMainScreen(
-                        snackbarHostState = snackbarHostState,
                         onSettingAccountClick = { navigator.navigate(SettingNavKey.SettingAccount) },
                         onFavoriteTeamEditClick = { onFavoriteTeamEditClick() },
                     )
                 }
                 entry<SettingNavKey.SettingAccount> {
                     SettingAccountScreen(
-                        snackbarHostState = snackbarHostState,
                         onDeleteAccountClick = { navigator.navigate(SettingNavKey.SettingDeleteAccount) },
                         onLogout = onLogout,
                     )
                 }
                 entry<SettingNavKey.SettingDeleteAccount> {
                     SettingDeleteAccountScreen(
-                        snackbarHostState = snackbarHostState,
                         onDeleteAccountCancel = {
                             navigator.clearStack()
                             onDeleteAccountCancel()

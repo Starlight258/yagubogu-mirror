@@ -7,6 +7,7 @@ import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,6 +26,7 @@ import com.yagubogu.ui.navigation.model.Navigator
 import com.yagubogu.ui.navigation.model.Route
 import com.yagubogu.ui.navigation.model.toEntries
 import com.yagubogu.ui.setting.SettingScreen
+import com.yagubogu.ui.util.LocalSnackbarHostState
 
 /**
  * 앱의 최상위 네비게이션 구조를 정의하는 루트 컴포저블.
@@ -55,70 +57,71 @@ fun NavigationRoot(
             else -> 20.dp
         }
 
-    val entryProvider: (NavKey) -> NavEntry<NavKey> =
-        entryProvider {
-            entry<Route.Login> {
-                LoginScreen(
-                    googleCredentialManager = googleCredentialManager,
-                    onSignIn = { rootNavigator.navigate(Route.Main) },
-                    onSignUp = { rootNavigator.navigate(Route.FavoriteTeam) },
-                )
+    CompositionLocalProvider(LocalSnackbarHostState provides snackbarHostState) {
+        val entryProvider: (NavKey) -> NavEntry<NavKey> =
+            entryProvider {
+                entry<Route.Login> {
+                    LoginScreen(
+                        googleCredentialManager = googleCredentialManager,
+                        onSignIn = { rootNavigator.navigate(Route.Main) },
+                        onSignUp = { rootNavigator.navigate(Route.FavoriteTeam) },
+                    )
+                }
+                entry<Route.Main> {
+                    MainScreen(
+                        navigator = mainNavigator,
+                        onSettingsClick = { rootNavigator.navigate(Route.Setting) },
+                        onBadgeClick = { rootNavigator.navigate(Route.Badge) },
+                    )
+                }
+                entry<Route.Setting> {
+                    SettingScreen(
+                        navigator = settingNavigator,
+                        onBackClick = {
+                            rootNavigator.navigate(Route.Main)
+                            rootNavigator.clearStack()
+                        },
+                        onDeleteAccountCancel = { rootNavigator.navigate(Route.Main) },
+                        onFavoriteTeamEditClick = { rootNavigator.navigate(Route.FavoriteTeam) },
+                        onLogout = {
+                            mainNavigator.navigate(BottomNavKey.Home)
+                            settingNavigator.clearStack()
+                            rootNavigator.clearStack()
+                            rootNavigator.navigate(Route.Login)
+                        },
+                    )
+                }
+                entry<Route.FavoriteTeam> {
+                    FavoriteTeamScreen(
+                        onFavoriteTeamUpdate = {
+                            mainNavigator.navigate(BottomNavKey.Home)
+                            rootNavigator.navigate(Route.Main)
+                            rootNavigator.clearStack()
+                        },
+                    )
+                }
+                entry<Route.Badge> {
+                    BadgeScreen(
+                        onBackClick = { rootNavigator.goBack() },
+                    )
+                }
             }
-            entry<Route.Main> {
-                MainScreen(
-                    navigator = mainNavigator,
-                    onSettingsClick = { rootNavigator.navigate(Route.Setting) },
-                    onBadgeClick = { rootNavigator.navigate(Route.Badge) },
-                )
-            }
-            entry<Route.Setting> {
-                SettingScreen(
-                    navigator = settingNavigator,
-                    snackbarHostState = snackbarHostState,
-                    onBackClick = {
-                        rootNavigator.navigate(Route.Main)
-                        rootNavigator.clearStack()
-                    },
-                    onDeleteAccountCancel = { rootNavigator.navigate(Route.Main) },
-                    onFavoriteTeamEditClick = { rootNavigator.navigate(Route.FavoriteTeam) },
-                    onLogout = {
-                        mainNavigator.navigate(BottomNavKey.Home)
-                        settingNavigator.clearStack()
-                        rootNavigator.clearStack()
-                        rootNavigator.navigate(Route.Login)
-                    },
-                )
-            }
-            entry<Route.FavoriteTeam> {
-                FavoriteTeamScreen(
-                    onFavoriteTeamUpdate = {
-                        mainNavigator.navigate(BottomNavKey.Home)
-                        rootNavigator.navigate(Route.Main)
-                        rootNavigator.clearStack()
-                    },
-                )
-            }
-            entry<Route.Badge> {
-                BadgeScreen(
-                    onBackClick = { rootNavigator.goBack() },
-                )
-            }
-        }
-    Box(modifier = modifier.fillMaxSize()) {
-        NavDisplay(
-            modifier = modifier.fillMaxSize(),
-            entries = rootNavigator.state.toEntries(entryProvider),
-            onBack = { rootNavigator.goBack() },
-        )
+        Box(modifier = modifier.fillMaxSize()) {
+            NavDisplay(
+                modifier = modifier.fillMaxSize(),
+                entries = rootNavigator.state.toEntries(entryProvider),
+                onBack = { rootNavigator.goBack() },
+            )
 
-        SnackbarHost(
-            hostState = snackbarHostState,
-            modifier =
-                Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = snackbarBottomPadding),
-        ) {
-            Snackbar(snackbarData = it)
+            SnackbarHost(
+                hostState = snackbarHostState,
+                modifier =
+                    Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = snackbarBottomPadding),
+            ) {
+                Snackbar(snackbarData = it)
+            }
         }
     }
 }

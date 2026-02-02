@@ -15,7 +15,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -48,15 +47,16 @@ import com.yagubogu.ui.theme.PretendardMedium
 import com.yagubogu.ui.theme.PretendardRegular
 import com.yagubogu.ui.theme.Primary500
 import com.yagubogu.ui.theme.White
+import com.yagubogu.ui.util.LocalSnackbarHostState
 
 @Composable
 fun SettingDeleteAccountScreen(
-    snackbarHostState: SnackbarHostState,
     onDeleteAccount: () -> Unit,
     onDeleteAccountCancel: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SettingViewModel = hiltViewModel(),
 ) {
+    val snackbarHostState = LocalSnackbarHostState.current
     val context = LocalContext.current
 
     val memberInfoItem: MemberInfoItem by viewModel.myMemberInfoItem.collectAsStateWithLifecycle()

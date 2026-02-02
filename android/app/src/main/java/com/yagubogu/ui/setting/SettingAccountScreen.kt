@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -27,15 +26,16 @@ import com.yagubogu.ui.setting.component.SettingButtonGroup
 import com.yagubogu.ui.setting.component.dialog.LogoutDialog
 import com.yagubogu.ui.setting.model.SettingEvent
 import com.yagubogu.ui.theme.Gray050
+import com.yagubogu.ui.util.LocalSnackbarHostState
 
 @Composable
 fun SettingAccountScreen(
-    snackbarHostState: SnackbarHostState,
     onDeleteAccountClick: () -> Unit,
     onLogout: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SettingViewModel = hiltViewModel(),
 ) {
+    val snackbarHostState = LocalSnackbarHostState.current
     val context = LocalContext.current
 
     var showLogoutDialog: Boolean by rememberSaveable { mutableStateOf(false) }
