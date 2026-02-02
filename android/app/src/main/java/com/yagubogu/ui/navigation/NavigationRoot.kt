@@ -47,15 +47,14 @@ fun NavigationRoot(
     settingNavigator: Navigator,
     modifier: Modifier = Modifier,
 ) {
-    val navigationState: NavigationState =
-        rememberNavigationState(
-            startRoute = Route.Main,
-            topLevelRoutes = setOf(Route.Main, Route.Setting),
-        )
     val snackbarHostState = remember { SnackbarHostState() }
-    val isMainTab = navigationState.topLevelRoute == Route.Main
-    val snackbarBottomPadding = if (isMainTab) 92.dp else 20.dp
+    val currentRoute = rootNavigator.currentRoute
 
+    // 화면별 스낵바 하단 패딩 계산
+    val snackbarBottomPadding = when {
+        currentRoute is Route.Main -> 92.dp
+        else -> 20.dp
+    }
 
     val entryProvider: (NavKey) -> NavEntry<NavKey> =
         entryProvider {
@@ -76,6 +75,7 @@ fun NavigationRoot(
             entry<Route.Setting> {
                 SettingScreen(
                     navigator = settingNavigator,
+                    snackbarHostState = snackbarHostState,
                     onBackClick = {
                         rootNavigator.navigate(Route.Main)
                         rootNavigator.clearStack()

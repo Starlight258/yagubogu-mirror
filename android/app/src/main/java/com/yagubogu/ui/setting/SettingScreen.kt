@@ -27,14 +27,13 @@ import com.yagubogu.ui.theme.White
 @Composable
 fun SettingScreen(
     navigator: Navigator,
+    snackbarHostState: SnackbarHostState,
     onBackClick: () -> Unit,
     onDeleteAccountCancel: () -> Unit,
     onFavoriteTeamEditClick: () -> Unit,
     onLogout: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
-
     Scaffold(
         containerColor = Gray050,
         topBar = {
@@ -48,24 +47,13 @@ fun SettingScreen(
                 title = stringResource((navigator.currentRoute as? SettingNavKey)?.label ?: R.string.setting_main_title),
             )
         },
-        snackbarHost = {
-            SnackbarHost(
-                hostState = snackbarHostState,
-                snackbar = {
-                    Snackbar(
-                        snackbarData = it,
-                        containerColor = Color.DarkGray,
-                        contentColor = White,
-                    )
-                },
-            )
-        },
         modifier = modifier,
     ) { innerPadding: PaddingValues ->
         val entryProvider: (NavKey) -> NavEntry<NavKey> =
             entryProvider {
                 entry<SettingNavKey.SettingMain> {
                     SettingMainScreen(
+                        snackbarHostState = snackbarHostState,
                         onSettingAccountClick = { navigator.navigate(SettingNavKey.SettingAccount) },
                         onFavoriteTeamEditClick = { onFavoriteTeamEditClick() },
                     )

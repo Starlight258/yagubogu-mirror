@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -73,6 +74,7 @@ import kotlin.coroutines.cancellation.CancellationException
 
 @Composable
 fun SettingMainScreen(
+    snackbarHostState: SnackbarHostState,
     onSettingAccountClick: () -> Unit,
     onFavoriteTeamEditClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -97,14 +99,22 @@ fun SettingMainScreen(
                     val resultUri: Uri =
                         UCrop.getOutput(intent) ?: return@rememberLauncherForActivityResult
                     scope.launch {
-                        handleCroppedImage(context, resultUri, viewModel::uploadProfileImage)
+                        val processResult = handleCroppedImage(context, resultUri, viewModel::uploadProfileImage)
+                        processResult.onFailure { e ->
+                            if (e is CancellationException) throw e
+                            snackbarHostState.currentSnackbarData?.dismiss()
+                            snackbarHostState.showSnackbar(context.getString(R.string.setting_edit_profile_image_upload_failed))
+                        }
                     }
                 }
 
                 UCrop.RESULT_ERROR -> {
                     val cropError: Throwable? = result.data?.let { UCrop.getError(it) }
                     Timber.e(cropError, "uCrop Error")
-                    context.showToast(R.string.setting_edit_profile_image_crop_failed)
+                    scope.launch {
+                        snackbarHostState.currentSnackbarData?.dismiss()
+                        snackbarHostState.showSnackbar(context.getString(R.string.setting_edit_profile_image_crop_failed))
+                    }
                 }
             }
         }
@@ -130,7 +140,8 @@ fun SettingMainScreen(
                     R.string.setting_edited_nickname_alert,
                     (settingEvent as SettingEvent.NicknameEditSuccess).newNickname,
                 )
-            context.showToast(message)
+            snackbarHostState.currentSnackbarData?.dismiss()
+            snackbarHostState.showSnackbar(message)
         }
     }
 
@@ -301,33 +312,16 @@ private suspend fun handleCroppedImage(
     context: Context,
     uri: Uri,
     onProfileImageUpload: suspend (Uri, String, Long) -> Result<Unit>,
-) {
-    runCatching {
-        val mimeType: String =
-            context
-                .contentResolver
-                .getType(uri) ?: "image/jpeg"
+): Result<Unit> {
+    return runCatching {
+        val mimeType = context.contentResolver.getType(uri) ?: "image/jpeg"
+        val fileSize = uri.fileSize(context).getOrNull() ?: error("파일 사이즈 획득 실패")
 
-        val fileSize: Long =
-            uri
-                .fileSize(context)
-                .getOrNull()
-                ?: error("파일 사이즈 획득 실패")
-
-        onProfileImageUpload(uri, mimeType, fileSize)
-    }.fold(
-        onSuccess = { result: Result<Unit> ->
-            result.onFailure { e ->
-                if (e is CancellationException) throw e
-                context.showToast(context.getString(R.string.setting_edit_profile_image_upload_failed))
-            }
-        },
-        onFailure = { e: Throwable ->
-            if (e is CancellationException) throw e
-            Timber.e(e, "프로필 이미지 전처리 실패")
-            context.showToast(context.getString(R.string.setting_edit_profile_image_processing_failed))
-        },
-    )
+        onProfileImageUpload(uri, mimeType, fileSize).getOrThrow()
+    }.onFailure { e ->
+        if (e is CancellationException) throw e
+        Timber.e(e, "프로필 이미지 처리 또는 업로드 실패")
+    }
 }
 
 private fun Uri.fileSize(context: Context): Result<Long?> =
