@@ -48,6 +48,7 @@ import com.yagubogu.ui.theme.PretendardRegular
 import com.yagubogu.ui.theme.Primary500
 import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.util.LocalSnackbarHostState
+import com.yagubogu.ui.util.showSingleSnackbar
 
 @Composable
 fun SettingDeleteAccountScreen(
@@ -68,14 +69,18 @@ fun SettingDeleteAccountScreen(
         when (settingEvent) {
             SettingEvent.DeleteAccount -> {
                 onDeleteAccount()
-                snackbarHostState.currentSnackbarData?.dismiss()
-                snackbarHostState.showSnackbar(context.getString(R.string.setting_delete_account_confirm_select_alert))
+                snackbarHostState.showSingleSnackbar(
+                    scope = this,
+                    message = context.getString(R.string.setting_delete_account_confirm_select_alert),
+                )
             }
 
             SettingEvent.DeleteAccountCancel -> {
                 onDeleteAccountCancel()
-                snackbarHostState.currentSnackbarData?.dismiss()
-                snackbarHostState.showSnackbar(context.getString(R.string.setting_delete_account_cancel_select_alert))
+                snackbarHostState.showSingleSnackbar(
+                    scope = this,
+                    message = context.getString(R.string.setting_delete_account_cancel_select_alert),
+                )
             }
 
             else -> Unit

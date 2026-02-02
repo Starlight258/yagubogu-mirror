@@ -51,6 +51,7 @@ import com.yagubogu.ui.home.model.StadiumStatsUiModel
 import com.yagubogu.ui.home.model.VictoryFairyRanking
 import com.yagubogu.ui.theme.Gray050
 import com.yagubogu.ui.util.BackPressHandler
+import com.yagubogu.ui.util.showSingleSnackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -86,12 +87,10 @@ fun HomeScreen(
                     locationPermissionManager.checkLocationSettingsThenAction(
                         viewModel::fetchStadiums,
                         {
-                            coroutineScope.launch {
-                                snackbarHostState.currentSnackbarData?.dismiss()
-                                snackbarHostState.showSnackbar(
-                                    context.getString(R.string.home_location_settings_disabled),
-                                )
-                            }
+                            snackbarHostState.showSingleSnackbar(
+                                scope = coroutineScope,
+                                message = context.getString(R.string.home_location_settings_disabled),
+                            )
                         },
                     )
 
@@ -141,12 +140,10 @@ fun HomeScreen(
                 launcher = locationPermissionLauncher,
                 onSuccess = viewModel::fetchStadiums,
                 onSettingsDisabled = {
-                    coroutineScope.launch {
-                        snackbarHostState.currentSnackbarData?.dismiss()
-                        snackbarHostState.showSnackbar(
-                            context.getString(R.string.home_location_settings_disabled),
-                        )
-                    }
+                    snackbarHostState.showSingleSnackbar(
+                        scope = coroutineScope,
+                        message = context.getString(R.string.home_location_settings_disabled),
+                    )
                 },
             )
         },

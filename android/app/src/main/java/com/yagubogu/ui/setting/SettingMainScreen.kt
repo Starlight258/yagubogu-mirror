@@ -65,6 +65,7 @@ import com.yagubogu.ui.theme.PretendardRegular12
 import com.yagubogu.ui.theme.PretendardSemiBold
 import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.util.LocalSnackbarHostState
+import com.yagubogu.ui.util.showSingleSnackbar
 import com.yalantis.ucrop.UCrop
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -102,8 +103,10 @@ fun SettingMainScreen(
                         val processResult = handleCroppedImage(context, resultUri, viewModel::uploadProfileImage)
                         processResult.onFailure { e ->
                             if (e is CancellationException) throw e
-                            snackbarHostState.currentSnackbarData?.dismiss()
-                            snackbarHostState.showSnackbar(context.getString(R.string.setting_edit_profile_image_upload_failed))
+                            snackbarHostState.showSingleSnackbar(
+                                scope = scope,
+                                message = context.getString(R.string.setting_edit_profile_image_upload_failed),
+                            )
                         }
                     }
                 }
@@ -111,10 +114,10 @@ fun SettingMainScreen(
                 UCrop.RESULT_ERROR -> {
                     val cropError: Throwable? = result.data?.let { UCrop.getError(it) }
                     Timber.e(cropError, "uCrop Error")
-                    scope.launch {
-                        snackbarHostState.currentSnackbarData?.dismiss()
-                        snackbarHostState.showSnackbar(context.getString(R.string.setting_edit_profile_image_crop_failed))
-                    }
+                    snackbarHostState.showSingleSnackbar(
+                        scope = scope,
+                        message = context.getString(R.string.setting_edit_profile_image_crop_failed),
+                    )
                 }
             }
         }
@@ -141,14 +144,18 @@ fun SettingMainScreen(
                         R.string.setting_edited_nickname_alert,
                         event.newNickname,
                     )
-                snackbarHostState.currentSnackbarData?.dismiss()
-                snackbarHostState.showSnackbar(message)
+                snackbarHostState.showSingleSnackbar(
+                    scope = this,
+                    message = message,
+                )
             }
 
             is SettingEvent.NicknameEditFailure -> {
                 val errorMessage = event.error.asString(context)
-                snackbarHostState.currentSnackbarData?.dismiss()
-                snackbarHostState.showSnackbar(errorMessage)
+                snackbarHostState.showSingleSnackbar(
+                    scope = this,
+                    message = errorMessage,
+                )
             }
 
             else -> Unit

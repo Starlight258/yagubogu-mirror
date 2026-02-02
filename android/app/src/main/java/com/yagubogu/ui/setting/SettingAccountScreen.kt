@@ -27,6 +27,7 @@ import com.yagubogu.ui.setting.component.dialog.LogoutDialog
 import com.yagubogu.ui.setting.model.SettingEvent
 import com.yagubogu.ui.theme.Gray050
 import com.yagubogu.ui.util.LocalSnackbarHostState
+import com.yagubogu.ui.util.showSingleSnackbar
 
 @Composable
 fun SettingAccountScreen(
@@ -44,8 +45,10 @@ fun SettingAccountScreen(
     LaunchedEffect(settingEvent) {
         if (settingEvent is SettingEvent.Logout) {
             onLogout()
-            snackbarHostState.currentSnackbarData?.dismiss()
-            snackbarHostState.showSnackbar(context.getString(R.string.setting_logout_alert))
+            snackbarHostState.showSingleSnackbar(
+                scope = this,
+                message = context.getString(R.string.setting_logout_alert),
+            )
         }
     }
 

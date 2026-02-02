@@ -13,7 +13,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.yagubogu.R
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 @Composable
 fun BackPressHandler(
@@ -28,10 +27,10 @@ fun BackPressHandler(
         val currentTime: Long = System.currentTimeMillis()
         if (currentTime - backPressedTime > BACK_PRESS_INTERVAL_MS) {
             backPressedTime = currentTime
-            coroutineScope.launch {
-                snackbarHostState.currentSnackbarData?.dismiss()
-                snackbarHostState.showSnackbar(message)
-            }
+            snackbarHostState.showSingleSnackbar(
+                scope = coroutineScope,
+                message = message,
+            )
         } else {
             (context as? Activity)?.finish()
         }
