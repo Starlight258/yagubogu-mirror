@@ -2,10 +2,10 @@ package com.yagubogu.ui.navigation
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -21,10 +21,8 @@ import com.yagubogu.ui.login.LoginScreen
 import com.yagubogu.ui.login.auth.GoogleCredentialManager
 import com.yagubogu.ui.main.MainScreen
 import com.yagubogu.ui.navigation.model.BottomNavKey
-import com.yagubogu.ui.navigation.model.NavigationState
 import com.yagubogu.ui.navigation.model.Navigator
 import com.yagubogu.ui.navigation.model.Route
-import com.yagubogu.ui.navigation.model.rememberNavigationState
 import com.yagubogu.ui.navigation.model.toEntries
 import com.yagubogu.ui.setting.SettingScreen
 
@@ -51,10 +49,11 @@ fun NavigationRoot(
     val currentRoute = rootNavigator.currentRoute
 
     // 화면별 스낵바 하단 패딩 계산
-    val snackbarBottomPadding = when {
-        currentRoute is Route.Main -> 92.dp
-        else -> 20.dp
-    }
+    val snackbarBottomPadding =
+        when {
+            currentRoute is Route.Main -> 92.dp
+            else -> 20.dp
+        }
 
     val entryProvider: (NavKey) -> NavEntry<NavKey> =
         entryProvider {

@@ -50,8 +50,8 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.yagubogu.R
+import com.yagubogu.data.repository.member.NicknameUpdateError
 import com.yagubogu.presentation.util.DateFormatter
-import com.yagubogu.presentation.util.showToast
 import com.yagubogu.ui.common.component.profile.ProfileImage
 import com.yagubogu.ui.setting.component.SettingButton
 import com.yagubogu.ui.setting.component.SettingButtonGroup
@@ -134,14 +134,24 @@ fun SettingMainScreen(
     }
 
     LaunchedEffect(settingEvent) {
-        if (settingEvent is SettingEvent.NicknameEditSuccess) {
-            val message =
-                context.getString(
-                    R.string.setting_edited_nickname_alert,
-                    (settingEvent as SettingEvent.NicknameEditSuccess).newNickname,
-                )
-            snackbarHostState.currentSnackbarData?.dismiss()
-            snackbarHostState.showSnackbar(message)
+        when (val event = settingEvent) {
+            is SettingEvent.NicknameEditSuccess -> {
+                val message =
+                    context.getString(
+                        R.string.setting_edited_nickname_alert,
+                        event.newNickname,
+                    )
+                snackbarHostState.currentSnackbarData?.dismiss()
+                snackbarHostState.showSnackbar(message)
+            }
+
+            is SettingEvent.NicknameEditFailure -> {
+                val errorMessage = event.error.asString(context)
+                snackbarHostState.currentSnackbarData?.dismiss()
+                snackbarHostState.showSnackbar(errorMessage)
+            }
+
+            else -> Unit
         }
     }
 
@@ -269,6 +279,30 @@ private fun MyProfile(
     }
 }
 
+private fun NicknameUpdateError.asString(context: Context): String =
+    when (this) {
+        NicknameUpdateError.DuplicateNickname ->
+            context.getString(R.string.setting_edit_nickname_duplicate)
+
+        NicknameUpdateError.InvalidNickname ->
+            context.getString(R.string.setting_edit_nickname_invalid_format)
+
+        NicknameUpdateError.MemberNotFound ->
+            context.getString(R.string.setting_edit_nickname_member_not_found)
+
+        NicknameUpdateError.NoPermission ->
+            context.getString(R.string.setting_edit_nickname_no_permission)
+
+        NicknameUpdateError.PayloadTooLarge ->
+            context.getString(R.string.setting_edit_nickname_too_long)
+
+        NicknameUpdateError.ServerError ->
+            context.getString(R.string.setting_edit_nickname_server_error)
+
+        is NicknameUpdateError.Unknown ->
+            message ?: context.getString(R.string.setting_edit_nickname_unknown_default)
+    }
+
 private fun Context.getAppVersion(): String =
     try {
         val packageInfo: PackageInfo =
@@ -312,8 +346,8 @@ private suspend fun handleCroppedImage(
     context: Context,
     uri: Uri,
     onProfileImageUpload: suspend (Uri, String, Long) -> Result<Unit>,
-): Result<Unit> {
-    return runCatching {
+): Result<Unit> =
+    runCatching {
         val mimeType = context.contentResolver.getType(uri) ?: "image/jpeg"
         val fileSize = uri.fileSize(context).getOrNull() ?: error("파일 사이즈 획득 실패")
 
@@ -322,7 +356,6 @@ private suspend fun handleCroppedImage(
         if (e is CancellationException) throw e
         Timber.e(e, "프로필 이미지 처리 또는 업로드 실패")
     }
-}
 
 private fun Uri.fileSize(context: Context): Result<Long?> =
     runCatching {
