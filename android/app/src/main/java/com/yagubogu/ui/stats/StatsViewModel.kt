@@ -27,7 +27,6 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.time.LocalDate
 import javax.inject.Inject
-import kotlin.math.roundToInt
 
 @HiltViewModel
 class StatsViewModel @Inject constructor(
@@ -110,7 +109,7 @@ class StatsViewModel @Inject constructor(
                         drawCount = statsCounts.drawCounts,
                         loseCount = statsCounts.loseCounts,
                         totalCount = statsCounts.favoriteCheckInCounts,
-                        winningPercentage = winRate.roundToInt(),
+                        winningPercentage = winRate.toFloat(),
                         myTeam = myTeam,
                         luckyStadium = luckyStadium,
                     )
