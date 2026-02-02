@@ -132,6 +132,7 @@ dependencies {
     implementation(libs.balloon.compose)
     implementation(libs.imagepickerkmp)
     implementation(libs.calendar.compose)
+    implementation(libs.compressor)
 
     // firebase
     implementation(platform(libs.firebase.bom))

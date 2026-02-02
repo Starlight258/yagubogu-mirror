@@ -5,7 +5,6 @@ import android.content.Intent
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
@@ -39,7 +38,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.graphics.scale
 import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -60,6 +58,11 @@ import com.yagubogu.ui.theme.PretendardMedium12
 import com.yagubogu.ui.theme.PretendardRegular12
 import com.yagubogu.ui.theme.PretendardSemiBold
 import com.yagubogu.ui.theme.White
+import id.zelory.compressor.Compressor
+import id.zelory.compressor.constraint.format
+import id.zelory.compressor.constraint.quality
+import id.zelory.compressor.constraint.resolution
+import id.zelory.compressor.constraint.size
 import io.github.ismoy.imagepickerkmp.domain.config.CameraCaptureConfig
 import io.github.ismoy.imagepickerkmp.domain.config.CropConfig
 import io.github.ismoy.imagepickerkmp.domain.models.CompressionLevel
@@ -67,12 +70,9 @@ import io.github.ismoy.imagepickerkmp.domain.models.GalleryPhotoResult
 import io.github.ismoy.imagepickerkmp.domain.models.MimeType.Companion.ALL_SUPPORTED_TYPES
 import io.github.ismoy.imagepickerkmp.presentation.ui.components.GalleryPickerLauncher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.File
-import java.io.FileOutputStream
 import kotlin.coroutines.cancellation.CancellationException
 
 @Composable
@@ -146,7 +146,7 @@ fun SettingMainScreen(
                                 runCatching {
                                     handleImagePickerKMPCroppedImage(
                                         context = context,
-                                        uri =
+                                        sourceImageUri =
                                             if (photo.uri.startsWith("file://")) {
                                                 photo.uri.toUri()
                                             } else {
@@ -320,21 +320,27 @@ private fun Context.getAppVersion(): String =
         DEFAULT_VERSION_NAME
     }
 
+/**
+ * ImagePickerKMP로 자른 이미지를
+ * 백엔드에서 요구하는 프로파일 이미지 규격(jpeg, 5mb)으로 컨버팅하여 업로드합니다.
+ */
 private suspend fun handleImagePickerKMPCroppedImage(
     context: Context,
-    uri: Uri,
+    sourceImageUri: Uri,
     onProfileImageUpload: suspend (Uri, String, Long) -> Result<Unit>,
 ) {
     runCatching {
-        val convertedProfileImage =
-            convertProfileImageSpec(
-                context = context,
-                sourceImageUri = uri,
-            ) ?: return
+        val originalFile = File(sourceImageUri.path ?: error("경로를 찾을 수 없음"))
+        val convertedProfileImage = Compressor.compress(context, originalFile) {
+            resolution(500, 500)
+            quality(90)
+            format(Bitmap.CompressFormat.JPEG)
+            size(5L * 1024L * 1024L)
+        }
 
         val convertedImageUri = convertedProfileImage.toUri()
-        val mimeType = "image/jpeg"
         val fileSize = convertedProfileImage.length()
+        val mimeType = "image/jpeg"
 
         onProfileImageUpload(convertedImageUri, mimeType, fileSize)
     }.fold(
@@ -351,52 +357,6 @@ private suspend fun handleImagePickerKMPCroppedImage(
         },
     )
 }
-
-/**
- * 백엔드에서 요구하는 프로파일 이미지 규격(jpeg, 5mb)으로 컨버팅합니다.
- */
-private suspend fun convertProfileImageSpec(
-    context: Context,
-    sourceImageUri: Uri,
-    maxWidth: Int = 500,
-    maxFileSizeBytes: Long = 5 * 1024 * 1024, // 5MB (서버 제한 기준)
-): File? =
-    withContext(Dispatchers.IO) {
-        runCatching {
-            // 1. 원본 비트맵 불러오기
-            val inputStream = context.contentResolver.openInputStream(sourceImageUri)
-            val originalBitmap = BitmapFactory.decodeStream(inputStream)
-            inputStream?.close()
-
-            // 2. 리사이징 로직 (가로 500px 기준)
-            val finalBitmap =
-                if (originalBitmap.width > maxWidth) {
-                    val aspectRatio = originalBitmap.height.toFloat() / originalBitmap.width.toFloat()
-                    val targetHeight = (maxWidth * aspectRatio).toInt()
-                    originalBitmap.scale(maxWidth, targetHeight).also {
-                        if (it != originalBitmap) originalBitmap.recycle()
-                    }
-                } else {
-                    originalBitmap
-                }
-
-            // 3. JPEG 임시 파일 저장
-            val tempFile = File(context.cacheDir, "processed_${System.currentTimeMillis()}.jpg")
-            FileOutputStream(tempFile).use { out ->
-                finalBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out)
-            }
-            finalBitmap.recycle()
-
-            // 4. 최종 파일 크기 검증
-            if (tempFile.length() > maxFileSizeBytes) {
-                tempFile.delete()
-                error("파일 크기가 너무 큽니다 (5MB 초과)")
-            }
-
-            tempFile
-        }.getOrNull()
-    }
-
 private fun Context.openUrl(url: String) {
     val intent = Intent(Intent.ACTION_VIEW, url.toUri())
     startActivity(intent)
