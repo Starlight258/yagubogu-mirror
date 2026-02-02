@@ -100,10 +100,10 @@ fun AnimatedBarChart(
             }
             Row {
                 SingleAnimatedHorizontalBarChart(
+                    item = item,
                     modifier = Modifier.height(strokeWidth),
                     durationMillis = durationMillis,
                     strokeColor = item.strokeColor,
-                    item = item,
                     maxValue = maxValue,
                     strokeShape = strokeShape,
                     maxTitleLabelWidth = maxTitleWidth,

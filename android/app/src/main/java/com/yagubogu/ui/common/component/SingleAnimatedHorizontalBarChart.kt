@@ -64,8 +64,8 @@ import com.yagubogu.ui.theme.Primary500
  */
 @Composable
 fun SingleAnimatedHorizontalBarChart(
-    modifier: Modifier = Modifier,
     item: BarChartItemValue,
+    modifier: Modifier = Modifier,
     maxValue: Float = 100f,
     maxTitleLabelWidth: Dp = 40.dp,
     maxDataTitleWidth: Dp = 40.dp,
@@ -79,7 +79,11 @@ fun SingleAnimatedHorizontalBarChart(
         animationSpec = tween(durationMillis = durationMillis, easing = LinearEasing),
         label = "BarProgress",
     )
-    val currentFraction = (item.amount.toFloat() / maxValue).coerceIn(0f, 1f) * progress
+
+    // 현재 퍼센트 0으로 나누기 및 NaN방지
+    val fraction = if (maxValue > 0) (item.amount.toFloat() / maxValue).coerceIn(0f, 1f) else 0f
+    val safeFraction = if (fraction.isNaN()) 0f else fraction
+    val currentFraction = safeFraction * progress
 
     LaunchedEffect(Unit) { targetProgress = 1f }
 
@@ -104,7 +108,7 @@ fun SingleAnimatedHorizontalBarChart(
             Box(
                 modifier =
                     Modifier
-                        .weight(currentFraction + 0.0001f) // 0 방어
+                        .weight(currentFraction.coerceAtLeast(0.0001f)) // 0 방어
                         .fillMaxHeight()
                         .background(strokeColor, strokeShape),
             )
@@ -134,8 +138,6 @@ fun SingleAnimatedHorizontalBarChart(
 @Composable
 private fun SingleAnimatedPieChartPreview0() {
     SingleAnimatedHorizontalBarChart(
-        modifier = Modifier.height(18.dp),
-        maxValue = 100f,
         item =
             BarChartItemValue(
                 strokeColor = Primary500,
@@ -143,6 +145,8 @@ private fun SingleAnimatedPieChartPreview0() {
                 amount = 0,
                 dataLabel = DefaultBarChartDataLabel.copy(value = "0회"),
             ),
+        modifier = Modifier.height(18.dp),
+        maxValue = 100f,
     )
 }
 
@@ -150,8 +154,6 @@ private fun SingleAnimatedPieChartPreview0() {
 @Composable
 private fun SingleAnimatedPieChartPreview30() {
     SingleAnimatedHorizontalBarChart(
-        modifier = Modifier.height(18.dp),
-        maxValue = 100f,
         item =
             BarChartItemValue(
                 strokeColor = Primary500,
@@ -159,6 +161,8 @@ private fun SingleAnimatedPieChartPreview30() {
                 amount = 30,
                 dataLabel = DefaultBarChartDataLabel.copy(value = "30회"),
             ),
+        modifier = Modifier.height(18.dp),
+        maxValue = 100f,
     )
 }
 
@@ -166,8 +170,6 @@ private fun SingleAnimatedPieChartPreview30() {
 @Composable
 private fun SingleAnimatedPieChartPreview() {
     SingleAnimatedHorizontalBarChart(
-        modifier = Modifier.height(18.dp),
-        maxValue = 100f,
         item =
             BarChartItemValue(
                 strokeColor = Primary500,
@@ -175,5 +177,7 @@ private fun SingleAnimatedPieChartPreview() {
                 amount = 100,
                 dataLabel = DefaultBarChartDataLabel.copy(value = "100회"),
             ),
+        modifier = Modifier.height(18.dp),
+        maxValue = 100f,
     )
 }
