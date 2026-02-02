@@ -1,4 +1,4 @@
-package com.yagubogu.presentation.util
+package com.yagubogu.ui.util
 
 import android.content.Context
 import android.graphics.Color

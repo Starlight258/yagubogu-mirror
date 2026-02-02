@@ -35,7 +35,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.firebase.Firebase
 import com.google.firebase.analytics.analytics
 import com.yagubogu.R
-import com.yagubogu.presentation.util.showToast
 import com.yagubogu.ui.setting.component.dialog.DeleteAccountDialog
 import com.yagubogu.ui.setting.model.MemberInfoItem
 import com.yagubogu.ui.setting.model.SettingEvent
@@ -48,6 +47,7 @@ import com.yagubogu.ui.theme.PretendardMedium
 import com.yagubogu.ui.theme.PretendardRegular
 import com.yagubogu.ui.theme.Primary500
 import com.yagubogu.ui.theme.White
+import com.yagubogu.ui.util.showToast
 
 @Composable
 fun SettingDeleteAccountScreen(

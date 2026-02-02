@@ -3,9 +3,9 @@ package com.yagubogu.ui.livetalk.chat.component
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.yagubogu.R
-import com.yagubogu.presentation.dialog.DefaultDialogUiModel
 import com.yagubogu.ui.common.component.DefaultDialog
 import com.yagubogu.ui.common.component.profile.ProfileDialog
+import com.yagubogu.ui.common.model.DefaultDialogUiModel
 import com.yagubogu.ui.livetalk.chat.model.LivetalkChatScreenActions
 import com.yagubogu.ui.livetalk.chat.model.LivetalkChatScreenStates
 

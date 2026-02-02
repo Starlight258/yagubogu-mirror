@@ -49,8 +49,6 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.yagubogu.R
-import com.yagubogu.presentation.util.DateFormatter
-import com.yagubogu.presentation.util.showToast
 import com.yagubogu.ui.common.component.profile.ProfileImage
 import com.yagubogu.ui.setting.component.SettingButton
 import com.yagubogu.ui.setting.component.SettingButtonGroup
@@ -64,6 +62,8 @@ import com.yagubogu.ui.theme.PretendardMedium12
 import com.yagubogu.ui.theme.PretendardRegular12
 import com.yagubogu.ui.theme.PretendardSemiBold
 import com.yagubogu.ui.theme.White
+import com.yagubogu.ui.util.DateFormatter
+import com.yagubogu.ui.util.showToast
 import com.yalantis.ucrop.UCrop
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch

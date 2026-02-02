@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.yagubogu.data.repository.auth.AuthRepository
 import com.yagubogu.data.repository.member.MemberRepository
 import com.yagubogu.data.repository.thirdparty.ThirdPartyRepository
-import com.yagubogu.presentation.mapper.toUiModel
+import com.yagubogu.ui.mapper.toUiModel
 import com.yagubogu.ui.setting.model.MemberInfoItem
 import com.yagubogu.ui.setting.model.PresignedUrlCompleteItem
 import com.yagubogu.ui.setting.model.PresignedUrlItem
