@@ -69,17 +69,36 @@ fun AttendanceAdditionBottomSheet(
         containerColor = Gray050,
         modifier = modifier,
     ) {
-        when (pastGameUiState) {
-            PastGameUiState.Loading -> PastGameLoadingContent()
-            is PastGameUiState.Success -> {
-                when (pastGameUiState.pastGames.isNotEmpty()) {
-                    true ->
-                        PastGamesContent(
-                            items = pastGameUiState.pastGames,
-                            onPastCheckIn = onPastCheckIn,
-                        )
+        val lazyListState: LazyListState = rememberLazyListState()
+        LazyColumn(
+            state = lazyListState,
+            modifier = modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(20.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            when (pastGameUiState) {
+                PastGameUiState.Loading -> {
+                    item { AttendanceHeader() }
+                    items(3) { PastGameLoadingItem() }
+                }
 
-                    false -> EmptyPastGameContent()
+                is PastGameUiState.Success -> {
+                    when (pastGameUiState.pastGames.isNotEmpty()) {
+                        true -> {
+                            item { AttendanceHeader() }
+                            items(
+                                items = pastGameUiState.pastGames,
+                                key = { item: PastGameUiModel -> item.gameId },
+                            ) { item: PastGameUiModel ->
+                                PastGameItem(
+                                    item = item,
+                                    onPastCheckIn = onPastCheckIn,
+                                )
+                            }
+                        }
+                        false -> item { EmptyPastGameContent() }
+                    }
                 }
             }
         }
@@ -87,90 +106,27 @@ fun AttendanceAdditionBottomSheet(
 }
 
 @Composable
-private fun PastGameLoadingContent(modifier: Modifier = Modifier) {
-    LazyColumn(
-        modifier = modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(20.dp),
-        verticalArrangement = Arrangement.spacedBy(20.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        item {
-            Text(
-                text = stringResource(R.string.attendance_history_add_attendance_description),
-                style = PretendardSemiBold16,
-            )
-        }
-        items(3) {
-            Box(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .height(120.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .shimmerLoading(),
-            )
-        }
-    }
+private fun AttendanceHeader() {
+    Text(
+        text = stringResource(R.string.attendance_history_add_attendance_description),
+        style = PretendardSemiBold16,
+    )
 }
 
 @Composable
-private fun PastGamesContent(
-    items: List<PastGameUiModel>,
-    onPastCheckIn: (Long) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val lazyListState: LazyListState = rememberLazyListState()
-
-    LazyColumn(
-        state = lazyListState,
-        modifier = modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(20.dp),
-        verticalArrangement = Arrangement.spacedBy(20.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        item {
-            Text(
-                text = stringResource(R.string.attendance_history_add_attendance_description),
-                style = PretendardSemiBold16,
-            )
-        }
-
-        items(
-            items = items,
-            key = { item: PastGameUiModel -> item.gameId },
-        ) { item: PastGameUiModel ->
-            PastAttendanceItem(
-                item = item,
-                onPastCheckIn = onPastCheckIn,
-            )
-        }
-    }
+private fun PastGameLoadingItem(modifier: Modifier = Modifier) {
+    Box(
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .height(120.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .shimmerLoading(),
+    )
 }
 
 @Composable
-private fun EmptyPastGameContent(modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier.padding(horizontal = 20.dp, vertical = 40.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Text(
-            text = stringResource(R.string.attendance_history_no_game_description),
-            style = PretendardMedium.copy(fontSize = 18.sp, color = Gray400),
-        )
-        Spacer(modifier = Modifier.height(20.dp))
-        Image(
-            painter = painterResource(id = R.drawable.img_baseball_fly_error),
-            contentDescription = null,
-            modifier =
-                Modifier
-                    .height(200.dp)
-                    .fillMaxWidth(),
-        )
-    }
-}
-
-@Composable
-private fun PastAttendanceItem(
+private fun PastGameItem(
     item: PastGameUiModel,
     onPastCheckIn: (Long) -> Unit,
     modifier: Modifier = Modifier,
@@ -230,6 +186,28 @@ private fun PastAttendanceItem(
     }
 }
 
+@Composable
+private fun EmptyPastGameContent(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier.padding(horizontal = 20.dp, vertical = 40.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(
+            text = stringResource(R.string.attendance_history_no_game_description),
+            style = PretendardMedium.copy(fontSize = 18.sp, color = Gray400),
+        )
+        Spacer(modifier = Modifier.height(20.dp))
+        Image(
+            painter = painterResource(id = R.drawable.img_baseball_fly_error),
+            contentDescription = null,
+            modifier =
+                Modifier
+                    .height(200.dp)
+                    .fillMaxWidth(),
+        )
+    }
+}
+
 @Preview
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -268,8 +246,8 @@ private fun EmptyAttendanceAdditionBottomSheetPreview() {
 
 @Preview
 @Composable
-private fun PastAttendanceItemPreview() {
-    PastAttendanceItem(
+private fun PastGameItemPreview() {
+    PastGameItem(
         item = PAST_GAME_UI_MODELS[0],
         onPastCheckIn = { },
     )
