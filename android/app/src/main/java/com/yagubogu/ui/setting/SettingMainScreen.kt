@@ -331,12 +331,13 @@ private suspend fun handleImagePickerKMPCroppedImage(
 ) {
     runCatching {
         val originalFile = File(sourceImageUri.path ?: error("경로를 찾을 수 없음"))
-        val convertedProfileImage = Compressor.compress(context, originalFile) {
-            resolution(500, 500)
-            quality(90)
-            format(Bitmap.CompressFormat.JPEG)
-            size(5L * 1024L * 1024L)
-        }
+        val convertedProfileImage =
+            Compressor.compress(context, originalFile) {
+                resolution(500, 500)
+                quality(90)
+                format(Bitmap.CompressFormat.JPEG)
+                size(5L * 1024L * 1024L)
+            }
 
         val convertedImageUri = convertedProfileImage.toUri()
         val fileSize = convertedProfileImage.length()
@@ -357,6 +358,7 @@ private suspend fun handleImagePickerKMPCroppedImage(
         },
     )
 }
+
 private fun Context.openUrl(url: String) {
     val intent = Intent(Intent.ACTION_VIEW, url.toUri())
     startActivity(intent)
