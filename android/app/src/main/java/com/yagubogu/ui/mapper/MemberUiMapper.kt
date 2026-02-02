@@ -1,4 +1,4 @@
-package com.yagubogu.presentation.mapper
+package com.yagubogu.ui.mapper
 
 import com.yagubogu.data.dto.response.member.BadgeDto
 import com.yagubogu.data.dto.response.member.MemberInfoResponse

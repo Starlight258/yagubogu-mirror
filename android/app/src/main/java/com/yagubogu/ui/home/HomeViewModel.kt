@@ -12,8 +12,6 @@ import com.yagubogu.data.repository.stream.StreamRepository
 import com.yagubogu.data.util.ApiException
 import com.yagubogu.domain.model.Coordinate
 import com.yagubogu.domain.model.Distance
-import com.yagubogu.presentation.mapper.toDomain
-import com.yagubogu.presentation.mapper.toUiModel
 import com.yagubogu.presentation.util.mapList
 import com.yagubogu.ui.common.model.MemberProfile
 import com.yagubogu.ui.home.model.CheckInSseEvent
@@ -25,6 +23,8 @@ import com.yagubogu.ui.home.model.StadiumStatsUiModel
 import com.yagubogu.ui.home.model.StadiumWithGame
 import com.yagubogu.ui.home.model.StadiumsWithGames
 import com.yagubogu.ui.home.model.VictoryFairyRanking
+import com.yagubogu.ui.mapper.toDomain
+import com.yagubogu.ui.mapper.toUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async

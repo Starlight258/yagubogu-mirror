@@ -6,9 +6,9 @@ import com.yagubogu.data.dto.response.stats.OpponentWinRateTeamDto
 import com.yagubogu.data.repository.checkin.CheckInRepository
 import com.yagubogu.data.repository.member.MemberRepository
 import com.yagubogu.data.repository.stats.StatsRepository
-import com.yagubogu.presentation.mapper.toUiModel
 import com.yagubogu.presentation.util.mapList
 import com.yagubogu.presentation.util.mapListIndexed
+import com.yagubogu.ui.mapper.toUiModel
 import com.yagubogu.ui.stats.detail.model.StadiumVisitCount
 import com.yagubogu.ui.stats.detail.model.VsTeamStatItem
 import com.yagubogu.ui.stats.my.model.AverageStats

@@ -1,4 +1,4 @@
-package com.yagubogu.presentation.mapper
+package com.yagubogu.ui.mapper
 
 import com.yagubogu.data.dto.response.checkin.CheckInGameDto
 import com.yagubogu.data.dto.response.checkin.CheckInGameTeamDto
