@@ -1,4 +1,4 @@
-package com.yagubogu.ui.common.component
+package com.yagubogu.ui.common.component.chart
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size

@@ -27,7 +27,7 @@ import com.google.firebase.analytics.analytics
 import com.skydoves.balloon.compose.Balloon
 import com.skydoves.balloon.compose.BalloonWindow
 import com.yagubogu.R
-import com.yagubogu.ui.common.component.AnimatedPieChart
+import com.yagubogu.ui.common.component.chart.AnimatedPieChart
 import com.yagubogu.ui.common.model.PieChartItemValue
 import com.yagubogu.ui.stats.my.model.StatsMyUiModel
 import com.yagubogu.ui.theme.Gray300

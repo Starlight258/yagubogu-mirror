@@ -1,4 +1,4 @@
-package com.yagubogu.ui.common.component
+package com.yagubogu.ui.common.component.chart
 
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
