@@ -19,7 +19,7 @@
         android:theme="@style/Theme.YaguBogu"
         tools:targetApi="31">
         <activity
-            android:name=".presentation.livetalk.chat.LivetalkChatActivity"
+            android:name=".ui.livetalk.chat.LivetalkChatActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
