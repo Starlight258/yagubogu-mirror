@@ -1,7 +1,7 @@
 *.iml
 .gradle
 /local.properties
-/.idea
+.idea/
 .DS_Store
 /build
 /captures
@@ -12,3 +12,4 @@ app/release/
 **/google-services.json
 app/yagubogu-keystore
 keystore.properties
+.kotlin/
