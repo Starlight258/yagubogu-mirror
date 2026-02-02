@@ -8,19 +8,20 @@ import com.yagubogu.ui.theme.PretendardMedium
 import com.yagubogu.ui.theme.PretendardMedium12
 
 data class BarChartLabel(
-    val value: String = "타이틀",
-    val gap: Dp = 10.dp,
-    val textStyle: TextStyle = PretendardMedium.copy(fontSize = 14.sp),
+    val value: String,
+    val gap: Dp,
+    val textStyle: TextStyle,
 ) {
     companion object {
         val DefaultBarChartTitleLabel =
             BarChartLabel(
-                value = "잠실",
+                value = "Title",
                 gap = 20.dp,
+                textStyle = PretendardMedium.copy(fontSize = 14.sp),
             )
         val DefaultBarChartDataLabel =
             BarChartLabel(
-                value = "100회",
+                value = "Data",
                 gap = 8.dp,
                 textStyle = PretendardMedium12,
             )
