@@ -61,6 +61,7 @@ fun SettingScreen(
                 }
                 entry<SettingNavKey.SettingDeleteAccount> {
                     SettingDeleteAccountScreen(
+                        snackbarHostState = snackbarHostState,
                         onDeleteAccountCancel = {
                             navigator.clearStack()
                             onDeleteAccountCancel()

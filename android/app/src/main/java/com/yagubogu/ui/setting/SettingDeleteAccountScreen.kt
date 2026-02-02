@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -35,7 +36,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.firebase.Firebase
 import com.google.firebase.analytics.analytics
 import com.yagubogu.R
-import com.yagubogu.presentation.util.showToast
 import com.yagubogu.ui.setting.component.dialog.DeleteAccountDialog
 import com.yagubogu.ui.setting.model.MemberInfoItem
 import com.yagubogu.ui.setting.model.SettingEvent
@@ -51,6 +51,7 @@ import com.yagubogu.ui.theme.White
 
 @Composable
 fun SettingDeleteAccountScreen(
+    snackbarHostState: SnackbarHostState,
     onDeleteAccount: () -> Unit,
     onDeleteAccountCancel: () -> Unit,
     modifier: Modifier = Modifier,
@@ -67,12 +68,14 @@ fun SettingDeleteAccountScreen(
         when (settingEvent) {
             SettingEvent.DeleteAccount -> {
                 onDeleteAccount()
-                context.showToast(R.string.setting_delete_account_confirm_select_alert)
+                snackbarHostState.currentSnackbarData?.dismiss()
+                snackbarHostState.showSnackbar(context.getString(R.string.setting_delete_account_confirm_select_alert))
             }
 
             SettingEvent.DeleteAccountCancel -> {
                 onDeleteAccountCancel()
-                context.showToast(R.string.setting_delete_account_cancel_select_alert)
+                snackbarHostState.currentSnackbarData?.dismiss()
+                snackbarHostState.showSnackbar(context.getString(R.string.setting_delete_account_cancel_select_alert))
             }
 
             else -> Unit
