@@ -45,13 +45,11 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.yagubogu.R
-import com.yagubogu.presentation.favorite.FavoriteTeamActivity
 import com.yagubogu.presentation.util.DateFormatter
 import com.yagubogu.presentation.util.showToast
 import com.yagubogu.ui.common.component.profile.ProfileImage
 import com.yagubogu.ui.setting.component.SettingButton
 import com.yagubogu.ui.setting.component.SettingButtonGroup
-import com.yagubogu.ui.setting.component.SettingEventHandler
 import com.yagubogu.ui.setting.component.dialog.NicknameEditDialog
 import com.yagubogu.ui.setting.model.MemberInfoItem
 import com.yagubogu.ui.setting.model.SettingEvent
@@ -76,7 +74,8 @@ import kotlin.coroutines.cancellation.CancellationException
 
 @Composable
 fun SettingMainScreen(
-    onClickSettingAccount: () -> Unit,
+    onSettingAccountClick: () -> Unit,
+    onFavoriteTeamEditClick: () -> Unit,
     onFullScreenMode: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SettingViewModel = hiltViewModel(),
@@ -87,8 +86,8 @@ fun SettingMainScreen(
         viewModel.myMemberInfoItem.collectAsStateWithLifecycle(MemberInfoItem())
 
     var showNicknameEditDialog: Boolean by rememberSaveable { mutableStateOf(false) }
-    val settingEvent: State<SettingEvent?> =
-        viewModel.settingEvent.collectAsStateWithLifecycle(null)
+
+    val settingEvent: SettingEvent? by viewModel.settingEvent.collectAsStateWithLifecycle(null)
 
     var showGallery by rememberSaveable { mutableStateOf(false) }
 
@@ -100,9 +99,21 @@ fun SettingMainScreen(
         viewModel.fetchMemberInfo()
     }
 
+    LaunchedEffect(settingEvent) {
+        if (settingEvent is SettingEvent.NicknameEdit) {
+            val message =
+                context.getString(
+                    R.string.setting_edited_nickname_alert,
+                    (settingEvent as SettingEvent.NicknameEdit).newNickname,
+                )
+            context.showToast(message)
+        }
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
         SettingMainScreen(
-            onClickSettingAccount = onClickSettingAccount,
+            onClickSettingAccount = onSettingAccountClick,
+            onFavoriteTeamEditClick = onFavoriteTeamEditClick,
             onNicknameEdit = { showNicknameEditDialog = true },
             onProfileImageUpload = {
                 showGallery = true
@@ -190,8 +201,6 @@ fun SettingMainScreen(
             onCancel = { showNicknameEditDialog = false },
         )
     }
-
-    SettingEventHandler(settingEvent = settingEvent.value)
 }
 
 @Composable
@@ -199,6 +208,7 @@ private fun SettingMainScreen(
     onClickSettingAccount: () -> Unit,
     onNicknameEdit: () -> Unit,
     onProfileImageUpload: () -> Unit,
+    onFavoriteTeamEditClick: () -> Unit,
     memberInfoItem: MemberInfoItem,
     appVersion: String,
     modifier: Modifier = Modifier,
@@ -225,9 +235,10 @@ private fun SettingMainScreen(
                 text = stringResource(R.string.setting_edit_nickname),
                 onClick = onNicknameEdit,
             )
-            SettingButton(text = stringResource(R.string.setting_edit_my_team), onClick = {
-                context.startActivity(Intent(context, FavoriteTeamActivity::class.java))
-            })
+            SettingButton(
+                text = stringResource(R.string.setting_edit_my_team),
+                onClick = onFavoriteTeamEditClick,
+            )
             SettingButton(
                 text = stringResource(R.string.setting_manage_account),
                 onClick = onClickSettingAccount,
@@ -370,6 +381,7 @@ private fun SettingMainScreenPreview() {
         onClickSettingAccount = {},
         onNicknameEdit = {},
         onProfileImageUpload = {},
+        onFavoriteTeamEditClick = {},
         memberInfoItem = MemberInfoItem(nickName = "야구보구"),
         appVersion = "1.0.0",
     )

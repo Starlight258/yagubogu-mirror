@@ -13,6 +13,9 @@
     <string name="all_ranking">%d등</string>
     <string name="all_score">%d점</string>
     <string name="all_score_first_float">%.1f점</string>
+    <string name="all_year">%d년</string>
+    <string name="all_month">%d월</string>
+    <string name="all_year_month">%d년 %d월</string>
 
     <string name="main_back_press_to_exit">뒤로가기를 한 번 더 누르면 종료됩니다.</string>
 
@@ -93,10 +96,12 @@
     <string name="stats_winning_percentage">직관 승률</string>
     <string name="stats_stadium_visit_count">구장 방문 횟수</string>
 
-    <string name="attendance_history_year">%d년</string>
-    <string name="attendance_history_month">%d월</string>
-    <string name="attendance_history_year_month">%d년 %d월</string>
     <string name="attendance_history_add_attendance">직관 내역 추가하기</string>
+    <string name="attendance_history_add_attendance_description">직관 내역에 추가할 경기를 선택해 주세요</string>
+    <string name="attendance_history_add_attendance_confirm">%s\n직관 내역에 추가할까요?</string>
+    <string name="attendance_history_add_attendance_message">추가된 직관 내역은 삭제할 수 없어요.</string>
+    <string name="attendance_history_check_in_success_message">직관 내역이 추가되었습니다!</string>
+    <string name="attendance_history_no_game_description">경기가 없는 날이에요</string>
     <string name="attendance_history_empty_description">직관 내역이 없어요</string>
     <string name="attendance_history_empty_scoreboard_illustration_description">비어있는 스코어보드 일러스트</string>
     <string name="attendance_history_all">전체 경기</string>
@@ -122,7 +127,8 @@
     <string name="livetalk_empty_game_description">오늘은 경기가 없어요</string>
     <string name="livetalk_empty_game_illustration_description">야구공을 놓치는 일러스트</string>
 
-    <string name="livetalk_send_btn_description">메시지 전송 버튼 비행기 아이콘</string>
+    <string name="livetalk_send_btn_description">메시지 전송</string>
+    <string name="livetalk_send_btn_locked_description">잠긴 메시지 전송</string>
     <string name="livetalk_away_home_name">%s vs %s</string>
     <string name="livetalk_chat_input_hint">현재 %s 상황은…</string>
     <string name="livetalk_chat_input_hint_unverified">직관 인증을 먼저 해주세요</string>
@@ -130,11 +136,15 @@
 
     <string name="livetalk_trash_icon_description">삭제 쓰레기통 아이콘</string>
     <string name="livetalk_trash_btn">삭제</string>
+    <string name="livetalk_pending_message">전송중…</string>
+    <string name="livetalk_empty_not_check_in_livetalk_description">직관 인증을 하고\n오늘의 첫 현장톡을 남겨보세요</string>
+    <string name="livetalk_empty_livetalk_description">오늘의 첫 현장톡을 남겨보세요</string>
     <string name="livetalk_trash_dialog_message">정말 현장톡을 삭제할까요?\n삭제된 현장톡은 모두에게 보이지 않습니다.</string>
     <string name="livetalk_delete_succeed">메시지가 삭제되었습니다.</string>
     <string name="livetalk_user_report_icon_description">신고 깃발 아이콘</string>
     <string name="livetalk_user_report_btn">신고</string>
     <string name="livetalk_user_report_dialog_message">정말 %1$s님의 현장톡을 신고할까요?</string>
+    <string name="livetalk_reported_chat_message">신고가 접수된 현장톡입니다.</string>
     <string name="livetalk_already_reported">이미 신고한 현장톡입니다.</string>
     <string name="livetalk_report_succeed">정상 신고 되었습니다.</string>
     <string name="livetalk_loading_error">현장톡을 불러오는 데 실패했습니다.</string>
