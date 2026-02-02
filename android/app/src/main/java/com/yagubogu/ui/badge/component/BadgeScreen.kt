@@ -20,6 +20,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -28,6 +29,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.yagubogu.R
 import com.yagubogu.ui.badge.BadgeUiState
 import com.yagubogu.ui.badge.BadgeViewModel
@@ -35,6 +37,7 @@ import com.yagubogu.ui.badge.model.BADGE_ID_0_ACQUIRED_FIXTURE
 import com.yagubogu.ui.badge.model.BADGE_ID_0_NOT_ACQUIRED_FIXTURE
 import com.yagubogu.ui.badge.model.BADGE_ID_1_ACQUIRED_FIXTURE
 import com.yagubogu.ui.badge.model.BadgeInfoUiModel
+import com.yagubogu.ui.common.component.DefaultToolbar
 import com.yagubogu.ui.theme.Gray050
 import com.yagubogu.ui.theme.Gray300
 import com.yagubogu.ui.theme.PretendardBold20
@@ -45,10 +48,14 @@ private const val COLUMN_SIZE = 2
 
 @Composable
 fun BadgeScreen(
-    viewModel: BadgeViewModel,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: BadgeViewModel = hiltViewModel(),
 ) {
+    LaunchedEffect(Unit) {
+        viewModel.fetchBadges()
+    }
+
     BadgeScreen(
         badgeUiState = viewModel.badgeUiState.value,
         onBackClick = onBackClick,
@@ -66,7 +73,12 @@ private fun BadgeScreen(
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
-        topBar = { BadgeToolbar(onBackClick = onBackClick) },
+        topBar = {
+            DefaultToolbar(
+                onBackClick = onBackClick,
+                title = stringResource(R.string.badge_title),
+            )
+        },
         containerColor = Gray050,
         modifier = modifier.background(Gray300),
     ) { innerPadding: PaddingValues ->

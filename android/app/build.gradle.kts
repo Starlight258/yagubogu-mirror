@@ -131,6 +131,7 @@ dependencies {
     implementation(libs.balloon)
     implementation(libs.balloon.compose)
     implementation(libs.ucrop)
+    implementation(libs.calendar.compose)
 
     // firebase
     implementation(platform(libs.firebase.bom))
