@@ -83,7 +83,17 @@ fun HomeScreen(
                 permissions.any { locationPermissionManager.shouldShowRationale(it.key) }
             when {
                 isPermissionGranted ->
-                    locationPermissionManager.checkLocationSettingsThenAction(viewModel::fetchStadiums)
+                    locationPermissionManager.checkLocationSettingsThenAction(
+                        viewModel::fetchStadiums,
+                        {
+                            coroutineScope.launch {
+                                snackbarHostState.currentSnackbarData?.dismiss()
+                                snackbarHostState.showSnackbar(
+                                    context.getString(R.string.home_location_settings_disabled),
+                                )
+                            }
+                        },
+                    )
 
                 shouldShowRationale -> {
                     coroutineScope.launch {
@@ -129,7 +139,15 @@ fun HomeScreen(
             checkIn(
                 manager = locationPermissionManager,
                 launcher = locationPermissionLauncher,
-                action = viewModel::fetchStadiums,
+                onSuccess = viewModel::fetchStadiums,
+                onSettingsDisabled = {
+                    coroutineScope.launch {
+                        snackbarHostState.currentSnackbarData?.dismiss()
+                        snackbarHostState.showSnackbar(
+                            context.getString(R.string.home_location_settings_disabled),
+                        )
+                    }
+                },
             )
         },
         memberStatsUiModel = memberStatsUiModel,
@@ -215,10 +233,14 @@ private fun HomeScreen(
 private fun checkIn(
     manager: LocationPermissionManager,
     launcher: ActivityResultLauncher<Array<String>>,
-    action: () -> Unit,
+    onSuccess: () -> Unit,
+    onSettingsDisabled: () -> Unit,
 ) {
     if (manager.isPermissionGranted()) {
-        manager.checkLocationSettingsThenAction(action)
+        manager.checkLocationSettingsThenAction(
+            onSuccess = onSuccess,
+            onSettingsDisabled = onSettingsDisabled,
+        )
     } else {
         manager.requestPermissions(launcher)
     }
