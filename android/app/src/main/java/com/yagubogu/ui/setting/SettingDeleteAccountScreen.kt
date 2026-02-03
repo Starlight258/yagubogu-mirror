@@ -20,7 +20,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -49,6 +48,7 @@ import com.yagubogu.ui.theme.PretendardRegular
 import com.yagubogu.ui.theme.Primary500
 import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.util.LocalSnackbarHostState
+import com.yagubogu.ui.util.LocalSnackbarScope
 import com.yagubogu.ui.util.showSingleSnackbar
 
 @Composable
@@ -59,8 +59,8 @@ fun SettingDeleteAccountScreen(
     viewModel: SettingViewModel = hiltViewModel(),
 ) {
     val snackbarHostState = LocalSnackbarHostState.current
+    val snackbarScope = LocalSnackbarScope.current
     val context = LocalContext.current
-    val scope = rememberCoroutineScope()
 
     val memberInfoItem: MemberInfoItem by viewModel.myMemberInfoItem.collectAsStateWithLifecycle()
     val settingEvent: SettingEvent? by viewModel.settingEvent.collectAsStateWithLifecycle(null)
@@ -72,7 +72,7 @@ fun SettingDeleteAccountScreen(
             SettingEvent.DeleteAccount -> {
                 onLogout()
                 snackbarHostState.showSingleSnackbar(
-                    scope = scope,
+                    scope = snackbarScope,
                     message = context.getString(R.string.setting_delete_account_confirm_select_alert),
                 )
             }
@@ -80,7 +80,7 @@ fun SettingDeleteAccountScreen(
             SettingEvent.DeleteAccountCancel -> {
                 onDeleteAccountCancel()
                 snackbarHostState.showSingleSnackbar(
-                    scope = scope,
+                    scope = snackbarScope,
                     message = context.getString(R.string.setting_delete_account_cancel_select_alert),
                 )
             }
@@ -109,7 +109,7 @@ fun SettingDeleteAccountScreen(
                 showDeleteAccountDialog = false
                 onDeleteAccountCancel()
                 snackbarHostState.showSingleSnackbar(
-                    scope = scope,
+                    scope = snackbarScope,
                     message = context.getString(R.string.setting_delete_account_cancel_select_alert),
                 )
             },

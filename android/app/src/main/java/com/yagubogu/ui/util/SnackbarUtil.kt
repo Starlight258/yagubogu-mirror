@@ -10,6 +10,10 @@ val LocalSnackbarHostState =
     staticCompositionLocalOf<SnackbarHostState> {
         error("SnackbarHostState 없음")
     }
+val LocalSnackbarScope =
+    staticCompositionLocalOf<CoroutineScope> {
+        error("SnackbarScope 없음")
+    }
 
 fun SnackbarHostState.showSingleSnackbar(
     scope: CoroutineScope,

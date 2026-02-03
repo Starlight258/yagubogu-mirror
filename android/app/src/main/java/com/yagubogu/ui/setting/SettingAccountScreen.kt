@@ -27,6 +27,7 @@ import com.yagubogu.ui.setting.component.dialog.LogoutDialog
 import com.yagubogu.ui.setting.model.SettingEvent
 import com.yagubogu.ui.theme.Gray050
 import com.yagubogu.ui.util.LocalSnackbarHostState
+import com.yagubogu.ui.util.LocalSnackbarScope
 import com.yagubogu.ui.util.showSingleSnackbar
 
 @Composable
@@ -37,6 +38,7 @@ fun SettingAccountScreen(
     viewModel: SettingViewModel = hiltViewModel(),
 ) {
     val snackbarHostState = LocalSnackbarHostState.current
+    val snackbarScope = LocalSnackbarScope.current
     val context = LocalContext.current
 
     var showLogoutDialog: Boolean by rememberSaveable { mutableStateOf(false) }
@@ -46,7 +48,7 @@ fun SettingAccountScreen(
         if (settingEvent is SettingEvent.Logout) {
             onLogout()
             snackbarHostState.showSingleSnackbar(
-                scope = this,
+                scope = snackbarScope,
                 message = context.getString(R.string.setting_logout_alert),
             )
         }

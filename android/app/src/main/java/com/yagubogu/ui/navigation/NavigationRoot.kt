@@ -9,6 +9,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -27,6 +28,7 @@ import com.yagubogu.ui.navigation.model.Route
 import com.yagubogu.ui.navigation.model.toEntries
 import com.yagubogu.ui.setting.SettingScreen
 import com.yagubogu.ui.util.LocalSnackbarHostState
+import com.yagubogu.ui.util.LocalSnackbarScope
 
 /**
  * 앱의 최상위 네비게이션 구조를 정의하는 루트 컴포저블.
@@ -48,6 +50,7 @@ fun NavigationRoot(
     modifier: Modifier = Modifier,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
+    val snackbarScope = rememberCoroutineScope()
     val currentRoute = rootNavigator.currentRoute
 
     // 화면별 스낵바 하단 패딩 계산
@@ -57,7 +60,10 @@ fun NavigationRoot(
             else -> 20.dp
         }
 
-    CompositionLocalProvider(LocalSnackbarHostState provides snackbarHostState) {
+    CompositionLocalProvider(
+        LocalSnackbarHostState provides snackbarHostState,
+        LocalSnackbarScope provides snackbarScope,
+    ) {
         val entryProvider: (NavKey) -> NavEntry<NavKey> =
             entryProvider {
                 entry<Route.Login> {
