@@ -36,8 +36,6 @@ fun SettingScreen(
     onLogout: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
-
     var isTopBarVisible: Boolean by remember { mutableStateOf(true) }
 
     Scaffold(
