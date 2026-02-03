@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -59,6 +60,7 @@ fun SettingDeleteAccountScreen(
 ) {
     val snackbarHostState = LocalSnackbarHostState.current
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
     val memberInfoItem: MemberInfoItem by viewModel.myMemberInfoItem.collectAsStateWithLifecycle()
     val settingEvent: SettingEvent? by viewModel.settingEvent.collectAsStateWithLifecycle(null)
@@ -70,7 +72,7 @@ fun SettingDeleteAccountScreen(
             SettingEvent.DeleteAccount -> {
                 onDeleteAccount()
                 snackbarHostState.showSingleSnackbar(
-                    scope = this,
+                    scope = scope,
                     message = context.getString(R.string.setting_delete_account_confirm_select_alert),
                 )
             }
@@ -78,7 +80,7 @@ fun SettingDeleteAccountScreen(
             SettingEvent.DeleteAccountCancel -> {
                 onDeleteAccountCancel()
                 snackbarHostState.showSingleSnackbar(
-                    scope = this,
+                    scope = scope,
                     message = context.getString(R.string.setting_delete_account_cancel_select_alert),
                 )
             }
@@ -103,7 +105,13 @@ fun SettingDeleteAccountScreen(
                 viewModel.deleteAccount()
                 showDeleteAccountDialog = false
             },
-            onCancel = { showDeleteAccountDialog = false },
+            onCancel = {
+                showDeleteAccountDialog = false
+                snackbarHostState.showSingleSnackbar(
+                    scope = scope,
+                    message = context.getString(R.string.setting_delete_account_cancel_select_alert),
+                )
+            },
         )
     }
 }
