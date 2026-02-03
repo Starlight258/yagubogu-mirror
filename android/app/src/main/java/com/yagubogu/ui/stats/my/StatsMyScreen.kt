@@ -10,6 +10,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -62,18 +63,20 @@ private fun StatsMyScreen(
         }
     }
 
-    Column(
-        verticalArrangement = Arrangement.spacedBy(20.dp),
-        modifier =
-            modifier
-                .background(Gray050)
-                .verticalScroll(scrollState)
-                .padding(horizontal = 20.dp)
-                .padding(top = 12.dp, bottom = 20.dp),
-    ) {
-        WinRates(statsMyUiModel)
-        MyStats(statsMyUiModel)
-        AttendanceStats(averageStats)
+    key(statsMyUiModel) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(20.dp),
+            modifier =
+                modifier
+                    .background(Gray050)
+                    .verticalScroll(scrollState)
+                    .padding(horizontal = 20.dp)
+                    .padding(top = 12.dp, bottom = 20.dp),
+        ) {
+            WinRates(statsMyUiModel)
+            MyStats(statsMyUiModel)
+            AttendanceStats(averageStats)
+        }
     }
 }
 

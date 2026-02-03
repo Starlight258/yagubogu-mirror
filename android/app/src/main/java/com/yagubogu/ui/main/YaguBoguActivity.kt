@@ -24,7 +24,6 @@ import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
 import com.yagubogu.BuildConfig
 import com.yagubogu.R
-import com.yagubogu.presentation.util.showToast
 import com.yagubogu.ui.login.auth.GoogleCredentialManager
 import com.yagubogu.ui.login.model.InAppUpdateType
 import com.yagubogu.ui.login.model.VersionInfo
@@ -32,6 +31,7 @@ import com.yagubogu.ui.main.model.AutoLoginState
 import com.yagubogu.ui.navigation.YaguBoguRoute
 import com.yagubogu.ui.navigation.model.Route
 import com.yagubogu.ui.theme.YaguBoguTheme
+import com.yagubogu.ui.util.showToast
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import javax.inject.Inject
