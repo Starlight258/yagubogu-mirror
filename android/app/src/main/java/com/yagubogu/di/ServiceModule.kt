@@ -28,49 +28,33 @@ import javax.inject.Singleton
 object ServiceModule {
     @Provides
     @Singleton
-    fun provideAuthApiService(
-        @GlobalKtorfit ktorfit: Ktorfit,
-    ): AuthApiService = ktorfit.createAuthApiService()
+    fun provideAuthApiService(ktorfit: Ktorfit): AuthApiService = ktorfit.createAuthApiService()
 
     @Provides
     @Singleton
-    fun provideThirdPartyApiService(
-        @NoAuthKtorfit ktorfit: Ktorfit,
-    ): ThirdPartyApiService = ktorfit.createThirdPartyApiService()
+    fun provideThirdPartyApiService(ktorfit: Ktorfit): ThirdPartyApiService = ktorfit.createThirdPartyApiService()
 
     @Provides
     @Singleton
-    fun provideMemberApiService(
-        @GlobalKtorfit ktorfit: Ktorfit,
-    ): MemberApiService = ktorfit.createMemberApiService()
+    fun provideMemberApiService(ktorfit: Ktorfit): MemberApiService = ktorfit.createMemberApiService()
 
     @Provides
     @Singleton
-    fun provideStadiumApiService(
-        @GlobalKtorfit ktorfit: Ktorfit,
-    ): StadiumApiService = ktorfit.createStadiumApiService()
+    fun provideStadiumApiService(ktorfit: Ktorfit): StadiumApiService = ktorfit.createStadiumApiService()
 
     @Provides
     @Singleton
-    fun provideCheckInApiService(
-        @GlobalKtorfit ktorfit: Ktorfit,
-    ): CheckInApiService = ktorfit.createCheckInApiService()
+    fun provideCheckInApiService(ktorfit: Ktorfit): CheckInApiService = ktorfit.createCheckInApiService()
 
     @Provides
     @Singleton
-    fun provideStatsApiService(
-        @GlobalKtorfit ktorfit: Ktorfit,
-    ): StatsApiService = ktorfit.createStatsApiService()
+    fun provideStatsApiService(ktorfit: Ktorfit): StatsApiService = ktorfit.createStatsApiService()
 
     @Provides
     @Singleton
-    fun provideGameApiService(
-        @GlobalKtorfit ktorfit: Ktorfit,
-    ): GameApiService = ktorfit.createGameApiService()
+    fun provideGameApiService(ktorfit: Ktorfit): GameApiService = ktorfit.createGameApiService()
 
     @Provides
     @Singleton
-    fun provideTalkApiService(
-        @GlobalKtorfit ktorfit: Ktorfit,
-    ): TalkApiService = ktorfit.createTalkApiService()
+    fun provideTalkApiService(ktorfit: Ktorfit): TalkApiService = ktorfit.createTalkApiService()
 }
