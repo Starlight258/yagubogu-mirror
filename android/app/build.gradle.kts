@@ -114,86 +114,95 @@ kotlin {
 }
 
 dependencies {
+    // AndroidX Core
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.appcompat)
-    implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.fragment.ktx)
+    implementation(libs.androidx.viewpager2)
+    implementation(libs.androidx.datastore.preferences)
+
+    // Kotlinx
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.datetime)
-    implementation(libs.androidx.viewpager2)
-    implementation(libs.play.services.location)
-    implementation(libs.androidx.core.splashscreen)
-    implementation(libs.timber)
-    implementation(libs.androidx.datastore.preferences)
-    implementation(libs.glide)
-    implementation(libs.play.services.oss.licenses)
-    implementation(libs.shimmer)
-    implementation(libs.balloon)
-    implementation(libs.balloon.compose)
-    implementation(libs.ucrop)
-    implementation(libs.calendar.compose)
 
     // Ktor & Ktorfit
     implementation(libs.ktorfit.lib)
     implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.okhttp)
     implementation(libs.ktor.client.content.negotiation)
     implementation(libs.ktor.serialization.kotlinx.json)
-    implementation(libs.ktor.client.okhttp)
     implementation(libs.ktor.client.auth)
     implementation(libs.ktor.client.logging)
 
-    // firebase
+    // Firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.crashlytics.ndk)
 
-    // google credentials
+    // Google Credentials
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
     implementation(libs.google.googleid)
 
-    // play in-app update
+    // Google Services
+    implementation(libs.play.services.location)
+    implementation(libs.play.services.oss.licenses)
+
+    // Play In-App Update
     implementation(libs.app.update)
     implementation(libs.app.update.ktx)
 
-    // compose
+    // Compose
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.material3)
-    implementation(libs.androidx.runtime.livedata)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.runtime.livedata)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.runtime.compose)
 
-    // navigation3
+    // Navigation3
     implementation(libs.androidx.navigation3.ui)
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.androidx.lifecycle.viewmodel.navigation3)
     implementation(libs.androidx.hilt.navigation.compose)
 
-    // coil
-    implementation(libs.coil.compose)
-    implementation(libs.coil.network.okhttp)
-
-    // kotest
-    testImplementation(libs.kotest.runner.junit5)
-    testImplementation(libs.kotest.assertions.core)
-
-    // hilt
+    // Hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
 
-    testImplementation(libs.kotlinx.coroutines.test)
+    // Image Loading
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
+    implementation(libs.glide)
+    implementation(libs.ucrop)
+
+    // UI Components
+    implementation(libs.material)
+    implementation(libs.shimmer)
+    implementation(libs.balloon)
+    implementation(libs.balloon.compose)
+    implementation(libs.calendar.compose)
+
+    // Logging
+    implementation(libs.timber)
+
+    // Testing
     testImplementation(libs.junit)
+    testImplementation(libs.kotest.runner.junit5)
+    testImplementation(libs.kotest.assertions.core)
+    testImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
 
+    // Debug
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }
