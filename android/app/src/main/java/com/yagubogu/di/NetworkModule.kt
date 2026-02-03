@@ -116,12 +116,40 @@ object NetworkModule {
         json: Json,
     ): SseClient = SseClient(baseUrl, client, json)
 
+    // ========== NoAuthClient (서드파티 서버 통신용) ==========
+    @Provides
+    @Singleton
+    @NoAuthClient
+    fun provideNoAuthHttpClient(json: Json): HttpClient =
+        HttpClient(OkHttp) {
+            configureBase(json)
+
+            install(HttpTimeout) {
+                requestTimeoutMillis = 60_000
+                connectTimeoutMillis = 10_000
+            }
+        }
+
     // ========== Ktorfit ==========
     @Provides
     @Singleton
-    fun provideKtorfit(
+    @GlobalKtorfit
+    fun provideGlobalKtorfit(
         @BaseUrl baseUrl: String,
         @GlobalClient client: HttpClient,
+    ): Ktorfit =
+        Ktorfit
+            .Builder()
+            .baseUrl(url = baseUrl, checkUrl = false)
+            .httpClient(client)
+            .build()
+
+    @Provides
+    @Singleton
+    @NoAuthKtorfit
+    fun provideNoAuthKtorfit(
+        @BaseUrl baseUrl: String,
+        @NoAuthClient client: HttpClient,
     ): Ktorfit =
         Ktorfit
             .Builder()
