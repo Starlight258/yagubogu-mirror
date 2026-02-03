@@ -8,7 +8,6 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlinx.serialization)
-    alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.google.services)
     alias(libs.plugins.firebase.crashlytics)
     alias(libs.plugins.kotlin.parcelize)
@@ -119,9 +118,7 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.activity)
-    implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.fragment.ktx)
-    implementation(libs.androidx.viewpager2)
     implementation(libs.androidx.datastore.preferences)
 
     // Kotlinx
@@ -162,7 +159,6 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.runtime.livedata)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.runtime.compose)
 
@@ -179,13 +175,10 @@ dependencies {
     // Image Loading
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
-    implementation(libs.glide)
     implementation(libs.ucrop)
 
     // UI Components
     implementation(libs.material)
-    implementation(libs.shimmer)
-    implementation(libs.balloon)
     implementation(libs.balloon.compose)
     implementation(libs.calendar.compose)
 
