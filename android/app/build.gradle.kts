@@ -176,6 +176,10 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
 
+    // Koin
+    implementation(platform(libs.koin.bom))
+    implementation(libs.koin.android)
+
     // Image Loading
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
