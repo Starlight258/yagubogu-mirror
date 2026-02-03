@@ -8,7 +8,6 @@ import io.ktor.http.ContentType
 import io.ktor.http.content.OutgoingContent
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.jvm.javaio.toByteReadChannel
-import java.io.InputStream
 import javax.inject.Inject
 
 class ThirdPartyRemoteDataSource @Inject constructor(
@@ -34,16 +33,15 @@ class ThirdPartyRemoteDataSource @Inject constructor(
     ): OutgoingContent =
         object : OutgoingContent.ReadChannelContent() {
             override val contentType: ContentType = ContentType.parse(contentType)
-
             override val contentLength: Long = contentLength
 
             override fun readFrom(): ByteReadChannel {
-                val inputStream: InputStream =
+                // .use를 제거하고 직접 반환, Ktor 엔진이 데이터를 다 보낸 후 내부적으로 채널을 닫음.
+                val inputStream =
                     contentResolver.openInputStream(uri)
                         ?: throw IllegalStateException("Failed to open input stream for $uri")
-                return inputStream.use { stream: InputStream ->
-                    stream.toByteReadChannel()
-                }
+
+                return inputStream.toByteReadChannel()
             }
         }
 }
