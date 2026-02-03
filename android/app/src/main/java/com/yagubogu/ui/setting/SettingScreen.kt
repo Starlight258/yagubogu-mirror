@@ -43,7 +43,7 @@ fun SettingScreen(
 ) {
     val snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
 
-    var isTopBarVisible by remember { mutableStateOf(true) }
+    var isTopBarVisible: Boolean by remember { mutableStateOf(true) }
 
     Scaffold(
         containerColor = Gray050,
@@ -88,7 +88,7 @@ fun SettingScreen(
                     SettingMainScreen(
                         onSettingAccountClick = { navigator.navigate(SettingNavKey.SettingAccount) },
                         onFavoriteTeamEditClick = { onFavoriteTeamEditClick() },
-                        onFullScreenMode = { isFull -> isTopBarVisible = !isFull },
+                        onFullScreenMode = { isFull: Boolean -> isTopBarVisible = !isFull },
                     )
                 }
                 entry<SettingNavKey.SettingAccount> {
