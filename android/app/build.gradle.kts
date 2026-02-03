@@ -175,7 +175,8 @@ dependencies {
     // Image Loading
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
-    implementation(libs.ucrop)
+    implementation(libs.imagepickerkmp)
+    implementation(libs.compressor)
 
     // UI Components
     implementation(libs.material)

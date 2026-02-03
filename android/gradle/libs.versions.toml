@@ -55,7 +55,8 @@ appUpdate = "2.1.0"
 # Image Loading
 coilCompose = "3.3.0"
 coilNetworkOkhttp = "3.3.0"
-ucrop = "2.2.11"
+imagepickerkmp = "1.0.32"
+compressor = "3.0.1"
 
 # UI Components
 material = "1.12.0"
@@ -141,7 +142,8 @@ app-update-ktx = { module = "com.google.android.play:app-update-ktx", version.re
 # Image Loading
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
 coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coilNetworkOkhttp" }
-ucrop = { module = "com.github.yalantis:ucrop", version.ref = "ucrop" }
+imagepickerkmp = { module = "io.github.ismoy:imagepickerkmp", version.ref = "imagepickerkmp" }
+compressor = { group = "id.zelory", name = "compressor", version.ref = "compressor" }
 
 # UI Components
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
