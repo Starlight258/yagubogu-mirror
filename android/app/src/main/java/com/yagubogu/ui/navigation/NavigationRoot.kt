@@ -81,7 +81,11 @@ fun NavigationRoot(
                             rootNavigator.navigate(Route.Main)
                             rootNavigator.clearStack()
                         },
-                        onDeleteAccountCancel = { rootNavigator.navigate(Route.Main) },
+                        onDeleteAccountCancel = {
+                            settingNavigator.clearStack()
+                            rootNavigator.navigate(Route.Main)
+                            rootNavigator.clearStack()
+                        },
                         onFavoriteTeamEditClick = { rootNavigator.navigate(Route.FavoriteTeam) },
                         onLogout = {
                             mainNavigator.navigate(BottomNavKey.Home)

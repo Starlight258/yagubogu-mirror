@@ -58,11 +58,8 @@ fun SettingScreen(
                 }
                 entry<SettingNavKey.SettingDeleteAccount> {
                     SettingDeleteAccountScreen(
-                        onDeleteAccountCancel = {
-                            navigator.clearStack()
-                            onDeleteAccountCancel()
-                        },
-                        onDeleteAccount = {
+                        onDeleteAccountCancel = onDeleteAccountCancel,
+                        onLogout = {
                             navigator.clearStack()
                             onLogout()
                         },

@@ -53,7 +53,7 @@ import com.yagubogu.ui.util.showSingleSnackbar
 
 @Composable
 fun SettingDeleteAccountScreen(
-    onDeleteAccount: () -> Unit,
+    onLogout: () -> Unit,
     onDeleteAccountCancel: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SettingViewModel = hiltViewModel(),
@@ -70,7 +70,7 @@ fun SettingDeleteAccountScreen(
     LaunchedEffect(settingEvent) {
         when (settingEvent) {
             SettingEvent.DeleteAccount -> {
-                onDeleteAccount()
+                onLogout()
                 snackbarHostState.showSingleSnackbar(
                     scope = scope,
                     message = context.getString(R.string.setting_delete_account_confirm_select_alert),
@@ -107,6 +107,7 @@ fun SettingDeleteAccountScreen(
             },
             onCancel = {
                 showDeleteAccountDialog = false
+                onDeleteAccountCancel()
                 snackbarHostState.showSingleSnackbar(
                     scope = scope,
                     message = context.getString(R.string.setting_delete_account_cancel_select_alert),
