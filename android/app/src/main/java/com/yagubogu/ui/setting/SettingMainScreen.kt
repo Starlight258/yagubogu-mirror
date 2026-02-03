@@ -9,7 +9,6 @@ import android.net.Uri
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -113,84 +112,82 @@ fun SettingMainScreen(
         }
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        SettingMainScreen(
-            onClickSettingAccount = onSettingAccountClick,
-            onFavoriteTeamEditClick = onFavoriteTeamEditClick,
-            onNicknameEdit = { showNicknameEditDialog = true },
-            onProfileImageUpload = {
-                showGallery = true
-            },
-            memberInfoItem = memberInfoItem.value,
-            appVersion = context.getAppVersion(),
-            modifier = modifier,
-        )
+    SettingMainScreen(
+        onClickSettingAccount = onSettingAccountClick,
+        onFavoriteTeamEditClick = onFavoriteTeamEditClick,
+        onNicknameEdit = { showNicknameEditDialog = true },
+        onProfileImageUpload = {
+            showGallery = true
+        },
+        memberInfoItem = memberInfoItem.value,
+        appVersion = context.getAppVersion(),
+        modifier = modifier,
+    )
 
-        if (showGallery) {
-            val activity = context as? ComponentActivity
-            when (activity is ComponentActivity) {
-                true -> {
-                    GalleryPickerLauncher(
-                        allowMultiple = false,
-                        mimeTypes = ALL_SUPPORTED_TYPES,
-                        onPhotosSelected = { photos: List<GalleryPhotoResult> ->
-                            Timber.d("onPhotosSelected, 사진 개수: ${photos.size}")
-                            showGallery = false
+    if (showGallery) {
+        val activity = context as? ComponentActivity
+        when (activity is ComponentActivity) {
+            true -> {
+                GalleryPickerLauncher(
+                    allowMultiple = false,
+                    mimeTypes = ALL_SUPPORTED_TYPES,
+                    onPhotosSelected = { photos: List<GalleryPhotoResult> ->
+                        Timber.d("onPhotosSelected, 사진 개수: ${photos.size}")
+                        showGallery = false
 
-                            val photo = photos.firstOrNull()
-                            if (photo == null) {
-                                Timber.w("선택된 사진이 없습니다")
-                                return@GalleryPickerLauncher
+                        val photo: GalleryPhotoResult? = photos.firstOrNull()
+                        if (photo == null) {
+                            Timber.w("선택된 사진이 없습니다")
+                            return@GalleryPickerLauncher
+                        }
+                        scope.launch {
+                            runCatching {
+                                handleImagePickerKMPCroppedImage(
+                                    context = context,
+                                    sourceImageUri =
+                                        if (photo.uri.startsWith("file://")) {
+                                            photo.uri.toUri()
+                                        } else {
+                                            File(photo.uri).toUri()
+                                        },
+                                    onProfileImageUpload = viewModel::uploadProfileImage,
+                                )
+                            }.getOrElse { exception: Throwable ->
+                                Timber.e(exception, "이미지 처리 중 예외 발생")
+                                context.showToast(R.string.setting_edit_profile_image_processing_failed)
                             }
-                            scope.launch {
-                                runCatching {
-                                    handleImagePickerKMPCroppedImage(
-                                        context = context,
-                                        sourceImageUri =
-                                            if (photo.uri.startsWith("file://")) {
-                                                photo.uri.toUri()
-                                            } else {
-                                                File(photo.uri).toUri()
-                                            },
-                                        onProfileImageUpload = viewModel::uploadProfileImage,
-                                    )
-                                }.getOrElse { exception: Throwable ->
-                                    Timber.e(exception, "이미지 처리 중 예외 발생")
-                                    context.showToast(R.string.setting_edit_profile_image_processing_failed)
-                                }
-                            }
-                        },
-                        onError = { exception: Exception ->
-                            Timber.e(exception, "GalleryPicker 에러 발생")
-                            context.showToast(context.getString(R.string.setting_edit_profile_image_selection_failed))
-                            showGallery = false
-                        },
-                        onDismiss = {
-                            Timber.d("GalleryPicker 닫힘")
-                            showGallery = false
-                        },
-                        enableCrop = true,
-                        cameraCaptureConfig =
-                            CameraCaptureConfig(
-                                compressionLevel = CompressionLevel.HIGH,
-                                cropConfig =
-                                    CropConfig(
-                                        enabled = true,
-                                        aspectRatioLocked = true,
-                                        circularCrop = true,
-                                        squareCrop = false,
-                                        freeformCrop = false,
-                                    ),
-                            ),
-                    )
-                }
-
-                else -> {
-                    Timber.e("Context가 ComponentActivity가 아닙니다: ${context.javaClass.name}")
-                    LaunchedEffect(Unit) {
+                        }
+                    },
+                    onError = { exception: Exception ->
+                        Timber.e(exception, "GalleryPicker 에러 발생")
                         context.showToast(context.getString(R.string.setting_edit_profile_image_selection_failed))
                         showGallery = false
-                    }
+                    },
+                    onDismiss = {
+                        Timber.d("GalleryPicker 닫힘")
+                        showGallery = false
+                    },
+                    enableCrop = true,
+                    cameraCaptureConfig =
+                        CameraCaptureConfig(
+                            compressionLevel = CompressionLevel.HIGH,
+                            cropConfig =
+                                CropConfig(
+                                    enabled = true,
+                                    aspectRatioLocked = true,
+                                    circularCrop = true,
+                                    squareCrop = false,
+                                    freeformCrop = false,
+                                ),
+                        ),
+                )
+            }
+
+            false -> {
+                Timber.e("Context가 ComponentActivity가 아닙니다: ${context.javaClass.name}")
+                LaunchedEffect(Unit) {
+                    context.showToast(context.getString(R.string.setting_edit_profile_image_selection_failed))
+                    showGallery = false
                 }
             }
         }
