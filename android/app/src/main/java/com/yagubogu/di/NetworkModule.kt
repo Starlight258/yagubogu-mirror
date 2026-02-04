@@ -135,6 +135,8 @@ private fun HttpClientConfig<*>.configureAuth(
 
     install(Auth) {
         bearer {
+            cacheTokens = false
+
             // 토큰 불러오기
             loadTokens {
                 val accessToken: String? = tokenManager.getAccessToken()
