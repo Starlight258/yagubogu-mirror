@@ -52,11 +52,18 @@ val networkModule =
             }
         }
 
+        // 토큰 갱신 동시성 제어용 Mutex (GlobalClient, StreamClient 공유)
+        single(named("TokenRefreshMutex")) { Mutex() }
+
         // ========== GlobalClient (일반 API용) ==========
         single(named("GlobalClient")) {
             HttpClient(OkHttp) {
                 configureBase(json = get())
-                configureAuth(tokenManager = get(), authApiServiceLazy = lazy { get() })
+                configureAuth(
+                    tokenManager = get(),
+                    authApiServiceLazy = lazy { get() },
+                    tokenRefreshMutex = get(named("TokenRefreshMutex")),
+                )
 
                 install(HttpTimeout) {
                     requestTimeoutMillis = 30_000 // 요청을 보내고 응답을 받을 때까지 전체 시간
@@ -70,7 +77,11 @@ val networkModule =
         single(named("StreamClient")) {
             HttpClient(OkHttp) {
                 configureBase(json = get())
-                configureAuth(tokenManager = get(), authApiServiceLazy = lazy { get() })
+                configureAuth(
+                    tokenManager = get(),
+                    authApiServiceLazy = lazy { get() },
+                    tokenRefreshMutex = get(named("TokenRefreshMutex")),
+                )
 
                 install(SSE) {
                     showCommentEvents()
@@ -130,9 +141,8 @@ private fun HttpClientConfig<*>.configureBase(json: Json) {
 private fun HttpClientConfig<*>.configureAuth(
     tokenManager: TokenManager,
     authApiServiceLazy: Lazy<AuthApiService>,
+    tokenRefreshMutex: Mutex,
 ) {
-    val mutex = Mutex()
-
     install(Auth) {
         bearer {
             // 토큰 불러오기
@@ -153,7 +163,8 @@ private fun HttpClientConfig<*>.configureAuth(
             refreshTokens {
                 // [동시성 문제 해결 (Mutex)]
                 // 여러 API가 동시에 401을 받더라도, 토큰 갱신 요청은 한 번만 순차적으로 실행되도록 락을 겁니다.
-                mutex.withLock {
+                // GlobalClient와 StreamClient가 동일한 Mutex를 공유합니다.
+                tokenRefreshMutex.withLock {
                     val refreshToken: String =
                         tokenManager.getRefreshToken() ?: return@refreshTokens null
 
