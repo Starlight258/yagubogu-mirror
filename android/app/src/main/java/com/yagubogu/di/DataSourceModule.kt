@@ -20,52 +20,29 @@ import com.yagubogu.data.datasource.talk.TalkDataSource
 import com.yagubogu.data.datasource.talk.TalkRemoteDataSource
 import com.yagubogu.data.datasource.thirdparty.ThirdPartyDataSource
 import com.yagubogu.data.datasource.thirdparty.ThirdPartyRemoteDataSource
-import dagger.Binds
-import dagger.Module
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
+import org.koin.dsl.module
 
-@Module
-@InstallIn(SingletonComponent::class)
-abstract class DataSourceModule {
-    @Binds
-    @Singleton
-    abstract fun bindAuthDataSource(impl: AuthRemoteDataSource): AuthDataSource
+val datasourceModule =
+    module {
+        single<AuthDataSource> { AuthRemoteDataSource(authApiService = get()) }
 
-    @Binds
-    @Singleton
-    abstract fun bindMemberDataSource(impl: MemberRemoteDataSource): MemberDataSource
+        single<MemberDataSource> { MemberRemoteDataSource(memberApiService = get()) }
 
-    @Binds
-    @Singleton
-    abstract fun bindCheckInDataSource(impl: CheckInRemoteDataSource): CheckInDataSource
+        single<CheckInDataSource> { CheckInRemoteDataSource(checkInApiService = get()) }
 
-    @Binds
-    @Singleton
-    abstract fun bindStatsDataSource(impl: StatsRemoteDataSource): StatsDataSource
+        single<StatsDataSource> { StatsRemoteDataSource(statsApiService = get()) }
 
-    @Binds
-    @Singleton
-    abstract fun bindLocationDataSource(impl: LocationLocalDataSource): LocationDataSource
+        single<LocationDataSource> { LocationLocalDataSource(locationClient = get()) }
 
-    @Binds
-    @Singleton
-    abstract fun bindStadiumDataSource(impl: StadiumRemoteDataSource): StadiumDataSource
+        single<StadiumDataSource> { StadiumRemoteDataSource(stadiumApiService = get()) }
 
-    @Binds
-    @Singleton
-    abstract fun bindStreamDataSource(impl: StreamRemoteDataSource): StreamDataSource
+        single<StreamDataSource> { StreamRemoteDataSource(sseClient = get()) }
 
-    @Binds
-    @Singleton
-    abstract fun bindGameDataSource(impl: GameRemoteDataSource): GameDataSource
+        single<GameDataSource> { GameRemoteDataSource(gameApiService = get()) }
 
-    @Binds
-    @Singleton
-    abstract fun bindThirdPartyDataSource(impl: ThirdPartyRemoteDataSource): ThirdPartyDataSource
+        single<ThirdPartyDataSource> {
+            ThirdPartyRemoteDataSource(thirdPartyApiService = get(), contentResolver = get())
+        }
 
-    @Binds
-    @Singleton
-    abstract fun bindTalkDataSource(impl: TalkRemoteDataSource): TalkDataSource
-}
+        single<TalkDataSource> { TalkRemoteDataSource(talkApiService = get()) }
+    }

@@ -16,45 +16,24 @@ import com.yagubogu.data.service.createStadiumApiService
 import com.yagubogu.data.service.createStatsApiService
 import com.yagubogu.data.service.createTalkApiService
 import com.yagubogu.data.service.createThirdPartyApiService
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
 import de.jensklingenberg.ktorfit.Ktorfit
-import javax.inject.Singleton
+import org.koin.dsl.module
 
-@Module
-@InstallIn(SingletonComponent::class)
-object ServiceModule {
-    @Provides
-    @Singleton
-    fun provideAuthApiService(ktorfit: Ktorfit): AuthApiService = ktorfit.createAuthApiService()
+val serviceModule =
+    module {
+        single<AuthApiService> { get<Ktorfit>().createAuthApiService() }
 
-    @Provides
-    @Singleton
-    fun provideThirdPartyApiService(ktorfit: Ktorfit): ThirdPartyApiService = ktorfit.createThirdPartyApiService()
+        single<CheckInApiService> { get<Ktorfit>().createCheckInApiService() }
 
-    @Provides
-    @Singleton
-    fun provideMemberApiService(ktorfit: Ktorfit): MemberApiService = ktorfit.createMemberApiService()
+        single<GameApiService> { get<Ktorfit>().createGameApiService() }
 
-    @Provides
-    @Singleton
-    fun provideStadiumApiService(ktorfit: Ktorfit): StadiumApiService = ktorfit.createStadiumApiService()
+        single<MemberApiService> { get<Ktorfit>().createMemberApiService() }
 
-    @Provides
-    @Singleton
-    fun provideCheckInApiService(ktorfit: Ktorfit): CheckInApiService = ktorfit.createCheckInApiService()
+        single<StadiumApiService> { get<Ktorfit>().createStadiumApiService() }
 
-    @Provides
-    @Singleton
-    fun provideStatsApiService(ktorfit: Ktorfit): StatsApiService = ktorfit.createStatsApiService()
+        single<StatsApiService> { get<Ktorfit>().createStatsApiService() }
 
-    @Provides
-    @Singleton
-    fun provideGameApiService(ktorfit: Ktorfit): GameApiService = ktorfit.createGameApiService()
+        single<TalkApiService> { get<Ktorfit>().createTalkApiService() }
 
-    @Provides
-    @Singleton
-    fun provideTalkApiService(ktorfit: Ktorfit): TalkApiService = ktorfit.createTalkApiService()
-}
+        single<ThirdPartyApiService> { get<Ktorfit>().createThirdPartyApiService() }
+    }

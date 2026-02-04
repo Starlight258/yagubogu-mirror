@@ -1,35 +1,19 @@
 package com.yagubogu.di
 
 import android.content.ContentResolver
-import android.content.Context
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.yagubogu.data.network.TokenManager
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
+import org.koin.android.ext.koin.androidApplication
+import org.koin.dsl.module
 
-@Module
-@InstallIn(SingletonComponent::class)
-object AndroidModule {
-    @Provides
-    @Singleton
-    fun provideTokenManager(
-        @ApplicationContext context: Context,
-    ): TokenManager = TokenManager(context)
+val androidModule =
+    module {
+        single<TokenManager> { TokenManager(context = androidApplication()) }
 
-    @Provides
-    @Singleton
-    fun provideContentResolver(
-        @ApplicationContext context: Context,
-    ): ContentResolver = context.contentResolver
+        single<ContentResolver> { androidApplication().contentResolver }
 
-    @Provides
-    @Singleton
-    fun provideFusedLocationClient(
-        @ApplicationContext context: Context,
-    ): FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
-}
+        single<FusedLocationProviderClient> {
+            LocationServices.getFusedLocationProviderClient(androidApplication())
+        }
+    }

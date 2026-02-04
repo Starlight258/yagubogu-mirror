@@ -1,19 +1,20 @@
 package com.yagubogu.di
 
-import android.content.Context
 import com.yagubogu.BuildConfig
 import com.yagubogu.ui.login.auth.GoogleCredentialManager
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityComponent
-import dagger.hilt.android.qualifiers.ActivityContext
+import com.yagubogu.ui.main.YaguBoguActivity
+import org.koin.android.ext.koin.androidContext
+import org.koin.dsl.module
 
-@Module
-@InstallIn(ActivityComponent::class)
-object AuthModule {
-    @Provides
-    fun provideGoogleCredentialManager(
-        @ActivityContext context: Context,
-    ): GoogleCredentialManager = GoogleCredentialManager(context, BuildConfig.WEB_CLIENT_ID, "")
-}
+val authModule =
+    module {
+        scope<YaguBoguActivity> {
+            scoped<GoogleCredentialManager> {
+                GoogleCredentialManager(
+                    context = androidContext(),
+                    serverClientId = BuildConfig.WEB_CLIENT_ID,
+                    nonce = "",
+                )
+            }
+        }
+    }

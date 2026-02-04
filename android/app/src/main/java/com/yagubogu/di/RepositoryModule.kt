@@ -20,52 +20,29 @@ import com.yagubogu.data.repository.talk.TalkDefaultRepository
 import com.yagubogu.data.repository.talk.TalkRepository
 import com.yagubogu.data.repository.thirdparty.ThirdPartyDefaultRepository
 import com.yagubogu.data.repository.thirdparty.ThirdPartyRepository
-import dagger.Binds
-import dagger.Module
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
+import org.koin.dsl.module
 
-@Module
-@InstallIn(SingletonComponent::class)
-abstract class RepositoryModule {
-    @Binds
-    @Singleton
-    abstract fun bindAuthRepository(impl: AuthDefaultRepository): AuthRepository
+val repositoryModule =
+    module {
+        single<AuthRepository> { AuthDefaultRepository(authDataSource = get(), tokenManager = get()) }
 
-    @Binds
-    @Singleton
-    abstract fun bindMemberRepository(impl: MemberDefaultRepository): MemberRepository
+        single<MemberRepository> {
+            MemberDefaultRepository(memberDataSource = get(), tokenManager = get())
+        }
 
-    @Binds
-    @Singleton
-    abstract fun bindCheckInRepository(impl: CheckInDefaultRepository): CheckInRepository
+        single<CheckInRepository> { CheckInDefaultRepository(checkInDataSource = get()) }
 
-    @Binds
-    @Singleton
-    abstract fun bindStatsRepository(impl: StatsDefaultRepository): StatsRepository
+        single<StatsRepository> { StatsDefaultRepository(statsDataSource = get()) }
 
-    @Binds
-    @Singleton
-    abstract fun bindLocationRepository(impl: LocationDefaultRepository): LocationRepository
+        single<LocationRepository> { LocationDefaultRepository(locationDataSource = get()) }
 
-    @Binds
-    @Singleton
-    abstract fun bindStadiumRepository(impl: StadiumDefaultRepository): StadiumRepository
+        single<StadiumRepository> { StadiumDefaultRepository(stadiumDataSource = get()) }
 
-    @Binds
-    @Singleton
-    abstract fun bindStreamRepository(impl: StreamDefaultRepository): StreamRepository
+        single<StreamRepository> { StreamDefaultRepository(streamDataSource = get()) }
 
-    @Binds
-    @Singleton
-    abstract fun bindGameRepository(impl: GameDefaultRepository): GameRepository
+        single<GameRepository> { GameDefaultRepository(gameDataSource = get()) }
 
-    @Binds
-    @Singleton
-    abstract fun bindThirdPartyRepository(impl: ThirdPartyDefaultRepository): ThirdPartyRepository
+        single<ThirdPartyRepository> { ThirdPartyDefaultRepository(thirdPartyDataSource = get()) }
 
-    @Binds
-    @Singleton
-    abstract fun bindTalkRepository(impl: TalkDefaultRepository): TalkRepository
-}
+        single<TalkRepository> { TalkDefaultRepository(talkDataSource = get()) }
+    }
