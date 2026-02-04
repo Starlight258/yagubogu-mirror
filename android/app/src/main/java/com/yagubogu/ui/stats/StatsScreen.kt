@@ -38,7 +38,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.firebase.Firebase
 import com.google.firebase.analytics.analytics
@@ -59,6 +58,7 @@ import com.yagubogu.ui.util.noRippleClickable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
+import org.koin.compose.viewmodel.koinViewModel
 import java.time.LocalDate
 
 @Composable
@@ -66,7 +66,7 @@ fun StatsScreen(
     snackbarHostState: SnackbarHostState,
     scrollToTopEvent: SharedFlow<Unit>,
     modifier: Modifier = Modifier,
-    statsViewModel: StatsViewModel = hiltViewModel(),
+    statsViewModel: StatsViewModel = koinViewModel(),
 ) {
     val year: Int by statsViewModel.year.collectAsStateWithLifecycle()
     val pagerState: PagerState = rememberPagerState(pageCount = { StatsTab.entries.size })

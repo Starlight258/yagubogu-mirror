@@ -31,7 +31,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.analytics
@@ -49,6 +48,7 @@ import com.yagubogu.ui.theme.dpToSp
 import com.yagubogu.ui.util.BackPressHandler
 import com.yagubogu.ui.util.noRippleClickable
 import kotlinx.coroutines.flow.SharedFlow
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun LoginScreen(
@@ -56,7 +56,7 @@ fun LoginScreen(
     onSignIn: () -> Unit,
     onSignUp: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: LoginViewModel = hiltViewModel(),
+    viewModel: LoginViewModel = koinViewModel(),
 ) {
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }

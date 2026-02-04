@@ -8,9 +8,8 @@ import com.yagubogu.data.dto.response.stats.StatsWinRateResponse
 import com.yagubogu.data.dto.response.stats.VictoryFairyRankingResponse
 import com.yagubogu.data.service.StatsApiService
 import com.yagubogu.data.util.safeApiCall
-import javax.inject.Inject
 
-class StatsRemoteDataSource @Inject constructor(
+class StatsRemoteDataSource(
     private val statsApiService: StatsApiService,
 ) : StatsDataSource {
     override suspend fun getStatsWinRate(year: Int): Result<StatsWinRateResponse> =

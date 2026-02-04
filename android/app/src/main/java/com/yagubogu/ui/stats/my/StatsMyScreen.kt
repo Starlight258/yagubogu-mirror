@@ -14,7 +14,6 @@ import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yagubogu.ui.stats.StatsViewModel
 import com.yagubogu.ui.stats.my.component.AttendanceStats
@@ -25,13 +24,14 @@ import com.yagubogu.ui.stats.my.model.StatsMyUiModel
 import com.yagubogu.ui.theme.Gray050
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun StatsMyScreen(
     year: Int,
     scrollToTopEvent: SharedFlow<Unit>,
     modifier: Modifier = Modifier,
-    viewModel: StatsViewModel = hiltViewModel(),
+    viewModel: StatsViewModel = koinViewModel(),
 ) {
     val statsMyUiModel: StatsMyUiModel by viewModel.statsMyUiModel.collectAsStateWithLifecycle()
     val averageStats: AverageStats by viewModel.averageStats.collectAsStateWithLifecycle()

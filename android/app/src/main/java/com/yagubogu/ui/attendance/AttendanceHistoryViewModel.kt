@@ -13,7 +13,6 @@ import com.yagubogu.ui.attendance.model.PastGameUiState
 import com.yagubogu.ui.mapper.toAttendanceUiModel
 import com.yagubogu.ui.mapper.toUiModel
 import com.yagubogu.ui.util.mapList
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,10 +24,8 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.time.LocalDate
 import java.time.YearMonth
-import javax.inject.Inject
 
-@HiltViewModel
-class AttendanceHistoryViewModel @Inject constructor(
+class AttendanceHistoryViewModel(
     private val checkInRepository: CheckInRepository,
     private val gameRepository: GameRepository,
 ) : ViewModel() {

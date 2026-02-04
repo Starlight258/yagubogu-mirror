@@ -1,16 +1,11 @@
 package com.yagubogu.di
 
-import javax.inject.Qualifier
+sealed interface Qualifier {
+    data object BaseUrl : Qualifier
 
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
-annotation class BaseUrl
+    data object GlobalClient : Qualifier
 
-// ========== HttpClient ==========
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
-annotation class GlobalClient
+    data object StreamClient : Qualifier
 
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
-annotation class StreamClient
+    data object TokenRefreshMutex : Qualifier
+}

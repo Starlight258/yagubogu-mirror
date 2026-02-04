@@ -8,9 +8,8 @@ import io.ktor.http.ContentType
 import io.ktor.http.content.OutgoingContent
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.jvm.javaio.toByteReadChannel
-import javax.inject.Inject
 
-class ThirdPartyRemoteDataSource @Inject constructor(
+class ThirdPartyRemoteDataSource(
     private val thirdPartyApiService: ThirdPartyApiService,
     private val contentResolver: ContentResolver,
 ) : ThirdPartyDataSource {

@@ -29,7 +29,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.yagubogu.R
 import com.yagubogu.ui.badge.BadgeUiState
 import com.yagubogu.ui.badge.BadgeViewModel
@@ -43,6 +42,7 @@ import com.yagubogu.ui.theme.Gray300
 import com.yagubogu.ui.theme.PretendardBold20
 import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.util.shimmerLoading
+import org.koin.compose.viewmodel.koinViewModel
 
 private const val COLUMN_SIZE = 2
 
@@ -50,7 +50,7 @@ private const val COLUMN_SIZE = 2
 fun BadgeScreen(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: BadgeViewModel = hiltViewModel(),
+    viewModel: BadgeViewModel = koinViewModel(),
 ) {
     LaunchedEffect(Unit) {
         viewModel.fetchBadges()

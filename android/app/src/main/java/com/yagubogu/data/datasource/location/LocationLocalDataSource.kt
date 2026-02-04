@@ -6,9 +6,8 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.Priority
 import com.yagubogu.data.dto.response.location.CoordinateDto
 import com.yagubogu.data.dto.response.location.DistanceDto
-import javax.inject.Inject
 
-class LocationLocalDataSource @Inject constructor(
+class LocationLocalDataSource(
     private val locationClient: FusedLocationProviderClient,
 ) : LocationDataSource {
     @SuppressLint("MissingPermission")
