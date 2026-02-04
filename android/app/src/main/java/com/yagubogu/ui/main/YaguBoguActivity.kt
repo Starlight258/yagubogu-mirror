@@ -31,11 +31,11 @@ import com.yagubogu.ui.navigation.YaguBoguRoute
 import com.yagubogu.ui.navigation.model.Route
 import com.yagubogu.ui.theme.YaguBoguTheme
 import com.yagubogu.ui.util.showToast
-import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
 class YaguBoguActivity : AppCompatActivity() {
-    private val viewModel: YaguBoguViewModel by inject()
+    private val viewModel: YaguBoguViewModel by viewModel()
 
     private val googleCredentialManager: GoogleCredentialManager by lazy {
         GoogleCredentialManager(
