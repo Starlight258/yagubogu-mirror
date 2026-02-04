@@ -35,7 +35,7 @@ import org.koin.dsl.module
 
 val networkModule =
     module {
-        single(named("BaseUrl")) {
+        single(named<Qualifier.BaseUrl>()) {
             if (BuildConfig.DEBUG) {
                 BuildConfig.BASE_URL_DEBUG
             } else {
@@ -43,7 +43,7 @@ val networkModule =
             }
         }
 
-        single(named("Json")) {
+        single {
             Json {
                 ignoreUnknownKeys = true
                 isLenient = true
@@ -52,11 +52,18 @@ val networkModule =
             }
         }
 
+        // 토큰 갱신 동시성 제어용 Mutex (GlobalClient, StreamClient 공유)
+        single(named<Qualifier.TokenRefreshMutex>()) { Mutex() }
+
         // ========== GlobalClient (일반 API용) ==========
-        single(named("GlobalClient")) {
+        single(named<Qualifier.GlobalClient>()) {
             HttpClient(OkHttp) {
-                configureBase(json = get(named("Json")))
-                configureAuth(tokenManager = get(), authApiServiceLazy = lazy { get() })
+                configureBase(json = get())
+                configureAuth(
+                    tokenManager = get(),
+                    authApiServiceLazy = lazy { get() },
+                    tokenRefreshMutex = get(named<Qualifier.TokenRefreshMutex>()),
+                )
 
                 install(HttpTimeout) {
                     requestTimeoutMillis = 30_000 // 요청을 보내고 응답을 받을 때까지 전체 시간
@@ -67,10 +74,14 @@ val networkModule =
         }
 
         // ========== StreamClient (SSE 전용) ==========
-        single(named("StreamClient")) {
+        single(named<Qualifier.StreamClient>()) {
             HttpClient(OkHttp) {
-                configureBase(json = get(named("Json")))
-                configureAuth(tokenManager = get(), authApiServiceLazy = lazy { get() })
+                configureBase(json = get())
+                configureAuth(
+                    tokenManager = get(),
+                    authApiServiceLazy = lazy { get() },
+                    tokenRefreshMutex = get(named<Qualifier.TokenRefreshMutex>()),
+                )
 
                 install(SSE) {
                     showCommentEvents()
@@ -88,9 +99,9 @@ val networkModule =
 
         single<SseClient> {
             SseClient(
-                baseUrl = get(named("BaseUrl")),
-                httpClient = get(named("StreamClient")),
-                json = get(named("Json")),
+                baseUrl = get(named<Qualifier.BaseUrl>()),
+                httpClient = get(named<Qualifier.StreamClient>()),
+                json = get(),
             )
         }
 
@@ -98,8 +109,8 @@ val networkModule =
         single<Ktorfit> {
             Ktorfit
                 .Builder()
-                .baseUrl(url = get(named("BaseUrl")), checkUrl = false)
-                .httpClient(client = get(named("GlobalClient")))
+                .baseUrl(url = get(named<Qualifier.BaseUrl>()), checkUrl = false)
+                .httpClient(client = get(named<Qualifier.GlobalClient>()))
                 .build()
         }
     }
@@ -130,9 +141,8 @@ private fun HttpClientConfig<*>.configureBase(json: Json) {
 private fun HttpClientConfig<*>.configureAuth(
     tokenManager: TokenManager,
     authApiServiceLazy: Lazy<AuthApiService>,
+    tokenRefreshMutex: Mutex,
 ) {
-    val mutex = Mutex()
-
     install(Auth) {
         bearer {
             cacheTokens = false
@@ -155,7 +165,8 @@ private fun HttpClientConfig<*>.configureAuth(
             refreshTokens {
                 // [동시성 문제 해결 (Mutex)]
                 // 여러 API가 동시에 401을 받더라도, 토큰 갱신 요청은 한 번만 순차적으로 실행되도록 락을 겁니다.
-                mutex.withLock {
+                // GlobalClient와 StreamClient가 동일한 Mutex를 공유합니다.
+                tokenRefreshMutex.withLock {
                     val refreshToken: String =
                         tokenManager.getRefreshToken() ?: return@refreshTokens null
 

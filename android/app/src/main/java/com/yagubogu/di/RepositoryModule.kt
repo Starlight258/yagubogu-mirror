@@ -20,29 +20,29 @@ import com.yagubogu.data.repository.talk.TalkDefaultRepository
 import com.yagubogu.data.repository.talk.TalkRepository
 import com.yagubogu.data.repository.thirdparty.ThirdPartyDefaultRepository
 import com.yagubogu.data.repository.thirdparty.ThirdPartyRepository
+import org.koin.core.module.dsl.bind
+import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
 val repositoryModule =
     module {
-        single<AuthRepository> { AuthDefaultRepository(authDataSource = get(), tokenManager = get()) }
+        singleOf(::AuthDefaultRepository) { bind<AuthRepository>() }
 
-        single<MemberRepository> {
-            MemberDefaultRepository(memberDataSource = get(), tokenManager = get())
-        }
+        singleOf(::MemberDefaultRepository) { bind<MemberRepository>() }
 
-        single<CheckInRepository> { CheckInDefaultRepository(checkInDataSource = get()) }
+        singleOf(::CheckInDefaultRepository) { bind<CheckInRepository>() }
 
-        single<StatsRepository> { StatsDefaultRepository(statsDataSource = get()) }
+        singleOf(::StatsDefaultRepository) { bind<StatsRepository>() }
 
-        single<LocationRepository> { LocationDefaultRepository(locationDataSource = get()) }
+        singleOf(::LocationDefaultRepository) { bind<LocationRepository>() }
 
-        single<StadiumRepository> { StadiumDefaultRepository(stadiumDataSource = get()) }
+        singleOf(::StadiumDefaultRepository) { bind<StadiumRepository>() }
 
-        single<StreamRepository> { StreamDefaultRepository(streamDataSource = get()) }
+        singleOf(::StreamDefaultRepository) { bind<StreamRepository>() }
 
-        single<GameRepository> { GameDefaultRepository(gameDataSource = get()) }
+        singleOf(::GameDefaultRepository) { bind<GameRepository>() }
 
-        single<ThirdPartyRepository> { ThirdPartyDefaultRepository(thirdPartyDataSource = get()) }
+        singleOf(::ThirdPartyDefaultRepository) { bind<ThirdPartyRepository>() }
 
-        single<TalkRepository> { TalkDefaultRepository(talkDataSource = get()) }
+        singleOf(::TalkDefaultRepository) { bind<TalkRepository>() }
     }

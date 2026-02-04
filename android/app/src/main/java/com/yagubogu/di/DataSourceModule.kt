@@ -20,29 +20,29 @@ import com.yagubogu.data.datasource.talk.TalkDataSource
 import com.yagubogu.data.datasource.talk.TalkRemoteDataSource
 import com.yagubogu.data.datasource.thirdparty.ThirdPartyDataSource
 import com.yagubogu.data.datasource.thirdparty.ThirdPartyRemoteDataSource
+import org.koin.core.module.dsl.bind
+import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
 val datasourceModule =
     module {
-        single<AuthDataSource> { AuthRemoteDataSource(authApiService = get()) }
+        singleOf(::AuthRemoteDataSource) { bind<AuthDataSource>() }
 
-        single<MemberDataSource> { MemberRemoteDataSource(memberApiService = get()) }
+        singleOf(::MemberRemoteDataSource) { bind<MemberDataSource>() }
 
-        single<CheckInDataSource> { CheckInRemoteDataSource(checkInApiService = get()) }
+        singleOf(::CheckInRemoteDataSource) { bind<CheckInDataSource>() }
 
-        single<StatsDataSource> { StatsRemoteDataSource(statsApiService = get()) }
+        singleOf(::StatsRemoteDataSource) { bind<StatsDataSource>() }
 
-        single<LocationDataSource> { LocationLocalDataSource(locationClient = get()) }
+        singleOf(::LocationLocalDataSource) { bind<LocationDataSource>() }
 
-        single<StadiumDataSource> { StadiumRemoteDataSource(stadiumApiService = get()) }
+        singleOf(::StadiumRemoteDataSource) { bind<StadiumDataSource>() }
 
-        single<StreamDataSource> { StreamRemoteDataSource(sseClient = get()) }
+        singleOf(::StreamRemoteDataSource) { bind<StreamDataSource>() }
 
-        single<GameDataSource> { GameRemoteDataSource(gameApiService = get()) }
+        singleOf(::GameRemoteDataSource) { bind<GameDataSource>() }
 
-        single<ThirdPartyDataSource> {
-            ThirdPartyRemoteDataSource(thirdPartyApiService = get(), contentResolver = get())
-        }
+        singleOf(::ThirdPartyRemoteDataSource) { bind<ThirdPartyDataSource>() }
 
-        single<TalkDataSource> { TalkRemoteDataSource(talkApiService = get()) }
+        singleOf(::TalkRemoteDataSource) { bind<TalkDataSource>() }
     }
