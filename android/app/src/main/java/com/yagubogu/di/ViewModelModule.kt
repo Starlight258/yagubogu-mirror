@@ -12,31 +12,22 @@ import com.yagubogu.ui.main.YaguBoguViewModel
 import com.yagubogu.ui.setting.SettingViewModel
 import com.yagubogu.ui.stats.StatsViewModel
 import org.koin.core.module.dsl.viewModel
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 val viewModelModule =
     module {
-        viewModel { YaguBoguViewModel(authRepository = get(), memberRepository = get()) }
+        viewModelOf(::YaguBoguViewModel)
 
-        viewModel { AttendanceHistoryViewModel(checkInRepository = get(), gameRepository = get()) }
+        viewModelOf(::AttendanceHistoryViewModel)
 
-        viewModel { BadgeViewModel(memberRepository = get()) }
+        viewModelOf(::BadgeViewModel)
 
-        viewModel { FavoriteTeamViewModel(memberRepository = get()) }
+        viewModelOf(::FavoriteTeamViewModel)
 
-        viewModel {
-            HomeViewModel(
-                memberRepository = get(),
-                checkInRepository = get(),
-                statsRepository = get(),
-                locationRepository = get(),
-                stadiumRepository = get(),
-                streamRepository = get(),
-                clock = get(),
-            )
-        }
+        viewModelOf(::HomeViewModel)
 
-        viewModel { LivetalkViewModel(gameRepository = get(), clock = get()) }
+        viewModelOf(::LivetalkViewModel)
 
         viewModel { (gameId: Long, isVerified: Boolean) ->
             LivetalkChatViewModel(
@@ -48,24 +39,11 @@ val viewModelModule =
             )
         }
 
-        viewModel { LoginViewModel(authRepository = get(), memberRepository = get()) }
+        viewModelOf(::LoginViewModel)
 
-        viewModel { MainViewModel() }
+        viewModelOf(::MainViewModel)
 
-        viewModel {
-            SettingViewModel(
-                memberRepository = get(),
-                authRepository = get(),
-                thirdPartyRepository = get(),
-                clock = get(),
-            )
-        }
+        viewModelOf(::SettingViewModel)
 
-        viewModel {
-            StatsViewModel(
-                statsRepository = get(),
-                memberRepository = get(),
-                checkInRepository = get(),
-            )
-        }
+        viewModelOf(::StatsViewModel)
     }
