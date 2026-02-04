@@ -9,9 +9,8 @@ import com.yagubogu.data.dto.response.member.MemberProfileResponse
 import com.yagubogu.data.dto.response.presigned.PresignedUrlCompleteResponse
 import com.yagubogu.data.dto.response.presigned.PresignedUrlStartResponse
 import com.yagubogu.data.network.TokenManager
-import javax.inject.Inject
 
-class MemberDefaultRepository @Inject constructor(
+class MemberDefaultRepository(
     private val memberDataSource: MemberDataSource,
     private val tokenManager: TokenManager,
 ) : MemberRepository {

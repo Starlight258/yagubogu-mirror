@@ -1,7 +1,6 @@
 package com.yagubogu.ui.livetalk.chat
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.yagubogu.data.dto.request.game.LikeBatchRequest
 import com.yagubogu.data.dto.request.game.LikeDeltaDto
@@ -17,9 +16,6 @@ import com.yagubogu.ui.livetalk.chat.model.LivetalkChatUiState
 import com.yagubogu.ui.livetalk.chat.model.LivetalkResponseItem
 import com.yagubogu.ui.livetalk.chat.model.LivetalkTeams
 import com.yagubogu.ui.mapper.toUiModel
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -37,21 +33,13 @@ import timber.log.Timber
 import java.time.Instant
 import java.time.LocalDateTime
 
-class LivetalkChatViewModel @AssistedInject constructor(
-    @Assisted private val gameId: Long,
-    @Assisted private val isVerified: Boolean,
+class LivetalkChatViewModel(
+    isVerified: Boolean,
+    private val gameId: Long,
     private val talkRepository: TalkRepository,
     private val gameRepository: GameRepository,
     private val memberRepository: MemberRepository,
 ) : ViewModel() {
-    @AssistedFactory
-    interface Factory {
-        fun create(
-            gameId: Long,
-            isVerified: Boolean,
-        ): LivetalkChatViewModel
-    }
-
     val messageStateHolder = MessageStateHolder(isVerified)
     val likeCountStateHolder = LikeCountStateHolder()
 
@@ -330,15 +318,5 @@ class LivetalkChatViewModel @AssistedInject constructor(
         private const val CHAT_LOAD_LIMIT = 30
 
         private const val LIKE_BATCH_INTERVAL_MILLS = 5_000L
-
-        fun provideFactory(
-            assistedFactory: Factory,
-            gameId: Long,
-            isVerified: Boolean,
-        ): ViewModelProvider.Factory =
-            object : ViewModelProvider.Factory {
-                @Suppress("UNCHECKED_CAST")
-                override fun <T : ViewModel> create(modelClass: Class<T>): T = assistedFactory.create(gameId, isVerified) as T
-            }
     }
 }

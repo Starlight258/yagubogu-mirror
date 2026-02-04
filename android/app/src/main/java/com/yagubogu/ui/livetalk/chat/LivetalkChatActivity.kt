@@ -6,20 +6,15 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import com.yagubogu.ui.theme.YaguBoguTheme
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
-@AndroidEntryPoint
 class LivetalkChatActivity : ComponentActivity() {
-    @Inject
-    lateinit var viewModelFactory: LivetalkChatViewModel.Factory
-
-    private val viewModel: LivetalkChatViewModel by viewModels {
+    private val viewModel: LivetalkChatViewModel by viewModel {
         val gameId = intent.getLongExtra(KEY_GAME_ID, 1L)
         val isVerified = intent.getBooleanExtra(KEY_IS_VERIFIED, false)
-        LivetalkChatViewModel.provideFactory(viewModelFactory, gameId, isVerified)
+        parametersOf(gameId, isVerified)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

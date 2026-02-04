@@ -28,7 +28,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.yagubogu.R
 import com.yagubogu.domain.model.Team
 import com.yagubogu.ui.common.component.DefaultDialog
@@ -40,12 +39,13 @@ import com.yagubogu.ui.theme.PretendardSemiBold16
 import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.util.emoji
 import com.yagubogu.ui.util.noRippleClickable
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun FavoriteTeamScreen(
     onFavoriteTeamUpdate: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: FavoriteTeamViewModel = hiltViewModel(),
+    viewModel: FavoriteTeamViewModel = koinViewModel(),
 ) {
     val teams: List<FavoriteTeamItem> = Team.entries.map { FavoriteTeamItem.of(it) }
     var selectedTeam: FavoriteTeamItem? by rememberSaveable { mutableStateOf(null) }

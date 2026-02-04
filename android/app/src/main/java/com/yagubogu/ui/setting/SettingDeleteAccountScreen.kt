@@ -30,7 +30,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.firebase.Firebase
 import com.google.firebase.analytics.analytics
@@ -48,13 +47,14 @@ import com.yagubogu.ui.theme.PretendardRegular
 import com.yagubogu.ui.theme.Primary500
 import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.util.showToast
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun SettingDeleteAccountScreen(
     onDeleteAccount: () -> Unit,
     onDeleteAccountCancel: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: SettingViewModel = hiltViewModel(),
+    viewModel: SettingViewModel = koinViewModel(),
 ) {
     val context = LocalContext.current
 

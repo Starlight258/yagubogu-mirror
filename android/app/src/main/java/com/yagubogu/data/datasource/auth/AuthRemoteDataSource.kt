@@ -7,9 +7,8 @@ import com.yagubogu.data.dto.response.auth.LoginResponse
 import com.yagubogu.data.dto.response.token.TokenResponse
 import com.yagubogu.data.service.AuthApiService
 import com.yagubogu.data.util.safeApiCall
-import javax.inject.Inject
 
-class AuthRemoteDataSource @Inject constructor(
+class AuthRemoteDataSource(
     private val authApiService: AuthApiService,
 ) : AuthDataSource {
     override suspend fun refreshToken(refreshToken: String): Result<TokenResponse> =

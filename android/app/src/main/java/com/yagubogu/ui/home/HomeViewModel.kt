@@ -25,7 +25,6 @@ import com.yagubogu.ui.home.model.VictoryFairyRanking
 import com.yagubogu.ui.mapper.toDomain
 import com.yagubogu.ui.mapper.toUiModel
 import com.yagubogu.ui.util.mapList
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
@@ -50,11 +49,9 @@ import timber.log.Timber
 import java.time.Clock
 import java.time.LocalDate
 import java.time.LocalTime
-import javax.inject.Inject
 import kotlin.math.roundToInt
 
-@HiltViewModel
-class HomeViewModel @Inject constructor(
+class HomeViewModel(
     private val memberRepository: MemberRepository,
     private val checkInRepository: CheckInRepository,
     private val statsRepository: StatsRepository,

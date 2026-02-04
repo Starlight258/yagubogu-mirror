@@ -4,16 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yagubogu.data.repository.member.MemberRepository
 import com.yagubogu.domain.model.Team
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import javax.inject.Inject
 
-@HiltViewModel
-class FavoriteTeamViewModel @Inject constructor(
+class FavoriteTeamViewModel(
     private val memberRepository: MemberRepository,
 ) : ViewModel() {
     private val _favoriteTeamUpdateEvent = MutableSharedFlow<Unit>()

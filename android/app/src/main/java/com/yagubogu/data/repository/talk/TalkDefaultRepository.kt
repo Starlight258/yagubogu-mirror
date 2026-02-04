@@ -4,9 +4,8 @@ import com.yagubogu.data.datasource.talk.TalkDataSource
 import com.yagubogu.data.dto.response.talk.TalkCursorResponse
 import com.yagubogu.data.dto.response.talk.TalkEntranceResponse
 import com.yagubogu.data.dto.response.talk.TalkResponse
-import javax.inject.Inject
 
-class TalkDefaultRepository @Inject constructor(
+class TalkDefaultRepository(
     private val talkDataSource: TalkDataSource,
 ) : TalkRepository {
     override suspend fun getBeforeTalks(

@@ -6,9 +6,8 @@ import com.yagubogu.data.dto.response.game.GameResponse
 import com.yagubogu.data.dto.response.game.GameWithCheckInDto
 import com.yagubogu.data.dto.response.game.LikeCountsResponse
 import java.time.LocalDate
-import javax.inject.Inject
 
-class GameDefaultRepository @Inject constructor(
+class GameDefaultRepository(
     private val gameDataSource: GameDataSource,
 ) : GameRepository {
     override suspend fun getGames(date: LocalDate): Result<List<GameWithCheckInDto>> =

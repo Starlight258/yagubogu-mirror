@@ -14,7 +14,6 @@ import com.yagubogu.ui.stats.my.model.StatsCounts
 import com.yagubogu.ui.stats.my.model.StatsMyUiModel
 import com.yagubogu.ui.util.mapList
 import com.yagubogu.ui.util.mapListIndexed
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,10 +25,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.time.LocalDate
-import javax.inject.Inject
 
-@HiltViewModel
-class StatsViewModel @Inject constructor(
+class StatsViewModel(
     private val statsRepository: StatsRepository,
     private val memberRepository: MemberRepository,
     private val checkInRepository: CheckInRepository,

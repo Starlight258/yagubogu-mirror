@@ -38,7 +38,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.yagubogu.R
@@ -70,6 +69,7 @@ import io.github.ismoy.imagepickerkmp.domain.models.MimeType.Companion.ALL_SUPPO
 import io.github.ismoy.imagepickerkmp.presentation.ui.components.GalleryPickerLauncher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.koin.compose.viewmodel.koinViewModel
 import timber.log.Timber
 import java.io.File
 import kotlin.coroutines.cancellation.CancellationException
@@ -80,7 +80,7 @@ fun SettingMainScreen(
     onFavoriteTeamEditClick: () -> Unit,
     onFullScreenMode: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: SettingViewModel = hiltViewModel(),
+    viewModel: SettingViewModel = koinViewModel(),
 ) {
     val context: Context = LocalContext.current
     val scope: CoroutineScope = rememberCoroutineScope()

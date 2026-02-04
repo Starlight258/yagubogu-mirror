@@ -37,7 +37,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.firebase.Firebase
 import com.google.firebase.analytics.analytics
@@ -63,6 +62,7 @@ import com.yagubogu.ui.util.noRippleClickable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import org.koin.compose.viewmodel.koinViewModel
 import java.time.LocalDate
 import java.time.YearMonth
 
@@ -71,7 +71,7 @@ fun AttendanceHistoryScreen(
     snackbarHostState: SnackbarHostState,
     scrollToTopEvent: SharedFlow<Unit>,
     modifier: Modifier = Modifier,
-    viewModel: AttendanceHistoryViewModel = hiltViewModel(),
+    viewModel: AttendanceHistoryViewModel = koinViewModel(),
 ) {
     val attendanceItems: List<AttendanceHistoryItem> by viewModel.items.collectAsStateWithLifecycle()
     val selectedMonth: YearMonth by viewModel.selectedMonth.collectAsStateWithLifecycle()

@@ -6,9 +6,8 @@ import com.yagubogu.data.dto.response.game.LikeCountsResponse
 import com.yagubogu.data.service.GameApiService
 import com.yagubogu.data.util.safeApiCall
 import java.time.LocalDate
-import javax.inject.Inject
 
-class GameRemoteDataSource @Inject constructor(
+class GameRemoteDataSource(
     private val gameApiService: GameApiService,
 ) : GameDataSource {
     override suspend fun getGames(date: LocalDate): Result<GameResponse> =
