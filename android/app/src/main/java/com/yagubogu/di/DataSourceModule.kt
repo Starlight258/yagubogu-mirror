@@ -43,6 +43,6 @@ val datasourceModule =
         singleOf(::GameRemoteDataSource) { bind<GameDataSource>() }
 
         singleOf(::ThirdPartyRemoteDataSource) { bind<ThirdPartyDataSource>() }
-        
+
         singleOf(::TalkRemoteDataSource) { bind<TalkDataSource>() }
     }

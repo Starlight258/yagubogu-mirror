@@ -35,7 +35,7 @@ import org.koin.dsl.module
 
 val networkModule =
     module {
-        single(named("BaseUrl")) {
+        single(named<Qualifier.BaseUrl>()) {
             if (BuildConfig.DEBUG) {
                 BuildConfig.BASE_URL_DEBUG
             } else {
@@ -53,16 +53,16 @@ val networkModule =
         }
 
         // 토큰 갱신 동시성 제어용 Mutex (GlobalClient, StreamClient 공유)
-        single(named("TokenRefreshMutex")) { Mutex() }
+        single(named<Qualifier.TokenRefreshMutex>()) { Mutex() }
 
         // ========== GlobalClient (일반 API용) ==========
-        single(named("GlobalClient")) {
+        single(named<Qualifier.GlobalClient>()) {
             HttpClient(OkHttp) {
                 configureBase(json = get())
                 configureAuth(
                     tokenManager = get(),
                     authApiServiceLazy = lazy { get() },
-                    tokenRefreshMutex = get(named("TokenRefreshMutex")),
+                    tokenRefreshMutex = get(named<Qualifier.TokenRefreshMutex>()),
                 )
 
                 install(HttpTimeout) {
@@ -74,13 +74,13 @@ val networkModule =
         }
 
         // ========== StreamClient (SSE 전용) ==========
-        single(named("StreamClient")) {
+        single(named<Qualifier.StreamClient>()) {
             HttpClient(OkHttp) {
                 configureBase(json = get())
                 configureAuth(
                     tokenManager = get(),
                     authApiServiceLazy = lazy { get() },
-                    tokenRefreshMutex = get(named("TokenRefreshMutex")),
+                    tokenRefreshMutex = get(named<Qualifier.TokenRefreshMutex>()),
                 )
 
                 install(SSE) {
@@ -99,9 +99,9 @@ val networkModule =
 
         single<SseClient> {
             SseClient(
-                baseUrl = get(named("BaseUrl")),
-                httpClient = get(named("StreamClient")),
-                json = get(named("Json")),
+                baseUrl = get(named<Qualifier.BaseUrl>()),
+                httpClient = get(named<Qualifier.StreamClient>()),
+                json = get(),
             )
         }
 
@@ -109,8 +109,8 @@ val networkModule =
         single<Ktorfit> {
             Ktorfit
                 .Builder()
-                .baseUrl(url = get(named("BaseUrl")), checkUrl = false)
-                .httpClient(client = get(named("GlobalClient")))
+                .baseUrl(url = get(named<Qualifier.BaseUrl>()), checkUrl = false)
+                .httpClient(client = get(named<Qualifier.GlobalClient>()))
                 .build()
         }
     }
@@ -206,8 +206,8 @@ private fun HttpClientConfig<*>.configureAuth(
                 // 우리 서버(yagubogu.com)로 보내는 요청이면서,
                 // 로그인이나 토큰 갱신 요청이 '아닌' 경우에만 토큰을 붙입니다.
                 host.contains(YAGUBOGU_HOSTNAME) &&
-                        !path.endsWith(AUTH_LOGIN_ENDPOINT) &&
-                        !path.endsWith(AUTH_REFRESH_ENDPOINT)
+                    !path.endsWith(AUTH_LOGIN_ENDPOINT) &&
+                    !path.endsWith(AUTH_REFRESH_ENDPOINT)
             }
         }
     }
