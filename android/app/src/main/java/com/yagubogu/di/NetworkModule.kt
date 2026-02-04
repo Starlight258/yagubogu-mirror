@@ -43,7 +43,7 @@ val networkModule =
             }
         }
 
-        single(named("Json")) {
+        single {
             Json {
                 ignoreUnknownKeys = true
                 isLenient = true
@@ -55,7 +55,7 @@ val networkModule =
         // ========== GlobalClient (일반 API용) ==========
         single(named("GlobalClient")) {
             HttpClient(OkHttp) {
-                configureBase(json = get(named("Json")))
+                configureBase(json = get())
                 configureAuth(tokenManager = get(), authApiServiceLazy = lazy { get() })
 
                 install(HttpTimeout) {
@@ -69,7 +69,7 @@ val networkModule =
         // ========== StreamClient (SSE 전용) ==========
         single(named("StreamClient")) {
             HttpClient(OkHttp) {
-                configureBase(json = get(named("Json")))
+                configureBase(json = get())
                 configureAuth(tokenManager = get(), authApiServiceLazy = lazy { get() })
 
                 install(SSE) {
@@ -195,8 +195,8 @@ private fun HttpClientConfig<*>.configureAuth(
                 // 우리 서버(yagubogu.com)로 보내는 요청이면서,
                 // 로그인이나 토큰 갱신 요청이 '아닌' 경우에만 토큰을 붙입니다.
                 host.contains(YAGUBOGU_HOSTNAME) &&
-                    !path.endsWith(AUTH_LOGIN_ENDPOINT) &&
-                    !path.endsWith(AUTH_REFRESH_ENDPOINT)
+                        !path.endsWith(AUTH_LOGIN_ENDPOINT) &&
+                        !path.endsWith(AUTH_REFRESH_ENDPOINT)
             }
         }
     }
