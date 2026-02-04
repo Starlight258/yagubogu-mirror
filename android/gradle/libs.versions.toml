@@ -32,8 +32,8 @@ nav3Core = "1.0.0"
 koin-bom = "4.1.1"
 
 # Ktor & Ktorfit
-ktor = "3.3.3"
-ktorfit = "2.7.1"
+ktor = "3.4.0"
+ktorfit = "2.7.2"
 
 # Kotlinx
 kotlinxSerializationJson = "1.9.0"
