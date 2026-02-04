@@ -7,7 +7,6 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.getValue
 import androidx.core.splashscreen.SplashScreen
@@ -32,16 +31,19 @@ import com.yagubogu.ui.navigation.YaguBoguRoute
 import com.yagubogu.ui.navigation.model.Route
 import com.yagubogu.ui.theme.YaguBoguTheme
 import com.yagubogu.ui.util.showToast
-import dagger.hilt.android.AndroidEntryPoint
+import org.koin.android.ext.android.inject
 import timber.log.Timber
-import javax.inject.Inject
 
-@AndroidEntryPoint
 class YaguBoguActivity : AppCompatActivity() {
-    private val viewModel: YaguBoguViewModel by viewModels()
+    private val viewModel: YaguBoguViewModel by inject()
 
-    @Inject
-    lateinit var googleCredentialManager: GoogleCredentialManager
+    private val googleCredentialManager: GoogleCredentialManager by lazy {
+        GoogleCredentialManager(
+            context = this,
+            serverClientId = BuildConfig.WEB_CLIENT_ID,
+            nonce = "",
+        )
+    }
 
     private var shouldImmediateUpdate: Boolean = true
     private var isAppInitialized: Boolean = false
