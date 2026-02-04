@@ -225,7 +225,7 @@ object NetworkModule {
         }
     }
 
-    private const val YAGUBOGU_HOSTNAME = "yagubogu"
+    private const val YAGUBOGU_HOSTNAME = "yagubogu.com"
     private const val AUTH_LOGIN_ENDPOINT = "/auth/login"
     private const val AUTH_REFRESH_ENDPOINT = "/auth/refresh"
 }
