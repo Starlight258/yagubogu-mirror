@@ -6,18 +6,16 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.yagubogu.common.YaguBoguDebugTree
 import com.yagubogu.common.YaguBoguReleaseTree
 import com.yagubogu.di.androidModule
-import com.yagubogu.di.authModule
 import com.yagubogu.di.datasourceModule
 import com.yagubogu.di.networkModule
 import com.yagubogu.di.repositoryModule
 import com.yagubogu.di.serviceModule
 import com.yagubogu.di.timeModule
-import dagger.hilt.android.HiltAndroidApp
+import com.yagubogu.di.viewModelModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import timber.log.Timber
 
-@HiltAndroidApp
 class YaguBoguApplication : Application() {
     override fun onCreate() {
         super.onCreate()
@@ -31,12 +29,12 @@ class YaguBoguApplication : Application() {
 
             modules(
                 androidModule,
-                authModule,
                 datasourceModule,
                 networkModule,
                 repositoryModule,
                 serviceModule,
                 timeModule,
+                viewModelModule,
             )
         }
     }
