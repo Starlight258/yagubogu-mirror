@@ -1,32 +1,39 @@
 package com.yagubogu.di
 
 import com.yagubogu.BuildConfig
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
 import org.koin.dsl.module
 import timber.log.Timber
-import java.time.Clock
-import java.time.LocalDateTime
-import java.time.ZoneId
+import kotlin.time.Clock
+import kotlin.time.Instant
 
 val timeModule =
     module {
         single<Clock> {
-            val kstZone = ZoneId.of("Asia/Seoul")
-
             val clock: Clock =
                 runCatching {
                     if (BuildConfig.DEBUG) {
+                        val kstZone = TimeZone.of("Asia/Seoul")
                         val localDateTime = LocalDateTime.parse(BuildConfig.DEBUG_FIXED_DATE)
-                        val fixedZonedDateTime = localDateTime.atZone(kstZone)
+                        val fixedInstant: Instant = localDateTime.toInstant(kstZone)
 
-                        Clock.fixed(fixedZonedDateTime.toInstant(), kstZone)
+                        FixedClock(fixedInstant)
                     } else {
-                        Clock.system(kstZone)
+                        Clock.System
                     }
                 }.getOrElse { e: Throwable ->
                     Timber.e("디버그 Clock 생성 실패: $e")
-                    Clock.system(kstZone)
+                    Clock.System
                 }
 
             clock
         }
     }
+
+private class FixedClock(
+    private val fixedInstant: Instant,
+) : Clock {
+    override fun now(): Instant = fixedInstant
+}

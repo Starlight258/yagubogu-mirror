@@ -27,8 +27,10 @@ import com.yagubogu.ui.theme.PretendardRegular16
 import com.yagubogu.ui.theme.Primary050
 import com.yagubogu.ui.theme.Primary700
 import com.yagubogu.ui.theme.Primary900
-import com.yagubogu.ui.util.formatTimestamp
-import java.time.LocalDateTime
+import com.yagubogu.ui.util.amPmhhmmFormatter
+import com.yagubogu.ui.util.now
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.format
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,7 +68,7 @@ fun LivetalkMyChatBubble(
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Text(
-                text = livetalkChatItem.timestamp.formatTimestamp(),
+                text = livetalkChatItem.timestamp.format(amPmhhmmFormatter),
                 style = PretendardRegular12,
                 color = Primary700,
             )

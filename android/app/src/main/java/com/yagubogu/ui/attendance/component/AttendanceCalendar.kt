@@ -29,18 +29,19 @@ import com.kizitonwose.calendar.compose.rememberCalendarState
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.DayPosition
 import com.kizitonwose.calendar.core.daysOfWeek
+import com.kizitonwose.calendar.core.now
 import com.yagubogu.ui.theme.Black
 import com.yagubogu.ui.theme.Gray400
 import com.yagubogu.ui.theme.PretendardRegular
 import com.yagubogu.ui.theme.Primary500
 import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.theme.dpToSp
+import com.yagubogu.ui.util.getDisplayName
+import com.yagubogu.ui.util.minusMonths
 import com.yagubogu.ui.util.noRippleClickable
-import java.time.DayOfWeek
-import java.time.LocalDate
-import java.time.YearMonth
-import java.time.format.TextStyle
-import java.util.Locale
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.YearMonth
 
 @Composable
 fun AttendanceCalendar(
@@ -105,7 +106,7 @@ private fun DaysOfWeekTitle(
     Row(modifier = modifier.fillMaxWidth()) {
         for (dayOfWeek: DayOfWeek in daysOfWeek) {
             Text(
-                text = dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()),
+                text = dayOfWeek.getDisplayName(),
                 style = PretendardRegular.copy(fontSize = 14.dpToSp),
                 textAlign = TextAlign.Center,
                 modifier = Modifier.weight(1f),
@@ -122,24 +123,26 @@ private fun Day(
     onClick: (CalendarDay) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val today: LocalDate = LocalDate.now()
+
     Column(
         modifier =
             modifier
                 .aspectRatio(0.8f)
                 .noRippleClickable(
-                    enabled = day.position == DayPosition.MonthDate && !day.date.isAfter(LocalDate.now()),
+                    enabled = day.position == DayPosition.MonthDate && day.date <= today,
                     onClick = { onClick(day) },
                 ),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            text = day.date.dayOfMonth.toString(),
+            text = day.date.day.toString(),
             style = PretendardRegular.copy(fontSize = 16.dpToSp),
             color =
                 when {
                     isSelected -> White
                     day.position != DayPosition.MonthDate -> Gray400
-                    day.date.isAfter(LocalDate.now()) -> Gray400
+                    day.date > today -> Gray400
                     else -> Black
                 },
             textAlign = TextAlign.Center,

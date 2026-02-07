@@ -6,8 +6,10 @@ import com.yagubogu.ui.attendance.model.AttendanceHistoryItem
 import com.yagubogu.ui.attendance.model.GameScoreBoard
 import com.yagubogu.ui.attendance.model.GameTeam
 import com.yagubogu.ui.attendance.model.PastGameUiModel
-import java.time.LocalDate
-import java.time.LocalTime
+import com.yagubogu.ui.util.minusDays
+import com.yagubogu.ui.util.now
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
 
 val ATTENDANCE_HISTORY_ITEM_PLAYED =
     AttendanceHistoryItem.Played(
@@ -58,7 +60,7 @@ val ATTENDANCE_HISTORY_ITEM_CANCELED =
         summary =
             AttendanceHistoryItem.Summary(
                 id = 1L,
-                attendanceDate = LocalDate.now().minusDays(2L),
+                attendanceDate = LocalDate.now().minusDays(2),
                 stadiumName = "잠실 야구장",
                 awayTeam =
                     GameTeam(
@@ -87,14 +89,14 @@ val ATTENDANCE_HISTORY_ITEMS =
             summary =
                 ATTENDANCE_HISTORY_ITEM_PLAYED.summary.copy(
                     id = 2L,
-                    attendanceDate = LocalDate.now().minusDays(15L),
+                    attendanceDate = LocalDate.now().minusDays(15),
                 ),
         ),
         ATTENDANCE_HISTORY_ITEM_PLAYED.copy(
             summary =
                 ATTENDANCE_HISTORY_ITEM_PLAYED.summary.copy(
                     id = 3L,
-                    attendanceDate = LocalDate.now().minusDays(5L),
+                    attendanceDate = LocalDate.now().minusDays(5),
                 ),
         ),
     )

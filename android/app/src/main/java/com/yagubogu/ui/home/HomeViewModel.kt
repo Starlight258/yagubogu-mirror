@@ -25,6 +25,7 @@ import com.yagubogu.ui.home.model.VictoryFairyRanking
 import com.yagubogu.ui.mapper.toDomain
 import com.yagubogu.ui.mapper.toUiModel
 import com.yagubogu.ui.util.mapList
+import com.yagubogu.ui.util.now
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
@@ -45,11 +46,11 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
 import timber.log.Timber
-import java.time.Clock
-import java.time.LocalDate
-import java.time.LocalTime
 import kotlin.math.roundToInt
+import kotlin.time.Clock
 
 class HomeViewModel(
     private val memberRepository: MemberRepository,

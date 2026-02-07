@@ -3,7 +3,7 @@ package com.yagubogu.data.datasource.game
 import com.yagubogu.data.dto.request.game.LikeBatchRequest
 import com.yagubogu.data.dto.response.game.GameResponse
 import com.yagubogu.data.dto.response.game.LikeCountsResponse
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 
 interface GameDataSource {
     suspend fun getGames(date: LocalDate): Result<GameResponse>

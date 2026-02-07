@@ -54,8 +54,8 @@ import com.yagubogu.ui.theme.PretendardMedium12
 import com.yagubogu.ui.theme.PretendardRegular12
 import com.yagubogu.ui.theme.PretendardSemiBold
 import com.yagubogu.ui.theme.White
-import com.yagubogu.ui.util.DateFormatter
 import com.yagubogu.ui.util.showToast
+import com.yagubogu.ui.util.yyyyMMddFormatter
 import id.zelory.compressor.Compressor
 import id.zelory.compressor.constraint.format
 import id.zelory.compressor.constraint.quality
@@ -69,6 +69,7 @@ import io.github.ismoy.imagepickerkmp.domain.models.MimeType.Companion.ALL_SUPPO
 import io.github.ismoy.imagepickerkmp.presentation.ui.components.GalleryPickerLauncher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.datetime.format
 import org.koin.compose.viewmodel.koinViewModel
 import timber.log.Timber
 import java.io.File
@@ -308,7 +309,7 @@ private fun MyProfile(
             text =
                 stringResource(
                     R.string.setting_main_sign_up_date,
-                    memberInfoItem.createdAt.format(DateFormatter.yyyyMMdd),
+                    memberInfoItem.createdAt.format(yyyyMMddFormatter),
                 ),
             style = PretendardRegular12,
             color = Gray500,

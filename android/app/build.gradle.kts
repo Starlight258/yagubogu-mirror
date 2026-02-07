@@ -183,7 +183,7 @@ dependencies {
     // UI Components
     implementation(libs.material)
     implementation(libs.balloon.compose)
-    implementation(libs.calendar.compose)
+    implementation(libs.calendar.compose.multiplatform)
 
     // Logging
     implementation(libs.timber)

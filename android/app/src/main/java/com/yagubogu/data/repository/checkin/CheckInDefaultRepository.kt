@@ -9,7 +9,7 @@ import com.yagubogu.data.dto.response.checkin.FanRateByGameDto
 import com.yagubogu.data.dto.response.checkin.FanRateResponse
 import com.yagubogu.data.dto.response.checkin.StadiumCheckInCountDto
 import com.yagubogu.data.dto.response.checkin.StadiumCheckInCountsResponse
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 
 class CheckInDefaultRepository(
     private val checkInDataSource: CheckInDataSource,

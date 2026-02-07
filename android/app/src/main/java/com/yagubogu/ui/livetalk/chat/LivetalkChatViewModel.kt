@@ -16,6 +16,7 @@ import com.yagubogu.ui.livetalk.chat.model.LivetalkChatUiState
 import com.yagubogu.ui.livetalk.chat.model.LivetalkResponseItem
 import com.yagubogu.ui.livetalk.chat.model.LivetalkTeams
 import com.yagubogu.ui.mapper.toUiModel
+import com.yagubogu.ui.util.now
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -29,9 +30,9 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.datetime.LocalDateTime
 import timber.log.Timber
-import java.time.Instant
-import java.time.LocalDateTime
+import kotlin.time.Clock
 
 class LivetalkChatViewModel(
     isVerified: Boolean,
@@ -224,7 +225,7 @@ class LivetalkChatViewModel(
         val countToSend: Int = likeCountStateHolder.getCountToSend()
         val request =
             LikeBatchRequest(
-                windowStartEpochSec = Instant.now().epochSecond,
+                windowStartEpochSec = Clock.System.now().epochSeconds,
                 likeDelta =
                     LikeDeltaDto(
                         teamCode = cachedLivetalkTeams.myTeam.name,
