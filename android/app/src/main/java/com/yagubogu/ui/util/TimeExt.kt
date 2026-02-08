@@ -1,5 +1,7 @@
 package com.yagubogu.ui.util
 
+import androidx.annotation.StringRes
+import com.yagubogu.R
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
@@ -44,13 +46,25 @@ fun YearMonth.minusMonths(value: Int): YearMonth = minus(value, DateTimeUnit.MON
 
 fun YearMonth.minusYears(value: Int): YearMonth = minus(value, DateTimeUnit.YEAR)
 
-fun DayOfWeek.getDisplayName(): String =
+@StringRes
+fun DayOfWeek.getDisplayNameResId(): Int =
     when (this) {
-        DayOfWeek.MONDAY -> "월"
-        DayOfWeek.TUESDAY -> "화"
-        DayOfWeek.WEDNESDAY -> "수"
-        DayOfWeek.THURSDAY -> "목"
-        DayOfWeek.FRIDAY -> "금"
-        DayOfWeek.SATURDAY -> "토"
-        DayOfWeek.SUNDAY -> "일"
+        DayOfWeek.MONDAY -> R.string.day_monday
+        DayOfWeek.TUESDAY -> R.string.day_tuesday
+        DayOfWeek.WEDNESDAY -> R.string.day_wednesday
+        DayOfWeek.THURSDAY -> R.string.day_thursday
+        DayOfWeek.FRIDAY -> R.string.day_friday
+        DayOfWeek.SATURDAY -> R.string.day_saturday
+        DayOfWeek.SUNDAY -> R.string.day_sunday
     }
+
+fun LocalDateTime.formatToAmPm(
+    amText: String,
+    pmText: String,
+): String {
+    val marker: String = if (hour < 12) amText else pmText
+    val hour12: Int = if (hour % 12 == 0) 12 else hour % 12
+    val minuteStr: String = minute.toString().padStart(2, '0')
+
+    return "$marker $hour12:$minuteStr"
+}

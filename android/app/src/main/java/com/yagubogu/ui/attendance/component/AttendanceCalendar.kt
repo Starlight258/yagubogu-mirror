@@ -20,6 +20,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -36,7 +37,7 @@ import com.yagubogu.ui.theme.PretendardRegular
 import com.yagubogu.ui.theme.Primary500
 import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.theme.dpToSp
-import com.yagubogu.ui.util.getDisplayName
+import com.yagubogu.ui.util.getDisplayNameResId
 import com.yagubogu.ui.util.minusMonths
 import com.yagubogu.ui.util.noRippleClickable
 import kotlinx.datetime.DayOfWeek
@@ -106,7 +107,7 @@ private fun DaysOfWeekTitle(
     Row(modifier = modifier.fillMaxWidth()) {
         for (dayOfWeek: DayOfWeek in daysOfWeek) {
             Text(
-                text = dayOfWeek.getDisplayName(),
+                text = stringResource(dayOfWeek.getDisplayNameResId()),
                 style = PretendardRegular.copy(fontSize = 14.dpToSp),
                 textAlign = TextAlign.Center,
                 modifier = Modifier.weight(1f),
