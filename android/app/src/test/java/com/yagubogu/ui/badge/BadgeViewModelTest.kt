@@ -1,5 +1,6 @@
 package com.yagubogu.ui.badge
 
+import co.touchlab.kermit.Logger
 import com.yagubogu.fixture.BADGE_ID_0_ACQUIRED_FIXTURE
 import com.yagubogu.fixture.BADGE_ID_1_ACQUIRED_FIXTURE
 import com.yagubogu.fixture.MemberFakeRepository
@@ -19,6 +20,7 @@ class BadgeViewModelTest :
     StringSpec({
         lateinit var memberRepository: MemberFakeRepository
         lateinit var badgeViewModel: BadgeViewModel
+        val logger = Logger.withTag("Test")
 
         beforeTest { Dispatchers.setMain(StandardTestDispatcher()) }
         afterTest { Dispatchers.resetMain() }
@@ -27,7 +29,7 @@ class BadgeViewModelTest :
             runTest {
                 // given & when
                 memberRepository = MemberFakeRepository(isFailureMode = false)
-                badgeViewModel = BadgeViewModel(memberRepository)
+                badgeViewModel = BadgeViewModel(memberRepository, logger)
                 badgeViewModel.fetchBadges()
 
                 advanceUntilIdle()
@@ -41,7 +43,7 @@ class BadgeViewModelTest :
             runTest {
                 // given & when
                 memberRepository = MemberFakeRepository(isFailureMode = true)
-                badgeViewModel = BadgeViewModel(memberRepository)
+                badgeViewModel = BadgeViewModel(memberRepository, logger)
                 badgeViewModel.fetchBadges()
 
                 advanceUntilIdle()
@@ -60,7 +62,7 @@ class BadgeViewModelTest :
                         badgeList =
                             listOf(BADGE_ID_0_ACQUIRED_FIXTURE, BADGE_ID_1_ACQUIRED_FIXTURE),
                     )
-                badgeViewModel = BadgeViewModel(memberRepository)
+                badgeViewModel = BadgeViewModel(memberRepository, logger)
                 badgeViewModel.fetchBadges()
                 badgeViewModel.updateRepresentativeBadge(0)
 
@@ -86,7 +88,7 @@ class BadgeViewModelTest :
                         badgeList =
                             listOf(BADGE_ID_0_ACQUIRED_FIXTURE, BADGE_ID_1_ACQUIRED_FIXTURE),
                     )
-                badgeViewModel = BadgeViewModel(memberRepository)
+                badgeViewModel = BadgeViewModel(memberRepository, logger)
                 badgeViewModel.fetchBadges()
                 advanceUntilIdle()
 
