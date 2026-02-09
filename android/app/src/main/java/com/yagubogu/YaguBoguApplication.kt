@@ -12,6 +12,7 @@ import com.yagubogu.common.YaguBoguDebugTree
 import com.yagubogu.common.YaguBoguReleaseTree
 import com.yagubogu.di.androidModule
 import com.yagubogu.di.datasourceModule
+import com.yagubogu.di.loggingModule
 import com.yagubogu.di.networkModule
 import com.yagubogu.di.repositoryModule
 import com.yagubogu.di.serviceModule
@@ -41,6 +42,7 @@ class YaguBoguApplication : Application() {
                 serviceModule,
                 timeModule,
                 viewModelModule,
+                loggingModule,
             )
         }
     }
