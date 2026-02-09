@@ -13,9 +13,8 @@ import com.yagubogu.data.dto.response.presigned.PresignedUrlCompleteResponse
 import com.yagubogu.data.dto.response.presigned.PresignedUrlStartResponse
 import com.yagubogu.data.service.MemberApiService
 import com.yagubogu.data.util.safeApiCall
-import javax.inject.Inject
 
-class MemberRemoteDataSource @Inject constructor(
+class MemberRemoteDataSource(
     private val memberApiService: MemberApiService,
 ) : MemberDataSource {
     override suspend fun getMemberInfo(): Result<MemberInfoResponse> =
@@ -65,11 +64,7 @@ class MemberRemoteDataSource @Inject constructor(
         contentLength: Long,
     ): Result<PresignedUrlStartResponse> =
         safeApiCall {
-            val request =
-                PresignedUrlStartRequest(
-                    contentType,
-                    contentLength,
-                )
+            val request = PresignedUrlStartRequest(contentType, contentLength)
             memberApiService.postPresignedUrl(request)
         }
 

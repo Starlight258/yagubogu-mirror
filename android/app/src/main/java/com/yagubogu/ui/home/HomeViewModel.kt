@@ -12,9 +12,6 @@ import com.yagubogu.data.repository.stream.StreamRepository
 import com.yagubogu.data.util.ApiException
 import com.yagubogu.domain.model.Coordinate
 import com.yagubogu.domain.model.Distance
-import com.yagubogu.presentation.mapper.toDomain
-import com.yagubogu.presentation.mapper.toUiModel
-import com.yagubogu.presentation.util.mapList
 import com.yagubogu.ui.common.model.MemberProfile
 import com.yagubogu.ui.home.model.CheckInSseEvent
 import com.yagubogu.ui.home.model.CheckInUiEvent
@@ -25,27 +22,36 @@ import com.yagubogu.ui.home.model.StadiumStatsUiModel
 import com.yagubogu.ui.home.model.StadiumWithGame
 import com.yagubogu.ui.home.model.StadiumsWithGames
 import com.yagubogu.ui.home.model.VictoryFairyRanking
-import dagger.hilt.android.lifecycle.HiltViewModel
+import com.yagubogu.ui.mapper.toDomain
+import com.yagubogu.ui.mapper.toUiModel
+import com.yagubogu.ui.util.mapList
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.time.Clock
 import java.time.LocalDate
 import java.time.LocalTime
-import javax.inject.Inject
 import kotlin.math.roundToInt
 
-@HiltViewModel
-class HomeViewModel @Inject constructor(
+class HomeViewModel(
     private val memberRepository: MemberRepository,
     private val checkInRepository: CheckInRepository,
     private val statsRepository: StatsRepository,
@@ -65,13 +71,8 @@ class HomeViewModel @Inject constructor(
     private val _memberStatsUiModel = MutableStateFlow(MemberStatsUiModel())
     val memberStatsUiModel: StateFlow<MemberStatsUiModel> = _memberStatsUiModel.asStateFlow()
 
-    private val cachedStadiumFanRateItems = mutableMapOf<Long, StadiumFanRateItem>()
-
     private val _isStadiumStatsExpanded = MutableStateFlow(false)
     val isStadiumStatsExpanded: StateFlow<Boolean> = _isStadiumStatsExpanded.asStateFlow()
-
-    private val _stadiumStatsUiModel = MutableStateFlow(StadiumStatsUiModel())
-    val stadiumStatsUiModel: StateFlow<StadiumStatsUiModel> = _stadiumStatsUiModel.asStateFlow()
 
     private val _victoryFairyRanking = MutableStateFlow(VictoryFairyRanking())
     val victoryFairyRanking: StateFlow<VictoryFairyRanking> = _victoryFairyRanking.asStateFlow()
@@ -84,42 +85,45 @@ class HomeViewModel @Inject constructor(
 
     private var stadiums: StadiumsWithGames? = null
 
+    private val cachedStadiumFanRateItems = LinkedHashMap<Long, StadiumFanRateItem>()
+    private val _stadiumStatsUiModel = MutableStateFlow(StadiumStatsUiModel())
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val sseFlow: Flow<StadiumStatsUiModel> =
+        _stadiumStatsUiModel
+            .map { it.stadiumFanRates.isNotEmpty() } // 데이터가 있는지 여부만 관찰
+            .distinctUntilChanged() // 상태가 바뀔 때만 실행 (중복 연결 방지)
+            .flatMapLatest { isNotEmpty: Boolean ->
+                if (isNotEmpty) { // 데이터가 있으면 SSE 연결 시작
+                    streamRepository
+                        .connect()
+                        .map { it.toUiModel() }
+                        .mapNotNull { event: CheckInSseEvent ->
+                            if (event is CheckInSseEvent.CheckInCreated) {
+                                mergeCachedItems(event.items)
+                                StadiumStatsUiModel(stadiumFanRates = cachedStadiumFanRateItems.values.toList())
+                            } else {
+                                null
+                            }
+                        }
+                } else { // 데이터가 없으면 아무것도 안 함
+                    emptyFlow()
+                }
+            }
+
+    val stadiumStatsUiModel: StateFlow<StadiumStatsUiModel> =
+        merge(_stadiumStatsUiModel, sseFlow)
+            .stateIn(
+                scope = viewModelScope,
+                // UI가 보고 있을 때만 연결하고, 화면 꺼지면 5초 뒤 연결 끊음
+                started = SharingStarted.WhileSubscribed(5_000),
+                initialValue = StadiumStatsUiModel(),
+            )
+
     fun fetchAll() {
         fetchMemberStats()
         fetchStadiumStats()
         fetchVictoryFairyRanking()
-    }
-
-    fun startStreaming() {
-        viewModelScope.launch {
-            streamRepository
-                .connect()
-                .map { it.toUiModel() }
-                .collect { event: CheckInSseEvent ->
-                    when (event) {
-                        is CheckInSseEvent.CheckInCreated -> {
-                            val newItems: List<StadiumFanRateItem> = event.items
-                            val validKeys: Set<Long> = newItems.map { it.gameId }.toSet()
-                            cachedStadiumFanRateItems.keys.retainAll(validKeys)
-
-                            newItems.forEach { item: StadiumFanRateItem ->
-                                cachedStadiumFanRateItems[item.gameId] = item
-                            }
-                            _stadiumStatsUiModel.value =
-                                StadiumStatsUiModel(stadiumFanRates = newItems)
-                        }
-
-                        CheckInSseEvent.Connect,
-                        CheckInSseEvent.Timeout,
-                        CheckInSseEvent.Unknown,
-                        -> Unit
-                    }
-                }
-        }
-    }
-
-    fun stopStreaming() {
-        streamRepository.disconnect()
     }
 
     fun fetchStadiums(date: LocalDate = LocalDate.now(clock)) {
@@ -321,6 +325,14 @@ class HomeViewModel @Inject constructor(
                 return@launch
             }
             _dialogEvent.emit(HomeDialogEvent.CheckInDialog(stadium))
+        }
+    }
+
+    private fun mergeCachedItems(newItems: List<StadiumFanRateItem>) {
+        val validKeys: Set<Long> = newItems.map { it.gameId }.toSet()
+        cachedStadiumFanRateItems.keys.retainAll(validKeys)
+        newItems.forEach { item: StadiumFanRateItem ->
+            cachedStadiumFanRateItems[item.gameId] = item
         }
     }
 

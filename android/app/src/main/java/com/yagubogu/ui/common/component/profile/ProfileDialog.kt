@@ -33,7 +33,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import coil3.compose.AsyncImage
 import com.yagubogu.R
-import com.yagubogu.presentation.util.DateFormatter
 import com.yagubogu.ui.common.model.MEMBER_PROFILE_FIXTURE
 import com.yagubogu.ui.common.model.MemberProfile
 import com.yagubogu.ui.theme.Gray050
@@ -45,6 +44,7 @@ import com.yagubogu.ui.theme.PretendardSemiBold
 import com.yagubogu.ui.theme.PretendardSemiBold20
 import com.yagubogu.ui.theme.Primary600
 import com.yagubogu.ui.theme.Primary700
+import com.yagubogu.ui.util.DateFormatter
 import com.yagubogu.ui.util.noRippleClickable
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -10,9 +10,8 @@ import com.yagubogu.data.dto.response.checkin.FanRateResponse
 import com.yagubogu.data.dto.response.checkin.StadiumCheckInCountDto
 import com.yagubogu.data.dto.response.checkin.StadiumCheckInCountsResponse
 import java.time.LocalDate
-import javax.inject.Inject
 
-class CheckInDefaultRepository @Inject constructor(
+class CheckInDefaultRepository(
     private val checkInDataSource: CheckInDataSource,
 ) : CheckInRepository {
     override suspend fun addCheckIn(gameId: Long): Result<Unit> = checkInDataSource.addCheckIn(gameId)
@@ -33,11 +32,12 @@ class CheckInDefaultRepository @Inject constructor(
 
     override suspend fun getCheckInHistories(
         year: Int,
+        month: Int,
         filter: String,
         sort: String,
     ): Result<List<CheckInGameDto>> =
         checkInDataSource
-            .getCheckInHistories(year, filter, sort)
+            .getCheckInHistories(year, month, filter, sort)
             .map { checkInHistoryResponse: CheckInHistoryResponse ->
                 checkInHistoryResponse.checkInHistory
             }
@@ -55,4 +55,6 @@ class CheckInDefaultRepository @Inject constructor(
             .map { stadiumCheckInCountsResponse: StadiumCheckInCountsResponse ->
                 stadiumCheckInCountsResponse.stadiums
             }
+
+    override suspend fun addPastCheckIn(gameId: Long): Result<Unit> = checkInDataSource.addPastCheckIn(gameId)
 }

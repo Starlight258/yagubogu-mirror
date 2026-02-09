@@ -1,29 +1,11 @@
 package com.yagubogu.di
 
-import javax.inject.Qualifier
+sealed interface Qualifier {
+    data object BaseUrl : Qualifier
 
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
-annotation class BaseUrl
+    data object GlobalClient : Qualifier
 
-// --- OkHttpClient ---
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
-annotation class BaseClient
+    data object StreamClient : Qualifier
 
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
-annotation class BaseTokenClient
-
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
-annotation class StreamClient
-
-// --- Retrofit ---
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
-annotation class BaseRetrofit
-
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
-annotation class BaseTokenRetrofit
+    data object TokenRefreshMutex : Qualifier
+}

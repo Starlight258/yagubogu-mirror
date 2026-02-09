@@ -20,6 +20,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -41,15 +42,20 @@ import com.yagubogu.ui.theme.Gray300
 import com.yagubogu.ui.theme.PretendardBold20
 import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.util.shimmerLoading
+import org.koin.compose.viewmodel.koinViewModel
 
 private const val COLUMN_SIZE = 2
 
 @Composable
 fun BadgeScreen(
-    viewModel: BadgeViewModel,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: BadgeViewModel = koinViewModel(),
 ) {
+    LaunchedEffect(Unit) {
+        viewModel.fetchBadges()
+    }
+
     BadgeScreen(
         badgeUiState = viewModel.badgeUiState.value,
         onBackClick = onBackClick,

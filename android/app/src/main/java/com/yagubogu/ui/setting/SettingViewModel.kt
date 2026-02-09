@@ -6,12 +6,11 @@ import androidx.lifecycle.viewModelScope
 import com.yagubogu.data.repository.auth.AuthRepository
 import com.yagubogu.data.repository.member.MemberRepository
 import com.yagubogu.data.repository.thirdparty.ThirdPartyRepository
-import com.yagubogu.presentation.mapper.toUiModel
+import com.yagubogu.ui.mapper.toUiModel
 import com.yagubogu.ui.setting.model.MemberInfoItem
 import com.yagubogu.ui.setting.model.PresignedUrlCompleteItem
 import com.yagubogu.ui.setting.model.PresignedUrlItem
 import com.yagubogu.ui.setting.model.SettingEvent
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -22,10 +21,8 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.time.Clock
 import java.time.LocalDate
-import javax.inject.Inject
 
-@HiltViewModel
-class SettingViewModel @Inject constructor(
+class SettingViewModel(
     private val memberRepository: MemberRepository,
     private val authRepository: AuthRepository,
     private val thirdPartyRepository: ThirdPartyRepository,
