@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -24,6 +25,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import co.touchlab.kermit.Logger
 import com.yagubogu.R
 import com.yagubogu.domain.model.Team
 import com.yagubogu.ui.theme.Gray050
@@ -31,7 +33,7 @@ import com.yagubogu.ui.theme.PretendardMedium16
 import com.yagubogu.ui.util.emoji
 import com.yagubogu.ui.util.noRippleClickable
 import com.yagubogu.ui.util.shimmerIf
-import timber.log.Timber
+import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,6 +44,9 @@ fun LivetalkChatCheeringBar(
     onCheeringClick: () -> Unit,
     onPositioned: (Offset) -> Unit = {},
 ) {
+    val kermitLogger: Logger = koinInject()
+    val logger = remember { kermitLogger.withTag("LivetalkChatCheeringBar") }
+
     Row(
         modifier =
             modifier
@@ -107,7 +112,7 @@ fun LivetalkChatCheeringBar(
                                     x = posInRoot.x + coordinates.size.width / 2f,
                                     y = posInRoot.y + coordinates.size.height / 2f,
                                 )
-                            Timber.d("응원 버튼 이모지 중앙 좌표 : $centerPos")
+                            logger.d("응원 버튼 이모지 중앙 좌표 : $centerPos")
                             onPositioned(centerPos)
                         },
             )

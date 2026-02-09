@@ -26,6 +26,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -39,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import co.touchlab.kermit.Logger
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.yagubogu.R
 import com.yagubogu.ui.common.component.profile.ProfileImage
@@ -69,8 +71,8 @@ import io.github.ismoy.imagepickerkmp.domain.models.MimeType.Companion.ALL_SUPPO
 import io.github.ismoy.imagepickerkmp.presentation.ui.components.GalleryPickerLauncher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
-import timber.log.Timber
 import java.io.File
 import kotlin.coroutines.cancellation.CancellationException
 
@@ -150,6 +152,8 @@ private fun ProfileImagePicker(
     onUpload: suspend (Uri, String, Long) -> Result<Unit>,
     onClosePicker: () -> Unit,
 ) {
+    val kermitLogger: Logger = koinInject()
+    val logger = remember { kermitLogger.withTag("ProfileImagePicker") }
     val activity = context as? ComponentActivity
     when (activity is ComponentActivity) {
         true -> {
@@ -157,12 +161,12 @@ private fun ProfileImagePicker(
                 allowMultiple = false,
                 mimeTypes = ALL_SUPPORTED_TYPES,
                 onPhotosSelected = { photos: List<GalleryPhotoResult> ->
-                    Timber.d("onPhotosSelected, 사진 개수: ${photos.size}")
+                    logger.d { "onPhotosSelected, 사진 개수: ${photos.size}" }
                     onClosePicker()
 
                     val photo: GalleryPhotoResult? = photos.firstOrNull()
                     if (photo == null) {
-                        Timber.w("선택된 사진이 없습니다")
+                        logger.w { "선택된 사진이 없습니다" }
                         return@GalleryPickerLauncher
                     }
                     scope.launch {
@@ -178,18 +182,18 @@ private fun ProfileImagePicker(
                                 onProfileImageUpload = onUpload,
                             )
                         }.getOrElse { exception: Throwable ->
-                            Timber.e(exception, "이미지 처리 중 예외 발생")
+                            logger.e(exception) { "이미지 처리 중 예외 발생" }
                             context.showToast(R.string.setting_edit_profile_image_processing_failed)
                         }
                     }
                 },
                 onError = { exception: Exception ->
-                    Timber.e(exception, "GalleryPicker 에러 발생")
+                    logger.e(exception) { "GalleryPicker 에러 발생" }
                     context.showToast(context.getString(R.string.setting_edit_profile_image_selection_failed))
                     onClosePicker()
                 },
                 onDismiss = {
-                    Timber.d("GalleryPicker 닫힘")
+                    logger.d { "GalleryPicker 닫힘" }
                     onClosePicker()
                 },
                 enableCrop = true,
@@ -209,7 +213,7 @@ private fun ProfileImagePicker(
         }
 
         false -> {
-            Timber.e("Context가 ComponentActivity가 아닙니다: ${context.javaClass.name}")
+            logger.e { "Context가 ComponentActivity가 아닙니다: ${context.javaClass.name}" }
             LaunchedEffect(Unit) {
                 context.showToast(context.getString(R.string.setting_edit_profile_image_selection_failed))
                 onClosePicker()
@@ -323,7 +327,7 @@ private fun Context.getAppVersion(): String =
             packageManager.getPackageInfo(packageName, 0)
         packageInfo.versionName ?: DEFAULT_VERSION_NAME
     } catch (e: PackageManager.NameNotFoundException) {
-        Timber.d("앱 버전 로드 실패 ${e.message}")
+        Logger.withTag("getAppVersion").d("앱 버전 로드 실패 ${e.message}")
         DEFAULT_VERSION_NAME
     }
 
@@ -360,7 +364,7 @@ private suspend fun handleImagePickerKMPCroppedImage(
         },
         onFailure = { e: Throwable ->
             if (e is CancellationException) throw e
-            Timber.e(e, "프로필 이미지 전처리 실패")
+            Logger.withTag("handleImagePickerKMPCroppedImage").e(e) { "프로필 이미지 전처리 실패" }
             context.showToast(context.getString(R.string.setting_edit_profile_image_processing_failed))
         },
     )

@@ -2,6 +2,7 @@ package com.yagubogu.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import co.touchlab.kermit.Logger
 import com.yagubogu.data.dto.response.location.CoordinateDto
 import com.yagubogu.data.repository.checkin.CheckInRepository
 import com.yagubogu.data.repository.location.LocationRepository
@@ -45,7 +46,6 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import java.time.Clock
 import java.time.LocalDate
 import java.time.LocalTime
@@ -59,7 +59,9 @@ class HomeViewModel(
     private val stadiumRepository: StadiumRepository,
     private val streamRepository: StreamRepository,
     private val clock: Clock,
+    kermitLogger: Logger,
 ) : ViewModel() {
+    private val logger = kermitLogger.withTag("HomeViewModel")
     private val _checkInUiEvent =
         MutableSharedFlow<CheckInUiEvent>(
             replay = 0,
@@ -139,7 +141,7 @@ class HomeViewModel(
                         fetchCheckInStatus(date)
                     }
                 }.onFailure { exception: Throwable ->
-                    Timber.w(exception, "API 호출 실패")
+                logger.w(exception) { "API 호출 실패 (fetchStadiums)"}
                     _checkInUiEvent.emit(CheckInUiEvent.NetworkFailed)
                 }
         }
@@ -154,7 +156,7 @@ class HomeViewModel(
                 _isCheckInLoading.value = false
             },
             onFailure = { exception: Exception ->
-                Timber.w(exception, "위치 불러오기 실패")
+                logger.w(exception) { "위치 불러오기 실패 (fetchCurrentLocationThenCheckIn)" }
                 _checkInUiEvent.tryEmit(CheckInUiEvent.LocationFetchFailed)
                 _isCheckInLoading.value = false
             },
@@ -181,7 +183,7 @@ class HomeViewModel(
                         else -> _checkInUiEvent.emit(CheckInUiEvent.NetworkFailed)
                     }
                     _isCheckInLoading.value = false
-                    Timber.w(exception, "API 호출 실패")
+                    logger.w(exception) { "API 호출 실패 (checkIn)" }
                 }
         }
     }
@@ -208,7 +210,7 @@ class HomeViewModel(
                 .onSuccess { memberProfile: MemberProfile ->
                     _dialogEvent.emit(HomeDialogEvent.ProfileDialog(memberProfile))
                 }.onFailure { exception: Throwable ->
-                    Timber.w(exception, "사용자 프로필 조회 API 호출 실패")
+                    logger.w(exception) { "API 호출 실패 (fetchMemberProfile)" }
                 }
         }
     }
@@ -243,7 +245,7 @@ class HomeViewModel(
                     listOf(myTeamResult, attendanceCountResult, winRateResult)
                         .filter { it.isFailure }
                         .mapNotNull { it.exceptionOrNull()?.message }
-                Timber.w("API 호출 실패: ${errors.joinToString()}")
+                logger.w { "API 호출 실패 (fetchMemberStats): ${errors.joinToString()}" }
             }
         }
     }
@@ -261,7 +263,7 @@ class HomeViewModel(
                     _stadiumStatsUiModel.value =
                         StadiumStatsUiModel(stadiumFanRates = stadiumFanRates)
                 }.onFailure { exception: Throwable ->
-                    Timber.w(exception, "API 호출 실패")
+                    logger.w(exception) { "API 호출 실패 (fetchStadiumStats)" }
                 }
         }
     }
@@ -274,7 +276,7 @@ class HomeViewModel(
                 .onSuccess { ranking: VictoryFairyRanking ->
                     _victoryFairyRanking.value = ranking
                 }.onFailure { exception: Throwable ->
-                    Timber.w(exception, "API 호출 실패")
+                    logger.w(exception) { "API 호출 실패 (fetchVictoryFairyRanking)" }
                 }
         }
     }
@@ -290,7 +292,7 @@ class HomeViewModel(
                         fetchCurrentLocationThenCheckIn()
                     }
                 }.onFailure { exception: Throwable ->
-                    Timber.w(exception, "API 호출 실패")
+                    logger.w(exception) { "API 호출 실패 (fetchCheckInStatus)" }
                 }
         }
     }

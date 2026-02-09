@@ -102,6 +102,7 @@ val networkModule =
                 baseUrl = get(named<Qualifier.BaseUrl>()),
                 httpClient = get(named<Qualifier.StreamClient>()),
                 json = get(),
+                kermitLogger = get(),
             )
         }
 

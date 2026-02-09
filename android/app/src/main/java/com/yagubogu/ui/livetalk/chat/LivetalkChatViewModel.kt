@@ -2,6 +2,7 @@ package com.yagubogu.ui.livetalk.chat
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import co.touchlab.kermit.Logger
 import com.yagubogu.data.dto.request.game.LikeBatchRequest
 import com.yagubogu.data.dto.request.game.LikeDeltaDto
 import com.yagubogu.data.dto.response.game.LikeCountsResponse
@@ -29,7 +30,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import timber.log.Timber
 import java.time.Instant
 import java.time.LocalDateTime
 
@@ -39,9 +39,11 @@ class LivetalkChatViewModel(
     private val talkRepository: TalkRepository,
     private val gameRepository: GameRepository,
     private val memberRepository: MemberRepository,
+    kermitLogger: Logger,
 ) : ViewModel() {
-    val messageStateHolder = MessageStateHolder(isVerified)
-    val likeCountStateHolder = LikeCountStateHolder()
+    val logger = kermitLogger.withTag("LivetalkChatViewModel")
+    val messageStateHolder = MessageStateHolder(isVerified, kermitLogger)
+    val likeCountStateHolder = LikeCountStateHolder(kermitLogger)
 
     private val _teams = MutableStateFlow<LivetalkTeams?>(null)
     val teams: StateFlow<LivetalkTeams?> = _teams.asStateFlow()
@@ -92,7 +94,7 @@ class LivetalkChatViewModel(
                 .onSuccess { response: LivetalkResponseItem ->
                     messageStateHolder.addBeforeChats(response)
                 }.onFailure { exception ->
-                    Timber.w(exception, "과거 메시지 API 호출 실패")
+                    logger.w(exception) { "과거 메시지 API 호출 실패" }
                 }
         }
     }
@@ -109,7 +111,7 @@ class LivetalkChatViewModel(
             .onSuccess { response: LivetalkResponseItem ->
                 messageStateHolder.addAfterChats(response)
             }.onFailure { exception ->
-                Timber.w(exception, "최신 메시지 API 호출 실패")
+                logger.w(exception) { "최신 메시지 API 호출 실패" }
             }
     }
 
@@ -144,7 +146,7 @@ class LivetalkChatViewModel(
                     stopPolling()
                     startPolling()
                 }.onFailure { exception: Throwable ->
-                    Timber.w(exception, "API 호출 실패")
+                    logger.w(exception) { "API 호출 실패" }
                 }
         }
     }
@@ -155,13 +157,13 @@ class LivetalkChatViewModel(
                 .deleteTalks(gameId, chatId)
                 .onSuccess {
                     messageStateHolder.deleteChat(chatId)
-                    Timber.d("현장톡 정상 삭제")
+                    logger.d { "현장톡 정상 삭제" }
                 }.onFailure { exception: Throwable ->
                     when (exception) {
-                        is ApiException.BadRequest -> Timber.d("해당 경기에 존재하지 않는 현장톡 삭제 시도")
-                        is ApiException.Forbidden -> Timber.d("타인의 현장톡 삭제 시도")
-                        is ApiException.NotFound -> Timber.d("존재하지 않는 현장톡 삭제 시도")
-                        else -> Timber.d(exception)
+                        is ApiException.BadRequest -> logger.w(exception) { "해당 경기에 존재하지 않는 현장톡 삭제 시도" }
+                        is ApiException.Forbidden -> logger.w(exception) { "타인의 현장톡 삭제 시도" }
+                        is ApiException.NotFound -> logger.w(exception) { "존재하지 않는 현장톡 삭제 시도" }
+                        else -> logger.w(exception) { "현장톡 삭제 API 호출 실패" }
                     }
                 }
         }
@@ -173,19 +175,19 @@ class LivetalkChatViewModel(
                 .reportTalks(chatId)
                 .onSuccess {
                     messageStateHolder.reportChat(chatId)
-                    Timber.d("현장톡 정상 신고")
+                    logger.d { "현장톡 정상 신고" }
                 }.onFailure { exception: Throwable ->
                     when (exception) {
                         is ApiException.BadRequest -> {
-                            Timber.d("스스로 신고하거나 중복 신고인 경우")
+                            logger.e(exception) { "스스로 신고하거나 중복 신고인 경우" }
                         }
 
                         is ApiException.Forbidden -> {
-                            Timber.d("회원이 존재하지 않거나 존재하지 않는 현장톡 신고 시도")
+                            logger.e(exception) { "회원이 존재하지 않거나 존재하지 않는 현장톡 신고 시도" }
                         }
 
                         else -> {
-                            Timber.d(exception)
+                            logger.e(exception) { "현장톡 신고 API 호출 실패" }
                         }
                     }
                 }
@@ -216,7 +218,7 @@ class LivetalkChatViewModel(
             .onSuccess { likeCountsResponse: LikeCountsResponse ->
                 likeCountStateHolder.updateLikeCount(cachedLivetalkTeams, likeCountsResponse)
             }.onFailure { exception ->
-                Timber.w(exception, "응원수 로드 실패")
+                logger.w(exception) { "응원수 로드 실패" }
             }
     }
 
@@ -236,9 +238,9 @@ class LivetalkChatViewModel(
             gameRepository
                 .addLikeBatches(gameId, request)
                 .onSuccess {
-                    Timber.d("응원 배치 전송 성공: $countToSend 건")
+                    logger.d { "응원 배치 전송 성공: $countToSend 건" }
                 }.onFailure { exception: Throwable ->
-                    Timber.w(exception, "응원 배치 전송 실패")
+                    logger.w(exception) { "응원 배치 전송 실패" }
                 }
         }
     }
@@ -251,7 +253,7 @@ class LivetalkChatViewModel(
 
                 cachedLivetalkTeams = livetalkTeams
             }.onFailure { exception ->
-                Timber.w(exception, "최초 팀 정보 가져오기 실패")
+                logger.w(exception) { "최초 팀 정보 가져오기 실패" }
             }
     }
 
@@ -263,7 +265,7 @@ class LivetalkChatViewModel(
                 .onSuccess { memberProfile: MemberProfile ->
                     _selectedProfile.emit(memberProfile)
                 }.onFailure { exception: Throwable ->
-                    Timber.w(exception, "사용자 프로필 조회 API 호출 실패")
+                    logger.w(exception) { "사용자 프로필 조회 API 호출 실패" }
                 }
         }
     }

@@ -2,6 +2,7 @@ package com.yagubogu.ui.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import co.touchlab.kermit.Logger
 import com.yagubogu.data.dto.response.auth.LoginResultResponse
 import com.yagubogu.data.repository.auth.AuthRepository
 import com.yagubogu.data.repository.member.MemberRepository
@@ -12,12 +13,13 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 class LoginViewModel(
     private val authRepository: AuthRepository,
     private val memberRepository: MemberRepository,
+    kermitLogger: Logger,
 ) : ViewModel() {
+    private val logger = kermitLogger.withTag("LoginViewModel")
     private val _loginResult = MutableSharedFlow<LoginResult>()
     val loginResult: SharedFlow<LoginResult> = _loginResult.asSharedFlow()
 
@@ -48,7 +50,7 @@ class LoginViewModel(
                                     }
                                 },
                                 onFailure = { exception: Throwable ->
-                                    Timber.w(exception, "API 호출 실패")
+                                    logger.w(exception) { "API 호출 실패" }
                                     LoginResult.Failure(exception)
                                 },
                             )

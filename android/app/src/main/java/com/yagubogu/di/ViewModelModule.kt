@@ -36,6 +36,7 @@ val viewModelModule =
                 talkRepository = get(),
                 gameRepository = get(),
                 memberRepository = get(),
+                kermitLogger = get(),
             )
         }
 

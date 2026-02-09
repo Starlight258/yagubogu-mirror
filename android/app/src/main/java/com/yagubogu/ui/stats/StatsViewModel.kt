@@ -2,6 +2,7 @@ package com.yagubogu.ui.stats
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import co.touchlab.kermit.Logger
 import com.yagubogu.data.dto.response.stats.OpponentWinRateTeamDto
 import com.yagubogu.data.repository.checkin.CheckInRepository
 import com.yagubogu.data.repository.member.MemberRepository
@@ -23,14 +24,15 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import java.time.LocalDate
 
 class StatsViewModel(
     private val statsRepository: StatsRepository,
     private val memberRepository: MemberRepository,
     private val checkInRepository: CheckInRepository,
+    kermitLogger: Logger,
 ) : ViewModel() {
+    val logger = kermitLogger.withTag("StatsViewModel")
     private val _year = MutableStateFlow(LocalDate.now().year)
     val year: StateFlow<Int> = _year.asStateFlow()
 
@@ -116,7 +118,7 @@ class StatsViewModel(
                     listOf(statsCountsResult, winRateResult, myTeamResult, luckyStadiumResult)
                         .filter { it.isFailure }
                         .mapNotNull { it.exceptionOrNull()?.message }
-                Timber.w("API 호출 실패: ${errors.joinToString()}")
+                logger.w { "API 호출 실패: ${errors.joinToString()}" }
             }
         }
     }
@@ -130,7 +132,7 @@ class StatsViewModel(
                 .onSuccess { averageStats: AverageStats ->
                     _averageStats.value = averageStats
                 }.onFailure { exception: Throwable ->
-                    Timber.w(exception, "API 호출 실패")
+                    logger.w(exception) { "API 호출 실패" }
                 }
         }
     }
@@ -148,7 +150,7 @@ class StatsViewModel(
                 .onSuccess { updatedVsTeamStats: List<VsTeamStatItem> ->
                     _vsTeamStatItems.value = updatedVsTeamStats
                 }.onFailure { exception: Throwable ->
-                    Timber.w(exception, "API 호출 실패")
+                    logger.w(exception) { "API 호출 실패" }
                 }
         }
     }
@@ -163,7 +165,7 @@ class StatsViewModel(
                     _stadiumVisitCounts.value =
                         stadiumVisitCounts.sortedByDescending { it.visitCounts }
                 }.onFailure { exception: Throwable ->
-                    Timber.w(exception, "API 호출 실패")
+                    logger.w(exception) { "API 호출 실패" }
                 }
         }
     }

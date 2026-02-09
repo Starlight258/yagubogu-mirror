@@ -2,6 +2,7 @@ package com.yagubogu.ui.attendance
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import co.touchlab.kermit.Logger
 import com.yagubogu.data.dto.response.game.GameWithCheckInDto
 import com.yagubogu.data.repository.checkin.CheckInRepository
 import com.yagubogu.data.repository.game.GameRepository
@@ -21,14 +22,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import java.time.LocalDate
 import java.time.YearMonth
 
 class AttendanceHistoryViewModel(
     private val checkInRepository: CheckInRepository,
     private val gameRepository: GameRepository,
+    kermitLogger: Logger,
 ) : ViewModel() {
+    val logger = kermitLogger.withTag("AttendanceHistoryViewModel")
     private val _items = MutableStateFlow<List<AttendanceHistoryItem>>(emptyList())
     val items: StateFlow<List<AttendanceHistoryItem>> = _items.asStateFlow()
 
@@ -68,7 +70,7 @@ class AttendanceHistoryViewModel(
                 .onSuccess { attendanceItems: List<AttendanceHistoryItem> ->
                     _items.value = attendanceItems
                 }.onFailure { exception: Throwable ->
-                    Timber.w(exception, "API 호출 실패")
+                    logger.w(exception) { "API 호출 실패" }
                 }
         }
     }
@@ -86,7 +88,7 @@ class AttendanceHistoryViewModel(
                 .onSuccess { pastGameUiModels: List<PastGameUiModel> ->
                     _pastGameUiState.value = PastGameUiState.Success(pastGameUiModels)
                 }.onFailure { exception: Throwable ->
-                    Timber.w(exception, "API 호출 실패")
+                    logger.w(exception) { "API 호출 실패" }
                 }
         }
     }
@@ -99,7 +101,7 @@ class AttendanceHistoryViewModel(
                     _pastCheckInUiEvent.emit(Unit)
                     fetchAttendanceHistoryItems()
                 }.onFailure { exception: Throwable ->
-                    Timber.w(exception, "API 호출 실패")
+                    logger.w(exception) { "API 호출 실패" }
                 }
         }
     }

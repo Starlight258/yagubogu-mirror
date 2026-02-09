@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import co.touchlab.kermit.Logger
 import com.yagubogu.ui.common.model.MemberProfile
 import com.yagubogu.ui.livetalk.chat.component.EmptyLivetalkChat
 import com.yagubogu.ui.livetalk.chat.component.FloatingEmojiItem
@@ -51,7 +52,7 @@ import com.yagubogu.ui.util.emoji
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import timber.log.Timber
+import org.koin.compose.koinInject
 import java.time.LocalDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -61,6 +62,8 @@ fun LivetalkChatScreen(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val kermitLogger: Logger = koinInject()
+    val logger = remember { kermitLogger.withTag("LivetalkChatScreen") }
     val messageStateHolder = viewModel.messageStateHolder
     val likeCountStateHolder = viewModel.likeCountStateHolder
     val teams: LivetalkTeams? by viewModel.teams.collectAsStateWithLifecycle()
@@ -174,6 +177,7 @@ fun LivetalkChatScreen(
                     emoji = myTeamEmoji,
                     count = count,
                     scope = this,
+                    logger = logger,
                     increaseCountText = { increment ->
                         likeCountStateHolder.increaseMyTeamShowingCount(increment)
                     },
@@ -193,6 +197,7 @@ fun LivetalkChatScreen(
                     emoji = otherTeamEmoji,
                     count = count,
                     scope = this,
+                    logger = logger,
                 ) {
                     generateEmojiAnimation(otherTeamEmoji)
                 }
@@ -214,6 +219,9 @@ fun LivetalkChatScreenContent(
     actions: LivetalkChatScreenActions,
     modifier: Modifier = Modifier,
 ) {
+    val kermitLogger: Logger = koinInject()
+    val logger = remember { kermitLogger.withTag("LivetalkChatScreenContent") }
+
     Scaffold(
         topBar = {
             LivetalkChatToolbar(
@@ -295,7 +303,7 @@ fun LivetalkChatScreenContent(
             state.emojiLayer.emojiQueue.forEach { item: EmojiAnimationItem ->
                 key(item.id) {
                     LaunchedEffect(Unit) {
-                        Timber.d("이모지 애니메이션 시작 좌표 : ${item.startOffset}")
+                        logger.d { "이모지 애니메이션 시작 좌표 : ${item.startOffset}" }
                     }
                     FloatingEmojiItem(
                         emoji = item.emoji,
@@ -317,6 +325,7 @@ private fun scheduleEmojiWithCounter(
     emoji: String,
     count: Long,
     scope: CoroutineScope,
+    logger: Logger,
     increaseCountText: (suspend (Long) -> Unit)? = null,
     triggerAnimation: () -> Unit,
 ) {
@@ -341,7 +350,7 @@ private fun scheduleEmojiWithCounter(
                 delay(randomDelay)
                 increaseCountText?.invoke(increment)
                 triggerAnimation()
-                Timber.d("$emoji 이모지 애니메이션 및 $increment 만큼 카운트 증가")
+                logger.d { "$emoji 이모지 애니메이션 및 $increment 만큼 카운트 증가" }
             }
         }
     }
