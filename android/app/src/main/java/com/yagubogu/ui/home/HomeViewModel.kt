@@ -141,7 +141,7 @@ class HomeViewModel(
                         fetchCheckInStatus(date)
                     }
                 }.onFailure { exception: Throwable ->
-                logger.w(exception) { "API 호출 실패 (fetchStadiums)"}
+                    logger.w(exception) { "API 호출 실패 (fetchStadiums)" }
                     _checkInUiEvent.emit(CheckInUiEvent.NetworkFailed)
                 }
         }

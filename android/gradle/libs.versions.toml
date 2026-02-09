@@ -63,7 +63,6 @@ balloon = "1.6.13"
 calendar = "2.9.0"
 
 # Logging
-timber = "5.0.1"
 kermit = "2.0.8"
 
 # Testing
@@ -153,7 +152,6 @@ balloon-compose = { module = "com.github.skydoves:balloon-compose", version.ref 
 calendar-compose = { module = "com.kizitonwose.calendar:compose", version.ref = "calendar" }
 
 # Logging
-timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 kermit-crashlytics = { module = "co.touchlab:kermit-crashlytics", version.ref = "kermit" }
 

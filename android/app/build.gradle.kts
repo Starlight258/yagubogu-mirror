@@ -185,7 +185,6 @@ dependencies {
     implementation(libs.calendar.compose)
 
     // Logging
-    implementation(libs.timber)
     implementation(libs.kermit)
     implementation(libs.kermit.crashlytics)
 
