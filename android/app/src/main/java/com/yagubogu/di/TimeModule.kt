@@ -1,8 +1,8 @@
 package com.yagubogu.di
 
+import co.touchlab.kermit.Logger
 import com.yagubogu.BuildConfig
 import org.koin.dsl.module
-import timber.log.Timber
 import java.time.Clock
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -10,6 +10,7 @@ import java.time.ZoneId
 val timeModule =
     module {
         single<Clock> {
+            val logger: Logger = get<Logger>().withTag("timeModule")
             val kstZone = ZoneId.of("Asia/Seoul")
 
             val clock: Clock =
@@ -23,7 +24,7 @@ val timeModule =
                         Clock.system(kstZone)
                     }
                 }.getOrElse { e: Throwable ->
-                    Timber.e("디버그 Clock 생성 실패: $e")
+                    logger.e(e) { "디버그 Clock 생성 실패" }
                     Clock.system(kstZone)
                 }
 
