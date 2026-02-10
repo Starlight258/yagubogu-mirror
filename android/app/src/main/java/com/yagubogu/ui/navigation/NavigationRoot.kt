@@ -56,17 +56,22 @@ fun NavigationRoot(
             entry<Route.Setting> {
                 SettingScreen(
                     navigator = settingNavigator,
-                    onBackClick = {
-                        rootNavigator.navigate(Route.Main)
-                        rootNavigator.clearStack()
-                    },
-                    onDeleteAccountCancel = { rootNavigator.navigate(Route.Main) },
+                    onBackClick = { rootNavigator.goBack() },
                     onFavoriteTeamEditClick = { rootNavigator.navigate(Route.FavoriteTeam) },
                     onLogout = {
                         mainNavigator.navigate(BottomNavKey.Home)
-                        settingNavigator.clearStack()
                         rootNavigator.clearStack()
                         rootNavigator.navigate(Route.Login)
+                    },
+                    onDeleteAccountCancel = {
+                        mainNavigator.navigate(BottomNavKey.Home)
+                        rootNavigator.clearStack()
+                        rootNavigator.navigate(Route.Main)
+                    },
+                    onDeleteAccount = {
+                        mainNavigator.navigate(BottomNavKey.Home)
+                        rootNavigator.clearStack()
+                        rootNavigator.navigate(Route.Main)
                     },
                 )
             }
