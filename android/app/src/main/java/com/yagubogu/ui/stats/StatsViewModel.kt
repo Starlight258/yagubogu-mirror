@@ -30,9 +30,8 @@ class StatsViewModel(
     private val statsRepository: StatsRepository,
     private val memberRepository: MemberRepository,
     private val checkInRepository: CheckInRepository,
-    kermitLogger: Logger,
+    private val logger: Logger,
 ) : ViewModel() {
-    val logger = kermitLogger.withTag("StatsViewModel")
     private val _year = MutableStateFlow(LocalDate.now().year)
     val year: StateFlow<Int> = _year.asStateFlow()
 

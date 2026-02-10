@@ -30,6 +30,7 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.Json
+import org.koin.core.parameter.parametersOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
@@ -102,7 +103,7 @@ val networkModule =
                 baseUrl = get(named<Qualifier.BaseUrl>()),
                 httpClient = get(named<Qualifier.StreamClient>()),
                 json = get(),
-                kermitLogger = get(),
+                logger = get { parametersOf("SseClient") },
             )
         }
 

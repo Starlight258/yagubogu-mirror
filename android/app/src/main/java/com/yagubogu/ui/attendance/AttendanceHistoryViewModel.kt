@@ -28,9 +28,8 @@ import java.time.YearMonth
 class AttendanceHistoryViewModel(
     private val checkInRepository: CheckInRepository,
     private val gameRepository: GameRepository,
-    kermitLogger: Logger,
+    private val logger: Logger,
 ) : ViewModel() {
-    val logger = kermitLogger.withTag("AttendanceHistoryViewModel")
     private val _items = MutableStateFlow<List<AttendanceHistoryItem>>(emptyList())
     val items: StateFlow<List<AttendanceHistoryItem>> = _items.asStateFlow()
 

@@ -13,21 +13,55 @@ import com.yagubogu.ui.setting.SettingViewModel
 import com.yagubogu.ui.stats.StatsViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
+import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
 
 val viewModelModule =
     module {
         viewModelOf(::YaguBoguViewModel)
 
-        viewModelOf(::AttendanceHistoryViewModel)
+        viewModel {
+            AttendanceHistoryViewModel(
+                checkInRepository = get(),
+                gameRepository = get(),
+                logger = get { parametersOf("AttendanceHistoryViewModel") },
+            )
+        }
 
-        viewModelOf(::BadgeViewModel)
+        viewModel {
+            BadgeViewModel(
+                memberRepository = get(),
+                logger = get { parametersOf("BadgeViewModel") },
+            )
+        }
 
-        viewModelOf(::FavoriteTeamViewModel)
+        viewModel {
+            FavoriteTeamViewModel(
+                memberRepository = get(),
+                logger = get { parametersOf("FavoriteTeamViewModel") },
+            )
+        }
 
-        viewModelOf(::HomeViewModel)
+        viewModel {
+            HomeViewModel(
+                memberRepository = get(),
+                checkInRepository = get(),
+                statsRepository = get(),
+                locationRepository = get(),
+                stadiumRepository = get(),
+                streamRepository = get(),
+                clock = get(),
+                logger = get { parametersOf("HomeViewModel") },
+            )
+        }
 
-        viewModelOf(::LivetalkViewModel)
+        viewModel {
+            LivetalkViewModel(
+                gameRepository = get(),
+                clock = get(),
+                logger = get { parametersOf("LivetalkViewModel") },
+            )
+        }
 
         viewModel { (gameId: Long, isVerified: Boolean) ->
             LivetalkChatViewModel(
@@ -36,15 +70,36 @@ val viewModelModule =
                 talkRepository = get(),
                 gameRepository = get(),
                 memberRepository = get(),
-                kermitLogger = get(),
+                logger = get { parametersOf("LivetalkChatViewModel") },
             )
         }
 
-        viewModelOf(::LoginViewModel)
+        viewModel {
+            LoginViewModel(
+                authRepository = get(),
+                memberRepository = get(),
+                logger = get { parametersOf("LoginViewModel") },
+            )
+        }
 
         viewModelOf(::MainViewModel)
 
-        viewModelOf(::SettingViewModel)
+        viewModel {
+            SettingViewModel(
+                memberRepository = get(),
+                authRepository = get(),
+                thirdPartyRepository = get(),
+                clock = get(),
+                logger = get { parametersOf("SettingViewModel") },
+            )
+        }
 
-        viewModelOf(::StatsViewModel)
+        viewModel {
+            StatsViewModel(
+                statsRepository = get(),
+                memberRepository = get(),
+                checkInRepository = get(),
+                logger = get { parametersOf("StatsViewModel") },
+            )
+        }
     }

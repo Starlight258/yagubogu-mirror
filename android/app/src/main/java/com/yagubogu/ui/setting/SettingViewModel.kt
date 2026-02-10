@@ -27,9 +27,8 @@ class SettingViewModel(
     private val authRepository: AuthRepository,
     private val thirdPartyRepository: ThirdPartyRepository,
     private val clock: Clock,
-    kermitLogger: Logger,
+    private val logger: Logger,
 ) : ViewModel() {
-    val logger = kermitLogger.withTag("SettingViewModel")
     private val _myMemberInfoItem = MutableStateFlow(MemberInfoItem())
     val myMemberInfoItem: StateFlow<MemberInfoItem> = _myMemberInfoItem.asStateFlow()
 

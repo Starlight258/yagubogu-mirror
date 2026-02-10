@@ -26,7 +26,6 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -73,6 +72,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 import java.io.File
 import kotlin.coroutines.cancellation.CancellationException
 
@@ -152,8 +152,7 @@ private fun ProfileImagePicker(
     onUpload: suspend (Uri, String, Long) -> Result<Unit>,
     onClosePicker: () -> Unit,
 ) {
-    val kermitLogger: Logger = koinInject()
-    val logger = remember { kermitLogger.withTag("ProfileImagePicker") }
+    val logger: Logger = koinInject { parametersOf("ProfileImagePicker") }
     val activity = context as? ComponentActivity
     when (activity is ComponentActivity) {
         true -> {

@@ -13,9 +13,8 @@ import kotlinx.coroutines.launch
 
 class BadgeViewModel(
     private val memberRepository: MemberRepository,
-    kermitLogger: Logger,
+    private val logger: Logger,
 ) : ViewModel() {
-    val logger = kermitLogger.withTag("BadgeViewModel")
     var badgeUiState = mutableStateOf<BadgeUiState>(BadgeUiState.Loading)
         private set
 

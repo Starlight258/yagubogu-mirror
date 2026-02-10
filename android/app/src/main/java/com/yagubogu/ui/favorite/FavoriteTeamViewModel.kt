@@ -12,9 +12,8 @@ import kotlinx.coroutines.launch
 
 class FavoriteTeamViewModel(
     private val memberRepository: MemberRepository,
-    kermitLogger: Logger,
+    private val logger: Logger,
 ) : ViewModel() {
-    val logger = kermitLogger.withTag("FavoriteTeamViewModel")
     private val _favoriteTeamUpdateEvent = MutableSharedFlow<Unit>()
     val favoriteTeamUpdateEvent: SharedFlow<Unit> = _favoriteTeamUpdateEvent.asSharedFlow()
 

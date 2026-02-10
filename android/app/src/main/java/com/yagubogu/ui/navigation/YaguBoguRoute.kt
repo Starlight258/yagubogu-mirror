@@ -12,6 +12,7 @@ import com.yagubogu.ui.navigation.model.Route
 import com.yagubogu.ui.navigation.model.SettingNavKey
 import com.yagubogu.ui.navigation.model.rememberNavigationState
 import org.koin.compose.koinInject
+import org.koin.core.parameter.parametersOf
 
 /**
  * 앱의 최상위 라우팅 컴포저블.
@@ -31,8 +32,6 @@ fun YaguBoguRoute(
     startRoute: Route,
     modifier: Modifier = Modifier,
 ) {
-    val kermitLogger: Logger = koinInject()
-
     val rootNavigationState: NavigationState =
         rememberNavigationState(
             startRoute = startRoute,
@@ -43,21 +42,25 @@ fun YaguBoguRoute(
                     Route.FavoriteTeam,
                 ),
         )
-    val rootNavigator: Navigator = remember { Navigator(rootNavigationState, kermitLogger.withTag("RootNavigator")) }
+    val rootLogger: Logger = koinInject { parametersOf("RootNavigator") }
+    val rootNavigator: Navigator = remember { Navigator(rootNavigationState, rootLogger) }
 
     val mainNavigationState: NavigationState =
         rememberNavigationState(
             startRoute = BottomNavKey.Home,
             topLevelRoutes = BottomNavKey.items.toSet(),
         )
-    val mainNavigator: Navigator = remember { Navigator(mainNavigationState, kermitLogger.withTag("MainNavigator")) }
+    val mainLogger: Logger = koinInject { parametersOf("MainNavigator") }
+    val mainNavigator: Navigator = remember { Navigator(mainNavigationState, mainLogger) }
 
     val settingNavigationState: NavigationState =
         rememberNavigationState(
             startRoute = SettingNavKey.SettingMain,
             topLevelRoutes = setOf(SettingNavKey.SettingMain),
         )
-    val settingNavigator: Navigator = remember { Navigator(settingNavigationState, kermitLogger.withTag("SettingNavigator")) }
+    val settingLogger: Logger = koinInject { parametersOf("SettingNavigator") }
+    val settingNavigator: Navigator =
+        remember { Navigator(settingNavigationState, logger = settingLogger) }
 
     NavigationRoot(
         googleCredentialManager = googleCredentialManager,

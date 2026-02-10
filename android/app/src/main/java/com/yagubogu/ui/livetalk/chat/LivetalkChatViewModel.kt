@@ -39,11 +39,10 @@ class LivetalkChatViewModel(
     private val talkRepository: TalkRepository,
     private val gameRepository: GameRepository,
     private val memberRepository: MemberRepository,
-    kermitLogger: Logger,
+    private val logger: Logger,
 ) : ViewModel() {
-    val logger = kermitLogger.withTag("LivetalkChatViewModel")
-    val messageStateHolder = MessageStateHolder(isVerified, kermitLogger)
-    val likeCountStateHolder = LikeCountStateHolder(kermitLogger)
+    val messageStateHolder = MessageStateHolder(isVerified, logger)
+    val likeCountStateHolder = LikeCountStateHolder(logger)
 
     private val _teams = MutableStateFlow<LivetalkTeams?>(null)
     val teams: StateFlow<LivetalkTeams?> = _teams.asStateFlow()

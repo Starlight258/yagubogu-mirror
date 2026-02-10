@@ -53,6 +53,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
+import org.koin.core.parameter.parametersOf
 import java.time.LocalDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -62,8 +63,7 @@ fun LivetalkChatScreen(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val kermitLogger: Logger = koinInject()
-    val logger = remember { kermitLogger.withTag("LivetalkChatScreen") }
+    val logger: Logger = koinInject { parametersOf("LivetalkChatScreen") }
     val messageStateHolder = viewModel.messageStateHolder
     val likeCountStateHolder = viewModel.likeCountStateHolder
     val teams: LivetalkTeams? by viewModel.teams.collectAsStateWithLifecycle()
@@ -219,8 +219,7 @@ fun LivetalkChatScreenContent(
     actions: LivetalkChatScreenActions,
     modifier: Modifier = Modifier,
 ) {
-    val kermitLogger: Logger = koinInject()
-    val logger = remember { kermitLogger.withTag("LivetalkChatScreenContent") }
+    val logger: Logger = koinInject { parametersOf("LivetalkChatScreenContent") }
 
     Scaffold(
         topBar = {

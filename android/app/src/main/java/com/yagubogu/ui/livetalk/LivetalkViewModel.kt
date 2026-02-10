@@ -17,9 +17,8 @@ import java.time.LocalDate
 class LivetalkViewModel(
     private val gameRepository: GameRepository,
     private val clock: Clock,
-    kermitLogger: Logger,
+    private val logger: Logger,
 ) : ViewModel() {
-    val logger = kermitLogger.withTag("LivetalkViewModel")
     private val _stadiumItems = MutableStateFlow<List<LivetalkStadiumItem>>(emptyList())
     val stadiumItems: StateFlow<List<LivetalkStadiumItem>> = _stadiumItems.asStateFlow()
 

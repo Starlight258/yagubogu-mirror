@@ -59,9 +59,8 @@ class HomeViewModel(
     private val stadiumRepository: StadiumRepository,
     private val streamRepository: StreamRepository,
     private val clock: Clock,
-    kermitLogger: Logger,
+    private val logger: Logger,
 ) : ViewModel() {
-    private val logger = kermitLogger.withTag("HomeViewModel")
     private val _checkInUiEvent =
         MutableSharedFlow<CheckInUiEvent>(
             replay = 0,

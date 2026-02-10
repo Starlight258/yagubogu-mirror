@@ -34,11 +34,11 @@ import com.yagubogu.ui.theme.YaguBoguTheme
 import com.yagubogu.ui.util.showToast
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 class YaguBoguActivity : AppCompatActivity() {
     private val viewModel: YaguBoguViewModel by viewModel()
-    private val kermitLogger: Logger by inject()
-    private val logger by lazy { kermitLogger.withTag("YaguBoguActivity") }
+    private val logger: Logger by inject { parametersOf("YaguBoguActivity") }
     private val googleCredentialManager: GoogleCredentialManager by lazy {
         GoogleCredentialManager(
             context = this,

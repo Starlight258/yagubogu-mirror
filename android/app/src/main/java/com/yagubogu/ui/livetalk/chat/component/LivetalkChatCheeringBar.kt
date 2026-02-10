@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -34,6 +33,7 @@ import com.yagubogu.ui.util.emoji
 import com.yagubogu.ui.util.noRippleClickable
 import com.yagubogu.ui.util.shimmerIf
 import org.koin.compose.koinInject
+import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,9 +44,7 @@ fun LivetalkChatCheeringBar(
     onCheeringClick: () -> Unit,
     onPositioned: (Offset) -> Unit = {},
 ) {
-    val kermitLogger: Logger = koinInject()
-    val logger = remember { kermitLogger.withTag("LivetalkChatCheeringBar") }
-
+    val logger: Logger = koinInject { parametersOf("LivetalkChatCheeringBar") }
     Row(
         modifier =
             modifier

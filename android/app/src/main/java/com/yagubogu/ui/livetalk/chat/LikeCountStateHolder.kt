@@ -25,9 +25,8 @@ import kotlinx.coroutines.sync.withLock
  * 빠르게 연속으로 클릭할 때 발생할 수 있는 경쟁 상태(race condition)를 방지합니다.
  */
 class LikeCountStateHolder(
-    kermitLogger: Logger,
+    private val logger: Logger,
 ) {
-    val logger = kermitLogger.withTag("LikeCountStateHolder")
     private var myTeamLikeRealCount: Long = 0L
     private var otherTeamLikeRealCount: Long = 0L
 
