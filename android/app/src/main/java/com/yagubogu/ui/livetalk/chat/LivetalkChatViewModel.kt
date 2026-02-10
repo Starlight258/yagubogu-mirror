@@ -45,9 +45,6 @@ class LivetalkChatViewModel(
     private val _teams = MutableStateFlow<LivetalkTeams?>(null)
     val teams: StateFlow<LivetalkTeams?> = _teams.asStateFlow()
 
-    lateinit var cachedLivetalkTeams: LivetalkTeams
-        private set
-
     private val pollingControlLock = Mutex()
     private var pollingJob: Job? = null
 
@@ -207,32 +204,34 @@ class LivetalkChatViewModel(
     }
 
     private suspend fun getLikeCount(gameId: Long) {
-        if (!::cachedLivetalkTeams.isInitialized || cachedLivetalkTeams.myTeamType == null) {
-            return
-        }
+        val teams: LivetalkTeams? = teams.value
+        teams?.myTeamType ?: return
 
         gameRepository
             .getLikeCounts(gameId)
             .onSuccess { likeCountsResponse: LikeCountsResponse ->
-                likeCountStateHolder.updateLikeCount(cachedLivetalkTeams, likeCountsResponse)
+                likeCountStateHolder.updateLikeCount(teams, likeCountsResponse)
             }.onFailure { exception ->
                 Timber.w(exception, "응원수 로드 실패")
             }
     }
 
     private suspend fun sendLikeBatch(gameId: Long) {
+        val teams: LivetalkTeams? = teams.value
+        teams ?: return
+
         val countToSend: Int = likeCountStateHolder.getCountToSend()
         val request =
             LikeBatchRequest(
                 windowStartEpochSec = Clock.System.now().epochSeconds,
                 likeDelta =
                     LikeDeltaDto(
-                        teamCode = cachedLivetalkTeams.myTeam.name,
+                        teamCode = teams.myTeam.name,
                         delta = countToSend,
                     ),
             )
 
-        if (countToSend > 0 && ::cachedLivetalkTeams.isInitialized && cachedLivetalkTeams.myTeamType != null) {
+        if (countToSend > 0 && teams.myTeamType != null) {
             gameRepository
                 .addLikeBatches(gameId, request)
                 .onSuccess {
@@ -252,7 +251,7 @@ class LivetalkChatViewModel(
                 .onSuccess { livetalkTeams: LivetalkTeams ->
                     _teams.value = livetalkTeams
 
-                    cachedLivetalkTeams = livetalkTeams
+                    startPolling(gameId)
                 }.onFailure { exception ->
                     Timber.w(exception, "최초 팀 정보 가져오기 실패")
                 }

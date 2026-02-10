@@ -177,7 +177,6 @@ fun LivetalkChatScreen(
 
     LaunchedEffect(gameId) {
         viewModel.fetchTeams(gameId)
-        viewModel.startPolling(gameId)
     }
 
     DisposableEffect(gameId) {
