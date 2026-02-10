@@ -3,7 +3,6 @@ package com.yagubogu.ui.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import com.yagubogu.ui.login.auth.GoogleCredentialManager
 import com.yagubogu.ui.navigation.model.BottomNavKey
 import com.yagubogu.ui.navigation.model.NavigationState
 import com.yagubogu.ui.navigation.model.Navigator
@@ -19,13 +18,11 @@ import com.yagubogu.ui.navigation.model.rememberNavigationState
  * [mainNavigator]: 하단 탭 네비게이션
  * [settingNavigator]: 설정 화면 네비게이션
  *
- * @param googleCredentialManager 구글 인증 관리자
  * @param startRoute 앱 시작 시 표시할 화면
  * @param modifier 레이아웃 수정을 위한 [Modifier]
  */
 @Composable
 fun YaguBoguRoute(
-    googleCredentialManager: GoogleCredentialManager,
     startRoute: Route,
     modifier: Modifier = Modifier,
 ) {
@@ -56,7 +53,6 @@ fun YaguBoguRoute(
     val settingNavigator: Navigator = remember { Navigator(settingNavigationState) }
 
     NavigationRoot(
-        googleCredentialManager = googleCredentialManager,
         rootNavigator = rootNavigator,
         mainNavigator = mainNavigator,
         settingNavigator = settingNavigator,

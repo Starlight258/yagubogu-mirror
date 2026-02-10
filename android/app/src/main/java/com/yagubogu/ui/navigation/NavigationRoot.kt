@@ -11,7 +11,6 @@ import com.yagubogu.ui.badge.component.BadgeScreen
 import com.yagubogu.ui.favorite.FavoriteTeamScreen
 import com.yagubogu.ui.livetalk.chat.LivetalkChatScreen
 import com.yagubogu.ui.login.LoginScreen
-import com.yagubogu.ui.login.auth.GoogleCredentialManager
 import com.yagubogu.ui.main.MainScreen
 import com.yagubogu.ui.navigation.model.BottomNavKey
 import com.yagubogu.ui.navigation.model.Navigator
@@ -24,7 +23,6 @@ import com.yagubogu.ui.setting.SettingScreen
  *
  * 각 경로([Route])에 따른 화면 컴포저블을 매핑하여 화면 전환을 관리합니다.
  *
- * @param googleCredentialManager 구글 인증 관리자
  * @param rootNavigator 최상위 라우팅 관리 Navigator
  * @param mainNavigator 하단 탭 네비게이션 Navigator
  * @param settingNavigator 설정 화면 네비게이션 Navigator
@@ -32,7 +30,6 @@ import com.yagubogu.ui.setting.SettingScreen
  */
 @Composable
 fun NavigationRoot(
-    googleCredentialManager: GoogleCredentialManager,
     rootNavigator: Navigator,
     mainNavigator: Navigator,
     settingNavigator: Navigator,
@@ -42,7 +39,6 @@ fun NavigationRoot(
         entryProvider {
             entry<Route.Login> {
                 LoginScreen(
-                    googleCredentialManager = googleCredentialManager,
                     onSignIn = { rootNavigator.navigate(Route.Main) },
                     onSignUp = { rootNavigator.navigate(Route.FavoriteTeam) },
                 )
