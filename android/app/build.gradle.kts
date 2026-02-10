@@ -187,6 +187,7 @@ dependencies {
     // Logging
     implementation(libs.kermit)
     implementation(libs.kermit.crashlytics)
+    implementation(libs.kermit.koin)
 
     // Testing
     testImplementation(libs.junit)
