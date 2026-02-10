@@ -155,6 +155,7 @@ calendar-compose = { module = "com.kizitonwose.calendar:compose", version.ref = 
 kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 kermit-crashlytics = { module = "co.touchlab:kermit-crashlytics", version.ref = "kermit" }
 kermit-koin = { module = "co.touchlab:kermit-koin", version.ref = "kermit" }
+kermit-test = { module = "co.touchlab:kermit-test", version.ref = "kermit" }
 
 # Testing
 junit = { group = "junit", name = "junit", version.ref = "junit" }

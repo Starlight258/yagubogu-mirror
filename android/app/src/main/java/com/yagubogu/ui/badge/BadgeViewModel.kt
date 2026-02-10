@@ -28,7 +28,7 @@ class BadgeViewModel(
                     val badges: List<BadgeInfoUiModel> = badgeResponse.badges.map { it.toUiModel() }
                     badgeUiState.value = BadgeUiState.Success(representativeBadge, badges)
                 }.onFailure { exception: Throwable ->
-                    logger.w(exception) { "API 호출 실패" }
+                    logger.w(exception) { "fetchBadges API 호출 실패" }
                 }
         }
     }
@@ -41,7 +41,7 @@ class BadgeViewModel(
                 .onSuccess {
                     updateBadgeUiState(badgeId)
                 }.onFailure { exception: Throwable ->
-                    logger.w(exception) { "API 호출 실패" }
+                    logger.w(exception) { "updateRepresentativeBadge API 호출 실패" }
                 }
         }
     }
