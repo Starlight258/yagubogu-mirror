@@ -86,6 +86,7 @@ fun SettingMainScreen(
     viewModel: SettingViewModel = koinViewModel(),
 ) {
     val context: Context = LocalContext.current
+    val resources: Resources = LocalResources.current
     val scope: CoroutineScope = rememberCoroutineScope()
     val memberInfoItem: State<MemberInfoItem> =
         viewModel.myMemberInfoItem.collectAsStateWithLifecycle(MemberInfoItem())
@@ -104,7 +105,6 @@ fun SettingMainScreen(
         viewModel.fetchMemberInfo()
     }
 
-    val resources: Resources = LocalResources.current
     LaunchedEffect(settingEvent) {
         if (settingEvent is SettingEvent.NicknameEdit) {
             val message =

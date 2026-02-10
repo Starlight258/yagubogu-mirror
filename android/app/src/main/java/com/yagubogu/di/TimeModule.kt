@@ -19,7 +19,9 @@ val timeModule =
                         val localDateTime = LocalDateTime.parse(BuildConfig.DEBUG_FIXED_DATE)
                         val fixedInstant: Instant = localDateTime.toInstant(kstZone)
 
-                        FixedClock(fixedInstant)
+                        object : Clock {
+                            override fun now(): Instant = fixedInstant
+                        }
                     } else {
                         Clock.System
                     }
@@ -31,9 +33,3 @@ val timeModule =
             clock
         }
     }
-
-private class FixedClock(
-    private val fixedInstant: Instant,
-) : Clock {
-    override fun now(): Instant = fixedInstant
-}
