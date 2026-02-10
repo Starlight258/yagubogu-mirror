@@ -9,6 +9,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import com.yagubogu.ui.badge.component.BadgeScreen
 import com.yagubogu.ui.favorite.FavoriteTeamScreen
+import com.yagubogu.ui.livetalk.chat.LivetalkChatScreen
 import com.yagubogu.ui.login.LoginScreen
 import com.yagubogu.ui.login.auth.GoogleCredentialManager
 import com.yagubogu.ui.main.MainScreen
@@ -21,7 +22,7 @@ import com.yagubogu.ui.setting.SettingScreen
 /**
  * 앱의 최상위 네비게이션 구조를 정의하는 루트 컴포저블.
  *
- * 각 경로([com.yagubogu.ui.navigation.model.Route])에 따른 화면 컴포저블을 매핑하여 화면 전환을 관리합니다.
+ * 각 경로([Route])에 따른 화면 컴포저블을 매핑하여 화면 전환을 관리합니다.
  *
  * @param googleCredentialManager 구글 인증 관리자
  * @param rootNavigator 최상위 라우팅 관리 Navigator
@@ -51,6 +52,9 @@ fun NavigationRoot(
                     navigator = mainNavigator,
                     onSettingsClick = { rootNavigator.navigate(Route.Setting) },
                     onBadgeClick = { rootNavigator.navigate(Route.Badge) },
+                    onLivetalkItemClick = { gameId: Long, isVerified: Boolean ->
+                        rootNavigator.navigate(Route.LivetalkChat(gameId, isVerified))
+                    },
                 )
             }
             entry<Route.Setting> {
@@ -81,6 +85,13 @@ fun NavigationRoot(
             }
             entry<Route.Badge> {
                 BadgeScreen(
+                    onBackClick = { rootNavigator.goBack() },
+                )
+            }
+            entry<Route.LivetalkChat> { key: Route.LivetalkChat ->
+                LivetalkChatScreen(
+                    gameId = key.gameId,
+                    isVerified = key.isVerified,
                     onBackClick = { rootNavigator.goBack() },
                 )
             }

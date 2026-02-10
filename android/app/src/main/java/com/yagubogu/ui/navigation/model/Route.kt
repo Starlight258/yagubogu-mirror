@@ -18,4 +18,10 @@ sealed interface Route : NavKey {
 
     @Serializable
     data object Badge : Route
+
+    @Serializable
+    data class LivetalkChat(
+        val gameId: Long,
+        val isVerified: Boolean,
+    ) : Route
 }

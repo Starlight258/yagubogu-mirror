@@ -13,6 +13,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -53,14 +54,17 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDateTime
+import org.koin.compose.viewmodel.koinViewModel
 import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LivetalkChatScreen(
-    viewModel: LivetalkChatViewModel,
+    gameId: Long,
+    isVerified: Boolean,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: LivetalkChatViewModel = koinViewModel(),
 ) {
     val messageStateHolder = viewModel.messageStateHolder
     val likeCountStateHolder = viewModel.likeCountStateHolder
@@ -124,7 +128,7 @@ fun LivetalkChatScreen(
                     LivetalkChatScreenStates.EmojiLayer(
                         emojiQueue = emojiQueue.toList(),
                     ),
-                isVerified = messageStateHolder.isVerified,
+                isVerified = isVerified,
             )
         }
     val actions =
@@ -134,20 +138,20 @@ fun LivetalkChatScreen(
                 chatInputBar =
                     LivetalkChatScreenActions.ChatInputBar(
                         onMessageTextChange = messageStateHolder::updateMessageText,
-                        onSendMessage = viewModel::sendMessage,
+                        onSendMessage = { viewModel.sendMessage(gameId) },
                     ),
                 chatBubbleItems =
                     LivetalkChatScreenActions.ChatBubbleItems(
                         onRequestDelete = messageStateHolder::requestDelete,
                         onRequestReport = messageStateHolder::requestReport,
                         onFetchMemberProfile = viewModel::fetchMemberProfile,
-                        onFetchBeforeTalks = viewModel::fetchBeforeTalks,
+                        onFetchBeforeTalks = { viewModel.fetchBeforeTalks(gameId) },
                     ),
                 chatCheering =
                     LivetalkChatScreenActions.ChatCheering(
                         onCheeringClick = { emoji ->
                             generateEmojiAnimation(emoji)
-                            viewModel.addLikeToBatch()
+                            viewModel.addLikeToBatch(gameId)
                         },
                         onEmojiButtonPositioned = { pos -> emojiButtonPos = pos },
                     ),
@@ -157,7 +161,12 @@ fun LivetalkChatScreen(
                     ),
                 dialog =
                     LivetalkChatScreenActions.Dialog(
-                        onDeleteMessage = viewModel::deleteMessage,
+                        onDeleteMessage = { chatId: Long ->
+                            viewModel.deleteMessage(
+                                gameId = gameId,
+                                chatId = chatId,
+                            )
+                        },
                         onReportMessage = viewModel::reportMessage,
                         onDismissProfile = viewModel::dismissProfile,
                         onDismissDeleteDialog = messageStateHolder::dismissDeleteDialog,
@@ -165,6 +174,17 @@ fun LivetalkChatScreen(
                     ),
             )
         }
+
+    LaunchedEffect(gameId) {
+        viewModel.fetchTeams(gameId)
+        viewModel.startPolling(gameId)
+    }
+
+    DisposableEffect(gameId) {
+        onDispose {
+            viewModel.clear(gameId)
+        }
+    }
 
     // 내 팀 (카운트 증가 + 이모지 애니메이션)
     LaunchedEffect(Unit) {
