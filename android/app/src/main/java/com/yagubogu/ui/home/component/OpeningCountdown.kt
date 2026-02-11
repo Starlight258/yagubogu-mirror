@@ -14,11 +14,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.LongState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.dropShadow
@@ -47,16 +47,15 @@ private const val SECONDS_PER_DAY = 24L * 60L * 60L
 
 @Composable
 fun OpeningCountdown(
-    leftTime: Long,
+    initialLeftTime: Long,
     modifier: Modifier = Modifier,
 ) {
-    var leftTime by remember { mutableLongStateOf(leftTime) }
-    val days: Long by remember { derivedStateOf { leftTime / SECONDS_PER_DAY } }
+    val leftTimeState = remember { mutableLongStateOf(initialLeftTime) }
 
     LaunchedEffect(Unit) {
-        while (leftTime > 0L) {
+        while (leftTimeState.longValue > 0L) {
             delay(1000)
-            leftTime--
+            leftTimeState.longValue--
         }
     }
 
@@ -82,30 +81,38 @@ fun OpeningCountdown(
             )
         }
         Spacer(modifier = Modifier.height(24.dp))
-        Text(
-            text =
-                if (days == 0L) {
-                    stringResource(R.string.d_day)
-                } else {
-                    stringResource(R.string.d_day_with_days, days)
-                },
-            style =
-                EsamanruBold.copy(
-                    fontSize = 48.dpToSp,
-                    color = Gray700,
-                    shadow = cssShadow(color = Dimming025, offsetY = 4.dp, blur = 4.dp),
-                ),
-        )
+        DaysText(leftTimeState = leftTimeState)
         Spacer(modifier = Modifier.height(16.dp))
-        TimeCountdowns(leftTime = leftTime)
+        TimeCountdowns(leftTimeState = leftTimeState)
     }
 }
 
 @Composable
-fun TimeCountdowns(
-    leftTime: Long,
+private fun DaysText(leftTimeState: LongState) {
+    val days: Long by remember { derivedStateOf { leftTimeState.longValue / SECONDS_PER_DAY } }
+
+    Text(
+        text =
+            if (days == 0L) {
+                stringResource(R.string.d_day)
+            } else {
+                stringResource(R.string.d_day_with_days, days)
+            },
+        style =
+            EsamanruBold.copy(
+                fontSize = 48.dpToSp,
+                color = Gray700,
+                shadow = cssShadow(color = Dimming025, offsetY = 4.dp, blur = 4.dp),
+            ),
+    )
+}
+
+@Composable
+private fun TimeCountdowns(
+    leftTimeState: LongState,
     modifier: Modifier = Modifier,
 ) {
+    val leftTime = leftTimeState.longValue
     val hours: Long = (leftTime % SECONDS_PER_DAY) / SECONDS_PER_HOUR
     val minutes: Long = (leftTime % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE
     val seconds: Long = leftTime % SECONDS_PER_MINUTE
@@ -206,7 +213,7 @@ private fun ColonDivider(modifier: Modifier = Modifier) {
 @Preview
 @Composable
 private fun OpeningCountdownPreview() {
-    OpeningCountdown(leftTime = 1_000_000L)
+    OpeningCountdown(initialLeftTime = 1_000_000L)
 }
 
 @Preview(showBackground = true)
@@ -229,6 +236,6 @@ private fun TimeCountdownPreview() {
 @Composable
 private fun TimeCountdownsPreview() {
     Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-        TimeCountdowns(leftTime = 10_000L)
+        TimeCountdowns(leftTimeState = remember { mutableLongStateOf(10_000L) })
     }
 }

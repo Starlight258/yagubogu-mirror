@@ -193,7 +193,7 @@ private fun HomeScreen(
         MemberStats(uiModel = memberStatsUiModel)
 
         if (leftTimeUntilOpening > 0L) {
-            OpeningCountdown(leftTime = leftTimeUntilOpening)
+            OpeningCountdown(initialLeftTime = leftTimeUntilOpening)
         }
 
         if (stadiumStatsUiModel.stadiumFanRates.isNotEmpty()) {
