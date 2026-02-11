@@ -30,10 +30,11 @@ fun cssShadow(
     return with(density) {
         Shadow(
             color = color,
-            offset = Offset(
-                x = offsetX.toPx(),
-                y = offsetY.toPx(),
-            ),
+            offset =
+                Offset(
+                    x = offsetX.toPx(),
+                    y = offsetY.toPx(),
+                ),
             blurRadius = blur.toPx() / 2f,
         )
     }

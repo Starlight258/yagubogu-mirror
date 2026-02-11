@@ -38,6 +38,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.analytics.analytics
 import com.yagubogu.R
 import com.yagubogu.ui.home.component.CheckInButton
+import com.yagubogu.ui.home.component.OpeningCountdown
 import com.yagubogu.ui.home.component.MemberStats
 import com.yagubogu.ui.home.component.STADIUM_STATS_UI_MODEL
 import com.yagubogu.ui.home.component.StadiumFanRate
@@ -51,6 +52,7 @@ import com.yagubogu.ui.home.model.StadiumStatsUiModel
 import com.yagubogu.ui.home.model.VictoryFairyRanking
 import com.yagubogu.ui.theme.Gray050
 import com.yagubogu.ui.util.BackPressHandler
+import io.github.ismoy.imagepickerkmp.domain.utils.openAppSettings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -130,6 +132,7 @@ fun HomeScreen(
         onStadiumStatsRefresh = viewModel::refreshStadiumStats,
         victoryFairyRanking = victoryFairyRanking,
         onVictoryFairyRankingClick = viewModel::fetchMemberProfile,
+        leftTimeUntilOpening = viewModel.leftTimeUntilOpening,
         modifier = modifier,
         scrollToTopEvent = scrollToTopEvent,
     )
@@ -158,6 +161,7 @@ private fun HomeScreen(
     onStadiumStatsRefresh: () -> Unit,
     victoryFairyRanking: VictoryFairyRanking,
     onVictoryFairyRankingClick: (Long) -> Unit,
+    leftTimeUntilOpening: Long,
     modifier: Modifier = Modifier,
     scrollToTopEvent: SharedFlow<Unit> = MutableSharedFlow(),
 ) {
@@ -187,6 +191,10 @@ private fun HomeScreen(
             modifier = Modifier.fillMaxWidth(),
         )
         MemberStats(uiModel = memberStatsUiModel)
+
+        if (leftTimeUntilOpening > 0L) {
+            OpeningCountdown(leftTime = leftTimeUntilOpening)
+        }
 
         if (stadiumStatsUiModel.stadiumFanRates.isNotEmpty()) {
             StadiumFanRate(
@@ -261,5 +269,6 @@ private fun HomeScreenPreview() {
         onStadiumStatsRefresh = {},
         victoryFairyRanking = VICTORY_FAIRY_RANKING,
         onVictoryFairyRankingClick = {},
+        leftTimeUntilOpening = 1_000_000L,
     )
 }
