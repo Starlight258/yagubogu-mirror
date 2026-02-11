@@ -17,6 +17,7 @@ import com.yagubogu.ui.home.model.CheckInSseEvent
 import com.yagubogu.ui.home.model.CheckInUiEvent
 import com.yagubogu.ui.home.model.HomeDialogEvent
 import com.yagubogu.ui.home.model.MemberStatsUiModel
+import com.yagubogu.ui.home.model.OpeningDate
 import com.yagubogu.ui.home.model.StadiumFanRateItem
 import com.yagubogu.ui.home.model.StadiumStatsUiModel
 import com.yagubogu.ui.home.model.StadiumWithGame
@@ -26,7 +27,6 @@ import com.yagubogu.ui.mapper.toDomain
 import com.yagubogu.ui.mapper.toUiModel
 import com.yagubogu.ui.util.mapList
 import com.yagubogu.ui.util.now
-import com.yagubogu.ui.util.toInstant
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
@@ -47,14 +47,11 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
-import kotlinx.datetime.until
 import timber.log.Timber
 import kotlin.math.roundToInt
 import kotlin.time.Clock
-import kotlin.time.Instant
 
 class HomeViewModel(
     private val memberRepository: MemberRepository,
@@ -126,17 +123,7 @@ class HomeViewModel(
             )
 
     val leftTimeUntilOpening: Long
-        get() {
-            val year: Int = LocalDate.now(clock).year
-
-            return when (year) {
-                2026 -> {
-                    val openingInstant: Instant = LocalDate(2026, 3, 28).toInstant()
-                    clock.now().until(other = openingInstant, unit = DateTimeUnit.SECOND)
-                }
-                else -> 0L
-            }
-        }
+        get() = OpeningDate.getLeftTimeUntilOpening(clock)
 
     fun fetchAll() {
         fetchMemberStats()
