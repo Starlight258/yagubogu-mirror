@@ -21,7 +21,8 @@ enum class OpeningDate(
         fun getLeftTimeUntilOpening(clock: Clock): Long {
             val currentYear: Int = LocalDate.now(clock).year
             val openingDate: OpeningDate = fromYear(currentYear) ?: return 0L
-            return clock.now().until(other = openingDate.instant, unit = DateTimeUnit.SECOND)
+            val time = clock.now().until(other = openingDate.instant, unit = DateTimeUnit.SECOND)
+            return if (time < 0L) 0L else time
         }
     }
 }
