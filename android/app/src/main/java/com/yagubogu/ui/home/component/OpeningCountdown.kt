@@ -41,16 +41,17 @@ import com.yagubogu.ui.theme.dpToSp
 import com.yagubogu.ui.util.cssShadow
 import kotlinx.coroutines.delay
 
+private const val SECONDS_PER_MINUTE = 60L
+private const val SECONDS_PER_HOUR = 60L * 60L
+private const val SECONDS_PER_DAY = 24L * 60L * 60L
+
 @Composable
 fun OpeningCountdown(
     leftTime: Long,
     modifier: Modifier = Modifier,
 ) {
     var leftTime by remember { mutableLongStateOf(leftTime) }
-    val days: Long by remember { derivedStateOf { leftTime / (60 * 60 * 24) } }
-    val hours: Long by remember { derivedStateOf { (leftTime % (60 * 60 * 24)) / (60 * 60) } }
-    val minutes: Long by remember { derivedStateOf { (leftTime % (60 * 60)) / 60 } }
-    val seconds: Long by remember { derivedStateOf { leftTime % 60 } }
+    val days: Long by remember { derivedStateOf { leftTime / SECONDS_PER_DAY } }
 
     LaunchedEffect(Unit) {
         while (leftTime > 0L) {
@@ -96,17 +97,19 @@ fun OpeningCountdown(
                 ),
         )
         Spacer(modifier = Modifier.height(16.dp))
-        TimeCountdowns(hours = hours, minutes = minutes, seconds = seconds)
+        TimeCountdowns(leftTime = leftTime)
     }
 }
 
 @Composable
 fun TimeCountdowns(
-    hours: Long,
-    minutes: Long,
-    seconds: Long,
+    leftTime: Long,
     modifier: Modifier = Modifier,
 ) {
+    val hours: Long = (leftTime % SECONDS_PER_DAY) / SECONDS_PER_HOUR
+    val minutes: Long = (leftTime % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE
+    val seconds: Long = leftTime % SECONDS_PER_MINUTE
+
     Row(modifier = modifier) {
         TimeCountdown(
             tens = (hours / 10).toString(),
@@ -226,6 +229,6 @@ private fun TimeCountdownPreview() {
 @Composable
 private fun TimeCountdownsPreview() {
     Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-        TimeCountdowns(hours = 12, minutes = 34, seconds = 56)
+        TimeCountdowns(leftTime = 10_000L)
     }
 }
