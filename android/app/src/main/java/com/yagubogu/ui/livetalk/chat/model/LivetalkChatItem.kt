@@ -1,6 +1,6 @@
 package com.yagubogu.ui.livetalk.chat.model
 
-import java.time.LocalDateTime
+import kotlinx.datetime.LocalDateTime
 
 data class LivetalkChatItem(
     val chatId: Long,

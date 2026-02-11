@@ -37,7 +37,10 @@ import com.yagubogu.ui.theme.PretendardBold20
 import com.yagubogu.ui.theme.PretendardSemiBold
 import com.yagubogu.ui.theme.Primary050
 import com.yagubogu.ui.theme.Primary500
-import java.time.YearMonth
+import com.yagubogu.ui.util.minusYears
+import com.yagubogu.ui.util.now
+import kotlinx.datetime.YearMonth
+import kotlinx.datetime.number
 
 private const val FIRST_MONTH = 1
 private const val LAST_MONTH = 12
@@ -52,7 +55,7 @@ fun YearMonthPickerDialog(
     modifier: Modifier = Modifier,
 ) {
     var year: Int by rememberSaveable { mutableIntStateOf(selectedMonth.year) }
-    var month: Int by rememberSaveable { mutableIntStateOf(selectedMonth.monthValue) }
+    var month: Int by rememberSaveable { mutableIntStateOf(selectedMonth.month.number) }
 
     val years: List<Int> =
         remember(startMonth, endMonth) {
@@ -61,8 +64,8 @@ fun YearMonthPickerDialog(
     val months: List<Int> =
         remember(year, startMonth, endMonth) {
             when (year) {
-                startMonth.year -> (startMonth.monthValue..LAST_MONTH)
-                endMonth.year -> (FIRST_MONTH..endMonth.monthValue)
+                startMonth.year -> (startMonth.month.number..LAST_MONTH)
+                endMonth.year -> (FIRST_MONTH..endMonth.month.number)
                 else -> (FIRST_MONTH..LAST_MONTH)
             }.toList()
         }
@@ -150,7 +153,7 @@ fun YearMonthPickerDialog(
                 }
 
                 Button(
-                    onClick = { onConfirm(YearMonth.of(year, month)) },
+                    onClick = { onConfirm(YearMonth(year, month)) },
                     modifier = Modifier.weight(1f),
                     colors =
                         ButtonDefaults.buttonColors(

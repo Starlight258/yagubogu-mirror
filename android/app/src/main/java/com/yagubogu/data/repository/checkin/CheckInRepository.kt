@@ -3,7 +3,7 @@ package com.yagubogu.data.repository.checkin
 import com.yagubogu.data.dto.response.checkin.CheckInGameDto
 import com.yagubogu.data.dto.response.checkin.FanRateByGameDto
 import com.yagubogu.data.dto.response.checkin.StadiumCheckInCountDto
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 
 interface CheckInRepository {
     suspend fun addCheckIn(gameId: Long): Result<Unit>
