@@ -3,7 +3,7 @@ package com.yagubogu.data.datasource.stadium
 import com.yagubogu.data.dto.response.stadium.StadiumsWithGamesResponse
 import com.yagubogu.data.service.StadiumApiService
 import com.yagubogu.data.util.safeApiCall
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 
 class StadiumRemoteDataSource(
     private val stadiumApiService: StadiumApiService,

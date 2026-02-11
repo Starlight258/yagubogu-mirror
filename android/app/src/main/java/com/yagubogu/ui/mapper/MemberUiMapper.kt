@@ -12,13 +12,12 @@ import com.yagubogu.ui.common.model.MemberProfile
 import com.yagubogu.ui.setting.model.MemberInfoItem
 import com.yagubogu.ui.setting.model.PresignedUrlCompleteItem
 import com.yagubogu.ui.setting.model.PresignedUrlItem
-import kotlinx.datetime.toJavaLocalDate
-import java.time.LocalDate
-import java.time.temporal.ChronoUnit
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.daysUntil
 
 fun MemberInfoResponse.toUiModel(today: LocalDate): MemberInfoItem {
     val createdDate = LocalDate.parse(createdAt)
-    val period = ChronoUnit.DAYS.between(createdDate, today).toInt() + 1
+    val period: Int = createdDate.daysUntil(today) + 1
 
     return MemberInfoItem(
         nickName = nickname,
@@ -50,7 +49,7 @@ fun BadgeDto.toUiModel(): BadgeInfoUiModel {
         badge = badge,
         description = description,
         achievedRate = achievedRate.toInt(),
-        achievedAt = achievedAt?.date?.toJavaLocalDate(),
+        achievedAt = achievedAt?.date,
         progressRate = progressRate,
     )
 }
@@ -69,7 +68,7 @@ fun PresignedUrlCompleteResponse.toUiModel(): PresignedUrlCompleteItem =
 fun MemberProfileResponse.toUiModel(): MemberProfile =
     MemberProfile(
         nickname = nickname,
-        enterDate = enterDate.toJavaLocalDate(),
+        enterDate = enterDate,
         profileImageUrl = profileImageUrl,
         favoriteTeam = favoriteTeam,
         representativeBadgeImageUrl = representativeBadge?.imageUrl,
@@ -81,5 +80,5 @@ fun MemberProfileResponse.toUiModel(): MemberProfile =
         winCounts = checkIn.winCounts,
         drawCounts = checkIn.drawCounts,
         loseCounts = checkIn.loseCounts,
-        recentCheckInDate = checkIn.recentCheckInDate?.toJavaLocalDate(),
+        recentCheckInDate = checkIn.recentCheckInDate,
     )

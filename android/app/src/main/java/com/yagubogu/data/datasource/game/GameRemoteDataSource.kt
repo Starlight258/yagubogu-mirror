@@ -5,7 +5,7 @@ import com.yagubogu.data.dto.response.game.GameResponse
 import com.yagubogu.data.dto.response.game.LikeCountsResponse
 import com.yagubogu.data.service.GameApiService
 import com.yagubogu.data.util.safeApiCall
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 
 class GameRemoteDataSource(
     private val gameApiService: GameApiService,

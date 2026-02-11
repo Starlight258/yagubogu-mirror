@@ -1,6 +1,7 @@
 package com.yagubogu.ui.home.model
 
-import java.time.LocalTime
+import com.yagubogu.ui.util.now
+import kotlinx.datetime.LocalTime
 
 data class StadiumStatsUiModel(
     val stadiumFanRates: List<StadiumFanRateItem> = emptyList(),

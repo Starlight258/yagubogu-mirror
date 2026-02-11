@@ -5,7 +5,7 @@ import com.yagubogu.data.dto.request.game.LikeBatchRequest
 import com.yagubogu.data.dto.response.game.GameResponse
 import com.yagubogu.data.dto.response.game.GameWithCheckInDto
 import com.yagubogu.data.dto.response.game.LikeCountsResponse
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 
 class GameDefaultRepository(
     private val gameDataSource: GameDataSource,

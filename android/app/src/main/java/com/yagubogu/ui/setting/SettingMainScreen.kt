@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.net.Uri
 import androidx.activity.ComponentActivity
@@ -32,6 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -54,8 +56,8 @@ import com.yagubogu.ui.theme.PretendardMedium12
 import com.yagubogu.ui.theme.PretendardRegular12
 import com.yagubogu.ui.theme.PretendardSemiBold
 import com.yagubogu.ui.theme.White
-import com.yagubogu.ui.util.DateFormatter
 import com.yagubogu.ui.util.showToast
+import com.yagubogu.ui.util.yyyyMMddFormatter
 import id.zelory.compressor.Compressor
 import id.zelory.compressor.constraint.format
 import id.zelory.compressor.constraint.quality
@@ -69,6 +71,7 @@ import io.github.ismoy.imagepickerkmp.domain.models.MimeType.Companion.ALL_SUPPO
 import io.github.ismoy.imagepickerkmp.presentation.ui.components.GalleryPickerLauncher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.datetime.format
 import org.koin.compose.viewmodel.koinViewModel
 import timber.log.Timber
 import java.io.File
@@ -83,6 +86,7 @@ fun SettingMainScreen(
     viewModel: SettingViewModel = koinViewModel(),
 ) {
     val context: Context = LocalContext.current
+    val resources: Resources = LocalResources.current
     val scope: CoroutineScope = rememberCoroutineScope()
     val memberInfoItem: State<MemberInfoItem> =
         viewModel.myMemberInfoItem.collectAsStateWithLifecycle(MemberInfoItem())
@@ -104,7 +108,7 @@ fun SettingMainScreen(
     LaunchedEffect(settingEvent) {
         if (settingEvent is SettingEvent.NicknameEdit) {
             val message =
-                context.getString(
+                resources.getString(
                     R.string.setting_edited_nickname_alert,
                     (settingEvent as SettingEvent.NicknameEdit).newNickname,
                 )
@@ -308,7 +312,7 @@ private fun MyProfile(
             text =
                 stringResource(
                     R.string.setting_main_sign_up_date,
-                    memberInfoItem.createdAt.format(DateFormatter.yyyyMMdd),
+                    memberInfoItem.createdAt.format(yyyyMMddFormatter),
                 ),
             style = PretendardRegular12,
             color = Gray500,

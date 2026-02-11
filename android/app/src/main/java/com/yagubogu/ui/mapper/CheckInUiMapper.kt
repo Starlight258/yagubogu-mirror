@@ -14,7 +14,7 @@ import com.yagubogu.ui.attendance.model.GameTeam
 import com.yagubogu.ui.home.model.StadiumFanRateItem
 import com.yagubogu.ui.home.model.TeamFanRate
 import com.yagubogu.ui.stats.detail.model.StadiumVisitCount
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 
 fun FanRateByGameDto.toUiModel(): StadiumFanRateItem =
     StadiumFanRateItem(

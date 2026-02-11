@@ -35,9 +35,10 @@ import com.yagubogu.ui.theme.PretendardMedium12
 import com.yagubogu.ui.theme.PretendardRegular12
 import com.yagubogu.ui.theme.PretendardRegular16
 import com.yagubogu.ui.theme.White
-import com.yagubogu.ui.util.formatTimestamp
+import com.yagubogu.ui.util.formatToAmPm
 import com.yagubogu.ui.util.noRippleClickable
-import java.time.LocalDateTime
+import com.yagubogu.ui.util.now
+import kotlinx.datetime.LocalDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -108,7 +109,11 @@ fun LivetalkOtherChatBubble(
         ) {
             // 시간
             Text(
-                text = livetalkChatItem.timestamp.formatTimestamp(),
+                text =
+                    livetalkChatItem.timestamp.formatToAmPm(
+                        amText = stringResource(id = R.string.time_am),
+                        pmText = stringResource(id = R.string.time_pm),
+                    ),
                 style = PretendardRegular12,
                 color = Gray500,
             )
