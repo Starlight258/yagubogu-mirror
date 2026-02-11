@@ -38,8 +38,8 @@ import com.google.firebase.Firebase
 import com.google.firebase.analytics.analytics
 import com.yagubogu.R
 import com.yagubogu.ui.home.component.CheckInButton
-import com.yagubogu.ui.home.component.OpeningCountdown
 import com.yagubogu.ui.home.component.MemberStats
+import com.yagubogu.ui.home.component.OpeningCountdown
 import com.yagubogu.ui.home.component.STADIUM_STATS_UI_MODEL
 import com.yagubogu.ui.home.component.StadiumFanRate
 import com.yagubogu.ui.home.component.VICTORY_FAIRY_RANKING

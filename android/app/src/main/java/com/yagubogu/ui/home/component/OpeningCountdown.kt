@@ -23,9 +23,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.shadow.Shadow
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import com.yagubogu.R
 import com.yagubogu.ui.theme.Dimming025
 import com.yagubogu.ui.theme.EsamanruBold
 import com.yagubogu.ui.theme.EsamanruMedium
@@ -72,11 +74,20 @@ fun OpeningCountdown(
                         .background(color = Primary100)
                         .size(197.dp, 14.dp),
             )
-            Text(text = "개막까지 남은 시간", style = EsamanruMedium, fontSize = 24.dpToSp)
+            Text(
+                text = stringResource(R.string.opening_countdown_left_time),
+                style = EsamanruMedium,
+                fontSize = 24.dpToSp,
+            )
         }
         Spacer(modifier = Modifier.height(24.dp))
         Text(
-            text = "D-$days",
+            text =
+                if (days == 0L) {
+                    stringResource(R.string.d_day)
+                } else {
+                    stringResource(R.string.d_day_with_days, days)
+                },
             style =
                 EsamanruBold.copy(
                     fontSize = 48.dpToSp,

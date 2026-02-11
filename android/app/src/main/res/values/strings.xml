@@ -17,6 +17,9 @@
     <string name="all_month">%d월</string>
     <string name="all_year_month">%d년 %d월</string>
 
+    <string name="d_day">D-DAY</string>
+    <string name="d_day_with_days">D-%d</string>
+
     <string name="day_monday">월</string>
     <string name="day_tuesday">화</string>
     <string name="day_wednesday">수</string>
@@ -221,4 +224,5 @@
     <string name="profile_victory_fairy_ranking_emoji">🎖️</string>
     <string name="profile_victory_fairy_score_emoji">🧚</string>
 
+    <string name="opening_countdown_left_time">개막까지 남은 시간</string>
 </resources>
