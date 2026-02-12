@@ -88,12 +88,7 @@ private fun DaysText(leftTimeState: State<Long>) {
     val days: Long by remember { derivedStateOf { leftTimeState.value / SECONDS_PER_DAY } }
 
     Text(
-        text =
-            if (days == 0L) {
-                stringResource(R.string.d_day)
-            } else {
-                stringResource(R.string.d_day_with_days, days)
-            },
+        text = stringResource(R.string.d_day_with_days, days),
         style =
             EsamanruBold.copy(
                 fontSize = 48.dpToSp,
