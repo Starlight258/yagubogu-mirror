@@ -31,6 +31,7 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -122,8 +123,12 @@ class HomeViewModel(
                 initialValue = StadiumStatsUiModel(),
             )
 
-    val leftTimeUntilOpening: Long
-        get() = OpeningDate.getLeftTimeUntilOpening(clock)
+    private val _leftTimeUntilOpening = MutableStateFlow(OpeningDate.getLeftTimeUntilOpening(clock))
+    val leftTimeUntilOpening: StateFlow<Long> = _leftTimeUntilOpening.asStateFlow()
+
+    init {
+        startOpeningCountdown()
+    }
 
     fun fetchAll() {
         fetchMemberStats()
@@ -338,6 +343,15 @@ class HomeViewModel(
         cachedStadiumFanRateItems.keys.retainAll(validKeys)
         newItems.forEach { item: StadiumFanRateItem ->
             cachedStadiumFanRateItems[item.gameId] = item
+        }
+    }
+
+    private fun startOpeningCountdown() {
+        viewModelScope.launch {
+            while (_leftTimeUntilOpening.value > 0L) {
+                delay(1000L)
+                _leftTimeUntilOpening.value = OpeningDate.getLeftTimeUntilOpening(clock)
+            }
         }
     }
 

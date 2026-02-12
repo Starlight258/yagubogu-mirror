@@ -13,11 +13,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.LongState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,6 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yagubogu.R
 import com.yagubogu.ui.theme.Dimming025
 import com.yagubogu.ui.theme.EsamanruBold
@@ -39,7 +38,8 @@ import com.yagubogu.ui.theme.Primary700
 import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.theme.dpToSp
 import com.yagubogu.ui.util.cssShadow
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 private const val SECONDS_PER_MINUTE = 60L
 private const val SECONDS_PER_HOUR = 60L * 60L
@@ -47,17 +47,13 @@ private const val SECONDS_PER_DAY = 24L * 60L * 60L
 
 @Composable
 fun OpeningCountdown(
-    initialLeftTime: Long,
+    leftTimeFlow: StateFlow<Long>,
     modifier: Modifier = Modifier,
 ) {
-    val leftTimeState = remember { mutableLongStateOf(initialLeftTime) }
+    val leftTimeState: State<Long> = leftTimeFlow.collectAsStateWithLifecycle()
+    val isVisible: Boolean by remember { derivedStateOf { leftTimeState.value > 0L } }
 
-    LaunchedEffect(Unit) {
-        while (leftTimeState.longValue > 0L) {
-            delay(1000)
-            leftTimeState.longValue--
-        }
-    }
+    if (!isVisible) return
 
     Column(
         modifier =
@@ -88,8 +84,8 @@ fun OpeningCountdown(
 }
 
 @Composable
-private fun DaysText(leftTimeState: LongState) {
-    val days: Long by remember { derivedStateOf { leftTimeState.longValue / SECONDS_PER_DAY } }
+private fun DaysText(leftTimeState: State<Long>) {
+    val days: Long by remember { derivedStateOf { leftTimeState.value / SECONDS_PER_DAY } }
 
     Text(
         text =
@@ -109,10 +105,11 @@ private fun DaysText(leftTimeState: LongState) {
 
 @Composable
 private fun TimeCountdowns(
-    leftTimeState: LongState,
+    leftTimeState: State<Long>,
     modifier: Modifier = Modifier,
 ) {
-    val leftTime = leftTimeState.longValue
+    val leftTime: Long by leftTimeState
+
     val hours: Long = (leftTime % SECONDS_PER_DAY) / SECONDS_PER_HOUR
     val minutes: Long = (leftTime % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE
     val seconds: Long = leftTime % SECONDS_PER_MINUTE
@@ -213,7 +210,7 @@ private fun ColonDivider(modifier: Modifier = Modifier) {
 @Preview
 @Composable
 private fun OpeningCountdownPreview() {
-    OpeningCountdown(initialLeftTime = 1_000_000L)
+    OpeningCountdown(leftTimeFlow = MutableStateFlow(1_000_000L))
 }
 
 @Preview(showBackground = true)
@@ -229,13 +226,5 @@ private fun DigitBoxPreview() {
 private fun TimeCountdownPreview() {
     Box(modifier = Modifier.size(100.dp), contentAlignment = Alignment.Center) {
         TimeCountdown("5", "9", description = "MINUTES")
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun TimeCountdownsPreview() {
-    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-        TimeCountdowns(leftTimeState = remember { mutableLongStateOf(10_000L) })
     }
 }

@@ -55,7 +55,9 @@ import com.yagubogu.ui.util.BackPressHandler
 import io.github.ismoy.imagepickerkmp.domain.utils.openAppSettings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -71,6 +73,7 @@ fun HomeScreen(
     val stadiumStatsUiModel: StadiumStatsUiModel by viewModel.stadiumStatsUiModel.collectAsStateWithLifecycle()
     val isStadiumStatsExpanded: Boolean by viewModel.isStadiumStatsExpanded.collectAsStateWithLifecycle()
     val victoryFairyRanking: VictoryFairyRanking by viewModel.victoryFairyRanking.collectAsStateWithLifecycle()
+    val leftTimeUntilOpening: StateFlow<Long> = viewModel.leftTimeUntilOpening
     var isPermissionDenied: Boolean by remember { mutableStateOf(false) }
 
     val context: Context = LocalContext.current
@@ -132,7 +135,7 @@ fun HomeScreen(
         onStadiumStatsRefresh = viewModel::refreshStadiumStats,
         victoryFairyRanking = victoryFairyRanking,
         onVictoryFairyRankingClick = viewModel::fetchMemberProfile,
-        leftTimeUntilOpening = viewModel.leftTimeUntilOpening,
+        leftTimeUntilOpening = leftTimeUntilOpening,
         modifier = modifier,
         scrollToTopEvent = scrollToTopEvent,
     )
@@ -161,7 +164,7 @@ private fun HomeScreen(
     onStadiumStatsRefresh: () -> Unit,
     victoryFairyRanking: VictoryFairyRanking,
     onVictoryFairyRankingClick: (Long) -> Unit,
-    leftTimeUntilOpening: Long,
+    leftTimeUntilOpening: StateFlow<Long>,
     modifier: Modifier = Modifier,
     scrollToTopEvent: SharedFlow<Unit> = MutableSharedFlow(),
 ) {
@@ -192,9 +195,7 @@ private fun HomeScreen(
         )
         MemberStats(uiModel = memberStatsUiModel)
 
-        if (leftTimeUntilOpening > 0L) {
-            OpeningCountdown(initialLeftTime = leftTimeUntilOpening)
-        }
+        OpeningCountdown(leftTimeFlow = leftTimeUntilOpening)
 
         if (stadiumStatsUiModel.stadiumFanRates.isNotEmpty()) {
             StadiumFanRate(
@@ -269,6 +270,6 @@ private fun HomeScreenPreview() {
         onStadiumStatsRefresh = {},
         victoryFairyRanking = VICTORY_FAIRY_RANKING,
         onVictoryFairyRankingClick = {},
-        leftTimeUntilOpening = 1_000_000L,
+        leftTimeUntilOpening = MutableStateFlow(1_000_000L),
     )
 }
