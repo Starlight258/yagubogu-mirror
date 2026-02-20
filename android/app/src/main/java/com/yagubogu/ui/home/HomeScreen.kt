@@ -3,6 +3,7 @@ package com.yagubogu.ui.home
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.res.Resources
 import android.net.Uri
 import android.provider.Settings
 import androidx.activity.compose.LocalActivity
@@ -29,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -70,6 +72,7 @@ fun HomeScreen(
     var isPermissionDenied: Boolean by remember { mutableStateOf(false) }
 
     val context: Context = LocalContext.current
+    val resources: Resources = LocalResources.current
     val activity: Activity = LocalActivity.current ?: return
     val coroutineScope: CoroutineScope = rememberCoroutineScope()
 
@@ -86,7 +89,7 @@ fun HomeScreen(
 
                 shouldShowRationale -> {
                     coroutineScope.launch {
-                        snackbarHostState.showSnackbar(context.getString(R.string.home_location_permission_denied_message))
+                        snackbarHostState.showSnackbar(resources.getString(R.string.home_location_permission_denied_message))
                     }
                 }
 

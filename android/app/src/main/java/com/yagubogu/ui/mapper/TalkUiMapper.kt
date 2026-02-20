@@ -8,7 +8,7 @@ import com.yagubogu.ui.livetalk.chat.model.LivetalkChatItem
 import com.yagubogu.ui.livetalk.chat.model.LivetalkCursorItem
 import com.yagubogu.ui.livetalk.chat.model.LivetalkResponseItem
 import com.yagubogu.ui.livetalk.chat.model.LivetalkTeams
-import java.time.LocalDateTime
+import kotlinx.datetime.LocalDateTime
 
 fun TalkCursorResponse.toUiModel(): LivetalkResponseItem =
     LivetalkResponseItem(

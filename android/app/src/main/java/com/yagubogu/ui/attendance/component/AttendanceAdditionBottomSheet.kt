@@ -50,9 +50,11 @@ import com.yagubogu.ui.theme.PretendardMedium24
 import com.yagubogu.ui.theme.PretendardRegular12
 import com.yagubogu.ui.theme.PretendardSemiBold16
 import com.yagubogu.ui.theme.White
-import com.yagubogu.ui.util.DateFormatter
 import com.yagubogu.ui.util.color
+import com.yagubogu.ui.util.hhmmFormatter
 import com.yagubogu.ui.util.shimmerLoading
+import com.yagubogu.ui.util.yyyyMMddFormatter
+import kotlinx.datetime.format
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -176,7 +178,7 @@ private fun PastGameItem(
         Spacer(modifier = Modifier.height(4.dp))
 
         Text(
-            text = "${item.date.format(DateFormatter.yyyyMMdd)} ${item.startAt.format(DateFormatter.hhmm)}",
+            text = "${item.date.format(yyyyMMddFormatter)} ${item.startAt.format(hhmmFormatter)}",
             style = PretendardRegular12.copy(color = Gray500),
         )
         Text(

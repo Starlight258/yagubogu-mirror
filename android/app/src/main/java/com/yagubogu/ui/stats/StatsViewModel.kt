@@ -15,6 +15,7 @@ import com.yagubogu.ui.stats.my.model.StatsCounts
 import com.yagubogu.ui.stats.my.model.StatsMyUiModel
 import com.yagubogu.ui.util.mapList
 import com.yagubogu.ui.util.mapListIndexed
+import com.yagubogu.ui.util.now
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,7 +25,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 
 class StatsViewModel(
     private val statsRepository: StatsRepository,

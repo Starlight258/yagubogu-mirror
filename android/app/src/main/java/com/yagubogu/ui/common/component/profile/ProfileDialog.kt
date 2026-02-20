@@ -44,8 +44,9 @@ import com.yagubogu.ui.theme.PretendardSemiBold
 import com.yagubogu.ui.theme.PretendardSemiBold20
 import com.yagubogu.ui.theme.Primary600
 import com.yagubogu.ui.theme.Primary700
-import com.yagubogu.ui.util.DateFormatter
 import com.yagubogu.ui.util.noRippleClickable
+import com.yagubogu.ui.util.yyyyMMddFormatter
+import kotlinx.datetime.format
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -342,7 +343,7 @@ private fun DatesRow(
     ) {
         StatItem(
             title = stringResource(R.string.profile_register_date),
-            value = memberProfile.enterDate.format(DateFormatter.yyyyMMdd),
+            value = memberProfile.enterDate.format(yyyyMMddFormatter),
             modifier = Modifier.weight(1f),
         )
         VerticalDivider(
@@ -353,8 +354,7 @@ private fun DatesRow(
         StatItem(
             title = stringResource(R.string.profile_latest_check_in_date),
             value =
-                memberProfile.recentCheckInDate
-                    ?.format(DateFormatter.yyyyMMdd),
+                memberProfile.recentCheckInDate?.format(yyyyMMddFormatter),
             modifier = Modifier.weight(1f),
         )
     }

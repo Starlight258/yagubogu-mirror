@@ -58,13 +58,18 @@ import com.yagubogu.ui.theme.Gray500
 import com.yagubogu.ui.theme.PretendardSemiBold20
 import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.util.BackPressHandler
+import com.yagubogu.ui.util.minusMonths
 import com.yagubogu.ui.util.noRippleClickable
+import com.yagubogu.ui.util.now
+import com.yagubogu.ui.util.plusMonths
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.YearMonth
+import kotlinx.datetime.number
+import kotlinx.datetime.onDay
 import org.koin.compose.viewmodel.koinViewModel
-import java.time.LocalDate
-import java.time.YearMonth
 
 @Composable
 fun AttendanceHistoryScreen(
@@ -93,7 +98,7 @@ fun AttendanceHistoryScreen(
     }
 
     LaunchedEffect(selectedMonth) {
-        viewModel.updateSelectedDate(selectedMonth.atDay(1))
+        viewModel.updateSelectedDate(selectedMonth.onDay(1))
     }
 
     val checkInSuccessMessage: String =
@@ -252,7 +257,7 @@ private fun AttendanceHistoryHeader(
                     stringResource(
                         R.string.all_year_month,
                         selectedMonth.year,
-                        selectedMonth.monthValue,
+                        selectedMonth.month.number,
                     ),
                 style = PretendardSemiBold20,
                 modifier =

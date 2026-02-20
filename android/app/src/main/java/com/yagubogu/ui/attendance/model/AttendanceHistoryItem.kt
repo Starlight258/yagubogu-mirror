@@ -6,7 +6,7 @@ import com.yagubogu.R
 import com.yagubogu.domain.model.GameResult
 import com.yagubogu.ui.theme.Gray400
 import com.yagubogu.ui.util.color
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 
 sealed interface AttendanceHistoryItem {
     val summary: Summary

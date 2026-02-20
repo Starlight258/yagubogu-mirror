@@ -55,11 +55,12 @@ import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.util.BackPressHandler
 import com.yagubogu.ui.util.crop
 import com.yagubogu.ui.util.noRippleClickable
+import com.yagubogu.ui.util.now
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
 import org.koin.compose.viewmodel.koinViewModel
-import java.time.LocalDate
 
 @Composable
 fun StatsScreen(

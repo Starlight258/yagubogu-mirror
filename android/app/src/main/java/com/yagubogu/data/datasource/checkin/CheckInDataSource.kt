@@ -5,7 +5,7 @@ import com.yagubogu.data.dto.response.checkin.CheckInHistoryResponse
 import com.yagubogu.data.dto.response.checkin.CheckInStatusResponse
 import com.yagubogu.data.dto.response.checkin.FanRateResponse
 import com.yagubogu.data.dto.response.checkin.StadiumCheckInCountsResponse
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 
 interface CheckInDataSource {
     suspend fun addCheckIn(gameId: Long): Result<Unit>

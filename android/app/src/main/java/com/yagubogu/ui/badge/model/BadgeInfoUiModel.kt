@@ -1,8 +1,8 @@
 package com.yagubogu.ui.badge.model
 
 import android.os.Parcelable
+import kotlinx.datetime.LocalDate
 import kotlinx.parcelize.Parcelize
-import java.time.LocalDate
 
 @Parcelize
 data class BadgeInfoUiModel(

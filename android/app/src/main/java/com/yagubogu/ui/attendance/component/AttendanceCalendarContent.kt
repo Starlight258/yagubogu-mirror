@@ -41,10 +41,12 @@ import com.yagubogu.ui.attendance.model.PastGameUiState
 import com.yagubogu.ui.theme.PretendardBold16
 import com.yagubogu.ui.theme.Primary500
 import com.yagubogu.ui.theme.White
+import com.yagubogu.ui.util.minusMonths
+import com.yagubogu.ui.util.now
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
-import java.time.LocalDate
-import java.time.YearMonth
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.YearMonth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
