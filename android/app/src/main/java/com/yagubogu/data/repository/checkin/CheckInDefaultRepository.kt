@@ -9,10 +9,9 @@ import com.yagubogu.data.dto.response.checkin.FanRateByGameDto
 import com.yagubogu.data.dto.response.checkin.FanRateResponse
 import com.yagubogu.data.dto.response.checkin.StadiumCheckInCountDto
 import com.yagubogu.data.dto.response.checkin.StadiumCheckInCountsResponse
-import java.time.LocalDate
-import javax.inject.Inject
+import kotlinx.datetime.LocalDate
 
-class CheckInDefaultRepository @Inject constructor(
+class CheckInDefaultRepository(
     private val checkInDataSource: CheckInDataSource,
 ) : CheckInRepository {
     override suspend fun addCheckIn(gameId: Long): Result<Unit> = checkInDataSource.addCheckIn(gameId)

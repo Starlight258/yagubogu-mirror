@@ -8,8 +8,6 @@ import androidx.annotation.IdRes
 import androidx.annotation.StringRes
 import com.google.android.material.snackbar.Snackbar
 import com.yagubogu.R
-import java.time.LocalDateTime
-import java.time.ZoneId
 
 fun View.showSnackbar(
     message: String,
@@ -49,10 +47,4 @@ fun Context.showToast(
 ) {
     val duration = if (isLong) Toast.LENGTH_LONG else Toast.LENGTH_SHORT
     Toast.makeText(this, message, duration).show()
-}
-
-fun LocalDateTime.formatTimestamp(): String {
-    val serverTime = this.atZone(ZoneId.of("GMT+9"))
-    val localTime = serverTime.withZoneSameInstant(ZoneId.systemDefault())
-    return localTime.toLocalDateTime().format(DateFormatter.amPmhhmm)
 }

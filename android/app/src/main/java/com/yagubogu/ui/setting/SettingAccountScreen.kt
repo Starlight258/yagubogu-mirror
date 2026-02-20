@@ -1,5 +1,6 @@
 package com.yagubogu.ui.setting
 
+import android.content.res.Resources
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,11 +15,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yagubogu.R
 import com.yagubogu.ui.setting.component.SettingButton
@@ -29,17 +29,18 @@ import com.yagubogu.ui.theme.Gray050
 import com.yagubogu.ui.util.LocalSnackbarHostState
 import com.yagubogu.ui.util.LocalSnackbarScope
 import com.yagubogu.ui.util.showSingleSnackbar
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun SettingAccountScreen(
     onDeleteAccountClick: () -> Unit,
     onLogout: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: SettingViewModel = hiltViewModel(),
+    viewModel: SettingViewModel = koinViewModel(),
 ) {
     val snackbarHostState = LocalSnackbarHostState.current
     val snackbarScope = LocalSnackbarScope.current
-    val context = LocalContext.current
+    val resources: Resources = LocalResources.current
 
     var showLogoutDialog: Boolean by rememberSaveable { mutableStateOf(false) }
     val settingEvent: SettingEvent? by viewModel.settingEvent.collectAsStateWithLifecycle(null)
@@ -49,7 +50,7 @@ fun SettingAccountScreen(
             onLogout()
             snackbarHostState.showSingleSnackbar(
                 scope = snackbarScope,
-                message = context.getString(R.string.setting_logout_alert),
+                message = resources.getString(R.string.setting_logout_alert),
             )
         }
     }

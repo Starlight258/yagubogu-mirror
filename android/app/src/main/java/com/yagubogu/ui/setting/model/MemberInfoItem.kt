@@ -1,6 +1,7 @@
 package com.yagubogu.ui.setting.model
 
-import java.time.LocalDate
+import com.yagubogu.ui.util.now
+import kotlinx.datetime.LocalDate
 
 data class MemberInfoItem(
     val nickName: String = "",

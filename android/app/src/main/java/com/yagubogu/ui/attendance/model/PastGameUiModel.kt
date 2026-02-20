@@ -1,8 +1,8 @@
 package com.yagubogu.ui.attendance.model
 
 import com.yagubogu.domain.model.Team
-import java.time.LocalDate
-import java.time.LocalTime
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
 
 data class PastGameUiModel(
     val gameId: Long,

@@ -8,9 +8,8 @@ import com.yagubogu.data.dto.response.stats.StatsCountsResponse
 import com.yagubogu.data.dto.response.stats.StatsLuckyStadiumsResponse
 import com.yagubogu.data.dto.response.stats.StatsWinRateResponse
 import com.yagubogu.data.dto.response.stats.VictoryFairyRankingResponse
-import javax.inject.Inject
 
-class StatsDefaultRepository @Inject constructor(
+class StatsDefaultRepository(
     private val statsDataSource: StatsDataSource,
 ) : StatsRepository {
     override suspend fun getStatsWinRate(year: Int): Result<Double> =

@@ -8,15 +8,12 @@ import com.google.firebase.analytics.analytics
 import com.yagubogu.data.repository.auth.AuthRepository
 import com.yagubogu.data.repository.member.MemberRepository
 import com.yagubogu.ui.main.model.AutoLoginState
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class YaguBoguViewModel @Inject constructor(
+class YaguBoguViewModel(
     private val authRepository: AuthRepository,
     private val memberRepository: MemberRepository,
 ) : ViewModel() {

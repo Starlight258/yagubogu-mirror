@@ -9,10 +9,9 @@ import com.yagubogu.data.dto.response.checkin.FanRateResponse
 import com.yagubogu.data.dto.response.checkin.StadiumCheckInCountsResponse
 import com.yagubogu.data.service.CheckInApiService
 import com.yagubogu.data.util.safeApiCall
-import java.time.LocalDate
-import javax.inject.Inject
+import kotlinx.datetime.LocalDate
 
-class CheckInRemoteDataSource @Inject constructor(
+class CheckInRemoteDataSource(
     private val checkInApiService: CheckInApiService,
 ) : CheckInDataSource {
     override suspend fun addCheckIn(gameId: Long): Result<Unit> {

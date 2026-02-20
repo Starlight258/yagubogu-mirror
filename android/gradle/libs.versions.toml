@@ -27,10 +27,9 @@ composeBom = "2025.08.01"
 
 # Navigation3
 nav3Core = "1.0.0"
-hiltNavigationCompose = "1.3.0"
 
-# Hilt
-hiltAndroid = "2.57.2"
+# Koin
+koin-bom = "4.1.1"
 
 # Ktor & Ktorfit
 ktor = "3.3.3"
@@ -61,7 +60,7 @@ compressor = "3.0.1"
 # UI Components
 material = "1.12.0"
 balloon = "1.6.13"
-calendar = "2.9.0"
+calendar = "2.10.0"
 
 # Logging
 timber = "5.0.1"
@@ -105,11 +104,13 @@ androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit
 # Navigation3
 androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "nav3Core" }
 androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "nav3Core" }
-androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 
-# Hilt
-hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
-hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroid" }
+# Koin
+koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin-bom" }
+koin-core = { module = "io.insert-koin:koin-core" }
+koin-android = { module = "io.insert-koin:koin-android" }
+koin-compose = { module = "io.insert-koin:koin-compose" }
+koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel" }
 
 # Ktor & Ktorfit
 ktorfit-lib = { module = "de.jensklingenberg.ktorfit:ktorfit-lib", version.ref = "ktorfit" }
@@ -148,7 +149,7 @@ compressor = { group = "id.zelory", name = "compressor", version.ref = "compress
 # UI Components
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 balloon-compose = { module = "com.github.skydoves:balloon-compose", version.ref = "balloon" }
-calendar-compose = { module = "com.kizitonwose.calendar:compose", version.ref = "calendar" }
+calendar-compose-multiplatform = { module = "com.kizitonwose.calendar:compose-multiplatform", version.ref = "calendar" }
 
 # Logging
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
@@ -171,5 +172,4 @@ firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize" }
 google-oss-licenses-plugin = { id = "com.google.android.gms.oss-licenses-plugin", version.ref = "googleOssLicenses" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hiltAndroid" }
 ktorfit = { id = "de.jensklingenberg.ktorfit", version.ref = "ktorfit" }

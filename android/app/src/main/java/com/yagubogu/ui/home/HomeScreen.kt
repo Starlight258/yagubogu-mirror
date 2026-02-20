@@ -3,6 +3,7 @@ package com.yagubogu.ui.home
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.res.Resources
 import android.net.Uri
 import android.provider.Settings
 import androidx.activity.compose.LocalActivity
@@ -29,9 +30,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.firebase.Firebase
 import com.google.firebase.analytics.analytics
@@ -55,6 +56,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun HomeScreen(
@@ -62,7 +64,7 @@ fun HomeScreen(
     scrollToTopEvent: SharedFlow<Unit>,
     onLoading: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: HomeViewModel = hiltViewModel(),
+    viewModel: HomeViewModel = koinViewModel(),
 ) {
     val memberStatsUiModel: MemberStatsUiModel by viewModel.memberStatsUiModel.collectAsStateWithLifecycle()
     val stadiumStatsUiModel: StadiumStatsUiModel by viewModel.stadiumStatsUiModel.collectAsStateWithLifecycle()
@@ -71,6 +73,7 @@ fun HomeScreen(
     var isPermissionDenied: Boolean by remember { mutableStateOf(false) }
 
     val context: Context = LocalContext.current
+    val resources: Resources = LocalResources.current
     val activity: Activity = LocalActivity.current ?: return
     val coroutineScope: CoroutineScope = rememberCoroutineScope()
 
@@ -88,14 +91,14 @@ fun HomeScreen(
                         {
                             snackbarHostState.showSingleSnackbar(
                                 scope = coroutineScope,
-                                message = context.getString(R.string.home_location_settings_disabled),
+                                message = resources.getString(R.string.home_location_settings_disabled),
                             )
                         },
                     )
 
                 shouldShowRationale -> {
                     coroutineScope.launch {
-                        snackbarHostState.showSnackbar(context.getString(R.string.home_location_permission_denied_message))
+                        snackbarHostState.showSnackbar(resources.getString(R.string.home_location_permission_denied_message))
                     }
                 }
 

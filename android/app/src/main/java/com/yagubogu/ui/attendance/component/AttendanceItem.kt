@@ -33,8 +33,9 @@ import com.yagubogu.ui.theme.PretendardSemiBold16
 import com.yagubogu.ui.theme.PretendardSemiBold20
 import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.theme.dpToSp
-import com.yagubogu.ui.util.DateFormatter
 import com.yagubogu.ui.util.noRippleClickable
+import com.yagubogu.ui.util.yyyyMMddFormatter
+import kotlinx.datetime.format
 
 @Composable
 fun AttendanceItem(
@@ -112,7 +113,7 @@ private fun AttendanceHistorySummary(
 
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = item.attendanceDate.format(DateFormatter.yyyyMMdd),
+                text = item.attendanceDate.format(yyyyMMddFormatter),
                 style = PretendardRegular12.copy(color = Gray500),
             )
             Text(

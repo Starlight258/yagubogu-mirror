@@ -1,4 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <string name="app_name">야구보구</string>
 
     <string name="all_settings">설정</string>
@@ -16,6 +16,17 @@
     <string name="all_year">%d년</string>
     <string name="all_month">%d월</string>
     <string name="all_year_month">%d년 %d월</string>
+
+    <string name="day_monday">월</string>
+    <string name="day_tuesday">화</string>
+    <string name="day_wednesday">수</string>
+    <string name="day_thursday">목</string>
+    <string name="day_friday">금</string>
+    <string name="day_saturday">토</string>
+    <string name="day_sunday">일</string>
+
+    <string name="time_am">오전</string>
+    <string name="time_pm">오후</string>
 
     <string name="main_back_press_to_exit">뒤로가기를 한 번 더 누르면 종료됩니다.</string>
 

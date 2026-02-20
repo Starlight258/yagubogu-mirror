@@ -6,18 +6,16 @@ import com.yagubogu.data.repository.game.GameRepository
 import com.yagubogu.ui.livetalk.model.LivetalkStadiumItem
 import com.yagubogu.ui.mapper.toLivetalkUiModel
 import com.yagubogu.ui.util.mapList
-import dagger.hilt.android.lifecycle.HiltViewModel
+import com.yagubogu.ui.util.now
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
 import timber.log.Timber
-import java.time.Clock
-import java.time.LocalDate
-import javax.inject.Inject
+import kotlin.time.Clock
 
-@HiltViewModel
-class LivetalkViewModel @Inject constructor(
+class LivetalkViewModel(
     private val gameRepository: GameRepository,
     private val clock: Clock,
 ) : ViewModel() {
