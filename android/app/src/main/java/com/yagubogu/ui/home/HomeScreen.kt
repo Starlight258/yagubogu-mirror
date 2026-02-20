@@ -133,7 +133,7 @@ fun HomeScreen(
                 onSettingsDisabled = {
                     snackbarHostState.showSingleSnackbar(
                         scope = coroutineScope,
-                        message = context.getString(R.string.home_location_settings_disabled),
+                        message = resources.getString(R.string.home_location_settings_disabled),
                     )
                 },
             )
