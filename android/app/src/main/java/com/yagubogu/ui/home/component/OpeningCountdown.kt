@@ -108,34 +108,25 @@ private fun TimeCountdowns(
 
     Row(modifier = modifier) {
         TimeCountdown(
-            tens = hours,
-            units = hours,
+            time = hours,
             description = "HOURS",
         )
         ColonDivider()
         TimeCountdown(
-            tens = minutes,
-            units = minutes,
+            time = minutes,
             description = "MINUTES",
         )
         ColonDivider()
         TimeCountdown(
-            tens = seconds,
-            units = seconds,
+            time = seconds,
             description = "SECONDS",
         )
     }
 }
 
-/**
- * @param tens 십의 자리
- * @param units 일의 자리
- * @param description 설명 ex) "HOURS"
- */
 @Composable
 private fun TimeCountdown(
-    tens: Long,
-    units: Long,
+    time: Long,
     description: String,
     modifier: Modifier = Modifier,
 ) {
@@ -148,8 +139,10 @@ private fun TimeCountdown(
             horizontalArrangement = Arrangement.spacedBy(4.dp),
             modifier = Modifier,
         ) {
-            DigitBox(number = (tens / 10).toString())
-            DigitBox(number = (units % 10).toString())
+            // 십의 자리
+            DigitBox(number = (time / 10).toString())
+            // 일의 자리
+            DigitBox(number = (time % 10).toString())
         }
         Text(text = description, style = PretendardRegular, fontSize = 10.dpToSp)
     }
@@ -217,6 +210,6 @@ private fun DigitBoxPreview() {
 @Composable
 private fun TimeCountdownPreview() {
     Box(modifier = Modifier.size(100.dp), contentAlignment = Alignment.Center) {
-        TimeCountdown(50, 9, description = "MINUTES")
+        TimeCountdown(time = 59, description = "MINUTES")
     }
 }
