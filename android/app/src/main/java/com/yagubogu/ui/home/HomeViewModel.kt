@@ -12,12 +12,12 @@ import com.yagubogu.data.repository.stream.StreamRepository
 import com.yagubogu.data.util.ApiException
 import com.yagubogu.domain.model.Coordinate
 import com.yagubogu.domain.model.Distance
+import com.yagubogu.domain.model.OpeningDate
 import com.yagubogu.ui.common.model.MemberProfile
 import com.yagubogu.ui.home.model.CheckInSseEvent
 import com.yagubogu.ui.home.model.CheckInUiEvent
 import com.yagubogu.ui.home.model.HomeDialogEvent
 import com.yagubogu.ui.home.model.MemberStatsUiModel
-import com.yagubogu.ui.home.model.OpeningDate
 import com.yagubogu.ui.home.model.StadiumFanRateItem
 import com.yagubogu.ui.home.model.StadiumStatsUiModel
 import com.yagubogu.ui.home.model.StadiumWithGame
@@ -48,8 +48,10 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
+import kotlinx.datetime.until
 import timber.log.Timber
 import kotlin.math.roundToInt
 import kotlin.time.Clock
@@ -123,8 +125,8 @@ class HomeViewModel(
                 initialValue = StadiumStatsUiModel(),
             )
 
-    private val _leftTimeUntilOpening = MutableStateFlow(OpeningDate.getLeftTimeUntilOpening(clock))
-    val leftTimeUntilOpening: StateFlow<Long> = _leftTimeUntilOpening.asStateFlow()
+    private val _leftSecondsUntilOpening = MutableStateFlow(getLeftSecondsUntilOpening())
+    val leftSecondsUntilOpening: StateFlow<Long> = _leftSecondsUntilOpening.asStateFlow()
 
     init {
         startOpeningCountdown()
@@ -348,11 +350,18 @@ class HomeViewModel(
 
     private fun startOpeningCountdown() {
         viewModelScope.launch {
-            while (_leftTimeUntilOpening.value > 0L) {
+            while (_leftSecondsUntilOpening.value > 0L) {
                 delay(1000L)
-                _leftTimeUntilOpening.value = OpeningDate.getLeftTimeUntilOpening(clock)
+                _leftSecondsUntilOpening.value = getLeftSecondsUntilOpening()
             }
         }
+    }
+
+    private fun getLeftSecondsUntilOpening(): Long {
+        val currentYear: Int = LocalDate.now(clock).year
+        val openingDate: OpeningDate = OpeningDate.fromYear(currentYear) ?: return 0L
+        val time = clock.now().until(other = openingDate.instant, unit = DateTimeUnit.SECOND)
+        return if (time < 0L) 0L else time
     }
 
     companion object {
