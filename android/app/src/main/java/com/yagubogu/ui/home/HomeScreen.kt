@@ -169,6 +169,12 @@ private fun HomeScreen(
     scrollToTopEvent: SharedFlow<Unit> = MutableSharedFlow(),
 ) {
     val scrollState: ScrollState = rememberScrollState()
+    val leftTime: Long by leftTimeUntilOpening.collectAsStateWithLifecycle()
+    var isCountdownVisible: Boolean by remember { mutableStateOf(false) }
+
+    if (!isCountdownVisible && leftTime > 0) {
+        isCountdownVisible = true
+    }
 
     LaunchedEffect(Unit) {
         scrollToTopEvent.collect {
@@ -195,7 +201,9 @@ private fun HomeScreen(
         )
         MemberStats(uiModel = memberStatsUiModel)
 
-        OpeningCountdown(leftTimeFlow = leftTimeUntilOpening)
+        if (isCountdownVisible) {
+            OpeningCountdown(leftTimeFlow = leftTimeUntilOpening)
+        }
 
         if (stadiumStatsUiModel.stadiumFanRates.isNotEmpty()) {
             StadiumFanRate(

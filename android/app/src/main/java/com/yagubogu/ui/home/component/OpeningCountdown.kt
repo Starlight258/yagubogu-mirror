@@ -51,9 +51,6 @@ fun OpeningCountdown(
     modifier: Modifier = Modifier,
 ) {
     val leftTimeState: State<Long> = leftTimeFlow.collectAsStateWithLifecycle()
-    val isVisible: Boolean by remember { derivedStateOf { leftTimeState.value > 0L } }
-
-    if (!isVisible) return
 
     Column(
         modifier =
