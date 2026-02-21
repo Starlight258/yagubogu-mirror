@@ -68,7 +68,7 @@ fun OpeningCountdown(
                         .size(197.dp, 14.dp),
             )
             Text(
-                text = stringResource(R.string.opening_countdown_left_time),
+                text = stringResource(R.string.home_opening_countdown_left_time),
                 style = EsamanruMedium,
                 fontSize = 24.dpToSp,
             )
