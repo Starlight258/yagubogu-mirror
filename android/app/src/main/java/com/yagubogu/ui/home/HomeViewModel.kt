@@ -12,6 +12,7 @@ import com.yagubogu.data.repository.stream.StreamRepository
 import com.yagubogu.data.util.ApiException
 import com.yagubogu.domain.model.Coordinate
 import com.yagubogu.domain.model.Distance
+import com.yagubogu.domain.model.OpeningDate
 import com.yagubogu.ui.common.model.MemberProfile
 import com.yagubogu.ui.home.model.CheckInSseEvent
 import com.yagubogu.ui.home.model.CheckInUiEvent
@@ -26,10 +27,12 @@ import com.yagubogu.ui.mapper.toDomain
 import com.yagubogu.ui.mapper.toUiModel
 import com.yagubogu.ui.util.mapList
 import com.yagubogu.ui.util.now
+import com.yagubogu.ui.util.toInstant
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,8 +49,10 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
+import kotlinx.datetime.until
 import timber.log.Timber
 import kotlin.math.roundToInt
 import kotlin.time.Clock
@@ -120,6 +125,13 @@ class HomeViewModel(
                 started = SharingStarted.WhileSubscribed(5_000),
                 initialValue = StadiumStatsUiModel(),
             )
+
+    private val _leftSecondsUntilOpening = MutableStateFlow(getLeftSecondsUntilOpening())
+    val leftSecondsUntilOpening: StateFlow<Long> = _leftSecondsUntilOpening.asStateFlow()
+
+    init {
+        startOpeningCountdown()
+    }
 
     fun fetchAll() {
         fetchMemberStats()
@@ -335,6 +347,22 @@ class HomeViewModel(
         newItems.forEach { item: StadiumFanRateItem ->
             cachedStadiumFanRateItems[item.gameId] = item
         }
+    }
+
+    private fun startOpeningCountdown() {
+        viewModelScope.launch {
+            while (_leftSecondsUntilOpening.value > 0L) {
+                delay(1000L)
+                _leftSecondsUntilOpening.value = getLeftSecondsUntilOpening()
+            }
+        }
+    }
+
+    private fun getLeftSecondsUntilOpening(): Long {
+        val currentYear: Int = LocalDate.now(clock).year
+        val openingDate: OpeningDate = OpeningDate.fromYear(currentYear) ?: return 0L
+        val time = clock.now().until(other = openingDate.date.toInstant(), unit = DateTimeUnit.SECOND)
+        return if (time < 0L) 0L else time
     }
 
     companion object {
