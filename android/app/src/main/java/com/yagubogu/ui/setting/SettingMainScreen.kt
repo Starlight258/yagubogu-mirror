@@ -97,8 +97,6 @@ fun SettingMainScreen(
 
     var showNicknameEditDialog: Boolean by rememberSaveable { mutableStateOf(false) }
 
-    val settingEvent: SettingEvent? by viewModel.settingEvent.collectAsStateWithLifecycle(null)
-
     var showGallery by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(showGallery) {
@@ -109,29 +107,31 @@ fun SettingMainScreen(
         viewModel.fetchMemberInfo()
     }
 
-    LaunchedEffect(settingEvent) {
-        when (val event = settingEvent) {
-            is SettingEvent.NicknameEditSuccess -> {
-                val message =
-                    resources.getString(
-                        R.string.setting_edited_nickname_alert,
-                        (settingEvent as SettingEvent.NicknameEditSuccess).newNickname,
+    LaunchedEffect(Unit) {
+        viewModel.settingEvent.collect { settingEvent ->
+            when (settingEvent) {
+                is SettingEvent.NicknameEditSuccess -> {
+                    val message =
+                        resources.getString(
+                            R.string.setting_edited_nickname_alert,
+                            settingEvent.newNickname,
+                        )
+                    snackbarHostState.showSingleSnackbar(
+                        scope = this,
+                        message = message,
                     )
-                snackbarHostState.showSingleSnackbar(
-                    scope = this,
-                    message = message,
-                )
-            }
+                }
 
-            is SettingEvent.NicknameEditFailure -> {
-                val errorMessage = event.error.asString(context)
-                snackbarHostState.showSingleSnackbar(
-                    scope = this,
-                    message = errorMessage,
-                )
-            }
+                is SettingEvent.NicknameEditFailure -> {
+                    val errorMessage = settingEvent.error.asString(context)
+                    snackbarHostState.showSingleSnackbar(
+                        scope = this,
+                        message = errorMessage,
+                    )
+                }
 
-            else -> Unit
+                else -> Unit
+            }
         }
     }
 

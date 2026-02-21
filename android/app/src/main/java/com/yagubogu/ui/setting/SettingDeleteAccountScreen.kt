@@ -64,29 +64,31 @@ fun SettingDeleteAccountScreen(
     val resources: Resources = LocalResources.current
 
     val memberInfoItem: MemberInfoItem by viewModel.myMemberInfoItem.collectAsStateWithLifecycle()
-    val settingEvent: SettingEvent? by viewModel.settingEvent.collectAsStateWithLifecycle(null)
 
     var showDeleteAccountDialog: Boolean by rememberSaveable { mutableStateOf(false) }
 
-    LaunchedEffect(settingEvent) {
-        when (settingEvent) {
-            SettingEvent.DeleteAccount -> {
-                onLogout()
-                snackbarHostState.showSingleSnackbar(
-                    scope = snackbarScope,
-                    message = resources.getString(R.string.setting_delete_account_confirm_select_alert),
-                )
-            }
+    LaunchedEffect(Unit) {
+        viewModel.settingEvent.collect { settingEvent ->
 
-            SettingEvent.DeleteAccountCancel -> {
-                onDeleteAccountCancel()
-                snackbarHostState.showSingleSnackbar(
-                    scope = snackbarScope,
-                    message = resources.getString(R.string.setting_delete_account_cancel_select_alert),
-                )
-            }
+            when (settingEvent) {
+                SettingEvent.DeleteAccount -> {
+                    onLogout()
+                    snackbarHostState.showSingleSnackbar(
+                        scope = snackbarScope,
+                        message = resources.getString(R.string.setting_delete_account_confirm_select_alert),
+                    )
+                }
 
-            else -> Unit
+                SettingEvent.DeleteAccountCancel -> {
+                    onDeleteAccountCancel()
+                    snackbarHostState.showSingleSnackbar(
+                        scope = snackbarScope,
+                        message = resources.getString(R.string.setting_delete_account_cancel_select_alert),
+                    )
+                }
+
+                else -> Unit
+            }
         }
     }
 

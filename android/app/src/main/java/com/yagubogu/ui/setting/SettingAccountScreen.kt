@@ -19,7 +19,6 @@ import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yagubogu.R
 import com.yagubogu.ui.setting.component.SettingButton
 import com.yagubogu.ui.setting.component.SettingButtonGroup
@@ -43,15 +42,17 @@ fun SettingAccountScreen(
     val resources: Resources = LocalResources.current
 
     var showLogoutDialog: Boolean by rememberSaveable { mutableStateOf(false) }
-    val settingEvent: SettingEvent? by viewModel.settingEvent.collectAsStateWithLifecycle(null)
 
-    LaunchedEffect(settingEvent) {
-        if (settingEvent is SettingEvent.Logout) {
-            onLogout()
-            snackbarHostState.showSingleSnackbar(
-                scope = snackbarScope,
-                message = resources.getString(R.string.setting_logout_alert),
-            )
+    LaunchedEffect(Unit) {
+        viewModel.settingEvent.collect { settingEvent ->
+
+            if (settingEvent is SettingEvent.Logout) {
+                onLogout()
+                snackbarHostState.showSingleSnackbar(
+                    scope = snackbarScope,
+                    message = resources.getString(R.string.setting_logout_alert),
+                )
+            }
         }
     }
 

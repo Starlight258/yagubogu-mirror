@@ -14,11 +14,11 @@ import com.yagubogu.ui.setting.model.PresignedUrlCompleteItem
 import com.yagubogu.ui.setting.model.PresignedUrlItem
 import com.yagubogu.ui.setting.model.SettingEvent
 import com.yagubogu.ui.util.now
-import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import timber.log.Timber
@@ -33,8 +33,8 @@ class SettingViewModel(
     private val _myMemberInfoItem = MutableStateFlow(MemberInfoItem())
     val myMemberInfoItem: StateFlow<MemberInfoItem> = _myMemberInfoItem.asStateFlow()
 
-    private val _settingEvent = Channel<SettingEvent>(Channel.UNLIMITED)
-    val settingEvent = _settingEvent.receiveAsFlow()
+    private val _settingEvent = MutableSharedFlow<SettingEvent>()
+    val settingEvent = _settingEvent.asSharedFlow()
 
     fun updateNickname(newNickname: String) {
         viewModelScope.launch {
@@ -42,13 +42,13 @@ class SettingViewModel(
                 .updateNickname(newNickname)
                 .onSuccess {
                     _myMemberInfoItem.value = myMemberInfoItem.value.copy(nickName = newNickname)
-                    _settingEvent.send(SettingEvent.NicknameEditSuccess(newNickname))
+                    _settingEvent.emit(SettingEvent.NicknameEditSuccess(newNickname))
                 }.onFailure { exception: Throwable ->
                     val updateError =
                         (exception as? NicknameUpdateException)?.error
                             ?: NicknameUpdateError.Unknown(exception.message)
 
-                    _settingEvent.send(SettingEvent.NicknameEditFailure(updateError))
+                    _settingEvent.emit(SettingEvent.NicknameEditFailure(updateError))
                     Timber.w(exception, "닉네임 변경 API 호출 실패")
                 }
         }
@@ -60,7 +60,7 @@ class SettingViewModel(
                 .logout()
                 .onSuccess {
                     memberRepository.invalidateCache()
-                    _settingEvent.send(SettingEvent.Logout)
+                    _settingEvent.emit(SettingEvent.Logout)
                 }.onFailure { exception: Throwable ->
                     Timber.w(exception, "로그아웃 API 호출 실패")
                 }
@@ -72,7 +72,7 @@ class SettingViewModel(
             memberRepository
                 .deleteMember()
                 .onSuccess {
-                    _settingEvent.send(SettingEvent.DeleteAccount)
+                    _settingEvent.emit(SettingEvent.DeleteAccount)
                 }.onFailure { exception: Throwable ->
                     Timber.w(exception, "계정 삭제 API 호출 실패")
                 }
@@ -81,7 +81,7 @@ class SettingViewModel(
 
     fun cancelDeleteAccount() {
         viewModelScope.launch {
-            _settingEvent.send(SettingEvent.DeleteAccountCancel)
+            _settingEvent.emit(SettingEvent.DeleteAccountCancel)
         }
     }
 
