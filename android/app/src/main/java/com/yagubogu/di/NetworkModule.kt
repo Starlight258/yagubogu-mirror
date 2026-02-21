@@ -25,7 +25,6 @@ import io.ktor.client.plugins.sse.SSE
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import io.ktor.http.encodedPath
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -63,6 +62,7 @@ val networkModule =
                     tokenManager = get(),
                     authApiServiceLazy = lazy { get() },
                     tokenRefreshMutex = get(named<Qualifier.TokenRefreshMutex>()),
+                    baseUrl = get(named<Qualifier.BaseUrl>()),
                 )
 
                 install(HttpTimeout) {
@@ -81,6 +81,7 @@ val networkModule =
                     tokenManager = get(),
                     authApiServiceLazy = lazy { get() },
                     tokenRefreshMutex = get(named<Qualifier.TokenRefreshMutex>()),
+                    baseUrl = get(named<Qualifier.BaseUrl>()),
                 )
 
                 install(SSE) {
@@ -142,9 +143,12 @@ private fun HttpClientConfig<*>.configureAuth(
     tokenManager: TokenManager,
     authApiServiceLazy: Lazy<AuthApiService>,
     tokenRefreshMutex: Mutex,
+    baseUrl: String,
 ) {
     install(Auth) {
         bearer {
+            cacheTokens = false
+
             // 토큰 불러오기
             loadTokens {
                 val accessToken: String? = tokenManager.getAccessToken()
@@ -200,19 +204,17 @@ private fun HttpClientConfig<*>.configureAuth(
             // - true를 반환하면 Authorization 헤더를 포함
             // - false을 반환하면 토큰 없이 요청을 보냄
             sendWithoutRequest { request: HttpRequestBuilder ->
-                val host: String = request.url.host
-                val path: String = request.url.encodedPath
+                val requestUrl: String = request.url.toString()
 
                 // 우리 서버(yagubogu.com)로 보내는 요청이면서,
                 // 로그인이나 토큰 갱신 요청이 '아닌' 경우에만 토큰을 붙입니다.
-                host.contains(YAGUBOGU_HOSTNAME) &&
-                    !path.endsWith(AUTH_LOGIN_ENDPOINT) &&
-                    !path.endsWith(AUTH_REFRESH_ENDPOINT)
+                requestUrl.startsWith(baseUrl) &&
+                    !requestUrl.endsWith(AUTH_LOGIN_ENDPOINT) &&
+                    !requestUrl.endsWith(AUTH_REFRESH_ENDPOINT)
             }
         }
     }
 }
 
-private const val YAGUBOGU_HOSTNAME = "yagubogu.com"
 private const val AUTH_LOGIN_ENDPOINT = "/auth/login"
 private const val AUTH_REFRESH_ENDPOINT = "/auth/refresh"
