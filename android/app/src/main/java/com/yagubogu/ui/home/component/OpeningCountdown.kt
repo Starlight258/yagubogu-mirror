@@ -108,20 +108,20 @@ private fun TimeCountdowns(
 
     Row(modifier = modifier) {
         TimeCountdown(
-            tens = (hours / 10).toString(),
-            units = (hours % 10).toString(),
+            tens = hours,
+            units = hours,
             description = "HOURS",
         )
         ColonDivider()
         TimeCountdown(
-            tens = (minutes / 10).toString(),
-            units = (minutes % 10).toString(),
+            tens = minutes,
+            units = minutes,
             description = "MINUTES",
         )
         ColonDivider()
         TimeCountdown(
-            tens = (seconds / 10).toString(),
-            units = (seconds % 10).toString(),
+            tens = seconds,
+            units = seconds,
             description = "SECONDS",
         )
     }
@@ -134,8 +134,8 @@ private fun TimeCountdowns(
  */
 @Composable
 private fun TimeCountdown(
-    tens: String,
-    units: String,
+    tens: Long,
+    units: Long,
     description: String,
     modifier: Modifier = Modifier,
 ) {
@@ -148,8 +148,8 @@ private fun TimeCountdown(
             horizontalArrangement = Arrangement.spacedBy(4.dp),
             modifier = Modifier,
         ) {
-            DigitBox(number = tens)
-            DigitBox(number = units)
+            DigitBox(number = (tens / 10).toString())
+            DigitBox(number = (units % 10).toString())
         }
         Text(text = description, style = PretendardRegular, fontSize = 10.dpToSp)
     }
@@ -217,6 +217,6 @@ private fun DigitBoxPreview() {
 @Composable
 private fun TimeCountdownPreview() {
     Box(modifier = Modifier.size(100.dp), contentAlignment = Alignment.Center) {
-        TimeCountdown("5", "9", description = "MINUTES")
+        TimeCountdown(50, 9, description = "MINUTES")
     }
 }
