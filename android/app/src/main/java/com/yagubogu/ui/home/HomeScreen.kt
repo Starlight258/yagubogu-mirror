@@ -73,7 +73,7 @@ fun HomeScreen(
     val stadiumStatsUiModel: StadiumStatsUiModel by viewModel.stadiumStatsUiModel.collectAsStateWithLifecycle()
     val isStadiumStatsExpanded: Boolean by viewModel.isStadiumStatsExpanded.collectAsStateWithLifecycle()
     val victoryFairyRanking: VictoryFairyRanking by viewModel.victoryFairyRanking.collectAsStateWithLifecycle()
-    val leftTimeUntilOpening: StateFlow<Long> = viewModel.leftTimeUntilOpening
+    val leftSecondsUntilOpening: StateFlow<Long> = viewModel.leftSecondsUntilOpening
     var isPermissionDenied: Boolean by remember { mutableStateOf(false) }
 
     val context: Context = LocalContext.current
@@ -135,7 +135,7 @@ fun HomeScreen(
         onStadiumStatsRefresh = viewModel::refreshStadiumStats,
         victoryFairyRanking = victoryFairyRanking,
         onVictoryFairyRankingClick = viewModel::fetchMemberProfile,
-        leftTimeUntilOpening = leftTimeUntilOpening,
+        leftSecondsUntilOpening = leftSecondsUntilOpening,
         modifier = modifier,
         scrollToTopEvent = scrollToTopEvent,
     )
@@ -164,15 +164,15 @@ private fun HomeScreen(
     onStadiumStatsRefresh: () -> Unit,
     victoryFairyRanking: VictoryFairyRanking,
     onVictoryFairyRankingClick: (Long) -> Unit,
-    leftTimeUntilOpening: StateFlow<Long>,
+    leftSecondsUntilOpening: StateFlow<Long>,
     modifier: Modifier = Modifier,
     scrollToTopEvent: SharedFlow<Unit> = MutableSharedFlow(),
 ) {
     val scrollState: ScrollState = rememberScrollState()
-    val leftTime: Long by leftTimeUntilOpening.collectAsStateWithLifecycle()
+    val leftSeconds: Long by leftSecondsUntilOpening.collectAsStateWithLifecycle()
     var isCountdownVisible: Boolean by remember { mutableStateOf(false) }
 
-    if (!isCountdownVisible && leftTime > 0) {
+    if (!isCountdownVisible && leftSeconds > 0) {
         isCountdownVisible = true
     }
 
@@ -202,7 +202,7 @@ private fun HomeScreen(
         MemberStats(uiModel = memberStatsUiModel)
 
         if (isCountdownVisible) {
-            OpeningCountdown(leftTimeFlow = leftTimeUntilOpening)
+            OpeningCountdown(leftSecondsFlow = leftSecondsUntilOpening)
         }
 
         if (stadiumStatsUiModel.stadiumFanRates.isNotEmpty()) {
@@ -278,6 +278,6 @@ private fun HomeScreenPreview() {
         onStadiumStatsRefresh = {},
         victoryFairyRanking = VICTORY_FAIRY_RANKING,
         onVictoryFairyRankingClick = {},
-        leftTimeUntilOpening = MutableStateFlow(1_000_000L),
+        leftSecondsUntilOpening = MutableStateFlow(1_000_000L),
     )
 }

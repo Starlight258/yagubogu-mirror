@@ -47,10 +47,10 @@ private const val SECONDS_PER_DAY = 24L * 60L * 60L
 
 @Composable
 fun OpeningCountdown(
-    leftTimeFlow: StateFlow<Long>,
+    leftSecondsFlow: StateFlow<Long>,
     modifier: Modifier = Modifier,
 ) {
-    val leftTimeState: State<Long> = leftTimeFlow.collectAsStateWithLifecycle()
+    val leftSecondsUntilOpening: State<Long> = leftSecondsFlow.collectAsStateWithLifecycle()
 
     Column(
         modifier =
@@ -74,9 +74,9 @@ fun OpeningCountdown(
             )
         }
         Spacer(modifier = Modifier.height(24.dp))
-        DaysText(leftTimeState = leftTimeState)
+        DaysText(leftTimeState = leftSecondsUntilOpening)
         Spacer(modifier = Modifier.height(16.dp))
-        TimeCountdowns(leftTimeState = leftTimeState)
+        TimeCountdowns(leftTimeState = leftSecondsUntilOpening)
     }
 }
 
@@ -202,7 +202,7 @@ private fun ColonDivider(modifier: Modifier = Modifier) {
 @Preview
 @Composable
 private fun OpeningCountdownPreview() {
-    OpeningCountdown(leftTimeFlow = MutableStateFlow(1_000_000L))
+    OpeningCountdown(leftSecondsFlow = MutableStateFlow(1_000_000L))
 }
 
 @Preview(showBackground = true)
