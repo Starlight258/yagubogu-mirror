@@ -1,14 +1,12 @@
 package com.yagubogu.domain.model
 
-import com.yagubogu.ui.util.toInstant
 import kotlinx.datetime.LocalDate
-import kotlin.time.Instant
 
 enum class OpeningDate(
     val year: Int,
-    val instant: Instant,
+    val date: LocalDate,
 ) {
-    YEAR_2026(year = 2026, instant = LocalDate(2026, 3, 28).toInstant()),
+    YEAR_2026(year = 2026, date = LocalDate(2026, 3, 28)),
     ;
 
     companion object {
