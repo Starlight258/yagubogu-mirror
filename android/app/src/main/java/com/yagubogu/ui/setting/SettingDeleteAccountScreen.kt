@@ -109,12 +109,8 @@ fun SettingDeleteAccountScreen(
                 showDeleteAccountDialog = false
             },
             onCancel = {
+                viewModel.cancelDeleteAccount()
                 showDeleteAccountDialog = false
-                onDeleteAccountCancel()
-                snackbarHostState.showSingleSnackbar(
-                    scope = snackbarScope,
-                    message = resources.getString(R.string.setting_delete_account_cancel_select_alert),
-                )
             },
         )
     }
