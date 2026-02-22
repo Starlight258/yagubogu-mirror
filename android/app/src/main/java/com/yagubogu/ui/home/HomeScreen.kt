@@ -87,8 +87,8 @@ fun HomeScreen(
             when {
                 isPermissionGranted ->
                     locationPermissionManager.checkLocationSettingsThenAction(
-                        viewModel::fetchStadiums,
-                        {
+                        onSuccess = viewModel::fetchStadiums,
+                        onSettingsDisabled = {
                             snackbarHostState.showSingleSnackbar(
                                 scope = snackbarScope,
                                 message = resources.getString(R.string.home_location_settings_disabled),
