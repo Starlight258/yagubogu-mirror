@@ -1,7 +1,10 @@
 package com.yagubogu.ui.navigation
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
@@ -30,6 +33,11 @@ import com.yagubogu.ui.setting.SettingScreen
 import com.yagubogu.ui.util.LocalSnackbarHostState
 import com.yagubogu.ui.util.LocalSnackbarScope
 
+private object SnackBarConfig {
+    val BottomNavBarHeight = 80.dp
+    val StandardPadding = 10.dp
+}
+
 /**
  * 앱의 최상위 네비게이션 구조를 정의하는 루트 컴포저블.
  *
@@ -51,13 +59,21 @@ fun NavigationRoot(
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val snackbarScope = rememberCoroutineScope()
-    val currentRoute = rootNavigator.currentRoute
 
-    // 화면별 스낵바 하단 패딩 계산
+    // 시스템 내비게이션 바(3버튼 혹은 제스처 바)의 높이
+    val systemNavigationPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+
+    val isMainScreen = rootNavigator.currentRoute is Route.Main
+
+    // 스낵바 하단 패딩 계산: 시스템 바 높이 + (메인 화면일 경우 내비바 높이) + 기본 여백
     val snackbarBottomPadding =
         when {
-            currentRoute is Route.Main -> 92.dp
-            else -> 20.dp
+            isMainScreen -> {
+                systemNavigationPadding + SnackBarConfig.BottomNavBarHeight + SnackBarConfig.StandardPadding
+            }
+            else -> {
+                systemNavigationPadding + SnackBarConfig.StandardPadding
+            }
         }
 
     CompositionLocalProvider(
