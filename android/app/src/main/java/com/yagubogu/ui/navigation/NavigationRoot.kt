@@ -71,7 +71,7 @@ fun NavigationRoot(
                     onDeleteAccount = {
                         mainNavigator.navigate(BottomNavKey.Home)
                         rootNavigator.clearStack()
-                        rootNavigator.navigate(Route.Main)
+                        rootNavigator.navigate(Route.Login)
                     },
                 )
             }
