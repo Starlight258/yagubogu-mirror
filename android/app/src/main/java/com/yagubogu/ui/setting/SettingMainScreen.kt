@@ -372,8 +372,9 @@ private fun NicknameUpdateError.asString(context: Context): String =
         NicknameUpdateError.ServerError ->
             context.getString(R.string.setting_edit_nickname_server_error)
 
+        NicknameUpdateError.NetworkIssue -> context.getString(R.string.setting_edit_nickname_network_error)
         is NicknameUpdateError.Unknown ->
-            message ?: context.getString(R.string.setting_edit_nickname_unknown_default)
+            message ?: context.getString(R.string.setting_edit_nickname_unknown_error)
     }
 
 private fun Context.getAppVersion(): String =

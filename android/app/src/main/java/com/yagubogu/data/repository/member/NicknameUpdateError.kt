@@ -13,6 +13,8 @@ sealed interface NicknameUpdateError {
 
     object ServerError : NicknameUpdateError // 500, 502: 서버 장애
 
+    object NetworkIssue : NicknameUpdateError // 네트워크 연결 실패
+
     data class Unknown(
         val message: String?,
     ) : NicknameUpdateError // 기타
