@@ -19,13 +19,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,6 +49,8 @@ import com.yagubogu.ui.home.model.StadiumStatsUiModel
 import com.yagubogu.ui.home.model.VictoryFairyRanking
 import com.yagubogu.ui.theme.Gray050
 import com.yagubogu.ui.util.BackPressHandler
+import com.yagubogu.ui.util.LocalSnackbarHostState
+import com.yagubogu.ui.util.LocalSnackbarScope
 import com.yagubogu.ui.util.showSingleSnackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -60,7 +60,6 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun HomeScreen(
-    snackbarHostState: SnackbarHostState,
     scrollToTopEvent: SharedFlow<Unit>,
     onLoading: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
@@ -75,7 +74,8 @@ fun HomeScreen(
     val context: Context = LocalContext.current
     val resources: Resources = LocalResources.current
     val activity: Activity = LocalActivity.current ?: return
-    val coroutineScope: CoroutineScope = rememberCoroutineScope()
+    val snackbarScope: CoroutineScope = LocalSnackbarScope.current
+    val snackbarHostState = LocalSnackbarHostState.current
 
     val locationPermissionManager: LocationPermissionManager =
         remember { LocationPermissionManager(activity) }
@@ -90,14 +90,14 @@ fun HomeScreen(
                         viewModel::fetchStadiums,
                         {
                             snackbarHostState.showSingleSnackbar(
-                                scope = coroutineScope,
+                                scope = snackbarScope,
                                 message = resources.getString(R.string.home_location_settings_disabled),
                             )
                         },
                     )
 
                 shouldShowRationale -> {
-                    coroutineScope.launch {
+                    snackbarScope.launch {
                         snackbarHostState.showSnackbar(resources.getString(R.string.home_location_permission_denied_message))
                     }
                 }
@@ -122,7 +122,7 @@ fun HomeScreen(
         }
     }
 
-    BackPressHandler(snackbarHostState, coroutineScope)
+    BackPressHandler()
 
     HomeScreen(
         onCheckInClick = {
@@ -132,7 +132,7 @@ fun HomeScreen(
                 onSuccess = viewModel::fetchStadiums,
                 onSettingsDisabled = {
                     snackbarHostState.showSingleSnackbar(
-                        scope = coroutineScope,
+                        scope = snackbarScope,
                         message = resources.getString(R.string.home_location_settings_disabled),
                     )
                 },

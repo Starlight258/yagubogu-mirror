@@ -113,26 +113,22 @@ fun MainScreen(
                 entryProvider {
                     entry<BottomNavKey.Home> {
                         HomeScreen(
-                            snackbarHostState = snackbarHostState,
                             scrollToTopEvent = scrollToTopEvent,
                             onLoading = viewModel::setLoading,
                         )
                     }
                     entry<BottomNavKey.Livetalk> {
                         LivetalkScreen(
-                            snackbarHostState = snackbarHostState,
                             scrollToTopEvent = scrollToTopEvent,
                         )
                     }
                     entry<BottomNavKey.Stats> {
                         StatsScreen(
-                            snackbarHostState = snackbarHostState,
                             scrollToTopEvent = scrollToTopEvent,
                         )
                     }
                     entry<BottomNavKey.AttendanceHistory> {
                         AttendanceHistoryScreen(
-                            snackbarHostState = snackbarHostState,
                             scrollToTopEvent = scrollToTopEvent,
                         )
                     }

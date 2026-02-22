@@ -14,6 +14,7 @@ import com.yagubogu.ui.setting.model.PresignedUrlCompleteItem
 import com.yagubogu.ui.setting.model.PresignedUrlItem
 import com.yagubogu.ui.setting.model.SettingEvent
 import com.yagubogu.ui.util.now
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -33,7 +34,12 @@ class SettingViewModel(
     private val _myMemberInfoItem = MutableStateFlow(MemberInfoItem())
     val myMemberInfoItem: StateFlow<MemberInfoItem> = _myMemberInfoItem.asStateFlow()
 
-    private val _settingEvent = MutableSharedFlow<SettingEvent>()
+    private val _settingEvent =
+        MutableSharedFlow<SettingEvent>(
+            replay = 0, // 재수집 방지
+            extraBufferCapacity = 1,
+            onBufferOverflow = BufferOverflow.DROP_OLDEST,
+        )
     val settingEvent = _settingEvent.asSharedFlow()
 
     fun updateNickname(newNickname: String) {
