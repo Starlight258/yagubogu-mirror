@@ -23,7 +23,6 @@ import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
 import com.yagubogu.BuildConfig
 import com.yagubogu.R
-import com.yagubogu.ui.login.auth.GoogleCredentialManager
 import com.yagubogu.ui.login.model.InAppUpdateType
 import com.yagubogu.ui.login.model.VersionInfo
 import com.yagubogu.ui.main.model.AutoLoginState
@@ -36,14 +35,6 @@ import timber.log.Timber
 
 class YaguBoguActivity : AppCompatActivity() {
     private val viewModel: YaguBoguViewModel by viewModel()
-
-    private val googleCredentialManager: GoogleCredentialManager by lazy {
-        GoogleCredentialManager(
-            context = this,
-            serverClientId = BuildConfig.WEB_CLIENT_ID,
-            nonce = "",
-        )
-    }
 
     private var shouldImmediateUpdate: Boolean = true
     private var isAppInitialized: Boolean = false
@@ -74,10 +65,7 @@ class YaguBoguActivity : AppCompatActivity() {
                 val autoLoginState: AutoLoginState by viewModel.autoLoginState.collectAsStateWithLifecycle()
 
                 if (autoLoginState !is AutoLoginState.Loading) {
-                    YaguBoguRoute(
-                        googleCredentialManager = googleCredentialManager,
-                        startRoute = setStartRoute(autoLoginState),
-                    )
+                    YaguBoguRoute(startRoute = setStartRoute(autoLoginState))
                 }
             }
         }

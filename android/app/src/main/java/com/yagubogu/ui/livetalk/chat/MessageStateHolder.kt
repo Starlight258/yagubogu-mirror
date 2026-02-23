@@ -17,19 +17,11 @@ import timber.log.Timber
  * 메시지 입력 폼의 상태를 관리하는 책임을 가집니다. [Mutex]를 사용하여 메시지 목록에 대한
  * 스레드 안전한 업데이트를 보장합니다.
  *
- * @param isVerified 현재 사용자가 메시지를 보낼 수 있는 인증된 사용자인지 여부를 나타내는 Boolean 값.
- *                   이 값은 `canSendMessage` 상태를 제어합니다.
- *
  * @property hasNext 불러올 이전 메시지가 더 있는지 여부를 나타냅니다.
  * @property oldestMessageCursor 이전 메시지를 가져오기 위한 커서 ID (페이지네이션용).
  * @property newestMessageCursor 최신 메시지를 가져오기 위한 커서 ID.
  */
-class MessageStateHolder(
-    val isVerified: Boolean = false,
-) {
-    private val _isInitialLoadCompleted = MutableStateFlow(false)
-    val isInitialLoadCompleted: StateFlow<Boolean> = _isInitialLoadCompleted.asStateFlow()
-
+class MessageStateHolder {
     private val lock = Mutex()
     var hasNext: Boolean = true
         private set
@@ -54,7 +46,6 @@ class MessageStateHolder(
     private val pendingWriteChatIds = mutableSetOf<Long>()
 
     suspend fun addBeforeChats(response: LivetalkResponseItem) {
-        _isInitialLoadCompleted.value = true
         val beforeChats: List<LivetalkChatBubbleItem> =
             response.cursor.chats.map { LivetalkChatBubbleItem.of(it) }
 
@@ -87,7 +78,6 @@ class MessageStateHolder(
     }
 
     suspend fun addAfterChats(response: LivetalkResponseItem) {
-        _isInitialLoadCompleted.value = true
         lock.withLock {
             hasNext = response.cursor.hasNext
         }

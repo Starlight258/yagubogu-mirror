@@ -29,10 +29,9 @@ val viewModelModule =
 
         viewModelOf(::LivetalkViewModel)
 
-        viewModel { (gameId: Long, isVerified: Boolean) ->
+        viewModel { (gameId: Long) ->
             LivetalkChatViewModel(
                 gameId = gameId,
-                isVerified = isVerified,
                 talkRepository = get(),
                 gameRepository = get(),
                 memberRepository = get(),
