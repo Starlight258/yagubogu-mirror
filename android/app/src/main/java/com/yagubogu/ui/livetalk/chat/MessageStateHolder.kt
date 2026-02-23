@@ -158,22 +158,4 @@ class MessageStateHolder {
     fun updateMessageText(text: String) {
         _messageText.value = text
     }
-
-    suspend fun clear() {
-        lock.withLock {
-            // 커서 및 페이징 상태 초기화
-            hasNext = true
-            oldestMessageCursor = null
-            newestMessageCursor = null
-
-            // 채팅 목록 및 입력 텍스트 초기화
-            _messageText.value = ""
-            _livetalkChatBubbleItems.value = emptyList()
-
-            // 다이얼로그 및 대기 상태 초기화
-            _pendingReportChat.value = null
-            _pendingDeleteChat.value = null
-            pendingWriteChatIds.clear()
-        }
-    }
 }

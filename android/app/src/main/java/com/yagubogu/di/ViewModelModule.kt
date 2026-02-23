@@ -29,8 +29,9 @@ val viewModelModule =
 
         viewModelOf(::LivetalkViewModel)
 
-        viewModel {
+        viewModel { (gameId: Long) ->
             LivetalkChatViewModel(
+                gameId = gameId,
                 talkRepository = get(),
                 gameRepository = get(),
                 memberRepository = get(),

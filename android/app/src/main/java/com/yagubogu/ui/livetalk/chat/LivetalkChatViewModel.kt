@@ -35,6 +35,7 @@ import timber.log.Timber
 import kotlin.time.Clock
 
 class LivetalkChatViewModel(
+    private val gameId: Long,
     private val talkRepository: TalkRepository,
     private val gameRepository: GameRepository,
     private val memberRepository: MemberRepository,
@@ -72,7 +73,7 @@ class LivetalkChatViewModel(
             initialValue = LivetalkChatUiState.Loading,
         )
 
-    fun fetchBeforeTalks(gameId: Long) {
+    fun fetchBeforeTalks() {
         if (!messageStateHolder.hasNext) return
 
         viewModelScope.launch {
@@ -90,7 +91,7 @@ class LivetalkChatViewModel(
         }
     }
 
-    private suspend fun fetchAfterTalks(gameId: Long) {
+    private suspend fun fetchAfterTalks() {
         val result: Result<LivetalkResponseItem> =
             talkRepository
                 .getAfterTalks(
@@ -107,7 +108,7 @@ class LivetalkChatViewModel(
             }
     }
 
-    fun sendMessage(gameId: Long) {
+    fun sendMessage() {
         val message = messageStateHolder.messageText.value
         if (message.isBlank()) return
 
@@ -136,17 +137,14 @@ class LivetalkChatViewModel(
             talksResult
                 .onSuccess {
                     stopPolling()
-                    startPolling(gameId)
+                    startPolling()
                 }.onFailure { exception: Throwable ->
                     Timber.w(exception, "API 호출 실패")
                 }
         }
     }
 
-    fun deleteMessage(
-        gameId: Long,
-        chatId: Long,
-    ) {
+    fun deleteMessage(chatId: Long) {
         viewModelScope.launch {
             talkRepository
                 .deleteTalks(gameId, chatId)
@@ -189,7 +187,7 @@ class LivetalkChatViewModel(
         }
     }
 
-    fun addLikeToBatch(gameId: Long) {
+    fun addLikeToBatch() {
         viewModelScope.launch {
             likeCountStateHolder.increaseMyTeamShowingCount()
             likeCountStateHolder.increaseLikeCount()
@@ -197,13 +195,13 @@ class LivetalkChatViewModel(
                 likeBatchingJob =
                     launch {
                         delay(LIKE_BATCH_INTERVAL_MILLS)
-                        sendLikeBatch(gameId)
+                        sendLikeBatch()
                     }
             }
         }
     }
 
-    private suspend fun getLikeCount(gameId: Long) {
+    private suspend fun getLikeCount() {
         val teams: LivetalkTeams? = teams.value
         teams?.myTeamType ?: return
 
@@ -216,7 +214,7 @@ class LivetalkChatViewModel(
             }
     }
 
-    private suspend fun sendLikeBatch(gameId: Long) {
+    private suspend fun sendLikeBatch() {
         val teams: LivetalkTeams? = teams.value
         teams ?: return
 
@@ -242,7 +240,7 @@ class LivetalkChatViewModel(
         }
     }
 
-    fun fetchTeams(gameId: Long) {
+    fun fetchInitial() {
         viewModelScope.launch {
             _isInitialLoadCompleted.value = false
             val result: Result<LivetalkTeams> =
@@ -251,7 +249,7 @@ class LivetalkChatViewModel(
                 .onSuccess { livetalkTeams: LivetalkTeams ->
                     _teams.value = livetalkTeams
 
-                    startPolling(gameId)
+                    startPolling()
                 }.onFailure { exception ->
                     Timber.w(exception, "최초 팀 정보 가져오기 실패")
                 }
@@ -277,7 +275,7 @@ class LivetalkChatViewModel(
         }
     }
 
-    fun startPolling(gameId: Long) {
+    private fun startPolling() {
         viewModelScope.launch {
             pollingControlLock.withLock {
                 if (pollingJob?.isActive == true) return@launch
@@ -285,8 +283,8 @@ class LivetalkChatViewModel(
                 pollingJob =
                     launch {
                         while (true) {
-                            launch { fetchAfterTalks(gameId) }
-                            launch { getLikeCount(gameId) }
+                            launch { fetchAfterTalks() }
+                            launch { getLikeCount() }
                             delay(POLLING_INTERVAL_MILLS)
                         }
                     }
@@ -294,7 +292,7 @@ class LivetalkChatViewModel(
         }
     }
 
-    fun stopPolling() {
+    private fun stopPolling() {
         viewModelScope.launch {
             pollingControlLock.withLock {
                 pollingJob?.cancel()
@@ -303,16 +301,14 @@ class LivetalkChatViewModel(
         }
     }
 
-    fun clear(gameId: Long) {
+    override fun onCleared() {
+        super.onCleared()
         stopPolling()
         likeBatchingJob?.cancel()
         if (likeCountStateHolder.pendingLikeCount > 0) {
             CoroutineScope(Dispatchers.IO).launch {
-                sendLikeBatch(gameId)
+                sendLikeBatch()
             }
-        }
-        viewModelScope.launch {
-            messageStateHolder.clear()
         }
     }
 
