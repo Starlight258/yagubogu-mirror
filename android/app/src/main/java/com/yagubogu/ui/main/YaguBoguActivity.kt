@@ -32,13 +32,12 @@ import com.yagubogu.ui.navigation.YaguBoguRoute
 import com.yagubogu.ui.navigation.model.Route
 import com.yagubogu.ui.theme.YaguBoguTheme
 import com.yagubogu.ui.util.showToast
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.core.parameter.parametersOf
 
 class YaguBoguActivity : AppCompatActivity() {
+    private val logger = Logger.withTag("YaguBoguActivity")
+
     private val viewModel: YaguBoguViewModel by viewModel()
-    private val logger: Logger by inject { parametersOf("YaguBoguActivity") }
     private val googleCredentialManager: GoogleCredentialManager by lazy {
         GoogleCredentialManager(
             context = this,
