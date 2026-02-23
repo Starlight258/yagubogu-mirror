@@ -26,15 +26,15 @@ suspend inline fun <T> safeApiCall(crossinline apiCall: suspend () -> T): Result
                         val message = "HTTP ${status.value}: ${status.description}"
 
                         when (status) {
-                            HttpStatusCode.BadRequest -> ApiException.BadRequest(message, errorBody)
-                            HttpStatusCode.Unauthorized -> ApiException.Unauthorized(message, errorBody)
-                            HttpStatusCode.Forbidden -> ApiException.Forbidden(message, errorBody)
-                            HttpStatusCode.NotFound -> ApiException.NotFound(message, errorBody)
-                            HttpStatusCode.Conflict -> ApiException.Conflict(message, errorBody)
-                            HttpStatusCode.UnprocessableEntity -> ApiException.UnprocessableEntity(message, errorBody)
+                            HttpStatusCode.BadRequest -> ApiException.BadRequest(message)
+                            HttpStatusCode.Unauthorized -> ApiException.Unauthorized(message)
+                            HttpStatusCode.Forbidden -> ApiException.Forbidden(message)
+                            HttpStatusCode.NotFound -> ApiException.NotFound(message)
+                            HttpStatusCode.Conflict -> ApiException.Conflict(message)
+                            HttpStatusCode.UnprocessableEntity -> ApiException.UnprocessableEntity(message)
                             else ->
                                 when {
-                                    status.value >= 500 -> ApiException.ServerError(status.value, message, errorBody)
+                                    status.value >= 500 -> ApiException.ServerError(message)
                                     else -> ApiException.Unknown(message, e)
                                 }
                         }
