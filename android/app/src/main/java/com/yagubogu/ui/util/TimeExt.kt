@@ -9,12 +9,14 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.YearMonth
+import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.datetime.todayIn
 import kotlinx.datetime.yearMonth
 import kotlin.time.Clock
+import kotlin.time.Instant
 
 private val KST: TimeZone = TimeZone.of("Asia/Seoul")
 
@@ -37,6 +39,8 @@ fun YearMonth.Companion.now(
     clock: Clock = Clock.System,
     timeZone: TimeZone = KST,
 ): YearMonth = clock.todayIn(timeZone).yearMonth
+
+fun LocalDate.toInstant(): Instant = this.atStartOfDayIn(KST)
 
 fun LocalDate.minusDays(value: Int): LocalDate = minus(value, DateTimeUnit.DAY)
 
