@@ -26,8 +26,9 @@ import kotlinx.coroutines.sync.withLock
  */
 class MessageStateHolder(
     val isVerified: Boolean = false,
-    private val logger: Logger = Logger,
 ) {
+    private val logger = Logger.withTag("MessageStateHolder")
+
     private val _isInitialLoadCompleted = MutableStateFlow(false)
     val isInitialLoadCompleted: StateFlow<Boolean> = _isInitialLoadCompleted.asStateFlow()
 

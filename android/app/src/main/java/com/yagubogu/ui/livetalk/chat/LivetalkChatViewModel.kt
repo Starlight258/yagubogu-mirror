@@ -43,8 +43,8 @@ class LivetalkChatViewModel(
 ) : ViewModel() {
     private val logger = Logger.withTag("LivetalkChatViewModel")
 
-    val messageStateHolder = MessageStateHolder(isVerified, logger)
-    val likeCountStateHolder = LikeCountStateHolder(logger)
+    val messageStateHolder = MessageStateHolder(isVerified)
+    val likeCountStateHolder = LikeCountStateHolder()
 
     private val _teams = MutableStateFlow<LivetalkTeams?>(null)
     val teams: StateFlow<LivetalkTeams?> = _teams.asStateFlow()

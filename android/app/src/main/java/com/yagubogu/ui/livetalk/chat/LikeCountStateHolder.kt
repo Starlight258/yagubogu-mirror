@@ -24,9 +24,9 @@ import kotlinx.coroutines.sync.withLock
  * [Mutex]를 사용하여 '좋아요' 수 업데이트 시 스레드 안전성을 보장하며, 사용자가 '좋아요' 버튼을
  * 빠르게 연속으로 클릭할 때 발생할 수 있는 경쟁 상태(race condition)를 방지합니다.
  */
-class LikeCountStateHolder(
-    private val logger: Logger,
-) {
+class LikeCountStateHolder {
+    private val logger = Logger.withTag("LikeCountStateHolder")
+
     private var myTeamLikeRealCount: Long = 0L
     private var otherTeamLikeRealCount: Long = 0L
 
