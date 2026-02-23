@@ -1,6 +1,6 @@
 package com.yagubogu.ui.setting.model
 
-import com.yagubogu.data.repository.member.NicknameUpdateError
+import com.yagubogu.ui.util.UiText
 
 sealed interface SettingEvent {
     data class NicknameEditSuccess(
@@ -8,7 +8,7 @@ sealed interface SettingEvent {
     ) : SettingEvent
 
     data class NicknameEditFailure(
-        val error: NicknameUpdateError,
+        val uiText: UiText,
     ) : SettingEvent
 
     data object Logout : SettingEvent

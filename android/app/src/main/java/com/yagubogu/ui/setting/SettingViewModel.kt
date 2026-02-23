@@ -3,16 +3,18 @@ package com.yagubogu.ui.setting
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.yagubogu.R
 import com.yagubogu.data.repository.auth.AuthRepository
 import com.yagubogu.data.repository.member.MemberRepository
 import com.yagubogu.data.repository.member.NicknameUpdateError
-import com.yagubogu.data.repository.member.NicknameUpdateException
+import com.yagubogu.data.repository.member.toNicknameUpdateError
 import com.yagubogu.data.repository.thirdparty.ThirdPartyRepository
 import com.yagubogu.ui.mapper.toUiModel
 import com.yagubogu.ui.setting.model.MemberInfoItem
 import com.yagubogu.ui.setting.model.PresignedUrlCompleteItem
 import com.yagubogu.ui.setting.model.PresignedUrlItem
 import com.yagubogu.ui.setting.model.SettingEvent
+import com.yagubogu.ui.util.UiText
 import com.yagubogu.ui.util.now
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -50,11 +52,9 @@ class SettingViewModel(
                     _myMemberInfoItem.value = myMemberInfoItem.value.copy(nickName = newNickname)
                     _settingEvent.emit(SettingEvent.NicknameEditSuccess(newNickname))
                 }.onFailure { exception: Throwable ->
-                    val updateError =
-                        (exception as? NicknameUpdateException)?.error
-                            ?: NicknameUpdateError.Unknown(exception.message)
+                    val nicknameUpdateError: NicknameUpdateError = exception.toNicknameUpdateError()
 
-                    _settingEvent.emit(SettingEvent.NicknameEditFailure(updateError))
+                    _settingEvent.emit(SettingEvent.NicknameEditFailure(nicknameUpdateError.toUiText()))
                     Timber.w(exception, "닉네임 변경 API 호출 실패")
                 }
         }
@@ -130,4 +130,18 @@ class SettingViewModel(
                 }
         }
     }
+
+    private fun NicknameUpdateError.toUiText(): UiText =
+        when (this) {
+            NicknameUpdateError.DuplicateNickname -> UiText.StringResource(R.string.setting_edit_nickname_duplicate)
+            NicknameUpdateError.InvalidNickname -> UiText.StringResource(R.string.setting_edit_nickname_invalid_format)
+            NicknameUpdateError.MemberNotFound -> UiText.StringResource(R.string.setting_edit_nickname_member_not_found)
+            NicknameUpdateError.NoPermission -> UiText.StringResource(R.string.setting_edit_nickname_no_permission)
+            NicknameUpdateError.PayloadTooLarge -> UiText.StringResource(R.string.setting_edit_nickname_too_long)
+            NicknameUpdateError.ServerError -> UiText.StringResource(R.string.setting_edit_nickname_server_error)
+            NicknameUpdateError.NetworkIssue -> UiText.StringResource(R.string.setting_edit_nickname_network_error)
+            is NicknameUpdateError.Unknown ->
+                message?.let { UiText.DynamicString(it) }
+                    ?: UiText.StringResource(R.string.setting_edit_nickname_unknown_error)
+        }
 }

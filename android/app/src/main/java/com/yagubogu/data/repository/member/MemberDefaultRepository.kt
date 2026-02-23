@@ -9,7 +9,6 @@ import com.yagubogu.data.dto.response.member.MemberProfileResponse
 import com.yagubogu.data.dto.response.presigned.PresignedUrlCompleteResponse
 import com.yagubogu.data.dto.response.presigned.PresignedUrlStartResponse
 import com.yagubogu.data.network.TokenManager
-import com.yagubogu.data.util.ApiException
 
 class MemberDefaultRepository(
     private val memberDataSource: MemberDataSource,
@@ -44,8 +43,8 @@ class MemberDefaultRepository(
             .updateNickname(nickname)
             .map { memberNicknameResponse: MemberNicknameResponse ->
                 cachedNickname = memberNicknameResponse.nickname
-            }.onFailure { exception ->
-                val domainError = mapToNicknameUpdateError(exception)
+            }.onFailure { exception: Throwable ->
+                val domainError = exception.toNicknameUpdateError()
                 return Result.failure(NicknameUpdateException(domainError, exception))
             }
 
@@ -94,16 +93,4 @@ class MemberDefaultRepository(
         memberDataSource.completeUploadProfileImage(key)
 
     override suspend fun getMemberProfile(memberId: Long): Result<MemberProfileResponse> = memberDataSource.getMemberProfile(memberId)
-
-    private fun mapToNicknameUpdateError(exception: Throwable): NicknameUpdateError =
-        when (exception) {
-            is ApiException.Conflict -> NicknameUpdateError.DuplicateNickname // 409
-            is ApiException.UnprocessableEntity -> NicknameUpdateError.InvalidNickname // 422
-            is ApiException.BadRequest -> NicknameUpdateError.InvalidNickname // 400
-            is ApiException.Forbidden -> NicknameUpdateError.NoPermission // 403
-            is ApiException.NotFound -> NicknameUpdateError.MemberNotFound // 404
-            is ApiException.ServerError -> NicknameUpdateError.ServerError // 5xx
-            is ApiException.NetworkError -> NicknameUpdateError.NetworkIssue // 네트워크 미연결
-            else -> NicknameUpdateError.Unknown(exception.message)
-        }
 }

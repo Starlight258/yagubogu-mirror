@@ -44,7 +44,6 @@ import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.yagubogu.R
-import com.yagubogu.data.repository.member.NicknameUpdateError
 import com.yagubogu.ui.common.component.profile.ProfileImage
 import com.yagubogu.ui.setting.component.SettingButton
 import com.yagubogu.ui.setting.component.SettingButtonGroup
@@ -123,7 +122,7 @@ fun SettingMainScreen(
                 }
 
                 is SettingEvent.NicknameEditFailure -> {
-                    val errorMessage = settingEvent.error.asString(context)
+                    val errorMessage = settingEvent.uiText.asString(context)
                     snackbarHostState.showSingleSnackbar(
                         scope = this,
                         message = errorMessage,
@@ -351,31 +350,6 @@ private fun MyProfile(
         Spacer(modifier = Modifier.height(30.dp))
     }
 }
-
-private fun NicknameUpdateError.asString(context: Context): String =
-    when (this) {
-        NicknameUpdateError.DuplicateNickname ->
-            context.getString(R.string.setting_edit_nickname_duplicate)
-
-        NicknameUpdateError.InvalidNickname ->
-            context.getString(R.string.setting_edit_nickname_invalid_format)
-
-        NicknameUpdateError.MemberNotFound ->
-            context.getString(R.string.setting_edit_nickname_member_not_found)
-
-        NicknameUpdateError.NoPermission ->
-            context.getString(R.string.setting_edit_nickname_no_permission)
-
-        NicknameUpdateError.PayloadTooLarge ->
-            context.getString(R.string.setting_edit_nickname_too_long)
-
-        NicknameUpdateError.ServerError ->
-            context.getString(R.string.setting_edit_nickname_server_error)
-
-        NicknameUpdateError.NetworkIssue -> context.getString(R.string.setting_edit_nickname_network_error)
-        is NicknameUpdateError.Unknown ->
-            message ?: context.getString(R.string.setting_edit_nickname_unknown_error)
-    }
 
 private fun Context.getAppVersion(): String =
     try {
