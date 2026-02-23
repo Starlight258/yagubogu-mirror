@@ -107,7 +107,7 @@ fun SettingMainScreen(
     }
 
     LaunchedEffect(Unit) {
-        viewModel.settingEvent.collect { settingEvent ->
+        viewModel.settingEvent.collect { settingEvent: SettingEvent ->
             when (settingEvent) {
                 is SettingEvent.NicknameEditSuccess -> {
                     val message =

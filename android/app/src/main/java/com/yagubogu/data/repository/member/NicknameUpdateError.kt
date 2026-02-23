@@ -24,6 +24,7 @@ sealed interface NicknameUpdateError {
 
 fun Throwable.toNicknameUpdateError(): NicknameUpdateError =
     when (this) {
+        is NicknameUpdateException -> this.error
         is ApiException.Conflict -> NicknameUpdateError.DuplicateNickname // 409
         is ApiException.UnprocessableEntity -> NicknameUpdateError.InvalidNickname // 422
         is ApiException.BadRequest -> NicknameUpdateError.InvalidNickname // 400
