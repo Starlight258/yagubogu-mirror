@@ -14,6 +14,7 @@ suspend inline fun <T> safeApiCall(crossinline apiCall: suspend () -> T): Result
             Result.success(it)
         },
         onFailure = { e: Throwable ->
+            // 코루틴 취소 예외는 잡지 말고 던져야 함 (구조적 동시성 유지)
             if (e is CancellationException) throw e
 
             val exception =
