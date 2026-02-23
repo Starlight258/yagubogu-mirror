@@ -46,6 +46,7 @@ fun MainScreen(
     navigator: Navigator,
     onSettingsClick: () -> Unit,
     onBadgeClick: () -> Unit,
+    onLivetalkItemClick: (Long, Boolean) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: MainViewModel = koinViewModel(),
 ) {
@@ -120,6 +121,7 @@ fun MainScreen(
                     entry<BottomNavKey.Livetalk> {
                         LivetalkScreen(
                             scrollToTopEvent = scrollToTopEvent,
+                            onLivetalkItemClick = onLivetalkItemClick,
                         )
                     }
                     entry<BottomNavKey.Stats> {

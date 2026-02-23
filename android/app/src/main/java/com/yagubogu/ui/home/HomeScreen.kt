@@ -37,6 +37,7 @@ import com.google.firebase.analytics.analytics
 import com.yagubogu.R
 import com.yagubogu.ui.home.component.CheckInButton
 import com.yagubogu.ui.home.component.MemberStats
+import com.yagubogu.ui.home.component.OpeningCountdown
 import com.yagubogu.ui.home.component.STADIUM_STATS_UI_MODEL
 import com.yagubogu.ui.home.component.StadiumFanRate
 import com.yagubogu.ui.home.component.VICTORY_FAIRY_RANKING
@@ -52,9 +53,12 @@ import com.yagubogu.ui.util.BackPressHandler
 import com.yagubogu.ui.util.LocalSnackbarHostState
 import com.yagubogu.ui.util.LocalSnackbarScope
 import com.yagubogu.ui.util.showSingleSnackbar
+import io.github.ismoy.imagepickerkmp.domain.utils.openAppSettings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -69,6 +73,7 @@ fun HomeScreen(
     val stadiumStatsUiModel: StadiumStatsUiModel by viewModel.stadiumStatsUiModel.collectAsStateWithLifecycle()
     val isStadiumStatsExpanded: Boolean by viewModel.isStadiumStatsExpanded.collectAsStateWithLifecycle()
     val victoryFairyRanking: VictoryFairyRanking by viewModel.victoryFairyRanking.collectAsStateWithLifecycle()
+    val leftSecondsUntilOpening: StateFlow<Long> = viewModel.leftSecondsUntilOpening
     var isPermissionDenied: Boolean by remember { mutableStateOf(false) }
 
     val context: Context = LocalContext.current
@@ -145,6 +150,7 @@ fun HomeScreen(
         onStadiumStatsRefresh = viewModel::refreshStadiumStats,
         victoryFairyRanking = victoryFairyRanking,
         onVictoryFairyRankingClick = viewModel::fetchMemberProfile,
+        leftSecondsUntilOpening = leftSecondsUntilOpening,
         modifier = modifier,
         scrollToTopEvent = scrollToTopEvent,
     )
@@ -173,10 +179,17 @@ private fun HomeScreen(
     onStadiumStatsRefresh: () -> Unit,
     victoryFairyRanking: VictoryFairyRanking,
     onVictoryFairyRankingClick: (Long) -> Unit,
+    leftSecondsUntilOpening: StateFlow<Long>,
     modifier: Modifier = Modifier,
     scrollToTopEvent: SharedFlow<Unit> = MutableSharedFlow(),
 ) {
     val scrollState: ScrollState = rememberScrollState()
+    val leftSeconds: Long by leftSecondsUntilOpening.collectAsStateWithLifecycle()
+    var isCountdownVisible: Boolean by remember { mutableStateOf(false) }
+
+    if (!isCountdownVisible && leftSeconds > 0) {
+        isCountdownVisible = true
+    }
 
     LaunchedEffect(Unit) {
         scrollToTopEvent.collect {
@@ -202,6 +215,10 @@ private fun HomeScreen(
             modifier = Modifier.fillMaxWidth(),
         )
         MemberStats(uiModel = memberStatsUiModel)
+
+        if (isCountdownVisible) {
+            OpeningCountdown(leftSecondsFlow = leftSecondsUntilOpening)
+        }
 
         if (stadiumStatsUiModel.stadiumFanRates.isNotEmpty()) {
             StadiumFanRate(
@@ -280,5 +297,6 @@ private fun HomeScreenPreview() {
         onStadiumStatsRefresh = {},
         victoryFairyRanking = VICTORY_FAIRY_RANKING,
         onVictoryFairyRankingClick = {},
+        leftSecondsUntilOpening = MutableStateFlow(1_000_000L),
     )
 }

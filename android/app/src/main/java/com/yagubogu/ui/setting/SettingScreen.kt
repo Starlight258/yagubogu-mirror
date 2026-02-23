@@ -31,9 +31,10 @@ import com.yagubogu.ui.theme.Gray050
 fun SettingScreen(
     navigator: Navigator,
     onBackClick: () -> Unit,
-    onDeleteAccountCancel: () -> Unit,
     onFavoriteTeamEditClick: () -> Unit,
     onLogout: () -> Unit,
+    onDeleteAccountCancel: () -> Unit,
+    onDeleteAccount: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var isTopBarVisible: Boolean by remember { mutableStateOf(true) }
@@ -83,7 +84,7 @@ fun SettingScreen(
                         onDeleteAccountCancel = onDeleteAccountCancel,
                         onLogout = {
                             navigator.clearStack()
-                            onLogout()
+                            onDeleteAccount()
                         },
                     )
                 }
