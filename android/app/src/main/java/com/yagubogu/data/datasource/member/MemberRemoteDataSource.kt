@@ -29,7 +29,8 @@ class MemberRemoteDataSource(
 
     override suspend fun updateNickname(nickname: String): Result<MemberNicknameResponse> =
         safeApiCall {
-            memberApiService.patchNickname(MemberNicknameRequest(nickname))
+            val request = MemberNicknameRequest(nickname)
+            memberApiService.patchNickname(request)
         }
 
     override suspend fun getFavoriteTeam(): Result<MemberFavoriteResponse> =
