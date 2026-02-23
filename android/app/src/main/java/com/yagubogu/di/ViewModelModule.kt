@@ -44,6 +44,6 @@ val viewModelModule =
         viewModelOf(::MainViewModel)
 
         viewModelOf(::SettingViewModel)
-        
+
         viewModelOf(::StatsViewModel)
     }
