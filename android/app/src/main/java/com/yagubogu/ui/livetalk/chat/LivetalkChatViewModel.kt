@@ -73,6 +73,11 @@ class LivetalkChatViewModel(
             initialValue = LivetalkChatUiState.Loading,
         )
 
+    init {
+        viewModelScope.launch { fetchInitial() }
+        startPolling()
+    }
+
     fun fetchBeforeTalks() {
         if (!messageStateHolder.hasNext) return
 
@@ -240,20 +245,15 @@ class LivetalkChatViewModel(
         }
     }
 
-    fun fetchInitial() {
-        viewModelScope.launch {
-            _isInitialLoadCompleted.value = false
-            val result: Result<LivetalkTeams> =
-                talkRepository.getInitial(gameId).map { it.toUiModel() }
-            result
-                .onSuccess { livetalkTeams: LivetalkTeams ->
-                    _teams.value = livetalkTeams
-
-                    startPolling()
-                }.onFailure { exception ->
-                    Timber.w(exception, "최초 팀 정보 가져오기 실패")
-                }
-        }
+    private suspend fun fetchInitial() {
+        _isInitialLoadCompleted.value = false
+        val result: Result<LivetalkTeams> = talkRepository.getInitial(gameId).map { it.toUiModel() }
+        result
+            .onSuccess { livetalkTeams: LivetalkTeams ->
+                _teams.value = livetalkTeams
+            }.onFailure { exception ->
+                Timber.w(exception, "최초 팀 정보 가져오기 실패")
+            }
     }
 
     fun fetchMemberProfile(memberId: Long) {
@@ -305,6 +305,7 @@ class LivetalkChatViewModel(
         super.onCleared()
         stopPolling()
         likeBatchingJob?.cancel()
+
         if (likeCountStateHolder.pendingLikeCount > 0) {
             CoroutineScope(Dispatchers.IO).launch {
                 sendLikeBatch()

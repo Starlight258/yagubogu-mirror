@@ -170,10 +170,6 @@ fun LivetalkChatScreen(
             )
         }
 
-    LaunchedEffect(Unit) {
-        viewModel.fetchInitial()
-    }
-
     // 내 팀 (카운트 증가 + 이모지 애니메이션)
     LaunchedEffect(Unit) {
         likeCountStateHolder.myTeamLikeChangeAmount.collect { count ->
