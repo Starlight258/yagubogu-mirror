@@ -17,8 +17,9 @@ import kotlinx.coroutines.launch
 class LoginViewModel(
     private val authRepository: AuthRepository,
     private val memberRepository: MemberRepository,
-    private val logger: Logger,
 ) : ViewModel() {
+    private val logger = Logger.withTag("LoginViewModel")
+
     private val _loginResult = MutableSharedFlow<LoginResult>()
     val loginResult: SharedFlow<LoginResult> = _loginResult.asSharedFlow()
 

@@ -60,8 +60,9 @@ class HomeViewModel(
     private val stadiumRepository: StadiumRepository,
     private val streamRepository: StreamRepository,
     private val clock: Clock,
-    private val logger: Logger,
 ) : ViewModel() {
+    private val logger = Logger.withTag("HomeViewModel")
+
     private val _checkInUiEvent =
         MutableSharedFlow<CheckInUiEvent>(
             replay = 0,

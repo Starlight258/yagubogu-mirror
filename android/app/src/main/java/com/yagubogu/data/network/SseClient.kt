@@ -15,8 +15,9 @@ class SseClient(
     private val baseUrl: String,
     private val httpClient: HttpClient,
     private val json: Json,
-    private val logger: Logger,
 ) {
+    private val logger = Logger.withTag("SseClient")
+
     fun connect(): Flow<SseStreamResponse> =
         flow {
             try {

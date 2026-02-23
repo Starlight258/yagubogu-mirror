@@ -18,8 +18,9 @@ import kotlin.time.Clock
 class LivetalkViewModel(
     private val gameRepository: GameRepository,
     private val clock: Clock,
-    private val logger: Logger,
 ) : ViewModel() {
+    private val logger = Logger.withTag("LivetalkViewModel")
+
     private val _stadiumItems = MutableStateFlow<List<LivetalkStadiumItem>>(emptyList())
     val stadiumItems: StateFlow<List<LivetalkStadiumItem>> = _stadiumItems.asStateFlow()
 

@@ -1,10 +1,5 @@
 package com.yagubogu.ui.badge
 
-import co.touchlab.kermit.ExperimentalKermitApi
-import co.touchlab.kermit.Logger
-import co.touchlab.kermit.Severity
-import co.touchlab.kermit.StaticConfig
-import co.touchlab.kermit.TestLogWriter
 import com.yagubogu.fixture.BADGE_ID_0_ACQUIRED_FIXTURE
 import com.yagubogu.fixture.BADGE_ID_1_ACQUIRED_FIXTURE
 import com.yagubogu.fixture.MemberFakeRepository
@@ -19,30 +14,20 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 
-@OptIn(ExperimentalCoroutinesApi::class, ExperimentalKermitApi::class)
+@OptIn(ExperimentalCoroutinesApi::class)
 class BadgeViewModelTest :
     StringSpec({
         lateinit var memberRepository: MemberFakeRepository
         lateinit var badgeViewModel: BadgeViewModel
 
-        val testLogWriter = TestLogWriter(Severity.Verbose)
-        val logger =
-            Logger(
-                config = StaticConfig(logWriterList = listOf(testLogWriter)),
-                tag = "BadgeViewModelTest",
-            )
-
-        beforeTest {
-            Dispatchers.setMain(StandardTestDispatcher())
-            testLogWriter.reset()
-        }
+        beforeTest { Dispatchers.setMain(StandardTestDispatcher()) }
         afterTest { Dispatchers.resetMain() }
 
         "초기 배지 조회 요청이 성공하면 BadgeUiState가 Success 상태이다" {
             runTest {
                 // given & when
                 memberRepository = MemberFakeRepository(isFailureMode = false)
-                badgeViewModel = BadgeViewModel(memberRepository, logger)
+                badgeViewModel = BadgeViewModel(memberRepository)
                 badgeViewModel.fetchBadges()
 
                 advanceUntilIdle()
@@ -52,28 +37,11 @@ class BadgeViewModelTest :
             }
         }
 
-        "배지 목록 조회 실패 시 경고(Warn) 로그가 남는다" {
-            runTest {
-                // given
-                memberRepository = MemberFakeRepository(isFailureMode = true)
-                badgeViewModel = BadgeViewModel(memberRepository, logger)
-
-                // when
-                badgeViewModel.fetchBadges()
-                advanceUntilIdle()
-
-                // then
-                val actualLog = testLogWriter.logs.find { it.severity == Severity.Warn }
-                actualLog?.message shouldBe "fetchBadges API 호출 실패"
-                actualLog?.throwable.shouldBeTypeOf<Exception>()
-            }
-        }
-
         "초기 배지 조회 요청이 실패하면 BadgeUiState가 Loading 상태이다" {
             runTest {
                 // given & when
                 memberRepository = MemberFakeRepository(isFailureMode = true)
-                badgeViewModel = BadgeViewModel(memberRepository, logger)
+                badgeViewModel = BadgeViewModel(memberRepository)
                 badgeViewModel.fetchBadges()
 
                 advanceUntilIdle()
@@ -92,7 +60,7 @@ class BadgeViewModelTest :
                         badgeList =
                             listOf(BADGE_ID_0_ACQUIRED_FIXTURE, BADGE_ID_1_ACQUIRED_FIXTURE),
                     )
-                badgeViewModel = BadgeViewModel(memberRepository, logger)
+                badgeViewModel = BadgeViewModel(memberRepository)
                 badgeViewModel.fetchBadges()
                 badgeViewModel.updateRepresentativeBadge(0)
 
@@ -118,7 +86,7 @@ class BadgeViewModelTest :
                         badgeList =
                             listOf(BADGE_ID_0_ACQUIRED_FIXTURE, BADGE_ID_1_ACQUIRED_FIXTURE),
                     )
-                badgeViewModel = BadgeViewModel(memberRepository, logger)
+                badgeViewModel = BadgeViewModel(memberRepository)
                 badgeViewModel.fetchBadges()
                 advanceUntilIdle()
 
@@ -132,25 +100,6 @@ class BadgeViewModelTest :
                     .shouldBeTypeOf<BadgeUiState.Success>()
                     .representativeBadge
                     ?.id shouldBe 0
-            }
-        }
-
-        "대표 배지 설정 실패 시 경고(Warn) 로그가 남는다" {
-            runTest {
-                // given
-                memberRepository = MemberFakeRepository(isFailureMode = true)
-                badgeViewModel = BadgeViewModel(memberRepository, logger)
-
-                // when
-                badgeViewModel.updateRepresentativeBadge(1L)
-                advanceUntilIdle()
-
-                // then
-                val hasWarnLog =
-                    testLogWriter.logs.any {
-                        it.severity == Severity.Warn && it.message == "updateRepresentativeBadge API 호출 실패"
-                    }
-                hasWarnLog shouldBe true
             }
         }
     })

@@ -13,8 +13,9 @@ import kotlinx.coroutines.launch
 
 class BadgeViewModel(
     private val memberRepository: MemberRepository,
-    private val logger: Logger,
 ) : ViewModel() {
+    private val logger = Logger.withTag("BadgeViewModel")
+
     var badgeUiState = mutableStateOf<BadgeUiState>(BadgeUiState.Loading)
         private set
 

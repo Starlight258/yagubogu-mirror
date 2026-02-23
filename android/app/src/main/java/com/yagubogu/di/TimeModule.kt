@@ -5,7 +5,6 @@ import com.yagubogu.BuildConfig
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
-import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
 import kotlin.time.Clock
 import kotlin.time.Instant
@@ -13,7 +12,7 @@ import kotlin.time.Instant
 val timeModule =
     module {
         single<Clock> {
-            val logger: Logger = get<Logger> { parametersOf("timeModule") }
+            val logger = Logger.withTag("TimeModule")
             val clock: Clock =
                 runCatching {
                     if (BuildConfig.DEBUG) {

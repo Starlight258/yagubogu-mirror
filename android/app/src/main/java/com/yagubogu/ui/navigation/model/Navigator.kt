@@ -11,8 +11,9 @@ import co.touchlab.kermit.Logger
  */
 class Navigator(
     val state: NavigationState,
-    private val logger: Logger,
 ) {
+    private val logger = Logger.withTag("Navigator")
+
     private val currentStack: NavBackStack<NavKey>
         get() =
             state.backStacks[state.topLevelRoute]

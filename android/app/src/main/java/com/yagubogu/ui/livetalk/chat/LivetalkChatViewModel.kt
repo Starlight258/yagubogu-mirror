@@ -40,8 +40,9 @@ class LivetalkChatViewModel(
     private val talkRepository: TalkRepository,
     private val gameRepository: GameRepository,
     private val memberRepository: MemberRepository,
-    private val logger: Logger,
 ) : ViewModel() {
+    private val logger = Logger.withTag("LivetalkChatViewModel")
+
     val messageStateHolder = MessageStateHolder(isVerified, logger)
     val likeCountStateHolder = LikeCountStateHolder(logger)
 

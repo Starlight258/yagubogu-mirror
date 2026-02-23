@@ -54,8 +54,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDateTime
-import org.koin.compose.koinInject
-import org.koin.core.parameter.parametersOf
+
+private val logger = Logger.withTag("LivetalkChatScreen")
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -64,7 +64,6 @@ fun LivetalkChatScreen(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val logger: Logger = koinInject { parametersOf("LivetalkChatScreen") }
     val messageStateHolder = viewModel.messageStateHolder
     val likeCountStateHolder = viewModel.likeCountStateHolder
     val teams: LivetalkTeams? by viewModel.teams.collectAsStateWithLifecycle()
@@ -178,7 +177,6 @@ fun LivetalkChatScreen(
                     emoji = myTeamEmoji,
                     count = count,
                     scope = this,
-                    logger = logger,
                     increaseCountText = { increment ->
                         likeCountStateHolder.increaseMyTeamShowingCount(increment)
                     },
@@ -198,7 +196,6 @@ fun LivetalkChatScreen(
                     emoji = otherTeamEmoji,
                     count = count,
                     scope = this,
-                    logger = logger,
                 ) {
                     generateEmojiAnimation(otherTeamEmoji)
                 }
@@ -220,8 +217,6 @@ fun LivetalkChatScreenContent(
     actions: LivetalkChatScreenActions,
     modifier: Modifier = Modifier,
 ) {
-    val logger: Logger = koinInject { parametersOf("LivetalkChatScreenContent") }
-
     Scaffold(
         topBar = {
             LivetalkChatToolbar(
@@ -325,7 +320,6 @@ private fun scheduleEmojiWithCounter(
     emoji: String,
     count: Long,
     scope: CoroutineScope,
-    logger: Logger,
     increaseCountText: (suspend (Long) -> Unit)? = null,
     triggerAnimation: () -> Unit,
 ) {

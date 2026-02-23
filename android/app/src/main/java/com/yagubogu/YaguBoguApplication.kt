@@ -5,8 +5,6 @@ import co.touchlab.kermit.ExperimentalKermitApi
 import co.touchlab.kermit.Logger
 import co.touchlab.kermit.Severity
 import co.touchlab.kermit.crashlytics.CrashlyticsLogWriter
-import co.touchlab.kermit.koin.KermitKoinLogger
-import co.touchlab.kermit.koin.kermitLoggerModule
 import co.touchlab.kermit.platformLogWriter
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
@@ -47,9 +45,6 @@ class YaguBoguApplication : Application() {
         startKoin {
             androidContext(androidContext = this@YaguBoguApplication)
 
-            logger(
-                KermitKoinLogger(Logger.withTag("koin")),
-            )
             modules(
                 androidModule,
                 datasourceModule,
@@ -58,7 +53,6 @@ class YaguBoguApplication : Application() {
                 serviceModule,
                 timeModule,
                 viewModelModule,
-                kermitLoggerModule(Logger),
             )
         }
     }

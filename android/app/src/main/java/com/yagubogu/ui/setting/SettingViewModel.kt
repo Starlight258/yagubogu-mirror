@@ -28,8 +28,9 @@ class SettingViewModel(
     private val authRepository: AuthRepository,
     private val thirdPartyRepository: ThirdPartyRepository,
     private val clock: Clock,
-    private val logger: Logger,
 ) : ViewModel() {
+    private val logger = Logger.withTag("SettingViewModel")
+
     private val _myMemberInfoItem = MutableStateFlow(MemberInfoItem())
     val myMemberInfoItem: StateFlow<MemberInfoItem> = _myMemberInfoItem.asStateFlow()
 

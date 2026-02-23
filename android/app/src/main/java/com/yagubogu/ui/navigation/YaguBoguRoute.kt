@@ -3,7 +3,6 @@ package com.yagubogu.ui.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import co.touchlab.kermit.Logger
 import com.yagubogu.ui.login.auth.GoogleCredentialManager
 import com.yagubogu.ui.navigation.model.BottomNavKey
 import com.yagubogu.ui.navigation.model.NavigationState
@@ -11,8 +10,6 @@ import com.yagubogu.ui.navigation.model.Navigator
 import com.yagubogu.ui.navigation.model.Route
 import com.yagubogu.ui.navigation.model.SettingNavKey
 import com.yagubogu.ui.navigation.model.rememberNavigationState
-import org.koin.compose.koinInject
-import org.koin.core.parameter.parametersOf
 
 /**
  * 앱의 최상위 라우팅 컴포저블.
@@ -42,25 +39,21 @@ fun YaguBoguRoute(
                     Route.FavoriteTeam,
                 ),
         )
-    val rootLogger: Logger = koinInject { parametersOf("RootNavigator") }
-    val rootNavigator: Navigator = remember { Navigator(rootNavigationState, rootLogger) }
+    val rootNavigator: Navigator = remember { Navigator(rootNavigationState) }
 
     val mainNavigationState: NavigationState =
         rememberNavigationState(
             startRoute = BottomNavKey.Home,
             topLevelRoutes = BottomNavKey.items.toSet(),
         )
-    val mainLogger: Logger = koinInject { parametersOf("MainNavigator") }
-    val mainNavigator: Navigator = remember { Navigator(mainNavigationState, mainLogger) }
+    val mainNavigator: Navigator = remember { Navigator(mainNavigationState) }
 
     val settingNavigationState: NavigationState =
         rememberNavigationState(
             startRoute = SettingNavKey.SettingMain,
             topLevelRoutes = setOf(SettingNavKey.SettingMain),
         )
-    val settingLogger: Logger = koinInject { parametersOf("SettingNavigator") }
-    val settingNavigator: Navigator =
-        remember { Navigator(settingNavigationState, logger = settingLogger) }
+    val settingNavigator: Navigator = remember { Navigator(settingNavigationState) }
 
     NavigationRoot(
         googleCredentialManager = googleCredentialManager,

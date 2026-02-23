@@ -73,9 +73,7 @@ import io.github.ismoy.imagepickerkmp.presentation.ui.components.GalleryPickerLa
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.datetime.format
-import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
 import java.io.File
 import kotlin.coroutines.cancellation.CancellationException
 
@@ -156,7 +154,7 @@ private fun ProfileImagePicker(
     onUpload: suspend (Uri, String, Long) -> Result<Unit>,
     onClosePicker: () -> Unit,
 ) {
-    val logger: Logger = koinInject { parametersOf("ProfileImagePicker") }
+    val logger: Logger = Logger.withTag("ProfileImagePicker")
     val activity = context as? ComponentActivity
     when (activity is ComponentActivity) {
         true -> {

@@ -31,8 +31,9 @@ class StatsViewModel(
     private val statsRepository: StatsRepository,
     private val memberRepository: MemberRepository,
     private val checkInRepository: CheckInRepository,
-    private val logger: Logger,
 ) : ViewModel() {
+    private val logger = Logger.withTag("StatsViewModel")
+
     private val _year = MutableStateFlow(LocalDate.now().year)
     val year: StateFlow<Int> = _year.asStateFlow()
 

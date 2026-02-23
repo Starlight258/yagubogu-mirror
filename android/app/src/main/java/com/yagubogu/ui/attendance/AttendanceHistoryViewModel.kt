@@ -30,8 +30,9 @@ import kotlinx.datetime.number
 class AttendanceHistoryViewModel(
     private val checkInRepository: CheckInRepository,
     private val gameRepository: GameRepository,
-    private val logger: Logger,
 ) : ViewModel() {
+    private val logger = Logger.withTag("AttendanceHistoryViewModel")
+
     private val _items = MutableStateFlow<List<AttendanceHistoryItem>>(emptyList())
     val items: StateFlow<List<AttendanceHistoryItem>> = _items.asStateFlow()
 

@@ -24,7 +24,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import co.touchlab.kermit.Logger
 import com.yagubogu.R
 import com.yagubogu.domain.model.Team
 import com.yagubogu.ui.theme.Gray050
@@ -32,8 +31,6 @@ import com.yagubogu.ui.theme.PretendardMedium16
 import com.yagubogu.ui.util.emoji
 import com.yagubogu.ui.util.noRippleClickable
 import com.yagubogu.ui.util.shimmerIf
-import org.koin.compose.koinInject
-import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,7 +41,6 @@ fun LivetalkChatCheeringBar(
     onCheeringClick: () -> Unit,
     onPositioned: (Offset) -> Unit = {},
 ) {
-    val logger: Logger = koinInject { parametersOf("LivetalkChatCheeringBar") }
     Row(
         modifier =
             modifier
@@ -110,7 +106,6 @@ fun LivetalkChatCheeringBar(
                                     x = posInRoot.x + coordinates.size.width / 2f,
                                     y = posInRoot.y + coordinates.size.height / 2f,
                                 )
-                            logger.d("응원 버튼 이모지 중앙 좌표 : $centerPos")
                             onPositioned(centerPos)
                         },
             )
