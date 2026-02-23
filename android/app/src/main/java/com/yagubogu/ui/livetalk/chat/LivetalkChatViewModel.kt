@@ -74,8 +74,9 @@ class LivetalkChatViewModel(
         )
 
     init {
-        viewModelScope.launch { fetchInitial() }
-        startPolling()
+        viewModelScope.launch {
+            fetchInitial(onFetchSuccess = { startPolling() })
+        }
     }
 
     fun fetchBeforeTalks() {
@@ -245,12 +246,13 @@ class LivetalkChatViewModel(
         }
     }
 
-    private suspend fun fetchInitial() {
+    private suspend fun fetchInitial(onFetchSuccess: () -> Unit) {
         _isInitialLoadCompleted.value = false
         val result: Result<LivetalkTeams> = talkRepository.getInitial(gameId).map { it.toUiModel() }
         result
             .onSuccess { livetalkTeams: LivetalkTeams ->
                 _teams.value = livetalkTeams
+                onFetchSuccess()
             }.onFailure { exception ->
                 Timber.w(exception, "최초 팀 정보 가져오기 실패")
             }
