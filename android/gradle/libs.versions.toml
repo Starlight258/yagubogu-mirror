@@ -29,7 +29,7 @@ composeBom = "2025.08.01"
 nav3Core = "1.0.0"
 
 # Koin
-koin-bom = "4.1.1"
+koin-bom = "4.2.0-RC1"
 
 # Ktor & Ktorfit
 ktor = "3.3.3"
@@ -111,6 +111,7 @@ koin-core = { module = "io.insert-koin:koin-core" }
 koin-android = { module = "io.insert-koin:koin-android" }
 koin-compose = { module = "io.insert-koin:koin-compose" }
 koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel" }
+koin-compose-navigation3 = { module = "io.insert-koin:koin-compose-navigation3", version.ref = "koin-bom" }
 
 # Ktor & Ktorfit
 ktorfit-lib = { module = "de.jensklingenberg.ktorfit:ktorfit-lib", version.ref = "ktorfit" }
