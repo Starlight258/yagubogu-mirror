@@ -3,6 +3,7 @@ package com.yagubogu.ui.home
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.res.Resources
 import android.net.Uri
 import android.provider.Settings
 import androidx.activity.compose.LocalActivity
@@ -29,16 +30,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.firebase.Firebase
 import com.google.firebase.analytics.analytics
 import com.yagubogu.R
 import com.yagubogu.ui.home.component.CheckInButton
 import com.yagubogu.ui.home.component.MemberStats
+import com.yagubogu.ui.home.component.OpeningCountdown
 import com.yagubogu.ui.home.component.STADIUM_STATS_UI_MODEL
 import com.yagubogu.ui.home.component.StadiumFanRate
 import com.yagubogu.ui.home.component.VICTORY_FAIRY_RANKING
@@ -51,10 +52,14 @@ import com.yagubogu.ui.home.model.StadiumStatsUiModel
 import com.yagubogu.ui.home.model.VictoryFairyRanking
 import com.yagubogu.ui.theme.Gray050
 import com.yagubogu.ui.util.BackPressHandler
+import io.github.ismoy.imagepickerkmp.domain.utils.openAppSettings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun HomeScreen(
@@ -62,15 +67,17 @@ fun HomeScreen(
     scrollToTopEvent: SharedFlow<Unit>,
     onLoading: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: HomeViewModel = hiltViewModel(),
+    viewModel: HomeViewModel = koinViewModel(),
 ) {
     val memberStatsUiModel: MemberStatsUiModel by viewModel.memberStatsUiModel.collectAsStateWithLifecycle()
     val stadiumStatsUiModel: StadiumStatsUiModel by viewModel.stadiumStatsUiModel.collectAsStateWithLifecycle()
     val isStadiumStatsExpanded: Boolean by viewModel.isStadiumStatsExpanded.collectAsStateWithLifecycle()
     val victoryFairyRanking: VictoryFairyRanking by viewModel.victoryFairyRanking.collectAsStateWithLifecycle()
+    val leftSecondsUntilOpening: StateFlow<Long> = viewModel.leftSecondsUntilOpening
     var isPermissionDenied: Boolean by remember { mutableStateOf(false) }
 
     val context: Context = LocalContext.current
+    val resources: Resources = LocalResources.current
     val activity: Activity = LocalActivity.current ?: return
     val coroutineScope: CoroutineScope = rememberCoroutineScope()
 
@@ -87,7 +94,7 @@ fun HomeScreen(
 
                 shouldShowRationale -> {
                     coroutineScope.launch {
-                        snackbarHostState.showSnackbar(context.getString(R.string.home_location_permission_denied_message))
+                        snackbarHostState.showSnackbar(resources.getString(R.string.home_location_permission_denied_message))
                     }
                 }
 
@@ -111,17 +118,6 @@ fun HomeScreen(
         }
     }
 
-    LifecycleStartEffect(viewModel) {
-        val isMatchDay: Boolean = stadiumStatsUiModel.stadiumFanRates.isNotEmpty()
-        if (isMatchDay) {
-            viewModel.startStreaming()
-        }
-
-        onStopOrDispose {
-            viewModel.stopStreaming()
-        }
-    }
-
     BackPressHandler(snackbarHostState, coroutineScope)
 
     HomeScreen(
@@ -139,6 +135,7 @@ fun HomeScreen(
         onStadiumStatsRefresh = viewModel::refreshStadiumStats,
         victoryFairyRanking = victoryFairyRanking,
         onVictoryFairyRankingClick = viewModel::fetchMemberProfile,
+        leftSecondsUntilOpening = leftSecondsUntilOpening,
         modifier = modifier,
         scrollToTopEvent = scrollToTopEvent,
     )
@@ -167,10 +164,17 @@ private fun HomeScreen(
     onStadiumStatsRefresh: () -> Unit,
     victoryFairyRanking: VictoryFairyRanking,
     onVictoryFairyRankingClick: (Long) -> Unit,
+    leftSecondsUntilOpening: StateFlow<Long>,
     modifier: Modifier = Modifier,
     scrollToTopEvent: SharedFlow<Unit> = MutableSharedFlow(),
 ) {
     val scrollState: ScrollState = rememberScrollState()
+    val leftSeconds: Long by leftSecondsUntilOpening.collectAsStateWithLifecycle()
+    var isCountdownVisible: Boolean by remember { mutableStateOf(false) }
+
+    if (!isCountdownVisible && leftSeconds > 0) {
+        isCountdownVisible = true
+    }
 
     LaunchedEffect(Unit) {
         scrollToTopEvent.collect {
@@ -196,6 +200,10 @@ private fun HomeScreen(
             modifier = Modifier.fillMaxWidth(),
         )
         MemberStats(uiModel = memberStatsUiModel)
+
+        if (isCountdownVisible) {
+            OpeningCountdown(leftSecondsFlow = leftSecondsUntilOpening)
+        }
 
         if (stadiumStatsUiModel.stadiumFanRates.isNotEmpty()) {
             StadiumFanRate(
@@ -270,5 +278,6 @@ private fun HomeScreenPreview() {
         onStadiumStatsRefresh = {},
         victoryFairyRanking = VICTORY_FAIRY_RANKING,
         onVictoryFairyRankingClick = {},
+        leftSecondsUntilOpening = MutableStateFlow(1_000_000L),
     )
 }

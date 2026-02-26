@@ -2,14 +2,11 @@ package com.yagubogu.ui.main
 
 import androidx.lifecycle.ViewModel
 import com.yagubogu.ui.navigation.model.BottomNavKey
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import javax.inject.Inject
 
-@HiltViewModel
-class MainViewModel @Inject constructor() : ViewModel() {
+class MainViewModel : ViewModel() {
     private val _selectedBottomNavKey = MutableStateFlow<BottomNavKey>(BottomNavKey.Home)
     val selectedBottomNavKey: StateFlow<BottomNavKey> = _selectedBottomNavKey.asStateFlow()
 

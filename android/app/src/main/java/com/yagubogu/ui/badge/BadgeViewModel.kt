@@ -8,13 +8,10 @@ import com.yagubogu.data.repository.member.MemberRepository
 import com.yagubogu.ui.badge.model.BadgeInfoUiModel
 import com.yagubogu.ui.badge.model.BadgeUiModel
 import com.yagubogu.ui.mapper.toUiModel
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import javax.inject.Inject
 
-@HiltViewModel
-class BadgeViewModel @Inject constructor(
+class BadgeViewModel(
     private val memberRepository: MemberRepository,
 ) : ViewModel() {
     var badgeUiState = mutableStateOf<BadgeUiState>(BadgeUiState.Loading)

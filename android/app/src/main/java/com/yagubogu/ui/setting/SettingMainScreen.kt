@@ -1,18 +1,13 @@
 package com.yagubogu.ui.setting
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.net.Uri
-import android.os.ParcelFileDescriptor
-import android.provider.OpenableColumns
-import androidx.activity.compose.ManagedActivityResultLauncher
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -38,14 +33,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.database.getLongOrNull
 import androidx.core.net.toUri
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.yagubogu.R
@@ -62,11 +56,23 @@ import com.yagubogu.ui.theme.PretendardMedium12
 import com.yagubogu.ui.theme.PretendardRegular12
 import com.yagubogu.ui.theme.PretendardSemiBold
 import com.yagubogu.ui.theme.White
-import com.yagubogu.ui.util.DateFormatter
 import com.yagubogu.ui.util.showToast
-import com.yalantis.ucrop.UCrop
+import com.yagubogu.ui.util.yyyyMMddFormatter
+import id.zelory.compressor.Compressor
+import id.zelory.compressor.constraint.format
+import id.zelory.compressor.constraint.quality
+import id.zelory.compressor.constraint.resolution
+import id.zelory.compressor.constraint.size
+import io.github.ismoy.imagepickerkmp.domain.config.CameraCaptureConfig
+import io.github.ismoy.imagepickerkmp.domain.config.CropConfig
+import io.github.ismoy.imagepickerkmp.domain.models.CompressionLevel
+import io.github.ismoy.imagepickerkmp.domain.models.GalleryPhotoResult
+import io.github.ismoy.imagepickerkmp.domain.models.MimeType.Companion.ALL_SUPPORTED_TYPES
+import io.github.ismoy.imagepickerkmp.presentation.ui.components.GalleryPickerLauncher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.datetime.format
+import org.koin.compose.viewmodel.koinViewModel
 import timber.log.Timber
 import java.io.File
 import kotlin.coroutines.cancellation.CancellationException
@@ -75,10 +81,12 @@ import kotlin.coroutines.cancellation.CancellationException
 fun SettingMainScreen(
     onSettingAccountClick: () -> Unit,
     onFavoriteTeamEditClick: () -> Unit,
+    onFullScreenMode: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: SettingViewModel = hiltViewModel(),
+    viewModel: SettingViewModel = koinViewModel(),
 ) {
     val context: Context = LocalContext.current
+    val resources: Resources = LocalResources.current
     val scope: CoroutineScope = rememberCoroutineScope()
     val memberInfoItem: State<MemberInfoItem> =
         viewModel.myMemberInfoItem.collectAsStateWithLifecycle(MemberInfoItem())
@@ -87,37 +95,11 @@ fun SettingMainScreen(
 
     val settingEvent: SettingEvent? by viewModel.settingEvent.collectAsStateWithLifecycle(null)
 
-    val uCropLauncher: ManagedActivityResultLauncher<Intent, ActivityResult> =
-        rememberLauncherForActivityResult(
-            ActivityResultContracts.StartActivityForResult(),
-        ) { result: ActivityResult ->
-            when (result.resultCode) {
-                Activity.RESULT_OK -> {
-                    val intent: Intent = result.data ?: return@rememberLauncherForActivityResult
-                    val resultUri: Uri =
-                        UCrop.getOutput(intent) ?: return@rememberLauncherForActivityResult
-                    scope.launch {
-                        handleCroppedImage(context, resultUri, viewModel::uploadProfileImage)
-                    }
-                }
+    var showGallery by rememberSaveable { mutableStateOf(false) }
 
-                UCrop.RESULT_ERROR -> {
-                    val cropError: Throwable? = result.data?.let { UCrop.getError(it) }
-                    Timber.e(cropError, "uCrop Error")
-                    context.showToast(R.string.setting_edit_profile_image_crop_failed)
-                }
-            }
-        }
-    val pickImageLauncher: ManagedActivityResultLauncher<String, Uri?> =
-        rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-            uri?.let {
-                launchUCropIntent(
-                    context = context,
-                    sourceUri = it,
-                    onCropIntentReady = uCropLauncher::launch,
-                )
-            }
-        }
+    LaunchedEffect(showGallery) {
+        onFullScreenMode(showGallery)
+    }
 
     LaunchedEffect(Unit) {
         viewModel.fetchMemberInfo()
@@ -126,7 +108,7 @@ fun SettingMainScreen(
     LaunchedEffect(settingEvent) {
         if (settingEvent is SettingEvent.NicknameEdit) {
             val message =
-                context.getString(
+                resources.getString(
                     R.string.setting_edited_nickname_alert,
                     (settingEvent as SettingEvent.NicknameEdit).newNickname,
                 )
@@ -136,13 +118,19 @@ fun SettingMainScreen(
 
     SettingMainScreen(
         onClickSettingAccount = onSettingAccountClick,
-        onNicknameEdit = { showNicknameEditDialog = true },
-        onProfileImageUpload = { pickImageLauncher.launch("image/*") },
         onFavoriteTeamEditClick = onFavoriteTeamEditClick,
+        onNicknameEdit = { showNicknameEditDialog = true },
+        onProfileImageUpload = {
+            showGallery = true
+        },
         memberInfoItem = memberInfoItem.value,
         appVersion = context.getAppVersion(),
         modifier = modifier,
     )
+
+    if (showGallery) {
+        ProfileImagePicker(context, scope, viewModel::uploadProfileImage, onClosePicker = { showGallery = false })
+    }
 
     if (showNicknameEditDialog) {
         NicknameEditDialog(
@@ -156,6 +144,81 @@ fun SettingMainScreen(
             },
             onCancel = { showNicknameEditDialog = false },
         )
+    }
+}
+
+@Composable
+private fun ProfileImagePicker(
+    context: Context,
+    scope: CoroutineScope,
+    onUpload: suspend (Uri, String, Long) -> Result<Unit>,
+    onClosePicker: () -> Unit,
+) {
+    val activity = context as? ComponentActivity
+    when (activity is ComponentActivity) {
+        true -> {
+            GalleryPickerLauncher(
+                allowMultiple = false,
+                mimeTypes = ALL_SUPPORTED_TYPES,
+                onPhotosSelected = { photos: List<GalleryPhotoResult> ->
+                    Timber.d("onPhotosSelected, 사진 개수: ${photos.size}")
+                    onClosePicker()
+
+                    val photo: GalleryPhotoResult? = photos.firstOrNull()
+                    if (photo == null) {
+                        Timber.w("선택된 사진이 없습니다")
+                        return@GalleryPickerLauncher
+                    }
+                    scope.launch {
+                        runCatching {
+                            handleImagePickerKMPCroppedImage(
+                                context = context,
+                                sourceImageUri =
+                                    if (photo.uri.startsWith("file://")) {
+                                        photo.uri.toUri()
+                                    } else {
+                                        File(photo.uri).toUri()
+                                    },
+                                onProfileImageUpload = onUpload,
+                            )
+                        }.getOrElse { exception: Throwable ->
+                            Timber.e(exception, "이미지 처리 중 예외 발생")
+                            context.showToast(R.string.setting_edit_profile_image_processing_failed)
+                        }
+                    }
+                },
+                onError = { exception: Exception ->
+                    Timber.e(exception, "GalleryPicker 에러 발생")
+                    context.showToast(context.getString(R.string.setting_edit_profile_image_selection_failed))
+                    onClosePicker()
+                },
+                onDismiss = {
+                    Timber.d("GalleryPicker 닫힘")
+                    onClosePicker()
+                },
+                enableCrop = true,
+                cameraCaptureConfig =
+                    CameraCaptureConfig(
+                        compressionLevel = CompressionLevel.HIGH,
+                        cropConfig =
+                            CropConfig(
+                                enabled = true,
+                                aspectRatioLocked = true,
+                                circularCrop = true,
+                                squareCrop = false,
+                                freeformCrop = false,
+                            ),
+                    ),
+            )
+        }
+
+        false -> {
+            Timber.e("Context가 ComponentActivity가 아닙니다: ${context.javaClass.name}")
+            LaunchedEffect(Unit) {
+                context.showToast(context.getString(R.string.setting_edit_profile_image_selection_failed))
+                onClosePicker()
+            }
+        }
     }
 }
 
@@ -249,7 +312,7 @@ private fun MyProfile(
             text =
                 stringResource(
                     R.string.setting_main_sign_up_date,
-                    memberInfoItem.createdAt.format(DateFormatter.yyyyMMdd),
+                    memberInfoItem.createdAt.format(yyyyMMddFormatter),
                 ),
             style = PretendardRegular12,
             color = Gray500,
@@ -268,53 +331,30 @@ private fun Context.getAppVersion(): String =
         DEFAULT_VERSION_NAME
     }
 
-private fun launchUCropIntent(
+/**
+ * ImagePickerKMP로 자른 이미지를
+ * 백엔드에서 요구하는 프로파일 이미지 규격(jpeg, 5mb)으로 컨버팅하여 업로드합니다.
+ */
+private suspend fun handleImagePickerKMPCroppedImage(
     context: Context,
-    sourceUri: Uri,
-    onCropIntentReady: (Intent) -> Unit,
-) {
-    val fileName = "cropped_image_${System.currentTimeMillis()}"
-    val destinationUri = Uri.fromFile(File(context.cacheDir, fileName))
-
-    val options: UCrop.Options =
-        UCrop.Options().apply {
-            setFreeStyleCropEnabled(false)
-            setHideBottomControls(false)
-            setCircleDimmedLayer(true)
-            setToolbarColor(context.getColor(R.color.gray050))
-            setCompressionFormat(Bitmap.CompressFormat.JPEG)
-            setCompressionQuality(85)
-        }
-
-    val uCropIntent: Intent? =
-        UCrop
-            .of(sourceUri, destinationUri)
-            .withAspectRatio(1f, 1f)
-            .withMaxResultSize(500, 500)
-            .withOptions(options)
-            .getIntent(context)
-
-    uCropIntent?.let { onCropIntentReady(it) }
-}
-
-private suspend fun handleCroppedImage(
-    context: Context,
-    uri: Uri,
+    sourceImageUri: Uri,
     onProfileImageUpload: suspend (Uri, String, Long) -> Result<Unit>,
 ) {
     runCatching {
-        val mimeType: String =
-            context
-                .contentResolver
-                .getType(uri) ?: "image/jpeg"
+        val originalFile = File(sourceImageUri.path ?: error("경로를 찾을 수 없음"))
+        val convertedProfileImage =
+            Compressor.compress(context, originalFile) {
+                resolution(500, 500)
+                quality(90)
+                format(Bitmap.CompressFormat.JPEG)
+                size(5L * 1024L * 1024L)
+            }
 
-        val fileSize: Long =
-            uri
-                .fileSize(context)
-                .getOrNull()
-                ?: error("파일 사이즈 획득 실패")
+        val convertedImageUri = convertedProfileImage.toUri()
+        val fileSize = convertedProfileImage.length()
+        val mimeType = "image/jpeg"
 
-        onProfileImageUpload(uri, mimeType, fileSize)
+        onProfileImageUpload(convertedImageUri, mimeType, fileSize)
     }.fold(
         onSuccess = { result: Result<Unit> ->
             result.onFailure { e ->
@@ -329,25 +369,6 @@ private suspend fun handleCroppedImage(
         },
     )
 }
-
-private fun Uri.fileSize(context: Context): Result<Long?> =
-    runCatching {
-        context.contentResolver
-            .query(this, arrayOf(OpenableColumns.SIZE), null, null, null)
-            ?.use { cursor ->
-                if (cursor.moveToFirst()) {
-                    val idx = cursor.getColumnIndexOrThrow(OpenableColumns.SIZE)
-                    cursor.getLongOrNull(idx)
-                } else {
-                    null
-                }
-            }
-            ?: context.contentResolver
-                .openFileDescriptor(this, "r")
-                ?.use { parcelFileDescriptor: ParcelFileDescriptor ->
-                    parcelFileDescriptor.statSize.takeIf { it >= 0 }
-                }
-    }
 
 private fun Context.openUrl(url: String) {
     val intent = Intent(Intent.ACTION_VIEW, url.toUri())

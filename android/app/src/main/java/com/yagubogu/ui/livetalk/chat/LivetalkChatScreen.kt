@@ -48,11 +48,12 @@ import com.yagubogu.ui.theme.Gray050
 import com.yagubogu.ui.theme.Gray300
 import com.yagubogu.ui.theme.YaguBoguTheme
 import com.yagubogu.ui.util.emoji
+import com.yagubogu.ui.util.now
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDateTime
 import timber.log.Timber
-import java.time.LocalDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -363,7 +364,7 @@ fun LivetalkChatPreviewSuccess() {
             profileImageUrl = null,
             nickname = "무빙맨",
             teamName = "한화",
-            timestamp = LocalDateTime.now().minusMinutes(5),
+            timestamp = LocalDateTime.now(),
             reported = false,
         )
 
@@ -376,7 +377,7 @@ fun LivetalkChatPreviewSuccess() {
             profileImageUrl = null,
             nickname = "포르",
             teamName = "기아",
-            timestamp = LocalDateTime.now().minusMinutes(2),
+            timestamp = LocalDateTime.now(),
             reported = false,
         )
 

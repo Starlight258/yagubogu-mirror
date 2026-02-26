@@ -14,7 +14,6 @@ import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yagubogu.domain.model.Team
 import com.yagubogu.ui.stats.StatsViewModel
@@ -25,13 +24,14 @@ import com.yagubogu.ui.stats.detail.model.VsTeamStatItem
 import com.yagubogu.ui.theme.Gray050
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun StatsDetailScreen(
     year: Int,
     scrollToTopEvent: SharedFlow<Unit>,
     modifier: Modifier = Modifier,
-    viewModel: StatsViewModel = hiltViewModel(),
+    viewModel: StatsViewModel = koinViewModel(),
 ) {
     val vsTeamStatItems: List<VsTeamStatItem> by viewModel.vsTeamStatItems.collectAsStateWithLifecycle()
     val stadiumVisitCounts: List<StadiumVisitCount> by viewModel.stadiumVisitCounts.collectAsStateWithLifecycle()

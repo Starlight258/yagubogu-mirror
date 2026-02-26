@@ -13,7 +13,7 @@ import com.yagubogu.ui.attendance.model.PastGameUiState
 import com.yagubogu.ui.mapper.toAttendanceUiModel
 import com.yagubogu.ui.mapper.toUiModel
 import com.yagubogu.ui.util.mapList
-import dagger.hilt.android.lifecycle.HiltViewModel
+import com.yagubogu.ui.util.now
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,13 +22,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.YearMonth
+import kotlinx.datetime.number
 import timber.log.Timber
-import java.time.LocalDate
-import java.time.YearMonth
-import javax.inject.Inject
 
-@HiltViewModel
-class AttendanceHistoryViewModel @Inject constructor(
+class AttendanceHistoryViewModel(
     private val checkInRepository: CheckInRepository,
     private val gameRepository: GameRepository,
 ) : ViewModel() {
@@ -64,7 +63,7 @@ class AttendanceHistoryViewModel @Inject constructor(
             checkInRepository
                 .getCheckInHistories(
                     yearMonth.year,
-                    yearMonth.monthValue,
+                    yearMonth.month.number,
                     filter.value.name,
                     sort.value.name,
                 ).mapList { it.toUiModel() }
@@ -124,7 +123,7 @@ class AttendanceHistoryViewModel @Inject constructor(
     }
 
     companion object {
-        val START_MONTH: YearMonth = YearMonth.of(2021, 3)
+        val START_MONTH: YearMonth = YearMonth(2021, 3)
         val END_MONTH: YearMonth = YearMonth.now()
     }
 }

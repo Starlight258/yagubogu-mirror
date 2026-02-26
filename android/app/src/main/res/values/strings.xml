@@ -1,4 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <string name="app_name">야구보구</string>
 
     <string name="all_settings">설정</string>
@@ -16,6 +16,19 @@
     <string name="all_year">%d년</string>
     <string name="all_month">%d월</string>
     <string name="all_year_month">%d년 %d월</string>
+
+    <string name="d_day_with_days">D-%d</string>
+
+    <string name="day_monday">월</string>
+    <string name="day_tuesday">화</string>
+    <string name="day_wednesday">수</string>
+    <string name="day_thursday">목</string>
+    <string name="day_friday">금</string>
+    <string name="day_saturday">토</string>
+    <string name="day_sunday">일</string>
+
+    <string name="time_am">오전</string>
+    <string name="time_pm">오후</string>
 
     <string name="main_back_press_to_exit">뒤로가기를 한 번 더 누르면 종료됩니다.</string>
 
@@ -55,6 +68,7 @@
     <string name="home_check_in_no_game_message">오늘은 경기가 없는 날이에요.</string>
     <string name="home_check_in_out_of_range_message">구장 근처에서만 인증할 수 있어요.</string>
     <string name="home_check_in_network_failed_message">네트워크 오류로 인증에 실패했습니다.\n잠시 후 다시 시도해주세요.</string>
+    <string name="home_opening_countdown_left_time">개막까지 남은 시간</string>
 
     <string name="home_stadium_stats_title">오늘 팬 현황</string>
     <string name="home_stadium_stats_tooltip">오늘 야구보구에서 직관 인증한 팬들의 비율이에요.</string>
@@ -170,15 +184,11 @@
     <string name="setting_edit_profile_image_processing_failed">이미지 처리에 실패했습니다\n다른 이미지를 선택해보세요</string>
     <string name="setting_edit_profile_image_upload_failed">이미지 업로드에 실패했습니다\n나중에 다시 시도하세요</string>
     <string name="setting_edit_profile_get_image_size_failed">이미지 파일 크기를 확인할 수 없습니다</string>
+    <string name="setting_edit_profile_image_selection_failed">이미지 선택 중 오류가 발생했습니다</string>
     <string name="setting_edit_nickname">닉네임 수정</string>
     <string name="setting_edit_nickname_dialog_hint">새 닉네임을 입력해 주세요</string>
     <string name="setting_edited_nickname_alert">닉네임이 \'%1$s\'(으)로 변경되었습니다.</string>
     <string name="setting_edit_my_team">응원팀 수정</string>
-
-    <!--    uCrop의 문자열 리소스 오버라이딩-->
-    <string name="ucrop_rotate" tools:ignore="PrivateResource">회전</string>
-    <string name="ucrop_scale" tools:ignore="PrivateResource">배율</string>
-
     <string name="setting_manage_account">계정 관리</string>
     <string name="setting_logout">로그아웃</string>
     <string name="setting_logout_dialog_message">정말 로그아웃 하시겠습니까?</string>
@@ -213,5 +223,4 @@
     <string name="profile_representative_badge_content_description">대표 배지 이미지</string>
     <string name="profile_victory_fairy_ranking_emoji">🎖️</string>
     <string name="profile_victory_fairy_score_emoji">🧚</string>
-
 </resources>

@@ -5,8 +5,7 @@ import com.yagubogu.data.dto.response.game.TeamByGameDto
 import com.yagubogu.domain.model.Team
 import com.yagubogu.ui.attendance.model.PastGameUiModel
 import com.yagubogu.ui.livetalk.model.LivetalkStadiumItem
-import kotlinx.datetime.toJavaLocalTime
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 
 fun GameWithCheckInDto.toLivetalkUiModel(): LivetalkStadiumItem =
     LivetalkStadiumItem(
@@ -22,7 +21,7 @@ fun GameWithCheckInDto.toAttendanceUiModel(date: LocalDate): PastGameUiModel =
     PastGameUiModel(
         gameId = gameId,
         date = date,
-        startAt = startAt.toJavaLocalTime(),
+        startAt = startAt,
         stadiumName = stadium.name,
         awayTeam = awayTeam.toDomain(),
         awayTeamName = awayTeam.name,

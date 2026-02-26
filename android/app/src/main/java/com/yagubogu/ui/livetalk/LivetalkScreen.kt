@@ -27,7 +27,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yagubogu.R
 import com.yagubogu.ui.livetalk.chat.LivetalkChatActivity
@@ -41,13 +40,14 @@ import com.yagubogu.ui.util.BackPressHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun LivetalkScreen(
     snackbarHostState: SnackbarHostState,
     scrollToTopEvent: SharedFlow<Unit>,
     modifier: Modifier = Modifier,
-    viewModel: LivetalkViewModel = hiltViewModel(),
+    viewModel: LivetalkViewModel = koinViewModel(),
 ) {
     val livetalkStadiumItems: List<LivetalkStadiumItem> by viewModel.stadiumItems.collectAsStateWithLifecycle()
     val context: Context = LocalContext.current

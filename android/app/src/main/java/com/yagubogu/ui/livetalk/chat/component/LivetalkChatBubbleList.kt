@@ -21,10 +21,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.yagubogu.ui.livetalk.chat.model.LivetalkChatBubbleItem
 import com.yagubogu.ui.livetalk.chat.model.LivetalkChatItem
+import com.yagubogu.ui.util.now
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
-import java.time.LocalDateTime
+import kotlinx.datetime.LocalDateTime
 
 /**
  * 현장톡 채팅 메시지 목록을 표시하는 컴포저블

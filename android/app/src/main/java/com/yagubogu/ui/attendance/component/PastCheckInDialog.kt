@@ -7,8 +7,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.yagubogu.R
 import com.yagubogu.ui.common.component.DefaultDialog
 import com.yagubogu.ui.common.model.DefaultDialogUiModel
-import com.yagubogu.ui.util.DateFormatter
-import java.time.LocalDate
+import com.yagubogu.ui.util.now
+import com.yagubogu.ui.util.yyyyMMddFormatter
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.format
 
 @Composable
 fun PastCheckInDialog(
@@ -22,7 +24,7 @@ fun PastCheckInDialog(
             title =
                 stringResource(
                     R.string.attendance_history_add_attendance_confirm,
-                    date.format(DateFormatter.yyyyMMdd),
+                    date.format(yyyyMMddFormatter),
                 ),
             message = stringResource(R.string.attendance_history_add_attendance_message),
             negativeText = stringResource(R.string.all_cancel),

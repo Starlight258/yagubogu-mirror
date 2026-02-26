@@ -20,58 +20,29 @@ import com.yagubogu.data.repository.talk.TalkDefaultRepository
 import com.yagubogu.data.repository.talk.TalkRepository
 import com.yagubogu.data.repository.thirdparty.ThirdPartyDefaultRepository
 import com.yagubogu.data.repository.thirdparty.ThirdPartyRepository
-import com.yagubogu.data.repository.token.TokenDefaultRepository
-import com.yagubogu.data.repository.token.TokenRepository
-import dagger.Binds
-import dagger.Module
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
+import org.koin.core.module.dsl.bind
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.module
 
-@Module
-@InstallIn(SingletonComponent::class)
-abstract class RepositoryModule {
-    @Binds
-    @Singleton
-    abstract fun bindTokenRepository(impl: TokenDefaultRepository): TokenRepository
+val repositoryModule =
+    module {
+        singleOf(::AuthDefaultRepository) { bind<AuthRepository>() }
 
-    @Binds
-    @Singleton
-    abstract fun bindAuthRepository(impl: AuthDefaultRepository): AuthRepository
+        singleOf(::MemberDefaultRepository) { bind<MemberRepository>() }
 
-    @Binds
-    @Singleton
-    abstract fun bindMemberRepository(impl: MemberDefaultRepository): MemberRepository
+        singleOf(::CheckInDefaultRepository) { bind<CheckInRepository>() }
 
-    @Binds
-    @Singleton
-    abstract fun bindCheckInRepository(impl: CheckInDefaultRepository): CheckInRepository
+        singleOf(::StatsDefaultRepository) { bind<StatsRepository>() }
 
-    @Binds
-    @Singleton
-    abstract fun bindStatsRepository(impl: StatsDefaultRepository): StatsRepository
+        singleOf(::LocationDefaultRepository) { bind<LocationRepository>() }
 
-    @Binds
-    @Singleton
-    abstract fun bindLocationRepository(impl: LocationDefaultRepository): LocationRepository
+        singleOf(::StadiumDefaultRepository) { bind<StadiumRepository>() }
 
-    @Binds
-    @Singleton
-    abstract fun bindStadiumRepository(impl: StadiumDefaultRepository): StadiumRepository
+        singleOf(::StreamDefaultRepository) { bind<StreamRepository>() }
 
-    @Binds
-    @Singleton
-    abstract fun bindStreamRepository(impl: StreamDefaultRepository): StreamRepository
+        singleOf(::GameDefaultRepository) { bind<GameRepository>() }
 
-    @Binds
-    @Singleton
-    abstract fun bindGameRepository(impl: GameDefaultRepository): GameRepository
+        singleOf(::ThirdPartyDefaultRepository) { bind<ThirdPartyRepository>() }
 
-    @Binds
-    @Singleton
-    abstract fun bindThirdPartyRepository(impl: ThirdPartyDefaultRepository): ThirdPartyRepository
-
-    @Binds
-    @Singleton
-    abstract fun bindTalkRepository(impl: TalkDefaultRepository): TalkRepository
-}
+        singleOf(::TalkDefaultRepository) { bind<TalkRepository>() }
+    }

@@ -20,58 +20,29 @@ import com.yagubogu.data.datasource.talk.TalkDataSource
 import com.yagubogu.data.datasource.talk.TalkRemoteDataSource
 import com.yagubogu.data.datasource.thirdparty.ThirdPartyDataSource
 import com.yagubogu.data.datasource.thirdparty.ThirdPartyRemoteDataSource
-import com.yagubogu.data.datasource.token.TokenDataSource
-import com.yagubogu.data.datasource.token.TokenRemoteDataSource
-import dagger.Binds
-import dagger.Module
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
+import org.koin.core.module.dsl.bind
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.module
 
-@Module
-@InstallIn(SingletonComponent::class)
-abstract class DataSourceModule {
-    @Binds
-    @Singleton
-    abstract fun bindTokenDataSource(impl: TokenRemoteDataSource): TokenDataSource
+val datasourceModule =
+    module {
+        singleOf(::AuthRemoteDataSource) { bind<AuthDataSource>() }
 
-    @Binds
-    @Singleton
-    abstract fun bindAuthDataSource(impl: AuthRemoteDataSource): AuthDataSource
+        singleOf(::MemberRemoteDataSource) { bind<MemberDataSource>() }
 
-    @Binds
-    @Singleton
-    abstract fun bindMemberDataSource(impl: MemberRemoteDataSource): MemberDataSource
+        singleOf(::CheckInRemoteDataSource) { bind<CheckInDataSource>() }
 
-    @Binds
-    @Singleton
-    abstract fun bindCheckInDataSource(impl: CheckInRemoteDataSource): CheckInDataSource
+        singleOf(::StatsRemoteDataSource) { bind<StatsDataSource>() }
 
-    @Binds
-    @Singleton
-    abstract fun bindStatsDataSource(impl: StatsRemoteDataSource): StatsDataSource
+        singleOf(::LocationLocalDataSource) { bind<LocationDataSource>() }
 
-    @Binds
-    @Singleton
-    abstract fun bindLocationDataSource(impl: LocationLocalDataSource): LocationDataSource
+        singleOf(::StadiumRemoteDataSource) { bind<StadiumDataSource>() }
 
-    @Binds
-    @Singleton
-    abstract fun bindStadiumDataSource(impl: StadiumRemoteDataSource): StadiumDataSource
+        singleOf(::StreamRemoteDataSource) { bind<StreamDataSource>() }
 
-    @Binds
-    @Singleton
-    abstract fun bindStreamDataSource(impl: StreamRemoteDataSource): StreamDataSource
+        singleOf(::GameRemoteDataSource) { bind<GameDataSource>() }
 
-    @Binds
-    @Singleton
-    abstract fun bindGameDataSource(impl: GameRemoteDataSource): GameDataSource
+        singleOf(::ThirdPartyRemoteDataSource) { bind<ThirdPartyDataSource>() }
 
-    @Binds
-    @Singleton
-    abstract fun bindThirdPartyDataSource(impl: ThirdPartyRemoteDataSource): ThirdPartyDataSource
-
-    @Binds
-    @Singleton
-    abstract fun bindTalkDataSource(impl: TalkRemoteDataSource): TalkDataSource
-}
+        singleOf(::TalkRemoteDataSource) { bind<TalkDataSource>() }
+    }
