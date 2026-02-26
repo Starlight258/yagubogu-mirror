@@ -208,7 +208,7 @@ private fun StatsYearDropdown(
                     .crop(vertical = 8.dp)
                     .padding(vertical = 4.dp),
         ) {
-            StatsViewModel.YEAR_RANGE.forEach { year: Int ->
+            StatsViewModel.YEAR_RANGE.reversed().forEach { year: Int ->
                 DropdownMenuItem(
                     text = {
                         Text(
