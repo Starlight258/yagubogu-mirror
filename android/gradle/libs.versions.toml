@@ -2,7 +2,7 @@
 # Build Tools & Plugins
 agp = "8.12.3"
 kotlin = "2.2.20"
-ksp = "2.3.4"
+ksp = "2.3.6"
 ktlint = "13.0.0"
 googleServices = "4.4.3"
 firebaseCrashlytics = "3.0.5"
