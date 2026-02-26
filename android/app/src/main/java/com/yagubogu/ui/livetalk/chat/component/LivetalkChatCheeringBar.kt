@@ -31,7 +31,6 @@ import com.yagubogu.ui.theme.PretendardMedium16
 import com.yagubogu.ui.util.emoji
 import com.yagubogu.ui.util.noRippleClickable
 import com.yagubogu.ui.util.shimmerIf
-import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -107,7 +106,6 @@ fun LivetalkChatCheeringBar(
                                     x = posInRoot.x + coordinates.size.width / 2f,
                                     y = posInRoot.y + coordinates.size.height / 2f,
                                 )
-                            Timber.d("응원 버튼 이모지 중앙 좌표 : $centerPos")
                             onPositioned(centerPos)
                         },
             )

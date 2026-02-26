@@ -3,6 +3,7 @@ package com.yagubogu.ui.setting
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import co.touchlab.kermit.Logger
 import com.yagubogu.R
 import com.yagubogu.data.repository.auth.AuthRepository
 import com.yagubogu.data.repository.member.MemberRepository
@@ -24,7 +25,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
-import timber.log.Timber
 import kotlin.time.Clock
 
 class SettingViewModel(
@@ -33,6 +33,8 @@ class SettingViewModel(
     private val thirdPartyRepository: ThirdPartyRepository,
     private val clock: Clock,
 ) : ViewModel() {
+    private val logger = Logger.withTag("SettingViewModel")
+
     private val _myMemberInfoItem = MutableStateFlow(MemberInfoItem())
     val myMemberInfoItem: StateFlow<MemberInfoItem> = _myMemberInfoItem.asStateFlow()
 
@@ -55,7 +57,7 @@ class SettingViewModel(
                     val nicknameUpdateError: NicknameUpdateError = exception.toNicknameUpdateError()
 
                     _settingEvent.emit(SettingEvent.NicknameEditFailure(nicknameUpdateError.toUiText()))
-                    Timber.w(exception, "닉네임 변경 API 호출 실패")
+                    logger.w(exception) { "닉네임 변경 API 호출 실패" }
                 }
         }
     }
@@ -68,7 +70,7 @@ class SettingViewModel(
                     memberRepository.invalidateCache()
                     _settingEvent.emit(SettingEvent.Logout)
                 }.onFailure { exception: Throwable ->
-                    Timber.w(exception, "로그아웃 API 호출 실패")
+                    logger.w(exception) { "로그아웃 API 호출 실패" }
                 }
         }
     }
@@ -80,7 +82,7 @@ class SettingViewModel(
                 .onSuccess {
                     _settingEvent.emit(SettingEvent.DeleteAccount)
                 }.onFailure { exception: Throwable ->
-                    Timber.w(exception, "계정 삭제 API 호출 실패")
+                    logger.w(exception) { "계정 삭제 API 호출 실패" }
                 }
         }
     }
@@ -115,7 +117,7 @@ class SettingViewModel(
             _myMemberInfoItem.value =
                 myMemberInfoItem.value.copy(profileImageUrl = completeItem.imageUrl)
         }.onFailure { exception: Throwable ->
-            Timber.e(exception, "프로필 이미지 업로드 실패")
+            logger.e(exception) { "프로필 이미지 업로드 실패" }
         }
 
     fun fetchMemberInfo() {
@@ -126,7 +128,7 @@ class SettingViewModel(
                 .onSuccess { memberInfoItem: MemberInfoItem ->
                     _myMemberInfoItem.value = memberInfoItem
                 }.onFailure { exception: Throwable ->
-                    Timber.w(exception, "회원 정보 조회 API 호출 실패")
+                    logger.w(exception) { "회원 정보 조회 API 호출 실패" }
                 }
         }
     }

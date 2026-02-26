@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import co.touchlab.kermit.Logger
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.yagubogu.R
 import com.yagubogu.ui.common.component.profile.ProfileImage
@@ -75,7 +76,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.datetime.format
 import org.koin.compose.viewmodel.koinViewModel
-import timber.log.Timber
 import java.io.File
 import kotlin.coroutines.cancellation.CancellationException
 
@@ -172,6 +172,7 @@ private fun ProfileImagePicker(
     onUpload: suspend (Uri, String, Long) -> Result<Unit>,
     onClosePicker: () -> Unit,
 ) {
+    val logger: Logger = Logger.withTag("ProfileImagePicker")
     val snackbarHostState = LocalSnackbarHostState.current
     val activity = context as? ComponentActivity
     when (activity is ComponentActivity) {
@@ -180,12 +181,12 @@ private fun ProfileImagePicker(
                 allowMultiple = false,
                 mimeTypes = ALL_SUPPORTED_TYPES,
                 onPhotosSelected = { photos: List<GalleryPhotoResult> ->
-                    Timber.d("onPhotosSelected, 사진 개수: ${photos.size}")
+                    logger.d { "onPhotosSelected, 사진 개수: ${photos.size}" }
                     onClosePicker()
 
                     val photo: GalleryPhotoResult? = photos.firstOrNull()
                     if (photo == null) {
-                        Timber.w("선택된 사진이 없습니다")
+                        logger.w { "선택된 사진이 없습니다" }
                         return@GalleryPickerLauncher
                     }
                     scope.launch {
@@ -203,7 +204,7 @@ private fun ProfileImagePicker(
                                 onProfileImageUpload = onUpload,
                             )
                         }.getOrElse { exception: Throwable ->
-                            Timber.e(exception, "이미지 처리 중 예외 발생")
+                            logger.e(exception) { "이미지 처리 중 예외 발생" }
                             snackbarHostState.showSingleSnackbar(
                                 scope = scope,
                                 message = context.getString(R.string.setting_edit_profile_image_processing_failed),
@@ -212,7 +213,7 @@ private fun ProfileImagePicker(
                     }
                 },
                 onError = { exception: Exception ->
-                    Timber.e(exception, "GalleryPicker 에러 발생")
+                    logger.e(exception) { "GalleryPicker 에러 발생" }
                     snackbarHostState.showSingleSnackbar(
                         scope = scope,
                         message = context.getString(R.string.setting_edit_profile_image_selection_failed),
@@ -220,7 +221,7 @@ private fun ProfileImagePicker(
                     onClosePicker()
                 },
                 onDismiss = {
-                    Timber.d("GalleryPicker 닫힘")
+                    logger.d { "GalleryPicker 닫힘" }
                     onClosePicker()
                 },
                 enableCrop = true,
@@ -240,7 +241,7 @@ private fun ProfileImagePicker(
         }
 
         false -> {
-            Timber.e("Context가 ComponentActivity가 아닙니다: ${context.javaClass.name}")
+            logger.e { "Context가 ComponentActivity가 아닙니다: ${context.javaClass.name}" }
             LaunchedEffect(Unit) {
                 snackbarHostState.showSingleSnackbar(
                     scope = scope,
@@ -357,7 +358,7 @@ private fun Context.getAppVersion(): String =
             packageManager.getPackageInfo(packageName, 0)
         packageInfo.versionName ?: DEFAULT_VERSION_NAME
     } catch (e: PackageManager.NameNotFoundException) {
-        Timber.d("앱 버전 로드 실패 ${e.message}")
+        Logger.withTag("getAppVersion").d("앱 버전 로드 실패 ${e.message}")
         DEFAULT_VERSION_NAME
     }
 
@@ -399,7 +400,7 @@ private suspend fun handleImagePickerKMPCroppedImage(
         },
         onFailure = { e: Throwable ->
             if (e is CancellationException) throw e
-            Timber.e(e, "프로필 이미지 전처리 실패")
+            Logger.withTag("handleImagePickerKMPCroppedImage").e(e) { "프로필 이미지 전처리 실패" }
             snackbarHostState.showSingleSnackbar(
                 scope = snackBarScope,
                 message = context.getString(R.string.setting_edit_profile_image_processing_failed),

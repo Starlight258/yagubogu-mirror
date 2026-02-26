@@ -1,17 +1,18 @@
 package com.yagubogu.di
 
+import co.touchlab.kermit.Logger
 import com.yagubogu.BuildConfig
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import org.koin.dsl.module
-import timber.log.Timber
 import kotlin.time.Clock
 import kotlin.time.Instant
 
 val timeModule =
     module {
         single<Clock> {
+            val logger = Logger.withTag("TimeModule")
             val clock: Clock =
                 runCatching {
                     if (BuildConfig.DEBUG) {
@@ -26,7 +27,7 @@ val timeModule =
                         Clock.System
                     }
                 }.getOrElse { e: Throwable ->
-                    Timber.e("디버그 Clock 생성 실패: $e")
+                    logger.e(e) { "디버그 Clock 생성 실패" }
                     Clock.System
                 }
 

@@ -2,7 +2,7 @@
 # Build Tools & Plugins
 agp = "8.12.3"
 kotlin = "2.2.20"
-ksp = "2.3.4"
+ksp = "2.3.6"
 ktlint = "13.0.0"
 googleServices = "4.4.3"
 firebaseCrashlytics = "3.0.5"
@@ -63,7 +63,7 @@ balloon = "1.6.13"
 calendar = "2.10.0"
 
 # Logging
-timber = "5.0.1"
+kermit = "2.0.8"
 
 # Testing
 junit = "4.13.2"
@@ -153,7 +153,8 @@ balloon-compose = { module = "com.github.skydoves:balloon-compose", version.ref 
 calendar-compose-multiplatform = { module = "com.kizitonwose.calendar:compose-multiplatform", version.ref = "calendar" }
 
 # Logging
-timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
+kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
+kermit-crashlytics = { module = "co.touchlab:kermit-crashlytics", version.ref = "kermit" }
 
 # Testing
 junit = { group = "junit", name = "junit", version.ref = "junit" }

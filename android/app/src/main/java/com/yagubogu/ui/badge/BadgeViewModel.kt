@@ -3,17 +3,19 @@ package com.yagubogu.ui.badge
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import co.touchlab.kermit.Logger
 import com.yagubogu.data.dto.response.member.BadgeResponse
 import com.yagubogu.data.repository.member.MemberRepository
 import com.yagubogu.ui.badge.model.BadgeInfoUiModel
 import com.yagubogu.ui.badge.model.BadgeUiModel
 import com.yagubogu.ui.mapper.toUiModel
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 class BadgeViewModel(
     private val memberRepository: MemberRepository,
 ) : ViewModel() {
+    private val logger = Logger.withTag("BadgeViewModel")
+
     var badgeUiState = mutableStateOf<BadgeUiState>(BadgeUiState.Loading)
         private set
 
@@ -27,7 +29,7 @@ class BadgeViewModel(
                     val badges: List<BadgeInfoUiModel> = badgeResponse.badges.map { it.toUiModel() }
                     badgeUiState.value = BadgeUiState.Success(representativeBadge, badges)
                 }.onFailure { exception: Throwable ->
-                    Timber.w(exception, "API 호출 실패")
+                    logger.w(exception) { "fetchBadges API 호출 실패" }
                 }
         }
     }
@@ -40,7 +42,7 @@ class BadgeViewModel(
                 .onSuccess {
                     updateBadgeUiState(badgeId)
                 }.onFailure { exception: Throwable ->
-                    Timber.w(exception, "API 호출 실패")
+                    logger.w(exception) { "updateRepresentativeBadge API 호출 실패" }
                 }
         }
     }

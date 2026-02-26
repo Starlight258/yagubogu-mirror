@@ -2,6 +2,7 @@ package com.yagubogu.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import co.touchlab.kermit.Logger
 import com.yagubogu.data.dto.response.location.CoordinateDto
 import com.yagubogu.data.repository.checkin.CheckInRepository
 import com.yagubogu.data.repository.location.LocationRepository
@@ -53,7 +54,6 @@ import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.until
-import timber.log.Timber
 import kotlin.math.roundToInt
 import kotlin.time.Clock
 
@@ -66,6 +66,8 @@ class HomeViewModel(
     private val streamRepository: StreamRepository,
     private val clock: Clock,
 ) : ViewModel() {
+    private val logger = Logger.withTag("HomeViewModel")
+
     private val _checkInUiEvent =
         MutableSharedFlow<CheckInUiEvent>(
             replay = 0,
@@ -152,7 +154,7 @@ class HomeViewModel(
                         fetchCheckInStatus(date)
                     }
                 }.onFailure { exception: Throwable ->
-                    Timber.w(exception, "API 호출 실패")
+                    logger.w(exception) { "API 호출 실패 (fetchStadiums)" }
                     _checkInUiEvent.emit(CheckInUiEvent.NetworkFailed)
                 }
         }
@@ -167,7 +169,7 @@ class HomeViewModel(
                 _isCheckInLoading.value = false
             },
             onFailure = { exception: Exception ->
-                Timber.w(exception, "위치 불러오기 실패")
+                logger.w(exception) { "위치 불러오기 실패 (fetchCurrentLocationThenCheckIn)" }
                 _checkInUiEvent.tryEmit(CheckInUiEvent.LocationFetchFailed)
                 _isCheckInLoading.value = false
             },
@@ -194,7 +196,7 @@ class HomeViewModel(
                         else -> _checkInUiEvent.emit(CheckInUiEvent.NetworkFailed)
                     }
                     _isCheckInLoading.value = false
-                    Timber.w(exception, "API 호출 실패")
+                    logger.w(exception) { "API 호출 실패 (checkIn)" }
                 }
         }
     }
@@ -221,7 +223,7 @@ class HomeViewModel(
                 .onSuccess { memberProfile: MemberProfile ->
                     _dialogEvent.emit(HomeDialogEvent.ProfileDialog(memberProfile))
                 }.onFailure { exception: Throwable ->
-                    Timber.w(exception, "사용자 프로필 조회 API 호출 실패")
+                    logger.w(exception) { "API 호출 실패 (fetchMemberProfile)" }
                 }
         }
     }
@@ -256,7 +258,7 @@ class HomeViewModel(
                     listOf(myTeamResult, attendanceCountResult, winRateResult)
                         .filter { it.isFailure }
                         .mapNotNull { it.exceptionOrNull()?.message }
-                Timber.w("API 호출 실패: ${errors.joinToString()}")
+                logger.w { "API 호출 실패 (fetchMemberStats): ${errors.joinToString()}" }
             }
         }
     }
@@ -274,7 +276,7 @@ class HomeViewModel(
                     _stadiumStatsUiModel.value =
                         StadiumStatsUiModel(stadiumFanRates = stadiumFanRates)
                 }.onFailure { exception: Throwable ->
-                    Timber.w(exception, "API 호출 실패")
+                    logger.w(exception) { "API 호출 실패 (fetchStadiumStats)" }
                 }
         }
     }
@@ -287,7 +289,7 @@ class HomeViewModel(
                 .onSuccess { ranking: VictoryFairyRanking ->
                     _victoryFairyRanking.value = ranking
                 }.onFailure { exception: Throwable ->
-                    Timber.w(exception, "API 호출 실패")
+                    logger.w(exception) { "API 호출 실패 (fetchVictoryFairyRanking)" }
                 }
         }
     }
@@ -303,7 +305,7 @@ class HomeViewModel(
                         fetchCurrentLocationThenCheckIn()
                     }
                 }.onFailure { exception: Throwable ->
-                    Timber.w(exception, "API 호출 실패")
+                    logger.w(exception) { "API 호출 실패 (fetchCheckInStatus)" }
                 }
         }
     }
@@ -361,7 +363,8 @@ class HomeViewModel(
     private fun getLeftSecondsUntilOpening(): Long {
         val currentYear: Int = LocalDate.now(clock).year
         val openingDate: OpeningDate = OpeningDate.fromYear(currentYear) ?: return 0L
-        val time = clock.now().until(other = openingDate.date.toInstant(), unit = DateTimeUnit.SECOND)
+        val time =
+            clock.now().until(other = openingDate.date.toInstant(), unit = DateTimeUnit.SECOND)
         return if (time < 0L) 0L else time
     }
 

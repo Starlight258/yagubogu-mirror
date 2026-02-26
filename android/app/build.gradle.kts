@@ -187,7 +187,8 @@ dependencies {
     implementation(libs.calendar.compose.multiplatform)
 
     // Logging
-    implementation(libs.timber)
+    implementation(libs.kermit)
+    implementation(libs.kermit.crashlytics)
 
     // Testing
     testImplementation(libs.junit)

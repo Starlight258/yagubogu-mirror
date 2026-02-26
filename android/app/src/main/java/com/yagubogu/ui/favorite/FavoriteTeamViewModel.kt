@@ -2,17 +2,19 @@ package com.yagubogu.ui.favorite
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import co.touchlab.kermit.Logger
 import com.yagubogu.data.repository.member.MemberRepository
 import com.yagubogu.domain.model.Team
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 class FavoriteTeamViewModel(
     private val memberRepository: MemberRepository,
 ) : ViewModel() {
+    private val logger = Logger.withTag("FavoriteTeamViewModel")
+
     private val _favoriteTeamUpdateEvent = MutableSharedFlow<Unit>()
     val favoriteTeamUpdateEvent: SharedFlow<Unit> = _favoriteTeamUpdateEvent.asSharedFlow()
 
@@ -23,7 +25,7 @@ class FavoriteTeamViewModel(
                 .onSuccess {
                     _favoriteTeamUpdateEvent.emit(Unit)
                 }.onFailure { exception: Throwable ->
-                    Timber.w(exception, "API 호출 실패")
+                    logger.w(exception) { "API 호출 실패" }
                 }
         }
     }

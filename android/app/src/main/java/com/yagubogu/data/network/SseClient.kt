@@ -1,5 +1,6 @@
 package com.yagubogu.data.network
 
+import co.touchlab.kermit.Logger
 import com.yagubogu.data.dto.response.checkin.FanRateByGameDto
 import com.yagubogu.data.dto.response.stream.SseStreamResponse
 import io.ktor.client.HttpClient
@@ -8,7 +9,6 @@ import io.ktor.sse.ServerSentEvent
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.json.Json
-import timber.log.Timber
 import kotlin.coroutines.cancellation.CancellationException
 
 class SseClient(
@@ -16,11 +16,13 @@ class SseClient(
     private val httpClient: HttpClient,
     private val json: Json,
 ) {
+    private val logger = Logger.withTag("SseClient")
+
     fun connect(): Flow<SseStreamResponse> =
         flow {
             try {
                 httpClient.sse("$baseUrl$EVENT_STREAM_ENDPOINT") {
-                    Timber.d("SSE: Connection Opened")
+                    logger.d { "SSE: Connection Opened" }
                     emit(SseStreamResponse.ConnectionOpened)
 
                     incoming.collect { serverSentEvent: ServerSentEvent ->
@@ -34,17 +36,17 @@ class SseClient(
                                 EVENT_TIMEOUT -> SseStreamResponse.Timeout(rawData)
                                 else -> SseStreamResponse.Comment(serverSentEvent.comments ?: "")
                             }
-                        Timber.d("SSE: $response")
+                        logger.d { "SSE: $response" }
                         emit(response)
                     }
                 }
             } catch (e: Exception) {
                 if (e !is CancellationException) {
-                    Timber.e("SSE error: $e")
+                    logger.e(e) { "SSE error" }
                     emit(SseStreamResponse.Error(e))
                 }
             } finally {
-                Timber.d("SSE: Connection Closed")
+                logger.d { "SSE: Connection Closed" }
                 emit(SseStreamResponse.ConnectionClosed)
             }
         }

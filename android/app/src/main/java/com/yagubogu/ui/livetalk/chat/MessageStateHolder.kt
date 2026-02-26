@@ -1,5 +1,6 @@
 package com.yagubogu.ui.livetalk.chat
 
+import co.touchlab.kermit.Logger
 import com.yagubogu.ui.livetalk.chat.model.LivetalkChatBubbleItem
 import com.yagubogu.ui.livetalk.chat.model.LivetalkChatItem
 import com.yagubogu.ui.livetalk.chat.model.LivetalkResponseItem
@@ -8,7 +9,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import timber.log.Timber
 
 /**
  * 현장톡 채팅 화면의 메시지 상태를 관리합니다.
@@ -22,6 +22,8 @@ import timber.log.Timber
  * @property newestMessageCursor 최신 메시지를 가져오기 위한 커서 ID.
  */
 class MessageStateHolder {
+    private val logger = Logger.withTag("MessageStateHolder")
+
     private val lock = Mutex()
     var hasNext: Boolean = true
         private set
@@ -139,7 +141,7 @@ class MessageStateHolder {
 
     fun requestDelete(chat: LivetalkChatItem) {
         _pendingDeleteChat.value = chat
-        Timber.d("삭제 요청: ${chat.chatId}")
+        logger.d { "삭제 요청: ${chat.chatId}" }
     }
 
     fun dismissDeleteDialog() {
@@ -148,7 +150,7 @@ class MessageStateHolder {
 
     fun requestReport(chat: LivetalkChatItem) {
         _pendingReportChat.value = chat
-        Timber.d("신고 요청: ${chat.chatId}")
+        logger.d { "신고 요청: ${chat.chatId}" }
     }
 
     fun dismissReportDialog() {

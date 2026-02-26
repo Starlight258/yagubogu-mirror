@@ -1,5 +1,6 @@
 package com.yagubogu.ui.livetalk.chat
 
+import co.touchlab.kermit.Logger
 import com.yagubogu.data.dto.response.game.LikeCountsResponse
 import com.yagubogu.ui.livetalk.chat.model.LivetalkTeams
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -10,7 +11,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import timber.log.Timber
 
 /**
  * 현장톡 내에서 우리 팀과 상대 팀의 '좋아요' 수 상태를 관리합니다.
@@ -25,6 +25,8 @@ import timber.log.Timber
  * 빠르게 연속으로 클릭할 때 발생할 수 있는 경쟁 상태(race condition)를 방지합니다.
  */
 class LikeCountStateHolder {
+    private val logger = Logger.withTag("LikeCountStateHolder")
+
     private var myTeamLikeRealCount: Long = 0L
     private var otherTeamLikeRealCount: Long = 0L
 
@@ -61,8 +63,8 @@ class LikeCountStateHolder {
                 likeCountsResponse.counts.firstOrNull { it.teamCode == livetalkTeams.otherTeam?.name }?.totalCount
                     ?: 0L
             }
-        Timber.d("remoteMyTeamLikeCount : $remoteMyTeamLikeCount")
-        Timber.d("remoteOtherTeamLikeCount : $remoteOtherTeamLikeCount")
+        logger.d { "remoteMyTeamLikeCount : $remoteMyTeamLikeCount" }
+        logger.d { "remoteOtherTeamLikeCount : $remoteOtherTeamLikeCount" }
 
         lock.withLock {
             if (myTeamLikeRealCount == 0L) {

@@ -2,7 +2,7 @@ package com.yagubogu.ui.navigation.model
 
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
-import timber.log.Timber
+import co.touchlab.kermit.Logger
 
 /**
  * Handles navigation events (forward and back) by updating the navigation state.
@@ -12,6 +12,8 @@ import timber.log.Timber
 class Navigator(
     val state: NavigationState,
 ) {
+    private val logger = Logger.withTag("Navigator")
+
     private val currentStack: NavBackStack<NavKey>
         get() =
             state.backStacks[state.topLevelRoute]
@@ -48,7 +50,7 @@ class Navigator(
     }
 
     private fun showBackStack() {
-        Timber.d("backStacks: ${state.backStacks.keys}")
-        Timber.d("currentStack: ${currentStack.joinToString()}")
+        logger.d { "backStacks: ${state.backStacks.keys}" }
+        logger.d { "currentStack: ${currentStack.joinToString()}" }
     }
 }

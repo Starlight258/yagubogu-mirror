@@ -13,6 +13,7 @@ import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import co.touchlab.kermit.Logger
 import com.google.android.gms.tasks.Task
 import com.google.android.play.core.appupdate.AppUpdateInfo
 import com.google.android.play.core.appupdate.AppUpdateManager
@@ -31,9 +32,10 @@ import com.yagubogu.ui.navigation.model.Route
 import com.yagubogu.ui.theme.YaguBoguTheme
 import com.yagubogu.ui.util.showToast
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import timber.log.Timber
 
 class YaguBoguActivity : AppCompatActivity() {
+    private val logger = Logger.withTag("YaguBoguActivity")
+
     private val viewModel: YaguBoguViewModel by viewModel()
 
     private var shouldImmediateUpdate: Boolean = true
@@ -173,7 +175,7 @@ class YaguBoguActivity : AppCompatActivity() {
             }.addOnFailureListener {
                 shouldImmediateUpdate = false
                 onSuccess()
-                Timber.w("AppUpdateInfo를 가져오지 못했습니다.")
+                logger.w { "AppUpdateInfo를 가져오지 못했습니다." }
             }
     }
 }

@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import co.touchlab.kermit.Logger
 import com.yagubogu.ui.common.model.MemberProfile
 import com.yagubogu.ui.livetalk.chat.component.EmptyLivetalkChat
 import com.yagubogu.ui.livetalk.chat.component.FloatingEmojiItem
@@ -55,7 +56,8 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDateTime
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
-import timber.log.Timber
+
+private val logger = Logger.withTag("LivetalkChatScreen")
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -300,7 +302,7 @@ fun LivetalkChatScreenContent(
             state.emojiLayer.emojiQueue.forEach { item: EmojiAnimationItem ->
                 key(item.id) {
                     LaunchedEffect(Unit) {
-                        Timber.d("이모지 애니메이션 시작 좌표 : ${item.startOffset}")
+                        logger.d { "이모지 애니메이션 시작 좌표 : ${item.startOffset}" }
                     }
                     FloatingEmojiItem(
                         emoji = item.emoji,
@@ -346,7 +348,7 @@ private fun scheduleEmojiWithCounter(
                 delay(randomDelay)
                 increaseCountText?.invoke(increment)
                 triggerAnimation()
-                Timber.d("$emoji 이모지 애니메이션 및 $increment 만큼 카운트 증가")
+                logger.d { "$emoji 이모지 애니메이션 및 $increment 만큼 카운트 증가" }
             }
         }
     }
