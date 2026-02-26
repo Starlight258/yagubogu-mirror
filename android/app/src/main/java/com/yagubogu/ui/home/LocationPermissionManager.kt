@@ -11,8 +11,8 @@ import com.google.android.gms.location.LocationSettingsResponse
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.Task
 import com.yagubogu.R
-import com.yagubogu.presentation.util.showToast
 import com.yagubogu.ui.util.PermissionUtil
+import com.yagubogu.ui.util.showToast
 
 class LocationPermissionManager(
     private val activity: Activity,

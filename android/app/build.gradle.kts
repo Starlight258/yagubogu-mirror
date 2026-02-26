@@ -25,8 +25,8 @@ android {
         applicationId = "com.yagubogu"
         minSdk = 29
         targetSdk = 36
-        versionCode = 2_01_00
-        versionName = "2.1.0"
+        versionCode = 2_02_00
+        versionName = "2.2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -45,6 +45,13 @@ android {
             "WEB_CLIENT_ID",
             "\"${gradleLocalProperties(rootDir, providers).getProperty("WEB_CLIENT_ID")}\"",
         )
+
+        val fixedDate = gradleLocalProperties(rootDir, providers).getProperty("DEBUG_FIXED_DATE")
+        if (fixedDate != null) {
+            buildConfigField("String", "DEBUG_FIXED_DATE", "\"$fixedDate\"")
+        } else {
+            buildConfigField("String", "DEBUG_FIXED_DATE", "null")
+        }
     }
 
     val signingFile = rootProject.file("keystore.properties")
@@ -115,7 +122,6 @@ dependencies {
     implementation(libs.logging.interceptor)
     implementation(libs.androidx.viewpager2)
     implementation(libs.play.services.location)
-    implementation(libs.mpandroidchart)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.timber)
     implementation(libs.androidx.datastore.preferences)
@@ -125,6 +131,7 @@ dependencies {
     implementation(libs.balloon)
     implementation(libs.balloon.compose)
     implementation(libs.ucrop)
+    implementation(libs.calendar.compose)
 
     // firebase
     implementation(platform(libs.firebase.bom))
