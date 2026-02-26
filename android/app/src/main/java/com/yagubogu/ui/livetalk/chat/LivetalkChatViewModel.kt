@@ -35,7 +35,6 @@ import kotlinx.datetime.LocalDateTime
 import kotlin.time.Clock
 
 class LivetalkChatViewModel(
-    isVerified: Boolean,
     private val gameId: Long,
     private val talkRepository: TalkRepository,
     private val gameRepository: GameRepository,
@@ -43,14 +42,11 @@ class LivetalkChatViewModel(
 ) : ViewModel() {
     private val logger = Logger.withTag("LivetalkChatViewModel")
 
-    val messageStateHolder = MessageStateHolder(isVerified)
+    val messageStateHolder = MessageStateHolder()
     val likeCountStateHolder = LikeCountStateHolder()
 
     private val _teams = MutableStateFlow<LivetalkTeams?>(null)
     val teams: StateFlow<LivetalkTeams?> = _teams.asStateFlow()
-
-    lateinit var cachedLivetalkTeams: LivetalkTeams
-        private set
 
     private val pollingControlLock = Mutex()
     private var pollingJob: Job? = null
@@ -60,10 +56,13 @@ class LivetalkChatViewModel(
     private val _selectedProfile = MutableStateFlow<MemberProfile?>(null)
     val selectedProfile: StateFlow<MemberProfile?> = _selectedProfile.asStateFlow()
 
+    private val _isInitialLoadCompleted: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isInitialLoadCompleted: StateFlow<Boolean> = _isInitialLoadCompleted.asStateFlow()
+
     val chatUiState: StateFlow<LivetalkChatUiState> =
         combine(
             messageStateHolder.livetalkChatBubbleItems,
-            messageStateHolder.isInitialLoadCompleted,
+            isInitialLoadCompleted,
         ) { items, isInitialLoadCompleted ->
             when {
                 !isInitialLoadCompleted -> LivetalkChatUiState.Loading
@@ -78,8 +77,7 @@ class LivetalkChatViewModel(
 
     init {
         viewModelScope.launch {
-            fetchTeams(gameId)
-            startPolling()
+            fetchInitial(onFetchSuccess = { startPolling() })
         }
     }
 
@@ -93,6 +91,7 @@ class LivetalkChatViewModel(
                     .map { it.toUiModel() }
             result
                 .onSuccess { response: LivetalkResponseItem ->
+                    _isInitialLoadCompleted.value = true
                     messageStateHolder.addBeforeChats(response)
                 }.onFailure { exception ->
                     logger.w(exception) { "과거 메시지 API 호출 실패" }
@@ -110,6 +109,7 @@ class LivetalkChatViewModel(
                 ).map { it.toUiModel() }
         result
             .onSuccess { response: LivetalkResponseItem ->
+                _isInitialLoadCompleted.value = true
                 messageStateHolder.addAfterChats(response)
             }.onFailure { exception ->
                 logger.w(exception) { "최신 메시지 API 호출 실패" }
@@ -210,32 +210,34 @@ class LivetalkChatViewModel(
     }
 
     private suspend fun getLikeCount() {
-        if (!::cachedLivetalkTeams.isInitialized || cachedLivetalkTeams.myTeamType == null) {
-            return
-        }
+        val teams: LivetalkTeams? = teams.value
+        teams?.myTeamType ?: return
 
         gameRepository
             .getLikeCounts(gameId)
             .onSuccess { likeCountsResponse: LikeCountsResponse ->
-                likeCountStateHolder.updateLikeCount(cachedLivetalkTeams, likeCountsResponse)
+                likeCountStateHolder.updateLikeCount(teams, likeCountsResponse)
             }.onFailure { exception ->
                 logger.w(exception) { "응원수 로드 실패" }
             }
     }
 
     private suspend fun sendLikeBatch() {
+        val teams: LivetalkTeams? = teams.value
+        teams ?: return
+
         val countToSend: Int = likeCountStateHolder.getCountToSend()
         val request =
             LikeBatchRequest(
                 windowStartEpochSec = Clock.System.now().epochSeconds,
                 likeDelta =
                     LikeDeltaDto(
-                        teamCode = cachedLivetalkTeams.myTeam.name,
+                        teamCode = teams.myTeam.name,
                         delta = countToSend,
                     ),
             )
 
-        if (countToSend > 0 && ::cachedLivetalkTeams.isInitialized && cachedLivetalkTeams.myTeamType != null) {
+        if (countToSend > 0 && teams.myTeamType != null) {
             gameRepository
                 .addLikeBatches(gameId, request)
                 .onSuccess {
@@ -246,13 +248,13 @@ class LivetalkChatViewModel(
         }
     }
 
-    private suspend fun fetchTeams(gameId: Long) {
+    private suspend fun fetchInitial(onFetchSuccess: () -> Unit) {
+        _isInitialLoadCompleted.value = false
         val result: Result<LivetalkTeams> = talkRepository.getInitial(gameId).map { it.toUiModel() }
         result
             .onSuccess { livetalkTeams: LivetalkTeams ->
                 _teams.value = livetalkTeams
-
-                cachedLivetalkTeams = livetalkTeams
+                onFetchSuccess()
             }.onFailure { exception ->
                 logger.w(exception) { "최초 팀 정보 가져오기 실패" }
             }

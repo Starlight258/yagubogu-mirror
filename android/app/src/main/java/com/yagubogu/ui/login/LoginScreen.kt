@@ -1,5 +1,6 @@
 package com.yagubogu.ui.login
 
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -26,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,6 +36,7 @@ import androidx.core.os.bundleOf
 import com.google.firebase.Firebase
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.analytics
+import com.yagubogu.BuildConfig
 import com.yagubogu.R
 import com.yagubogu.ui.login.auth.GoogleCredentialManager
 import com.yagubogu.ui.login.model.LoginResult
@@ -52,7 +55,6 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun LoginScreen(
-    googleCredentialManager: GoogleCredentialManager,
     onSignIn: () -> Unit,
     onSignUp: () -> Unit,
     modifier: Modifier = Modifier,
@@ -60,6 +62,16 @@ fun LoginScreen(
 ) {
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+    val context: Context = LocalContext.current
+
+    val googleCredentialManager =
+        remember(context) {
+            GoogleCredentialManager(
+                context = context,
+                serverClientId = BuildConfig.WEB_CLIENT_ID,
+                nonce = "",
+            )
+        }
 
     Box(modifier = modifier) {
         LoginScreen(

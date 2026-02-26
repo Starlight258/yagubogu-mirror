@@ -46,6 +46,7 @@ fun MainScreen(
     navigator: Navigator,
     onSettingsClick: () -> Unit,
     onBadgeClick: () -> Unit,
+    onLivetalkItemClick: (Long, Boolean) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: MainViewModel = koinViewModel(),
 ) {
@@ -122,6 +123,7 @@ fun MainScreen(
                         LivetalkScreen(
                             snackbarHostState = snackbarHostState,
                             scrollToTopEvent = scrollToTopEvent,
+                            onLivetalkItemClick = onLivetalkItemClick,
                         )
                     }
                     entry<BottomNavKey.Stats> {

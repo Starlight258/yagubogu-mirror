@@ -54,15 +54,19 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDateTime
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 private val logger = Logger.withTag("LivetalkChatScreen")
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LivetalkChatScreen(
-    viewModel: LivetalkChatViewModel,
+    gameId: Long,
+    isVerified: Boolean,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: LivetalkChatViewModel = koinViewModel(parameters = { parametersOf(gameId) }),
 ) {
     val messageStateHolder = viewModel.messageStateHolder
     val likeCountStateHolder = viewModel.likeCountStateHolder
@@ -126,7 +130,7 @@ fun LivetalkChatScreen(
                     LivetalkChatScreenStates.EmojiLayer(
                         emojiQueue = emojiQueue.toList(),
                     ),
-                isVerified = messageStateHolder.isVerified,
+                isVerified = isVerified,
             )
         }
     val actions =
@@ -147,15 +151,15 @@ fun LivetalkChatScreen(
                     ),
                 chatCheering =
                     LivetalkChatScreenActions.ChatCheering(
-                        onCheeringClick = { emoji ->
+                        onCheeringClick = { emoji: String ->
                             generateEmojiAnimation(emoji)
                             viewModel.addLikeToBatch()
                         },
-                        onEmojiButtonPositioned = { pos -> emojiButtonPos = pos },
+                        onEmojiButtonPositioned = { pos: Offset -> emojiButtonPos = pos },
                     ),
                 floatingEmojiItem =
                     LivetalkChatScreenActions.FloatingEmojiItem(
-                        onAnimationFinished = { item -> emojiQueue.remove(item) },
+                        onAnimationFinished = { item: EmojiAnimationItem -> emojiQueue.remove(item) },
                     ),
                 dialog =
                     LivetalkChatScreenActions.Dialog(

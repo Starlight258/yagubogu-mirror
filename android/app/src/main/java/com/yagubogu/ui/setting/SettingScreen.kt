@@ -36,9 +36,10 @@ import com.yagubogu.ui.theme.White
 fun SettingScreen(
     navigator: Navigator,
     onBackClick: () -> Unit,
-    onDeleteAccountCancel: () -> Unit,
     onFavoriteTeamEditClick: () -> Unit,
     onLogout: () -> Unit,
+    onDeleteAccountCancel: () -> Unit,
+    onDeleteAccount: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
@@ -105,7 +106,7 @@ fun SettingScreen(
                         },
                         onDeleteAccount = {
                             navigator.clearStack()
-                            onLogout()
+                            onDeleteAccount()
                         },
                     )
                 }

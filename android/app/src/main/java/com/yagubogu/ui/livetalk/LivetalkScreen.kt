@@ -1,6 +1,5 @@
 package com.yagubogu.ui.livetalk
 
-import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -21,7 +20,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,7 +27,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yagubogu.R
-import com.yagubogu.ui.livetalk.chat.LivetalkChatActivity
 import com.yagubogu.ui.livetalk.component.LIVETALK_STADIUM_ITEMS
 import com.yagubogu.ui.livetalk.component.LivetalkStadiumItem
 import com.yagubogu.ui.livetalk.model.LivetalkStadiumItem
@@ -46,11 +43,11 @@ import org.koin.compose.viewmodel.koinViewModel
 fun LivetalkScreen(
     snackbarHostState: SnackbarHostState,
     scrollToTopEvent: SharedFlow<Unit>,
+    onLivetalkItemClick: (Long, Boolean) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: LivetalkViewModel = koinViewModel(),
 ) {
     val livetalkStadiumItems: List<LivetalkStadiumItem> by viewModel.stadiumItems.collectAsStateWithLifecycle()
-    val context: Context = LocalContext.current
     val coroutineScope: CoroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
@@ -64,9 +61,7 @@ fun LivetalkScreen(
             LivetalkScreen(
                 items = livetalkStadiumItems,
                 onItemClick = { item: LivetalkStadiumItem ->
-                    val intent =
-                        LivetalkChatActivity.newIntent(context, item.gameId, item.isVerified)
-                    context.startActivity(intent)
+                    onLivetalkItemClick(item.gameId, item.isVerified)
                 },
                 modifier = modifier,
                 scrollToTopEvent = scrollToTopEvent,
