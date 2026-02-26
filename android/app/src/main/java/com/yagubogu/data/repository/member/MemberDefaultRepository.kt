@@ -42,8 +42,10 @@ class MemberDefaultRepository(
         memberDataSource
             .updateNickname(nickname)
             .map { memberNicknameResponse: MemberNicknameResponse ->
-                val newNickname: String = memberNicknameResponse.nickname
-                cachedNickname = newNickname
+                cachedNickname = memberNicknameResponse.nickname
+            }.onFailure { exception: Throwable ->
+                val domainError = exception.toNicknameUpdateError()
+                return Result.failure(NicknameUpdateException(domainError, exception))
             }
 
     override suspend fun getFavoriteTeam(): Result<String?> {

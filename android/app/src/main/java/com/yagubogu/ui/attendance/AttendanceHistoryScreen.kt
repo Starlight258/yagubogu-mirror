@@ -19,13 +19,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -58,11 +56,11 @@ import com.yagubogu.ui.theme.Gray500
 import com.yagubogu.ui.theme.PretendardSemiBold20
 import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.util.BackPressHandler
+import com.yagubogu.ui.util.LocalSnackbarHostState
 import com.yagubogu.ui.util.minusMonths
 import com.yagubogu.ui.util.noRippleClickable
 import com.yagubogu.ui.util.now
 import com.yagubogu.ui.util.plusMonths
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.datetime.LocalDate
@@ -73,7 +71,6 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun AttendanceHistoryScreen(
-    snackbarHostState: SnackbarHostState,
     scrollToTopEvent: SharedFlow<Unit>,
     modifier: Modifier = Modifier,
     viewModel: AttendanceHistoryViewModel = koinViewModel(),
@@ -91,7 +88,7 @@ fun AttendanceHistoryScreen(
     var viewType: AttendanceHistoryViewType by rememberSaveable {
         mutableStateOf(AttendanceHistoryViewType.CALENDAR)
     }
-    val coroutineScope: CoroutineScope = rememberCoroutineScope()
+    val snackbarScope = LocalSnackbarHostState.current
 
     LaunchedEffect(selectedMonth, viewType, filter, sort) {
         viewModel.fetchAttendanceHistoryItems()
@@ -105,11 +102,11 @@ fun AttendanceHistoryScreen(
         stringResource(R.string.attendance_history_check_in_success_message)
     LaunchedEffect(Unit) {
         viewModel.pastCheckInUiEvent.collect {
-            snackbarHostState.showSnackbar(checkInSuccessMessage)
+            snackbarScope.showSnackbar(checkInSuccessMessage)
         }
     }
 
-    BackPressHandler(snackbarHostState, coroutineScope)
+    BackPressHandler()
 
     AttendanceHistoryScreen(
         startMonth = startMonth,

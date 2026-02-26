@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -56,7 +57,8 @@ import com.yagubogu.ui.theme.PretendardMedium12
 import com.yagubogu.ui.theme.PretendardRegular12
 import com.yagubogu.ui.theme.PretendardSemiBold
 import com.yagubogu.ui.theme.White
-import com.yagubogu.ui.util.showToast
+import com.yagubogu.ui.util.LocalSnackbarHostState
+import com.yagubogu.ui.util.showSingleSnackbar
 import com.yagubogu.ui.util.yyyyMMddFormatter
 import id.zelory.compressor.Compressor
 import id.zelory.compressor.constraint.format
@@ -85,6 +87,7 @@ fun SettingMainScreen(
     modifier: Modifier = Modifier,
     viewModel: SettingViewModel = koinViewModel(),
 ) {
+    val snackbarHostState = LocalSnackbarHostState.current
     val context: Context = LocalContext.current
     val resources: Resources = LocalResources.current
     val scope: CoroutineScope = rememberCoroutineScope()
@@ -92,8 +95,6 @@ fun SettingMainScreen(
         viewModel.myMemberInfoItem.collectAsStateWithLifecycle(MemberInfoItem())
 
     var showNicknameEditDialog: Boolean by rememberSaveable { mutableStateOf(false) }
-
-    val settingEvent: SettingEvent? by viewModel.settingEvent.collectAsStateWithLifecycle(null)
 
     var showGallery by rememberSaveable { mutableStateOf(false) }
 
@@ -105,14 +106,31 @@ fun SettingMainScreen(
         viewModel.fetchMemberInfo()
     }
 
-    LaunchedEffect(settingEvent) {
-        if (settingEvent is SettingEvent.NicknameEdit) {
-            val message =
-                resources.getString(
-                    R.string.setting_edited_nickname_alert,
-                    (settingEvent as SettingEvent.NicknameEdit).newNickname,
-                )
-            context.showToast(message)
+    LaunchedEffect(Unit) {
+        viewModel.settingEvent.collect { settingEvent: SettingEvent ->
+            when (settingEvent) {
+                is SettingEvent.NicknameEditSuccess -> {
+                    val message =
+                        resources.getString(
+                            R.string.setting_edited_nickname_alert,
+                            settingEvent.newNickname,
+                        )
+                    snackbarHostState.showSingleSnackbar(
+                        scope = this,
+                        message = message,
+                    )
+                }
+
+                is SettingEvent.NicknameEditFailure -> {
+                    val errorMessage = settingEvent.uiText.asString(context)
+                    snackbarHostState.showSingleSnackbar(
+                        scope = this,
+                        message = errorMessage,
+                    )
+                }
+
+                else -> Unit
+            }
         }
     }
 
@@ -154,6 +172,7 @@ private fun ProfileImagePicker(
     onUpload: suspend (Uri, String, Long) -> Result<Unit>,
     onClosePicker: () -> Unit,
 ) {
+    val snackbarHostState = LocalSnackbarHostState.current
     val activity = context as? ComponentActivity
     when (activity is ComponentActivity) {
         true -> {
@@ -173,6 +192,8 @@ private fun ProfileImagePicker(
                         runCatching {
                             handleImagePickerKMPCroppedImage(
                                 context = context,
+                                snackBarScope = scope,
+                                snackbarHostState = snackbarHostState,
                                 sourceImageUri =
                                     if (photo.uri.startsWith("file://")) {
                                         photo.uri.toUri()
@@ -183,13 +204,19 @@ private fun ProfileImagePicker(
                             )
                         }.getOrElse { exception: Throwable ->
                             Timber.e(exception, "이미지 처리 중 예외 발생")
-                            context.showToast(R.string.setting_edit_profile_image_processing_failed)
+                            snackbarHostState.showSingleSnackbar(
+                                scope = scope,
+                                message = context.getString(R.string.setting_edit_profile_image_processing_failed),
+                            )
                         }
                     }
                 },
                 onError = { exception: Exception ->
                     Timber.e(exception, "GalleryPicker 에러 발생")
-                    context.showToast(context.getString(R.string.setting_edit_profile_image_selection_failed))
+                    snackbarHostState.showSingleSnackbar(
+                        scope = scope,
+                        message = context.getString(R.string.setting_edit_profile_image_selection_failed),
+                    )
                     onClosePicker()
                 },
                 onDismiss = {
@@ -215,7 +242,10 @@ private fun ProfileImagePicker(
         false -> {
             Timber.e("Context가 ComponentActivity가 아닙니다: ${context.javaClass.name}")
             LaunchedEffect(Unit) {
-                context.showToast(context.getString(R.string.setting_edit_profile_image_selection_failed))
+                snackbarHostState.showSingleSnackbar(
+                    scope = scope,
+                    message = context.getString(R.string.setting_edit_profile_image_selection_failed),
+                )
                 onClosePicker()
             }
         }
@@ -337,6 +367,8 @@ private fun Context.getAppVersion(): String =
  */
 private suspend fun handleImagePickerKMPCroppedImage(
     context: Context,
+    snackBarScope: CoroutineScope,
+    snackbarHostState: SnackbarHostState,
     sourceImageUri: Uri,
     onProfileImageUpload: suspend (Uri, String, Long) -> Result<Unit>,
 ) {
@@ -359,13 +391,19 @@ private suspend fun handleImagePickerKMPCroppedImage(
         onSuccess = { result: Result<Unit> ->
             result.onFailure { e ->
                 if (e is CancellationException) throw e
-                context.showToast(context.getString(R.string.setting_edit_profile_image_upload_failed))
+                snackbarHostState.showSingleSnackbar(
+                    scope = snackBarScope,
+                    message = context.getString(R.string.setting_edit_profile_image_upload_failed),
+                )
             }
         },
         onFailure = { e: Throwable ->
             if (e is CancellationException) throw e
             Timber.e(e, "프로필 이미지 전처리 실패")
-            context.showToast(context.getString(R.string.setting_edit_profile_image_processing_failed))
+            snackbarHostState.showSingleSnackbar(
+                scope = snackBarScope,
+                message = context.getString(R.string.setting_edit_profile_image_processing_failed),
+            )
         },
     )
 }

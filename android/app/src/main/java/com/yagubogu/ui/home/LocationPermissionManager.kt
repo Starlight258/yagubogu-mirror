@@ -10,9 +10,7 @@ import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.LocationSettingsResponse
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.Task
-import com.yagubogu.R
 import com.yagubogu.ui.util.PermissionUtil
-import com.yagubogu.ui.util.showToast
 
 class LocationPermissionManager(
     private val activity: Activity,
@@ -36,7 +34,10 @@ class LocationPermissionManager(
 
     fun shouldShowRationale(permission: String) = PermissionUtil.shouldShowRationale(activity, permission)
 
-    fun checkLocationSettingsThenAction(onSuccess: () -> Unit) {
+    fun checkLocationSettingsThenAction(
+        onSuccess: () -> Unit,
+        onSettingsDisabled: () -> Unit,
+    ) {
         checkDeviceLocationSettings()
             .addOnSuccessListener {
                 // 위치 설정이 활성화된 경우 구장 불러오기
@@ -46,7 +47,7 @@ class LocationPermissionManager(
                 if (exception is ResolvableApiException) {
                     exception.startResolutionForResult(activity, REQUEST_CHECK_SETTINGS)
                 } else {
-                    activity.showToast(R.string.home_location_settings_disabled)
+                    onSettingsDisabled()
                 }
             }
     }
