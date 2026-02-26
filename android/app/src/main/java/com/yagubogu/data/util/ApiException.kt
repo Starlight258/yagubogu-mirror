@@ -1,25 +1,53 @@
 package com.yagubogu.data.util
 
 sealed class ApiException(
-    errorMessage: String?,
-) : Exception(errorMessage) {
-    data class BadRequest(
-        val errorMessage: String?,
-    ) : ApiException(errorMessage) // 400
+    override val message: String?,
+    override val cause: Throwable? = null,
+) : Exception(message) {
+    // 400: 잘못된 요청 (파라미터 오류 등)
+    class BadRequest(
+        message: String?,
+    ) : ApiException(message)
 
-    data class Unauthorized(
-        val errorMessage: String?,
-    ) : ApiException(errorMessage) // 401
+    // 401: 인증 실패 (토큰 만료 등)
+    class Unauthorized(
+        message: String?,
+    ) : ApiException(message)
 
-    data class Forbidden(
-        val errorMessage: String?,
-    ) : ApiException(errorMessage) // 403
+    // 403: 권한 없음
+    class Forbidden(
+        message: String?,
+    ) : ApiException(message)
 
-    data class NotFound(
-        val errorMessage: String?,
-    ) : ApiException(errorMessage) // 404
+    // 404: 리소스를 찾을 수 없음
+    class NotFound(
+        message: String?,
+    ) : ApiException(message)
 
-    data class Conflict(
-        val errorMessage: String?,
-    ) : ApiException(errorMessage) // 409
+    // 409: 리소스 충돌 (중복 닉네임 등)
+    class Conflict(
+        message: String?,
+    ) : ApiException(message)
+
+    // 422: 유효성 검사 실패
+    class UnprocessableEntity(
+        message: String?,
+    ) : ApiException(message)
+
+    // 5xx: 서버 내부 에러
+    class ServerError(
+        message: String?,
+    ) : ApiException(message)
+
+    // 기타 네트워크 에러 (Timeout, No Internet 등)
+    class NetworkError(
+        message: String?,
+        cause: Throwable,
+    ) : ApiException(message, cause)
+
+    // 정의되지 않은 기타 에러
+    class Unknown(
+        message: String?,
+        cause: Throwable? = null,
+    ) : ApiException(message, cause)
 }

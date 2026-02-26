@@ -1,5 +1,6 @@
 package com.yagubogu.ui.setting
 
+import android.content.res.Resources
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -23,7 +24,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -46,36 +47,48 @@ import com.yagubogu.ui.theme.PretendardMedium
 import com.yagubogu.ui.theme.PretendardRegular
 import com.yagubogu.ui.theme.Primary500
 import com.yagubogu.ui.theme.White
-import com.yagubogu.ui.util.showToast
+import com.yagubogu.ui.util.LocalSnackbarHostState
+import com.yagubogu.ui.util.LocalSnackbarScope
+import com.yagubogu.ui.util.showSingleSnackbar
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun SettingDeleteAccountScreen(
-    onDeleteAccount: () -> Unit,
+    onLogout: () -> Unit,
     onDeleteAccountCancel: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SettingViewModel = koinViewModel(),
 ) {
-    val context = LocalContext.current
+    val snackbarHostState = LocalSnackbarHostState.current
+    val snackbarScope = LocalSnackbarScope.current
+    val resources: Resources = LocalResources.current
 
     val memberInfoItem: MemberInfoItem by viewModel.myMemberInfoItem.collectAsStateWithLifecycle()
-    val settingEvent: SettingEvent? by viewModel.settingEvent.collectAsStateWithLifecycle(null)
 
     var showDeleteAccountDialog: Boolean by rememberSaveable { mutableStateOf(false) }
 
-    LaunchedEffect(settingEvent) {
-        when (settingEvent) {
-            SettingEvent.DeleteAccount -> {
-                onDeleteAccount()
-                context.showToast(R.string.setting_delete_account_confirm_select_alert)
-            }
+    LaunchedEffect(Unit) {
+        viewModel.settingEvent.collect { settingEvent ->
 
-            SettingEvent.DeleteAccountCancel -> {
-                onDeleteAccountCancel()
-                context.showToast(R.string.setting_delete_account_cancel_select_alert)
-            }
+            when (settingEvent) {
+                SettingEvent.DeleteAccount -> {
+                    onLogout()
+                    snackbarHostState.showSingleSnackbar(
+                        scope = snackbarScope,
+                        message = resources.getString(R.string.setting_delete_account_confirm_select_alert),
+                    )
+                }
 
-            else -> Unit
+                SettingEvent.DeleteAccountCancel -> {
+                    onDeleteAccountCancel()
+                    snackbarHostState.showSingleSnackbar(
+                        scope = snackbarScope,
+                        message = resources.getString(R.string.setting_delete_account_cancel_select_alert),
+                    )
+                }
+
+                else -> Unit
+            }
         }
     }
 
@@ -95,7 +108,10 @@ fun SettingDeleteAccountScreen(
                 viewModel.deleteAccount()
                 showDeleteAccountDialog = false
             },
-            onCancel = { showDeleteAccountDialog = false },
+            onCancel = {
+                viewModel.cancelDeleteAccount()
+                showDeleteAccountDialog = false
+            },
         )
     }
 }

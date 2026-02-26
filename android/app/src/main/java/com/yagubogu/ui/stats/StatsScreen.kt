@@ -22,7 +22,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -64,7 +63,6 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun StatsScreen(
-    snackbarHostState: SnackbarHostState,
     scrollToTopEvent: SharedFlow<Unit>,
     modifier: Modifier = Modifier,
     statsViewModel: StatsViewModel = koinViewModel(),
@@ -73,7 +71,7 @@ fun StatsScreen(
     val pagerState: PagerState = rememberPagerState(pageCount = { StatsTab.entries.size })
     val coroutineScope: CoroutineScope = rememberCoroutineScope()
 
-    BackPressHandler(snackbarHostState, coroutineScope)
+    BackPressHandler()
 
     Column(
         modifier = modifier.fillMaxSize(),

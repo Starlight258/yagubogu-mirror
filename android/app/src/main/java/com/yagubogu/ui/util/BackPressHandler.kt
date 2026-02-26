@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.res.Resources
 import androidx.activity.compose.BackHandler
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
@@ -13,26 +12,24 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import com.yagubogu.R
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 @Composable
-fun BackPressHandler(
-    snackbarHostState: SnackbarHostState,
-    coroutineScope: CoroutineScope,
-) {
+fun BackPressHandler() {
     val context: Context = LocalContext.current
     val resources: Resources = LocalResources.current
+    val snackbarHostState = LocalSnackbarHostState.current
+    val snackbarScope = LocalSnackbarScope.current
+
     var backPressedTime: Long by remember { mutableLongStateOf(0L) }
 
     BackHandler {
         val currentTime: Long = System.currentTimeMillis()
         if (currentTime - backPressedTime > BACK_PRESS_INTERVAL_MS) {
             backPressedTime = currentTime
-            coroutineScope.launch {
-                snackbarHostState.currentSnackbarData?.dismiss()
-                snackbarHostState.showSnackbar(resources.getString(R.string.main_back_press_to_exit))
-            }
+            snackbarHostState.showSingleSnackbar(
+                scope = snackbarScope,
+                message = resources.getString(R.string.main_back_press_to_exit),
+            )
         } else {
             (context as? Activity)?.finish()
         }
