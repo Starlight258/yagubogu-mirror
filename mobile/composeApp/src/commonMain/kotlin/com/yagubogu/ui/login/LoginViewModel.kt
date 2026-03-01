@@ -57,12 +57,10 @@ class LoginViewModel(
                     }
 
                     is GoogleCredentialResult.Failure -> {
-                        logger.d { "${googleCredentialResult.exception}" }
                         LoginResult.Failure(googleCredentialResult.exception)
                     }
 
                     GoogleCredentialResult.Suspending -> {
-                        logger.d { "Suspending!!!!!!!!!!!!" }
                         LoginResult.Failure(null)
                     }
 

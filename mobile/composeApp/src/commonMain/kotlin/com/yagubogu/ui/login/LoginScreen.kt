@@ -1,6 +1,5 @@
 package com.yagubogu.ui.login
 
-import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -26,18 +25,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.os.bundleOf
 import co.touchlab.kermit.Logger
-import com.google.firebase.Firebase
-import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.analytics.analytics
-import com.yagubogu.BuildKonfig
-import yagubogu.composeapp.generated.resources.Res
 import com.yagubogu.ui.login.auth.GoogleCredentialManager
 import com.yagubogu.ui.login.model.LoginResult
 import com.yagubogu.ui.theme.Dimming025
@@ -51,7 +41,11 @@ import com.yagubogu.ui.theme.dpToSp
 import com.yagubogu.ui.util.BackPressHandler
 import com.yagubogu.ui.util.noRippleClickable
 import kotlinx.coroutines.flow.SharedFlow
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
+import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.app_name
 import yagubogu.composeapp.generated.resources.ic_google_g_logo
 import yagubogu.composeapp.generated.resources.img_login
@@ -65,19 +59,10 @@ fun LoginScreen(
     onSignIn: () -> Unit,
     onSignUp: () -> Unit,
     modifier: Modifier = Modifier,
+    googleCredentialManager: GoogleCredentialManager = koinInject(),
     viewModel: LoginViewModel = koinViewModel(),
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
-    val context: Context = LocalContext.current
-
-    val googleCredentialManager =
-        remember(context) {
-            GoogleCredentialManager(
-                context = context,
-                serverClientId = BuildKonfig.WEB_CLIENT_ID,
-                nonce = "",
-            )
-        }
 
     Box(modifier = modifier) {
         LoginScreen(
@@ -198,18 +183,18 @@ fun LoginResultHandler(
                 is LoginResult.Failure -> {
                     Logger.withTag("LoginResult").d { loginResult.toString() }
                     snackbarHostState.showSnackbar(loginFailedMessage)
-                    val bundle = bundleOf("reason" to "${loginResult.exception}")
-                    Firebase.analytics.logEvent("login_failure", bundle)
+//                    val bundle = bundleOf("reason" to "${loginResult.exception}")
+//                    Firebase.analytics.logEvent("login_failure", bundle)
                 }
 
                 LoginResult.SignIn -> {
                     onSignIn()
-                    Firebase.analytics.logEvent(FirebaseAnalytics.Event.LOGIN, null)
+//                    Firebase.analytics.logEvent(FirebaseAnalytics.Event.LOGIN, null)
                 }
 
                 LoginResult.SignUp -> {
                     onSignUp()
-                    Firebase.analytics.logEvent(FirebaseAnalytics.Event.LOGIN, null)
+//                    Firebase.analytics.logEvent(FirebaseAnalytics.Event.LOGIN, null)
                 }
 
                 LoginResult.Cancel -> {

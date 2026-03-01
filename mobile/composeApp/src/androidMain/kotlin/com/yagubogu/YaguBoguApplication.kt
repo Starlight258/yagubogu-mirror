@@ -9,6 +9,7 @@ import co.touchlab.kermit.platformLogWriter
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.yagubogu.di.androidModule
+import com.yagubogu.di.authModule
 import com.yagubogu.di.datasourceModule
 import com.yagubogu.di.networkModule
 import com.yagubogu.di.repositoryModule
@@ -45,6 +46,7 @@ class YaguBoguApplication : Application() {
             androidContext(androidContext = this@YaguBoguApplication)
 
             modules(
+                authModule,
                 androidModule,
                 datasourceModule,
                 networkModule,
