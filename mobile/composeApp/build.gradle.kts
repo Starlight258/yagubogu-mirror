@@ -71,8 +71,11 @@ kotlin {
     androidTarget {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_21)
-            optIn.add("kotlin.time.ExperimentalTime")
         }
+    }
+
+    compilerOptions {
+        optIn.add("kotlin.time.ExperimentalTime")
     }
 
     listOf(
@@ -87,8 +90,15 @@ kotlin {
 
     sourceSets {
         androidMain.dependencies {
+            // Compose
+            implementation(libs.compose.runtime)
+            implementation(libs.compose.foundation)
+            implementation(libs.compose.material3)
+            implementation(libs.compose.ui)
+            implementation(libs.compose.components.resources)
             implementation(libs.compose.uiToolingPreview)
-            implementation(libs.androidx.activity.compose)
+            implementation(libs.androidx.lifecycle.viewmodelCompose)
+            implementation(libs.androidx.lifecycle.runtime.compose)
 
             // AndroidX Core
             implementation(libs.androidx.core.ktx)
@@ -97,19 +107,6 @@ kotlin {
             implementation(libs.androidx.activity)
             implementation(libs.androidx.fragment.ktx)
             implementation(libs.androidx.datastore.preferences)
-
-            // Kotlinx
-            implementation(libs.kotlinx.serialization.json)
-            implementation(libs.kotlinx.datetime)
-
-            // Ktor & Ktorfit
-            implementation(libs.ktorfit.lib)
-            implementation(libs.ktor.client.core)
-            implementation(libs.ktor.client.okhttp)
-            implementation(libs.ktor.client.content.negotiation)
-            implementation(libs.ktor.serialization.kotlinx.json)
-            implementation(libs.ktor.client.auth)
-            implementation(libs.ktor.client.logging)
 
             // Firebase
             implementation(project.dependencies.platform(libs.firebase.bom))
@@ -129,15 +126,46 @@ kotlin {
             implementation(libs.app.update)
             implementation(libs.app.update.ktx)
 
+//            // Testing
+//            testImplementation(libs.junit)
+//            testImplementation(libs.kotest.runner.junit5)
+//            testImplementation(libs.kotest.assertions.core)
+//            testImplementation(libs.kotlinx.coroutines.test)
+//            androidTestImplementation(libs.androidx.junit)
+//            androidTestImplementation(libs.androidx.espresso.core)
+//            androidTestImplementation(project.dependencies.platform(libs.androidx.compose.bom))
+//            androidTestImplementation(libs.androidx.ui.test.junit4)
+
+            // Debug
+//            debugImplementation(libs.androidx.ui.tooling)
+//            debugImplementation(libs.androidx.ui.test.manifest)
+        }
+        commonMain.dependencies {
             // Compose
-            implementation(libs.androidx.activity.compose)
-            implementation(project.dependencies.platform(libs.androidx.compose.bom))
-            implementation(libs.androidx.material3)
-            implementation(libs.androidx.ui)
-            implementation(libs.androidx.ui.graphics)
-            implementation(libs.androidx.ui.tooling.preview)
-            implementation(libs.androidx.lifecycle.runtime.ktx)
+            implementation(libs.compose.runtime)
+            implementation(libs.compose.foundation)
+            implementation(libs.compose.material3)
+            implementation(libs.compose.ui)
+            implementation(libs.compose.components.resources)
+            implementation(libs.compose.uiToolingPreview)
+            implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtime.compose)
+
+            // Kotlinx
+            implementation(libs.kotlinx.serialization.json)
+            implementation(libs.kotlinx.datetime)
+
+            // Ktor & Ktorfit
+            implementation(libs.ktorfit.lib)
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.okhttp)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.serialization.kotlinx.json)
+            implementation(libs.ktor.client.auth)
+            implementation(libs.ktor.client.logging)
+
+            // Compose
+            implementation(libs.androidx.lifecycle.runtime.ktx)
 
             // Navigation3
             implementation(libs.androidx.navigation3.ui)
@@ -166,30 +194,6 @@ kotlin {
             // Logging
             implementation(libs.kermit)
             implementation(libs.kermit.crashlytics)
-
-//            // Testing
-//            testImplementation(libs.junit)
-//            testImplementation(libs.kotest.runner.junit5)
-//            testImplementation(libs.kotest.assertions.core)
-//            testImplementation(libs.kotlinx.coroutines.test)
-//            androidTestImplementation(libs.androidx.junit)
-//            androidTestImplementation(libs.androidx.espresso.core)
-//            androidTestImplementation(project.dependencies.platform(libs.androidx.compose.bom))
-//            androidTestImplementation(libs.androidx.ui.test.junit4)
-
-            // Debug
-//            debugImplementation(libs.androidx.ui.tooling)
-//            debugImplementation(libs.androidx.ui.test.manifest)
-        }
-        commonMain.dependencies {
-            implementation(libs.compose.runtime)
-            implementation(libs.compose.foundation)
-            implementation(libs.compose.material3)
-            implementation(libs.compose.ui)
-            implementation(libs.compose.components.resources)
-            implementation(libs.compose.uiToolingPreview)
-            implementation(libs.androidx.lifecycle.viewmodelCompose)
-            implementation(libs.androidx.lifecycle.runtime.compose)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
