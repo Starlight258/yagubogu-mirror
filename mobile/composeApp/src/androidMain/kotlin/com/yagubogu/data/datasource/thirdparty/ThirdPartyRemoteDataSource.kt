@@ -1,7 +1,7 @@
 package com.yagubogu.data.datasource.thirdparty
 
 import android.content.ContentResolver
-import android.net.Uri
+import androidx.core.net.toUri
 import com.yagubogu.data.service.ThirdPartyApiService
 import com.yagubogu.data.util.safeApiCall
 import io.ktor.http.ContentType
@@ -15,7 +15,7 @@ class ThirdPartyRemoteDataSource(
 ) : ThirdPartyDataSource {
     override suspend fun uploadImageToS3(
         url: String,
-        imageFileUri: Uri,
+        imageFileUri: String,
         contentType: String,
         contentLength: Long,
     ): Result<Unit> =
@@ -26,7 +26,7 @@ class ThirdPartyRemoteDataSource(
         }
 
     private fun createRequestBody(
-        uri: Uri,
+        uri: String,
         contentType: String,
         contentLength: Long,
     ): OutgoingContent =
@@ -37,7 +37,7 @@ class ThirdPartyRemoteDataSource(
             override fun readFrom(): ByteReadChannel {
                 // .use를 제거하고 직접 반환, Ktor 엔진이 데이터를 다 보낸 후 내부적으로 채널을 닫음.
                 val inputStream =
-                    contentResolver.openInputStream(uri)
+                    contentResolver.openInputStream(uri.toUri())
                         ?: throw IllegalStateException("Failed to open input stream for $uri")
 
                 return inputStream.toByteReadChannel()

@@ -139,6 +139,10 @@ kotlin {
             // Debug
 //            debugImplementation(libs.androidx.ui.tooling)
 //            debugImplementation(libs.androidx.ui.test.manifest)
+
+            // Koin
+            implementation(project.dependencies.platform(libs.koin.bom))
+            implementation(libs.koin.core)
         }
         commonMain.dependencies {
             // Compose
