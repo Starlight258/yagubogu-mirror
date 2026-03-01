@@ -25,7 +25,7 @@ fun FanRateByGameDto.toUiModel(): StadiumFanRateItem =
 
 fun TeamFanRateDto.toUiModel(): TeamFanRate =
     TeamFanRate(
-        team = Team.Companion.getByCode(code),
+        team = Team.getByCode(code),
         teamName = name,
         fanRate = fanRate,
     )
@@ -55,7 +55,7 @@ fun CheckInGameDto.toUiModel(): AttendanceHistoryItem {
 
 fun CheckInGameTeamDto.toUiModel(opponent: CheckInGameTeamDto): GameTeam =
     GameTeam(
-        team = Team.Companion.getByCode(code),
+        team = Team.getByCode(code),
         name = name,
         score = score?.toString() ?: "-",
         isMyTeam = isMyTeam,
@@ -63,7 +63,7 @@ fun CheckInGameTeamDto.toUiModel(opponent: CheckInGameTeamDto): GameTeam =
             if (score == null || opponent.score == null) {
                 GameResult.DRAW
             } else {
-                GameResult.Companion.from(score, opponent.score)
+                GameResult.from(score, opponent.score)
             },
     )
 

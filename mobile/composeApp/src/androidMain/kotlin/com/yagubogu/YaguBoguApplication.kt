@@ -32,7 +32,7 @@ class YaguBoguApplication : Application() {
             FirebaseCrashlytics.getInstance().isCrashlyticsCollectionEnabled = false
             FirebaseAnalytics.getInstance(this).setAnalyticsCollectionEnabled(false)
         }
-        Logger.Companion.setLogWriters(
+        Logger.setLogWriters(
             if (BuildKonfig.IS_DEBUG) {
                 platformLogWriter()
             } else {

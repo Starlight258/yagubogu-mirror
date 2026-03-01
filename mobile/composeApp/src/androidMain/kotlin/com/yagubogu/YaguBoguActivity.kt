@@ -33,7 +33,7 @@ import com.yagubogu.ui.util.showToast
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class YaguBoguActivity : ComponentActivity() {
-    private val logger = Logger.Companion.withTag("YaguBoguActivity")
+    private val logger = Logger.withTag("YaguBoguActivity")
 
     private val viewModel: YaguBoguViewModel by viewModel()
 
@@ -124,15 +124,15 @@ class YaguBoguActivity : ComponentActivity() {
 
                 // 스토어에서 제공되는 최신 앱 버전 코드
                 val availableVersionCode: Int = appUpdateInfo.availableVersionCode()
-                val availableVersionInfo = VersionInfo.Companion.of(availableVersionCode)
+                val availableVersionInfo = VersionInfo.of(availableVersionCode)
 
                 // 현재 앱의 버전 코드
                 val currentVersionCode: Int = BuildKonfig.VERSION_CODE
-                val currentVersionInfo = VersionInfo.Companion.of(currentVersionCode)
+                val currentVersionInfo = VersionInfo.of(currentVersionCode)
 
                 // 현재 버전과 최신 버전을 비교해 업데이트 타입 결정
                 val inAppUpdateType =
-                    InAppUpdateType.Companion.determine(currentVersionInfo, availableVersionInfo)
+                    InAppUpdateType.determine(currentVersionInfo, availableVersionInfo)
 
                 when (inAppUpdateType) {
                     // 강제 업데이트가 필요한 경우

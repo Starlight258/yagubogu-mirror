@@ -32,7 +32,7 @@ fun AverageStatisticResponse.toUiModel(): AverageStats =
 fun OpponentWinRateTeamDto.toUiModel(rank: Int): VsTeamStatItem =
     VsTeamStatItem(
         rank = rank,
-        team = Team.Companion.getByCode(teamCode),
+        team = Team.getByCode(teamCode),
         teamName = shortName,
         winCounts = wins,
         drawCounts = draws,

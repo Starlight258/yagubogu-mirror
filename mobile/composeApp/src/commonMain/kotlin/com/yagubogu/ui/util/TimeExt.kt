@@ -1,6 +1,5 @@
 package com.yagubogu.ui.util
 
-import yagubogu.composeapp.generated.resources.Res
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
@@ -15,6 +14,7 @@ import kotlinx.datetime.toLocalDateTime
 import kotlinx.datetime.todayIn
 import kotlinx.datetime.yearMonth
 import org.jetbrains.compose.resources.StringResource
+import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.day_friday
 import yagubogu.composeapp.generated.resources.day_monday
 import yagubogu.composeapp.generated.resources.day_saturday
@@ -27,22 +27,22 @@ import kotlin.time.Instant
 
 private val KST: TimeZone = TimeZone.of("Asia/Seoul")
 
-fun LocalDate.Companion.now(
+fun LocalDate.now(
     clock: Clock = Clock.System,
     timeZone: TimeZone = KST,
 ): LocalDate = clock.todayIn(timeZone)
 
-fun LocalTime.Companion.now(
+fun LocalTime.now(
     clock: Clock = Clock.System,
     timeZone: TimeZone = KST,
 ): LocalTime = clock.now().toLocalDateTime(timeZone).time
 
-fun LocalDateTime.Companion.now(
+fun LocalDateTime.now(
     clock: Clock = Clock.System,
     timeZone: TimeZone = KST,
 ): LocalDateTime = clock.now().toLocalDateTime(timeZone)
 
-fun YearMonth.Companion.now(
+fun YearMonth.now(
     clock: Clock = Clock.System,
     timeZone: TimeZone = KST,
 ): YearMonth = clock.todayIn(timeZone).yearMonth

@@ -20,6 +20,8 @@ import com.yagubogu.ui.stats.detail.model.StadiumVisitCount
 import com.yagubogu.ui.theme.PretendardBold20
 import com.yagubogu.ui.theme.Primary500
 import com.yagubogu.ui.theme.White
+import yagubogu.composeapp.generated.resources.all_count
+import yagubogu.composeapp.generated.resources.stats_stadium_visit_count
 
 @Composable
 fun StadiumVisitCounts(
@@ -64,7 +66,10 @@ private fun List<StadiumVisitCount>.toBarChartItems(): List<BarChartItemValue> =
                     value =
                         when {
                             stadiumVisitCount.visitCounts <= 0 -> "-"
-                            else -> stringResource(Res.string.all_count, stadiumVisitCount.visitCounts)
+                            else -> stringResource(
+                                Res.string.all_count,
+                                stadiumVisitCount.visitCounts
+                            )
                         },
                     gap =
                         when {

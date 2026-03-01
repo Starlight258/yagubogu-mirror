@@ -27,8 +27,8 @@ import com.yagubogu.ui.home.model.VictoryFairyRanking
 import com.yagubogu.ui.mapper.toDomain
 import com.yagubogu.ui.mapper.toUiModel
 import com.yagubogu.ui.util.mapList
-import com.yagubogu.ui.util.now
 import com.yagubogu.ui.util.toInstant
+import com.yagubogu.ui.util.now
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
@@ -212,7 +212,7 @@ class HomeViewModel(
     }
 
     fun refreshStadiumStats() {
-        _stadiumStatsUiModel.value = stadiumStatsUiModel.value.copy(refreshTime = LocalTime.now())
+        _stadiumStatsUiModel.value = stadiumStatsUiModel.value.copy(refreshTime = LocalTime.now(clock))
     }
 
     fun fetchMemberProfile(memberId: Long) {
@@ -362,7 +362,7 @@ class HomeViewModel(
 
     private fun getLeftSecondsUntilOpening(): Long {
         val currentYear: Int = LocalDate.now(clock).year
-        val openingDate: OpeningDate = OpeningDate.Companion.fromYear(currentYear) ?: return 0L
+        val openingDate: OpeningDate = OpeningDate.fromYear(currentYear) ?: return 0L
         val time =
             clock.now().until(other = openingDate.date.toInstant(), unit = DateTimeUnit.SECOND)
         return if (time < 0L) 0L else time

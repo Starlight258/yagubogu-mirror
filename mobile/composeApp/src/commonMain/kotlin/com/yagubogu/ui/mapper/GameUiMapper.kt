@@ -29,4 +29,4 @@ fun GameWithCheckInDto.toAttendanceUiModel(date: LocalDate): PastGameUiModel =
         homeTeamName = homeTeam.name,
     )
 
-fun TeamByGameDto.toDomain(): Team = Team.Companion.getByCode(code)
+fun TeamByGameDto.toDomain(): Team = Team.getByCode(code)
