@@ -11,59 +11,82 @@ val Int.dpToSp
     @Composable
     get() = with(LocalDensity.current) { Dp(toFloat()).toSp() }
 
-val PretendardRegular =
-    TextStyle(
-        fontFamily = PretendardFontFamily,
-        fontWeight = FontWeight.Normal,
-    )
-val PretendardRegular12 = PretendardRegular.copy(fontSize = 12.sp)
-val PretendardRegular16 = PretendardRegular.copy(fontSize = 16.sp)
+val PretendardRegular
+    @Composable get() =
+        TextStyle(
+            fontFamily = PretendardFontFamily,
+            fontWeight = FontWeight.Normal,
+        )
+val PretendardRegular12
+    @Composable get() = PretendardRegular.copy(fontSize = 12.sp)
+val PretendardRegular16
+    @Composable get() = PretendardRegular.copy(fontSize = 16.sp)
 
-val PretendardMedium =
-    TextStyle(
-        fontFamily = PretendardFontFamily,
-        fontWeight = FontWeight.Medium,
-    )
-val PretendardMedium12 = PretendardMedium.copy(fontSize = 12.sp)
-val PretendardMedium16 = PretendardMedium.copy(fontSize = 16.sp)
-val PretendardMedium24 = PretendardMedium.copy(fontSize = 24.sp)
+val PretendardMedium
+    @Composable get() =
+        TextStyle(
+            fontFamily = PretendardFontFamily,
+            fontWeight = FontWeight.Medium,
+        )
+val PretendardMedium12
+    @Composable get() = PretendardMedium.copy(fontSize = 12.sp)
+val PretendardMedium16
+    @Composable get() = PretendardMedium.copy(fontSize = 16.sp)
+val PretendardMedium24
+    @Composable get() = PretendardMedium.copy(fontSize = 24.sp)
 
-val PretendardSemiBold =
-    TextStyle(
-        fontFamily = PretendardFontFamily,
-        fontWeight = FontWeight.SemiBold,
-    )
-val PretendardSemiBold12 = PretendardSemiBold.copy(fontSize = 12.sp)
-val PretendardSemiBold16 = PretendardSemiBold.copy(fontSize = 16.sp)
-val PretendardSemiBold20 = PretendardSemiBold.copy(fontSize = 20.sp)
+val PretendardSemiBold
+    @Composable get() =
+        TextStyle(
+            fontFamily = PretendardFontFamily,
+            fontWeight = FontWeight.SemiBold,
+        )
+val PretendardSemiBold12
+    @Composable get() = PretendardSemiBold.copy(fontSize = 12.sp)
+val PretendardSemiBold16
+    @Composable get() = PretendardSemiBold.copy(fontSize = 16.sp)
+val PretendardSemiBold20
+    @Composable get() = PretendardSemiBold.copy(fontSize = 20.sp)
 
-val PretendardBold =
-    TextStyle(
-        fontFamily = PretendardFontFamily,
-        fontWeight = FontWeight.Bold,
-    )
-val PretendardBold12 = PretendardBold.copy(fontSize = 12.sp)
-val PretendardBold16 = PretendardBold.copy(fontSize = 16.sp)
-val PretendardBold20 = PretendardBold.copy(fontSize = 20.sp)
-val PretendardBold32 = PretendardBold.copy(fontSize = 32.sp)
+val PretendardBold
+    @Composable get() =
+        TextStyle(
+            fontFamily = PretendardFontFamily,
+            fontWeight = FontWeight.Bold,
+        )
+val PretendardBold12
+    @Composable get() = PretendardBold.copy(fontSize = 12.sp)
+val PretendardBold16
+    @Composable get() = PretendardBold.copy(fontSize = 16.sp)
 
-val EsamanruLight =
-    TextStyle(
-        fontFamily = EsamanruFontFamily,
-        fontWeight = FontWeight.Light,
-    )
+val PretendardBold20
+    @Composable get() = PretendardBold.copy(fontSize = 20.sp)
+val PretendardBold32
+    @Composable get() = PretendardBold.copy(fontSize = 32.sp)
 
-val EsamanruMedium =
-    TextStyle(
-        fontFamily = EsamanruFontFamily,
-        fontWeight = FontWeight.Medium,
-    )
-val EsamanruMedium20 = EsamanruMedium.copy(fontSize = 20.sp)
-val EsamanruMedium24 = EsamanruMedium.copy(fontSize = 24.sp)
+val EsamanruLight
+    @Composable get() =
+        TextStyle(
+            fontFamily = EsamanruFontFamily,
+            fontWeight = FontWeight.Light,
+        )
 
-val EsamanruBold =
-    TextStyle(
-        fontFamily = EsamanruFontFamily,
-        fontWeight = FontWeight.Bold,
-    )
-val EsamanruBold32 = EsamanruBold.copy(fontSize = 32.sp)
+val EsamanruMedium
+    @Composable get() =
+        TextStyle(
+            fontFamily = EsamanruFontFamily,
+            fontWeight = FontWeight.Medium,
+        )
+val EsamanruMedium20
+    @Composable get() = EsamanruMedium.copy(fontSize = 20.sp)
+val EsamanruMedium24
+    @Composable get() = EsamanruMedium.copy(fontSize = 24.sp)
+
+val EsamanruBold
+    @Composable get() =
+        TextStyle(
+            fontFamily = EsamanruFontFamily,
+            fontWeight = FontWeight.Bold,
+        )
+val EsamanruBold32
+    @Composable get() = EsamanruBold.copy(fontSize = 32.sp)
