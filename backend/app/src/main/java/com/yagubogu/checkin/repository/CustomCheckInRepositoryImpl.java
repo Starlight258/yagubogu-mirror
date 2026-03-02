@@ -27,6 +27,7 @@ import com.yagubogu.stadium.domain.QStadium;
 import com.yagubogu.stadium.domain.StadiumLevel;
 import com.yagubogu.stat.dto.AverageStatisticParam;
 import com.yagubogu.stat.dto.OpponentWinRateRowParam;
+import com.yagubogu.stat.dto.StadiumStatsParam;
 import com.yagubogu.team.domain.QTeam;
 import com.yagubogu.team.domain.Team;
 import com.yagubogu.team.domain.TeamStatus;
@@ -59,10 +60,7 @@ public class CustomCheckInRepositoryImpl implements CustomCheckInRepository {
     }
 
     @Override
-    public StatCountsParam findStatCounts(final Member member, final int year) {
-        LocalDate start = LocalDate.of(year, 1, 1);
-        LocalDate end = LocalDate.of(year, 12, 31);
-
+    public StatCountsParam findStatCounts(final Member member, final Integer year) {
         NumberExpression<Integer> winExpr = new CaseBuilder().when(winCondition(CHECK_IN, GAME)).then(1).otherwise(0);
         NumberExpression<Integer> drawExpr = new CaseBuilder().when(drawCondition(CHECK_IN, GAME)).then(1).otherwise(0);
         NumberExpression<Integer> loseExpr = new CaseBuilder().when(loseCondition(CHECK_IN, GAME)).then(1).otherwise(0);
@@ -77,23 +75,23 @@ public class CustomCheckInRepositoryImpl implements CustomCheckInRepository {
                 .join(CHECK_IN.game, CustomCheckInRepositoryImpl.GAME).on(isComplete())
                 .where(
                         CHECK_IN.member.eq(member),
-                        GAME.date.between(start, end),
+                        isBetweenYear(year),
                         isMyCurrentFavorite(member, CHECK_IN)
                 ).fetchOne();
     }
 
     @Override
-    public int findWinCounts(final Member member, final int year) {
+    public int findWinCounts(final Member member, final Integer year) {
         return conditionCount(member, year, winCondition(QCheckIn.checkIn, QGame.game));
     }
 
     @Override
-    public int findLoseCounts(final Member member, final int year) {
+    public int findLoseCounts(final Member member, final Integer year) {
         return conditionCount(member, year, loseCondition(QCheckIn.checkIn, QGame.game));
     }
 
     @Override
-    public int findDrawCounts(final Member member, final int year) {
+    public int findDrawCounts(final Member member, final Integer year) {
         return conditionCount(member, year, drawCondition(QCheckIn.checkIn, QGame.game));
     }
 
@@ -130,7 +128,7 @@ public class CustomCheckInRepositoryImpl implements CustomCheckInRepository {
     }
 
     @Override
-    public int findRecentGamesWinCounts(final Member member, final int year, final int limit) {
+    public int findRecentGamesWinCounts(final Member member, final Integer year, final int limit) {
         return conditionCountOnRecentGames(member, year, winCondition(QCheckIn.checkIn, QGame.game), limit);
     }
 
@@ -162,7 +160,7 @@ public class CustomCheckInRepositoryImpl implements CustomCheckInRepository {
     }
 
     @Override
-    public int findRecentGamesLoseCounts(final Member member, final int year, final int limit) {
+    public int findRecentGamesLoseCounts(final Member member, final Integer year, final int limit) {
         return conditionCountOnRecentGames(member, year, loseCondition(QCheckIn.checkIn, QGame.game), limit);
     }
 
@@ -230,7 +228,7 @@ public class CustomCheckInRepositoryImpl implements CustomCheckInRepository {
 
 
     @Override
-    public int findRecentGamesDrawCounts(final Member member, final int year, final int limit) {
+    public int findRecentGamesDrawCounts(final Member member, final Integer year, final int limit) {
         return conditionCountOnRecentGames(member, year, drawCondition(QCheckIn.checkIn, QGame.game), limit);
     }
 
@@ -239,7 +237,7 @@ public class CustomCheckInRepositoryImpl implements CustomCheckInRepository {
     public List<CheckInGameParam> findCheckInHistory(
             final Member member,
             final Team team,
-            final int year,
+            final Integer year,
             final Integer month,
             final CheckInResultFilter resultFilter,
             final CheckInOrderFilter orderFilter
@@ -357,7 +355,7 @@ public class CustomCheckInRepositoryImpl implements CustomCheckInRepository {
 
     public List<StadiumCheckInCountParam> findStadiumCheckInCounts(
             Member member,
-            int year
+            Integer year
     ) {
         return jpaQueryFactory
                 .select(
@@ -376,10 +374,11 @@ public class CustomCheckInRepositoryImpl implements CustomCheckInRepository {
                 .groupBy(STADIUM.id, STADIUM.location)
                 .fetch();
     }
+
     public List<OpponentWinRateRowParam> findOpponentWinRates(
             Member member,
             Team team,
-            int year
+            Integer year
     ) {
         QTeam opponentTeam = QTeam.team;
 
@@ -435,12 +434,46 @@ public class CustomCheckInRepositoryImpl implements CustomCheckInRepository {
                 .fetch();
     }
 
-    private int conditionCount(final Member member, final int year, final BooleanExpression condition) {
+    @Override
+    public List<StadiumStatsParam> findWinAndNonDrawCountByStadium(Long memberId, Integer year) {
+        BooleanExpression isMyCurrentTeam = CHECK_IN.team.eq(CHECK_IN.member.team);
+
+        NumberExpression<Integer> winCount = new CaseBuilder()
+                .when(isMyCurrentTeam.and(winCondition(CHECK_IN, GAME)))
+                .then(1)
+                .otherwise(0)
+                .sum();
+
+        NumberExpression<Integer> nonDrawCount = new CaseBuilder()
+                .when(isMyCurrentTeam.and(GAME.homeScore.ne(GAME.awayScore)))
+                .then(1)
+                .otherwise(0)
+                .sum();
+
+        return jpaQueryFactory.select(
+                        Projections.constructor(
+                                StadiumStatsParam.class,
+                                STADIUM.shortName,
+                                winCount,
+                                nonDrawCount
+                        )
+                )
+                .from(CHECK_IN)
+                .join(CHECK_IN.game, GAME)
+                .join(GAME.stadium, STADIUM)
+                .join(CHECK_IN.member, MEMBER)
+                .where(
+                        CHECK_IN.member.id.eq(memberId),
+                        isBetweenYear(year),
+                        isComplete()
+                )
+                .groupBy(STADIUM.id, STADIUM.shortName)
+                .fetch();
+    }
+
+    private int conditionCount(final Member member, final Integer year, final BooleanExpression condition) {
         QCheckIn qCheckIn = QCheckIn.checkIn;
         QGame qGame = QGame.game;
-
-        LocalDate start = LocalDate.of(year, 1, 1);
-        LocalDate end = LocalDate.of(year, 12, 31);
 
         Long result = jpaQueryFactory
                 .select(qCheckIn.id.count())
@@ -448,7 +481,7 @@ public class CustomCheckInRepositoryImpl implements CustomCheckInRepository {
                 .join(qCheckIn.game, qGame)
                 .where(
                         qCheckIn.member.eq(member),
-                        qGame.date.between(start, end),
+                        isBetweenYear(year),
                         qGame.gameState.eq(GameState.COMPLETED),
                         isMyCurrentFavorite(member, CHECK_IN),
                         condition
@@ -517,7 +550,7 @@ public class CustomCheckInRepositoryImpl implements CustomCheckInRepository {
 
     private int conditionCountOnRecentGames(
             final Member member,
-            final int year,
+            final Integer year,
             final BooleanExpression condition,
             final int limit
     ) {
@@ -543,12 +576,9 @@ public class CustomCheckInRepositoryImpl implements CustomCheckInRepository {
         return result == null ? 0 : result.intValue();
     }
 
-    private List<Long> findRecentGameIdsByYear(final Member member, final int year, final int limit) {
+    private List<Long> findRecentGameIdsByYear(final Member member, final Integer year, final int limit) {
         QCheckIn qCheckIn = QCheckIn.checkIn;
         QGame qGame = QGame.game;
-
-        LocalDate start = LocalDate.of(year, 1, 1);
-        LocalDate end = LocalDate.of(year, 12, 31);
 
         return jpaQueryFactory
                 .select(qGame.id)
@@ -556,7 +586,7 @@ public class CustomCheckInRepositoryImpl implements CustomCheckInRepository {
                 .join(qCheckIn.game, qGame)
                 .where(
                         qCheckIn.member.eq(member),
-                        qGame.date.between(start, end),
+                        isBetweenYear(year),
                         qGame.gameState.eq(GameState.COMPLETED)
                 )
                 .orderBy(qCheckIn.id.desc())
@@ -626,21 +656,27 @@ public class CustomCheckInRepositoryImpl implements CustomCheckInRepository {
         return checkIn.team.eq(member.getTeam());
     }
 
-    private Predicate dateFilter(final QGame game, final int year, final Integer month) {
+    private Predicate dateFilter(final QGame game, final Integer year, final Integer month) {
         if (month == null) {
             return isBetweenYear(game, year);
         }
         return isBetweenYearMonth(game, year, month);
     }
 
-    private BooleanExpression isBetweenYear(final QGame game, final int year) {
+    private BooleanExpression isBetweenYear(final QGame game, final Integer year) {
+        if (year == null) {
+            return null;
+        }
         LocalDate start = LocalDate.of(year, 1, 1);
         LocalDate end = LocalDate.of(year, 12, 31);
 
         return game.date.between(start, end);
     }
 
-    private BooleanExpression isBetweenYearMonth(final QGame game, final int year, final int month) {
+    private BooleanExpression isBetweenYearMonth(final QGame game, final Integer year, final int month) {
+        if (year == null) {
+            return null;
+        }
         YearMonth yearMonth = YearMonth.of(year, month);
         LocalDate start = yearMonth.atDay(1);
         LocalDate end = yearMonth.atEndOfMonth();
