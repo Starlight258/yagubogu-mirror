@@ -36,8 +36,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.firebase.Firebase
-import com.google.firebase.analytics.analytics
+import com.yagubogu.analytics.AnalyticsLogger
 import com.yagubogu.ui.stats.detail.StatsDetailScreen
 import com.yagubogu.ui.stats.my.StatsMyScreen
 import com.yagubogu.ui.theme.Gray200
@@ -221,7 +220,7 @@ private fun StatsYearDropdown(
                     onClick = {
                         onYearChange(year)
                         isExpanded = false
-                        Firebase.analytics.logEvent("stats_change_year", null)
+                        AnalyticsLogger.logEvent("stats_change_year")
                     },
                     contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
                     modifier = Modifier.crop(horizontal = 0.dp, vertical = 8.dp),

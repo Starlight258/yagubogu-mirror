@@ -13,19 +13,18 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.google.firebase.Firebase
-import com.google.firebase.analytics.analytics
 import com.skydoves.balloon.compose.Balloon
 import com.skydoves.balloon.compose.BalloonWindow
-import yagubogu.composeapp.generated.resources.Res
+import com.yagubogu.analytics.AnalyticsLogger
 import com.yagubogu.ui.stats.my.model.StatsMyUiModel
 import com.yagubogu.ui.theme.Gray300
 import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.util.noRippleClickable
 import com.yagubogu.ui.util.rememberBalloonBuilder
+import org.jetbrains.compose.resources.stringResource
+import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.stats_my_lucky_stadium
 import yagubogu.composeapp.generated.resources.stats_my_lucky_stadium_emoji
 import yagubogu.composeapp.generated.resources.stats_my_lucky_stadium_tooltip
@@ -75,7 +74,7 @@ fun MyStats(
                         Modifier
                             .noRippleClickable {
                                 balloonWindow.showAlignBottom(yOff = -10)
-                                Firebase.analytics.logEvent("tooltip_lucky_stadium", null)
+                                AnalyticsLogger.logEvent("tooltip_lucky_stadium")
                             },
                 )
             }

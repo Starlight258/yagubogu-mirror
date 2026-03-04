@@ -18,17 +18,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.firebase.Firebase
-import com.google.firebase.analytics.analytics
 import com.skydoves.balloon.compose.Balloon
 import com.skydoves.balloon.compose.BalloonWindow
-import yagubogu.composeapp.generated.resources.Res
+import com.yagubogu.analytics.AnalyticsLogger
 import com.yagubogu.ui.common.component.profile.ProfileImage
 import com.yagubogu.ui.home.model.VictoryFairyItem
 import com.yagubogu.ui.home.model.VictoryFairyRanking
@@ -48,6 +44,9 @@ import com.yagubogu.ui.theme.dpToSp
 import com.yagubogu.ui.util.noRippleClickable
 import com.yagubogu.ui.util.rememberBalloonBuilder
 import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
+import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.all_fan
 import yagubogu.composeapp.generated.resources.home_victory_fairy_my_nickname
 import yagubogu.composeapp.generated.resources.home_victory_fairy_ranking
@@ -97,10 +96,7 @@ fun VictoryFairyRanking(
                                 .padding(horizontal = 8.dp)
                                 .noRippleClickable {
                                     balloonWindow.showAlignBottom(yOff = -10)
-                                    Firebase.analytics.logEvent(
-                                        "tooltip_victory_fairy_ranking",
-                                        null,
-                                    )
+                                    AnalyticsLogger.logEvent("tooltip_victory_fairy_ranking")
                                 },
                     )
                 }
@@ -145,7 +141,7 @@ private fun VictoryFairyRankingItem(
                 .padding(vertical = 8.dp)
                 .noRippleClickable {
                     onClick(item.memberId)
-                    Firebase.analytics.logEvent("member_profile", null)
+                    AnalyticsLogger.logEvent("member_profile")
                 },
         verticalAlignment = Alignment.CenterVertically,
     ) {

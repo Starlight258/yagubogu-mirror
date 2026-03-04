@@ -2,9 +2,8 @@ package com.yagubogu.ui.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.Firebase
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.analytics.analytics
+import com.yagubogu.analytics.AnalyticsLogger
 import com.yagubogu.data.repository.auth.AuthRepository
 import com.yagubogu.data.repository.member.MemberRepository
 import com.yagubogu.ui.main.model.AutoLoginState
@@ -28,7 +27,7 @@ class YaguBoguViewModel(
                 onAppInitialized()
                 return@launch
             }
-            Firebase.analytics.logEvent(FirebaseAnalytics.Event.LOGIN, null)
+            AnalyticsLogger.logEvent("login")
 
             val isNewUser: Boolean = memberRepository.getFavoriteTeam().getOrNull() == null
             when (isNewUser) {

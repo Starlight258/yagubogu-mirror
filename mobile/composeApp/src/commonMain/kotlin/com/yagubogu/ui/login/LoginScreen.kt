@@ -28,6 +28,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import co.touchlab.kermit.Logger
+import com.yagubogu.analytics.AnalyticsLogger
 import com.yagubogu.ui.login.auth.GoogleCredentialManager
 import com.yagubogu.ui.login.model.LoginResult
 import com.yagubogu.ui.theme.Dimming025
@@ -183,18 +184,19 @@ fun LoginResultHandler(
                 is LoginResult.Failure -> {
                     Logger.withTag("LoginResult").d { loginResult.toString() }
                     snackbarHostState.showSnackbar(loginFailedMessage)
-//                    val bundle = bundleOf("reason" to "${loginResult.exception}")
-//                    Firebase.analytics.logEvent("login_failure", bundle)
+                    AnalyticsLogger.logEvent(
+                        "login_failure", mapOf("reason" to "${loginResult.exception}")
+                    )
                 }
 
                 LoginResult.SignIn -> {
                     onSignIn()
-//                    Firebase.analytics.logEvent(FirebaseAnalytics.Event.LOGIN, null)
+                    AnalyticsLogger.logEvent("login")
                 }
 
                 LoginResult.SignUp -> {
                     onSignUp()
-//                    Firebase.analytics.logEvent(FirebaseAnalytics.Event.LOGIN, null)
+                    AnalyticsLogger.logEvent("login")
                 }
 
                 LoginResult.Cancel -> {

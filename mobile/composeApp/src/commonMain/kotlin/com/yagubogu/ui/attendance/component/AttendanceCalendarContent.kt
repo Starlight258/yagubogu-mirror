@@ -27,13 +27,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.google.firebase.Firebase
-import com.google.firebase.analytics.analytics
-import yagubogu.composeapp.generated.resources.Res
+import com.yagubogu.analytics.AnalyticsLogger
 import com.yagubogu.ui.attendance.model.AttendanceHistoryItem
 import com.yagubogu.ui.attendance.model.PastGameUiState
 import com.yagubogu.ui.theme.PretendardBold16
@@ -45,6 +41,9 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.YearMonth
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
+import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.attendance_history_add_attendance
 import yagubogu.composeapp.generated.resources.ic_add
 import yagubogu.composeapp.generated.resources.ic_calendar_plus
@@ -152,7 +151,7 @@ private fun AttendanceAdditionButton(
     Button(
         onClick = {
             onClick()
-            Firebase.analytics.logEvent("past_attendance_addition", null)
+            AnalyticsLogger.logEvent("past_attendance_addition")
         },
         shape = CircleShape,
         colors =

@@ -17,12 +17,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.firebase.Firebase
-import com.google.firebase.analytics.analytics
+import com.yagubogu.analytics.AnalyticsLogger
 import com.yagubogu.ui.attendance.model.AttendanceHistoryItem
 import com.yagubogu.ui.theme.EsamanruBold
 import com.yagubogu.ui.theme.Gray500
@@ -36,6 +34,7 @@ import com.yagubogu.ui.theme.dpToSp
 import com.yagubogu.ui.util.noRippleClickable
 import com.yagubogu.ui.util.yyyyMMddFormatter
 import kotlinx.datetime.format
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun AttendanceItem(
@@ -51,7 +50,7 @@ fun AttendanceItem(
                 .background(color = White, shape = RoundedCornerShape(12.dp))
                 .noRippleClickable {
                     onItemClick(item)
-                    Firebase.analytics.logEvent("attendance_history_item_click", null)
+                    AnalyticsLogger.logEvent("attendance_history_item_click")
                 }.padding(horizontal = 20.dp, vertical = 24.dp),
     ) {
         AttendanceHistorySummary(item = item.summary)

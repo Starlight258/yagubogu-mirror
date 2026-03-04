@@ -20,10 +20,9 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.firebase.Firebase
-import com.google.firebase.analytics.analytics
 import com.skydoves.balloon.compose.Balloon
 import com.skydoves.balloon.compose.BalloonWindow
+import com.yagubogu.analytics.AnalyticsLogger
 import com.yagubogu.ui.common.component.chart.AnimatedPieChart
 import com.yagubogu.ui.common.model.PieChartItemValue
 import com.yagubogu.ui.stats.my.model.StatsMyUiModel
@@ -83,7 +82,7 @@ fun WinRates(
                             .padding(horizontal = 8.dp)
                             .noRippleClickable {
                                 balloonWindow.showAlignBottom(yOff = -10)
-                                Firebase.analytics.logEvent("tooltip_my_chart", null)
+                                AnalyticsLogger.logEvent("tooltip_my_chart")
                             },
                 )
             }

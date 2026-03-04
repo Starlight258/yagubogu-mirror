@@ -14,18 +14,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
-import com.google.firebase.Firebase
-import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.analytics.analytics
-import com.google.firebase.analytics.logEvent
-import yagubogu.composeapp.generated.resources.Res
+import com.yagubogu.analytics.AnalyticsLogger
 import com.yagubogu.ui.attendance.AttendanceHistoryScreen
 import com.yagubogu.ui.home.HomeScreen
 import com.yagubogu.ui.livetalk.LivetalkScreen
@@ -39,7 +34,9 @@ import com.yagubogu.ui.stats.StatsScreen
 import com.yagubogu.ui.theme.Gray050
 import com.yagubogu.ui.theme.White
 import kotlinx.coroutines.flow.MutableSharedFlow
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.app_name
 
 @Composable
@@ -63,9 +60,7 @@ fun MainScreen(
 
     val selectedItemLabel: String = stringResource(selectedItem.label)
     LaunchedEffect(selectedItem) {
-        Firebase.analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
-            param(FirebaseAnalytics.Param.SCREEN_NAME, "$selectedItemLabel Screen")
-        }
+        AnalyticsLogger.logEvent("screen_view", mapOf("screen_name" to "$selectedItemLabel Screen"))
     }
 
     Box(modifier = modifier.fillMaxSize()) {

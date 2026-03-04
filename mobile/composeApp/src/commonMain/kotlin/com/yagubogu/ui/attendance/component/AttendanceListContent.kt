@@ -31,15 +31,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.firebase.Firebase
-import com.google.firebase.analytics.analytics
-import yagubogu.composeapp.generated.resources.Res
+import com.yagubogu.analytics.AnalyticsLogger
 import com.yagubogu.ui.attendance.model.AttendanceHistoryFilter
 import com.yagubogu.ui.attendance.model.AttendanceHistoryItem
 import com.yagubogu.ui.attendance.model.AttendanceHistorySort
@@ -53,6 +49,9 @@ import com.yagubogu.ui.util.crop
 import com.yagubogu.ui.util.noRippleClickable
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
+import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.attendance_history_all
 import yagubogu.composeapp.generated.resources.attendance_history_empty_description
 import yagubogu.composeapp.generated.resources.attendance_history_empty_scoreboard_illustration_description
@@ -267,7 +266,7 @@ private fun AttendanceHistoryFilterDropdown(
                     onClick = {
                         onClick(filter)
                         isExpanded = false
-                        Firebase.analytics.logEvent("attendance_history_change_filter", null)
+                        AnalyticsLogger.logEvent("attendance_history_change_filter")
                     },
                     contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
                     modifier = Modifier.crop(horizontal = 0.dp, vertical = 8.dp),
@@ -288,7 +287,7 @@ private fun AttendanceHistorySortSwitch(
             modifier
                 .noRippleClickable {
                     onClick()
-                    Firebase.analytics.logEvent("attendance_history_change_sort", null)
+                    AnalyticsLogger.logEvent("attendance_history_change_sort")
                 },
         verticalAlignment = Alignment.CenterVertically,
     ) {

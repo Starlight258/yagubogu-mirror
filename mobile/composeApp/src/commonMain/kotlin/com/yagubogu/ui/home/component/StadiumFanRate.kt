@@ -34,17 +34,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.firebase.Firebase
-import com.google.firebase.analytics.analytics
 import com.skydoves.balloon.compose.Balloon
 import com.skydoves.balloon.compose.BalloonWindow
-import yagubogu.composeapp.generated.resources.Res
+import com.yagubogu.analytics.AnalyticsLogger
 import com.yagubogu.ui.common.component.HeartbeatAnimation
 import com.yagubogu.ui.common.component.ParallelogramShape
 import com.yagubogu.ui.common.component.ShowMoreButton
@@ -64,6 +60,9 @@ import com.yagubogu.ui.theme.dpToSp
 import com.yagubogu.ui.util.color
 import com.yagubogu.ui.util.noRippleClickable
 import com.yagubogu.ui.util.rememberBalloonBuilder
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
+import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.all_win_rate
 import yagubogu.composeapp.generated.resources.home_stadium_stats_refresh_time
 import yagubogu.composeapp.generated.resources.home_stadium_stats_title
@@ -113,7 +112,7 @@ fun StadiumFanRate(
                                 .padding(horizontal = 8.dp)
                                 .noRippleClickable {
                                     balloonWindow.showAlignBottom(yOff = -10)
-                                    Firebase.analytics.logEvent("tooltip_stadium_stats", null)
+                                    AnalyticsLogger.logEvent("tooltip_stadium_stats")
                                 },
                     )
                 }
@@ -187,7 +186,7 @@ private fun RefreshIcon(
                 }.noRippleClickable {
                     rotation += 360f
                     onRefresh()
-                    Firebase.analytics.logEvent("fan_rate_refresh", null)
+                    AnalyticsLogger.logEvent("fan_rate_refresh")
                 },
     )
 }

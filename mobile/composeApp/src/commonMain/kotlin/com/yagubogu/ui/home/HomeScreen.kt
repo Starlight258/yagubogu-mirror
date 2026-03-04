@@ -32,9 +32,7 @@ import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.firebase.Firebase
-import com.google.firebase.analytics.analytics
-import yagubogu.composeapp.generated.resources.Res
+import com.yagubogu.analytics.AnalyticsLogger
 import com.yagubogu.ui.home.component.CheckInButton
 import com.yagubogu.ui.home.component.MemberStats
 import com.yagubogu.ui.home.component.OpeningCountdown
@@ -60,6 +58,15 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
+import yagubogu.composeapp.generated.resources.Res
+import yagubogu.composeapp.generated.resources.home_already_checked_in_message
+import yagubogu.composeapp.generated.resources.home_check_in_location_fetch_failed_message
+import yagubogu.composeapp.generated.resources.home_check_in_network_failed_message
+import yagubogu.composeapp.generated.resources.home_check_in_no_game_message
+import yagubogu.composeapp.generated.resources.home_check_in_out_of_range_message
+import yagubogu.composeapp.generated.resources.home_check_in_success_message
+import yagubogu.composeapp.generated.resources.home_location_permission_denied_message
+import yagubogu.composeapp.generated.resources.home_location_settings_disabled
 
 @Composable
 fun HomeScreen(
@@ -209,7 +216,7 @@ private fun HomeScreen(
         CheckInButton(
             onClick = {
                 onCheckInClick()
-                Firebase.analytics.logEvent("check_in", null)
+                AnalyticsLogger.logEvent("check_in")
             },
             modifier = Modifier.fillMaxWidth(),
         )
