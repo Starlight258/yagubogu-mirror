@@ -5,7 +5,6 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSerializable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
@@ -16,8 +15,7 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberDecoratedNavEntries
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
-import androidx.navigation3.runtime.serialization.NavKeySerializer
-import androidx.savedstate.compose.serialization.serializers.MutableStateSerializer
+import androidx.savedstate.serialization.SavedStateConfiguration
 
 /**
  * Create a navigation state that persists config changes and process death.
@@ -28,18 +26,12 @@ import androidx.savedstate.compose.serialization.serializers.MutableStateSeriali
 fun rememberNavigationState(
     startRoute: NavKey,
     topLevelRoutes: Set<NavKey>,
+    savedStateConfig: SavedStateConfiguration,
 ): NavigationState {
-    val topLevelRoute: MutableState<NavKey> =
-        rememberSerializable(
-            startRoute,
-            topLevelRoutes,
-            serializer = MutableStateSerializer(NavKeySerializer()),
-        ) {
-            mutableStateOf(startRoute)
-        }
+    val topLevelRoute: MutableState<NavKey> = remember(startRoute) { mutableStateOf(startRoute) }
 
     val backStacks: Map<NavKey, NavBackStack<NavKey>> =
-        topLevelRoutes.associateWith { key -> rememberNavBackStack(key) }
+        topLevelRoutes.associateWith { key -> rememberNavBackStack(savedStateConfig, key) }
 
     return remember(startRoute, topLevelRoutes) {
         NavigationState(
