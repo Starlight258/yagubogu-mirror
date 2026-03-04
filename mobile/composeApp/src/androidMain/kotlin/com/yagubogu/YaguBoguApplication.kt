@@ -17,13 +17,14 @@ import com.yagubogu.di.serviceModule
 import com.yagubogu.di.timeModule
 import com.yagubogu.di.viewModelModule
 import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.startKoin
 
 @OptIn(ExperimentalKermitApi::class)
 class YaguBoguApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         setupLogging()
-        startKoin()
+        setupKoin()
     }
 
     private fun setupLogging() {
@@ -41,8 +42,8 @@ class YaguBoguApplication : Application() {
         )
     }
 
-    private fun startKoin() {
-        org.koin.core.context.startKoin {
+    private fun setupKoin() {
+        startKoin {
             androidContext(androidContext = this@YaguBoguApplication)
 
             modules(

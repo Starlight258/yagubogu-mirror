@@ -30,9 +30,15 @@ import com.yagubogu.ui.navigation.YaguBoguRoute
 import com.yagubogu.ui.navigation.model.Route
 import com.yagubogu.ui.theme.YaguBoguTheme
 import com.yagubogu.ui.util.showToast
+import org.koin.android.scope.AndroidScopeComponent
+import org.koin.androidx.compose.scope.KoinActivityScope
+import org.koin.androidx.scope.activityScope
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.scope.Scope
 
-class YaguBoguActivity : ComponentActivity() {
+class YaguBoguActivity : ComponentActivity(), AndroidScopeComponent {
+    override val scope: Scope by activityScope()
+
     private val logger = Logger.withTag("YaguBoguActivity")
 
     private val viewModel: YaguBoguViewModel by viewModel()
@@ -62,11 +68,13 @@ class YaguBoguActivity : ComponentActivity() {
             viewModel.handleAutoLogin(onAppInitialized = { isAppInitialized = true })
         })
         setContent {
-            YaguBoguTheme {
-                val autoLoginState: AutoLoginState by viewModel.autoLoginState.collectAsStateWithLifecycle()
+            KoinActivityScope {
+                YaguBoguTheme {
+                    val autoLoginState: AutoLoginState by viewModel.autoLoginState.collectAsStateWithLifecycle()
 
-                if (autoLoginState !is AutoLoginState.Loading) {
-                    YaguBoguRoute(startRoute = setStartRoute(autoLoginState))
+                    if (autoLoginState !is AutoLoginState.Loading) {
+                        YaguBoguRoute(startRoute = setStartRoute(autoLoginState))
+                    }
                 }
             }
         }
