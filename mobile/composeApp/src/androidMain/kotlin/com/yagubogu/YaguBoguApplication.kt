@@ -8,7 +8,7 @@ import co.touchlab.kermit.crashlytics.CrashlyticsLogWriter
 import co.touchlab.kermit.platformLogWriter
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.yagubogu.di.androidModule
+import com.yagubogu.di.commonModule
 import com.yagubogu.di.authModule
 import com.yagubogu.di.datasourceModule
 import com.yagubogu.di.networkModule
@@ -48,7 +48,7 @@ class YaguBoguApplication : Application() {
 
             modules(
                 authModule,
-                androidModule,
+                commonModule,
                 datasourceModule,
                 networkModule,
                 repositoryModule,
