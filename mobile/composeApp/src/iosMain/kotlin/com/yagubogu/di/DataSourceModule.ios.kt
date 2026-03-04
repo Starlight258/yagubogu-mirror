@@ -1,0 +1,6 @@
+package com.yagubogu.di
+
+import org.koin.core.module.Module
+
+actual fun Module.registerPlatformDataSources() {
+}
