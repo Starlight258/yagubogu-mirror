@@ -8,8 +8,10 @@ import co.touchlab.kermit.crashlytics.CrashlyticsLogWriter
 import co.touchlab.kermit.platformLogWriter
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.yagubogu.di.commonModule
+import com.yagubogu.analytics.AnalyticsLogger
+import com.yagubogu.analytics.FirebaseAnalyticsLogger
 import com.yagubogu.di.authModule
+import com.yagubogu.di.commonModule
 import com.yagubogu.di.datasourceModule
 import com.yagubogu.di.networkModule
 import com.yagubogu.di.repositoryModule
@@ -24,7 +26,12 @@ class YaguBoguApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         setupLogging()
+        setupAnalytics()
         setupKoin()
+    }
+
+    private fun setupAnalytics() {
+        AnalyticsLogger.initialize(FirebaseAnalyticsLogger())
     }
 
     private fun setupLogging() {
