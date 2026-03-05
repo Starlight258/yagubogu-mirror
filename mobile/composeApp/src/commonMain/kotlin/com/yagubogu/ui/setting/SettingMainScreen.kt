@@ -2,12 +2,6 @@ package com.yagubogu.ui.setting
 
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageInfo
-import android.content.pm.PackageManager
-import android.content.res.Resources
-import android.graphics.Bitmap
-import android.net.Uri
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -34,15 +28,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalResources
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.touchlab.kermit.Logger
+import coil3.Uri
+import coil3.toUri
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import yagubogu.composeapp.generated.resources.Res
 import com.yagubogu.ui.common.component.profile.ProfileImage
@@ -62,11 +56,6 @@ import com.yagubogu.ui.util.LocalSnackbarHostState
 import com.yagubogu.ui.util.getAppVersion
 import com.yagubogu.ui.util.showSingleSnackbar
 import com.yagubogu.ui.util.yyyyMMddFormatter
-import id.zelory.compressor.Compressor
-import id.zelory.compressor.constraint.format
-import id.zelory.compressor.constraint.quality
-import id.zelory.compressor.constraint.resolution
-import id.zelory.compressor.constraint.size
 import io.github.ismoy.imagepickerkmp.domain.config.CameraCaptureConfig
 import io.github.ismoy.imagepickerkmp.domain.config.CropConfig
 import io.github.ismoy.imagepickerkmp.domain.models.CompressionLevel
@@ -85,14 +74,11 @@ import yagubogu.composeapp.generated.resources.setting_edit_nickname
 import yagubogu.composeapp.generated.resources.setting_edit_profile_image
 import yagubogu.composeapp.generated.resources.setting_edit_profile_image_processing_failed
 import yagubogu.composeapp.generated.resources.setting_edit_profile_image_selection_failed
-import yagubogu.composeapp.generated.resources.setting_edit_profile_image_upload_failed
 import yagubogu.composeapp.generated.resources.setting_edited_nickname_alert
 import yagubogu.composeapp.generated.resources.setting_main_sign_up_date
 import yagubogu.composeapp.generated.resources.setting_manage_account
 import yagubogu.composeapp.generated.resources.setting_notice
 import yagubogu.composeapp.generated.resources.setting_open_source_license
-import java.io.File
-import kotlin.coroutines.cancellation.CancellationException
 
 @Composable
 fun SettingMainScreen(
@@ -161,7 +147,7 @@ fun SettingMainScreen(
     )
 
     if (showGallery) {
-        ProfileImagePicker(context, scope, viewModel::uploadProfileImage, onClosePicker = { showGallery = false })
+        ProfileImagePicker(scope, viewModel::uploadProfileImage, onClosePicker = { showGallery = false })
     }
 
     if (showNicknameEditDialog) {
@@ -181,90 +167,67 @@ fun SettingMainScreen(
 
 @Composable
 private fun ProfileImagePicker(
-    context: Context,
     scope: CoroutineScope,
     onUpload: suspend (Uri, String, Long) -> Result<Unit>,
     onClosePicker: () -> Unit,
 ) {
     val logger: Logger = Logger.withTag("ProfileImagePicker")
     val snackbarHostState = LocalSnackbarHostState.current
-    val activity = context as? ComponentActivity
-    when (activity is ComponentActivity) {
-        true -> {
-            GalleryPickerLauncher(
-                allowMultiple = false,
-                mimeTypes = ALL_SUPPORTED_TYPES,
-                onPhotosSelected = { photos: List<GalleryPhotoResult> ->
-                    logger.d { "onPhotosSelected, 사진 개수: ${photos.size}" }
-                    onClosePicker()
+    GalleryPickerLauncher(
+        allowMultiple = false,
+        mimeTypes = ALL_SUPPORTED_TYPES,
+        onPhotosSelected = { photos: List<GalleryPhotoResult> ->
+            logger.d { "onPhotosSelected, 사진 개수: ${photos.size}" }
+            onClosePicker()
 
-                    val photo: GalleryPhotoResult? = photos.firstOrNull()
-                    if (photo == null) {
-                        logger.w { "선택된 사진이 없습니다" }
-                        return@GalleryPickerLauncher
-                    }
-                    scope.launch {
-                        runCatching {
-                            handleImagePickerKMPCroppedImage(
-                                context = context,
-                                snackBarScope = scope,
-                                snackbarHostState = snackbarHostState,
-                                sourceImageUri =
-                                    if (photo.uri.startsWith("file://")) {
-                                        photo.uri.toUri()
-                                    } else {
-                                        File(photo.uri).toUri()
-                                    },
-                                onProfileImageUpload = onUpload,
-                            )
-                        }.getOrElse { exception: Throwable ->
-                            logger.e(exception) { "이미지 처리 중 예외 발생" }
-                            snackbarHostState.showSingleSnackbar(
-                                scope = scope,
-                                message = getString(  Res.string.setting_edit_profile_image_processing_failed ),
-                            )
-                        }
-                    }
-                },
-                onError = { exception: Exception ->
-                    logger.e(exception) { "GalleryPicker 에러 발생" }
+            val photo: GalleryPhotoResult? = photos.firstOrNull()
+            if (photo == null) {
+                logger.w { "선택된 사진이 없습니다" }
+                return@GalleryPickerLauncher
+            }
+            scope.launch {
+                runCatching {
+                    handleImagePickerKMPCroppedImage(
+                        snackBarScope = scope,
+                        snackbarHostState = snackbarHostState,
+                        sourceImageUri = photo.uri.toUri(),
+                        onProfileImageUpload = onUpload,
+                    )
+                }.getOrElse { exception: Throwable ->
+                    logger.e(exception) { "이미지 처리 중 예외 발생" }
                     snackbarHostState.showSingleSnackbar(
                         scope = scope,
-                        message = context.getString(Res.string.setting_edit_profile_image_selection_failed),
+                        message = getString(  Res.string.setting_edit_profile_image_processing_failed ),
                     )
-                    onClosePicker()
-                },
-                onDismiss = {
-                    logger.d { "GalleryPicker 닫힘" }
-                    onClosePicker()
-                },
-                enableCrop = true,
-                cameraCaptureConfig =
-                    CameraCaptureConfig(
-                        compressionLevel = CompressionLevel.HIGH,
-                        cropConfig =
-                            CropConfig(
-                                enabled = true,
-                                aspectRatioLocked = true,
-                                circularCrop = true,
-                                squareCrop = false,
-                                freeformCrop = false,
-                            ),
-                    ),
-            )
-        }
-
-        false -> {
-            logger.e { "Context가 ComponentActivity가 아닙니다: ${context.javaClass.name}" }
-            LaunchedEffect(Unit) {
-                snackbarHostState.showSingleSnackbar(
-                    scope = scope,
-                    message = getString(Res.string.setting_edit_profile_image_selection_failed),
-                )
-                onClosePicker()
+                }
             }
-        }
-    }
+        },
+        onError = { exception: Exception ->
+            logger.e(exception) { "GalleryPicker 에러 발생" }
+            snackbarHostState.showSingleSnackbar(
+                scope = scope,
+                stringResource = Res.string.setting_edit_profile_image_selection_failed,
+            )
+            onClosePicker()
+        },
+        onDismiss = {
+            logger.d { "GalleryPicker 닫힘" }
+            onClosePicker()
+        },
+        enableCrop = true,
+        cameraCaptureConfig =
+            CameraCaptureConfig(
+                compressionLevel = CompressionLevel.HIGH,
+                cropConfig =
+                    CropConfig(
+                        enabled = true,
+                        aspectRatioLocked = true,
+                        circularCrop = true,
+                        squareCrop = false,
+                        freeformCrop = false,
+                    ),
+            ),
+    )
 }
 
 @Composable
@@ -366,62 +329,16 @@ private fun MyProfile(
     }
 }
 
-private fun Context.getAppVersion(): String =
-    try {
-        val packageInfo: PackageInfo =
-            packageManager.getPackageInfo(packageName, 0)
-        packageInfo.versionName ?: DEFAULT_VERSION_NAME
-    } catch (e: PackageManager.NameNotFoundException) {
-        Logger.withTag("getAppVersion").d("앱 버전 로드 실패 ${e.message}")
-        DEFAULT_VERSION_NAME
-    }
-
 /**
  * ImagePickerKMP로 자른 이미지를
  * 백엔드에서 요구하는 프로파일 이미지 규격(jpeg, 5mb)으로 컨버팅하여 업로드합니다.
  */
-private suspend fun handleImagePickerKMPCroppedImage(
-    context: Context,
+expect suspend fun handleImagePickerKMPCroppedImage(
     snackBarScope: CoroutineScope,
     snackbarHostState: SnackbarHostState,
     sourceImageUri: Uri,
     onProfileImageUpload: suspend (Uri, String, Long) -> Result<Unit>,
-) {
-    runCatching {
-        val originalFile = File(sourceImageUri.path ?: error("경로를 찾을 수 없음"))
-        val convertedProfileImage =
-            Compressor.compress(context, originalFile) {
-                resolution(500, 500)
-                quality(90)
-                format(Bitmap.CompressFormat.JPEG)
-                size(5L * 1024L * 1024L)
-            }
-
-        val convertedImageUri = convertedProfileImage.toUri()
-        val fileSize = convertedProfileImage.length()
-        val mimeType = "image/jpeg"
-
-        onProfileImageUpload(convertedImageUri, mimeType, fileSize)
-    }.fold(
-        onSuccess = { result: Result<Unit> ->
-            result.onFailure { e ->
-                if (e is CancellationException) throw e
-                snackbarHostState.showSingleSnackbar(
-                    scope = snackBarScope,
-                    message = context.getString(Res.string.setting_edit_profile_image_upload_failed),
-                )
-            }
-        },
-        onFailure = { e: Throwable ->
-            if (e is CancellationException) throw e
-            Logger.withTag("handleImagePickerKMPCroppedImage").e(e) { "프로필 이미지 전처리 실패" }
-            snackbarHostState.showSingleSnackbar(
-                scope = snackBarScope,
-                message = context.getString(Res.string.setting_edit_profile_image_processing_failed),
-            )
-        },
-    )
-}
+)
 
 private fun Context.openUrl(url: String) {
     val intent = Intent(Intent.ACTION_VIEW, url.toUri())
