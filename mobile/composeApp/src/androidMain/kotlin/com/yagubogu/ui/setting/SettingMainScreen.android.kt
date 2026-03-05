@@ -2,28 +2,21 @@ package com.yagubogu.ui.setting
 
 import android.app.Application
 import android.graphics.Bitmap
-import androidx.compose.material3.SnackbarHostState
 import coil3.toUri
 import co.touchlab.kermit.Logger
 import coil3.Uri
-import com.yagubogu.ui.util.showSingleSnackbar
 import id.zelory.compressor.Compressor
 import id.zelory.compressor.constraint.format
 import id.zelory.compressor.constraint.quality
 import id.zelory.compressor.constraint.resolution
 import id.zelory.compressor.constraint.size
-import kotlinx.coroutines.CoroutineScope
-import org.jetbrains.compose.resources.getString
 import org.koin.core.context.GlobalContext
-import yagubogu.composeapp.generated.resources.Res
-import yagubogu.composeapp.generated.resources.setting_edit_profile_image_processing_failed
-import yagubogu.composeapp.generated.resources.setting_edit_profile_image_upload_failed
 import java.io.File
 import kotlin.coroutines.cancellation.CancellationException
 
 actual suspend fun handleImagePickerKMPCroppedImage(
-    snackBarScope: CoroutineScope,
-    snackbarHostState: SnackbarHostState,
+    onUploadFailure: () -> Unit,
+    onProcessingFailure: () -> Unit,
     sourceImageUri: Uri,
     onProfileImageUpload: suspend (Uri, String, Long) -> Result<Unit>
 ) {
@@ -47,19 +40,13 @@ actual suspend fun handleImagePickerKMPCroppedImage(
         onSuccess = { result: Result<Unit> ->
             result.onFailure { e ->
                 if (e is CancellationException) throw e
-                snackbarHostState.showSingleSnackbar(
-                    scope = snackBarScope,
-                    message = getString(Res.string.setting_edit_profile_image_upload_failed),
-                )
+                onUploadFailure()
             }
         },
         onFailure = { e: Throwable ->
             if (e is CancellationException) throw e
             Logger.withTag("handleImagePickerKMPCroppedImage").e(e) { "프로필 이미지 전처리 실패" }
-            snackbarHostState.showSingleSnackbar(
-                scope = snackBarScope,
-                message = getString(Res.string.setting_edit_profile_image_processing_failed),
-            )
+            onProcessingFailure()
         },
     )
 }

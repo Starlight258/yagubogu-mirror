@@ -1,13 +1,9 @@
 package com.yagubogu.ui.setting
 
-import androidx.compose.material3.SnackbarHostState
 import co.touchlab.kermit.Logger
 import coil3.Uri
 import coil3.toUri
-import com.yagubogu.ui.util.showSingleSnackbar
 import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.coroutines.CoroutineScope
-import org.jetbrains.compose.resources.getString
 import platform.CoreGraphics.CGRectMake
 import platform.CoreGraphics.CGSizeMake
 import platform.Foundation.NSDate
@@ -19,15 +15,12 @@ import platform.UIKit.UIGraphicsEndImageContext
 import platform.UIKit.UIGraphicsGetImageFromCurrentImageContext
 import platform.UIKit.UIImage
 import platform.UIKit.UIImageJPEGRepresentation
-import yagubogu.composeapp.generated.resources.Res
-import yagubogu.composeapp.generated.resources.setting_edit_profile_image_processing_failed
-import yagubogu.composeapp.generated.resources.setting_edit_profile_image_upload_failed
 import kotlin.coroutines.cancellation.CancellationException
 
 @OptIn(ExperimentalForeignApi::class)
 actual suspend fun handleImagePickerKMPCroppedImage(
-    snackBarScope: CoroutineScope,
-    snackbarHostState: SnackbarHostState,
+    onUploadFailure: () -> Unit,
+    onProcessingFailure: () -> Unit,
     sourceImageUri: Uri,
     onProfileImageUpload: suspend (Uri, String, Long) -> Result<Unit>
 ) {
@@ -66,19 +59,13 @@ actual suspend fun handleImagePickerKMPCroppedImage(
         onSuccess = { result ->
             result.onFailure { e ->
                 if (e is CancellationException) throw e
-                snackbarHostState.showSingleSnackbar(
-                    scope = snackBarScope,
-                    message = getString(Res.string.setting_edit_profile_image_upload_failed),
-                )
+                onUploadFailure()
             }
         },
         onFailure = { e ->
             if (e is CancellationException) throw e
             Logger.withTag("handleImagePickerKMPCroppedImage").e(e) { "iOS 이미지 전처리 실패" }
-            snackbarHostState.showSingleSnackbar(
-                scope = snackBarScope,
-                message = getString(Res.string.setting_edit_profile_image_processing_failed),
-            )
+            onProcessingFailure()
         }
     )
 }

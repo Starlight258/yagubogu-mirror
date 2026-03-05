@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -72,6 +71,7 @@ import yagubogu.composeapp.generated.resources.setting_edit_nickname
 import yagubogu.composeapp.generated.resources.setting_edit_profile_image
 import yagubogu.composeapp.generated.resources.setting_edit_profile_image_processing_failed
 import yagubogu.composeapp.generated.resources.setting_edit_profile_image_selection_failed
+import yagubogu.composeapp.generated.resources.setting_edit_profile_image_upload_failed
 import yagubogu.composeapp.generated.resources.setting_edited_nickname_alert
 import yagubogu.composeapp.generated.resources.setting_main_sign_up_date
 import yagubogu.composeapp.generated.resources.setting_manage_account
@@ -191,8 +191,18 @@ private fun ProfileImagePicker(
             scope.launch {
                 runCatching {
                     handleImagePickerKMPCroppedImage(
-                        snackBarScope = scope,
-                        snackbarHostState = snackbarHostState,
+                        onUploadFailure= {
+                            snackbarHostState.showSingleSnackbar(
+                                scope = scope,
+                                stringResource = Res.string.setting_edit_profile_image_upload_failed,
+                            )
+                        },
+                        onProcessingFailure= {
+                            snackbarHostState.showSingleSnackbar(
+                                scope = scope,
+                                stringResource = Res.string.setting_edit_profile_image_processing_failed,
+                            )
+                        },
                         sourceImageUri = photo.uri.toUri(),
                         onProfileImageUpload = onUpload,
                     )
@@ -200,7 +210,7 @@ private fun ProfileImagePicker(
                     logger.e(exception) { "이미지 처리 중 예외 발생" }
                     snackbarHostState.showSingleSnackbar(
                         scope = scope,
-                        message = getString(Res.string.setting_edit_profile_image_processing_failed),
+                        stringResource = Res.string.setting_edit_profile_image_processing_failed,
                     )
                 }
             }
@@ -336,8 +346,8 @@ private fun MyProfile(
  * 백엔드에서 요구하는 프로파일 이미지 규격(jpeg, 5mb)으로 컨버팅하여 업로드합니다.
  */
 expect suspend fun handleImagePickerKMPCroppedImage(
-    snackBarScope: CoroutineScope,
-    snackbarHostState: SnackbarHostState,
+    onUploadFailure: () -> Unit,
+    onProcessingFailure: () -> Unit,
     sourceImageUri: Uri,
     onProfileImageUpload: suspend (Uri, String, Long) -> Result<Unit>,
 )
