@@ -2,6 +2,7 @@ package com.yagubogu.ui.util
 
 import android.content.Context
 import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.getString
 
 sealed class UiText {
     data class DynamicString(
@@ -17,5 +18,10 @@ sealed class UiText {
         when (this) {
             is DynamicString -> value
             is StringRes -> context.getString(resId, *args)
+        }
+    suspend fun asString(): String =
+        when (this) {
+            is DynamicString -> value
+            is StringRes -> getString(resId, *args)
         }
 }

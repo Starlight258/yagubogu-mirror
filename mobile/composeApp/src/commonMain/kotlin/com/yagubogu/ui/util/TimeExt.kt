@@ -27,22 +27,22 @@ import kotlin.time.Instant
 
 private val KST: TimeZone = TimeZone.of("Asia/Seoul")
 
-fun LocalDate.now(
+fun LocalDate.Companion.now(
     clock: Clock = Clock.System,
     timeZone: TimeZone = KST,
 ): LocalDate = clock.todayIn(timeZone)
 
-fun LocalTime.now(
+fun LocalTime.Companion.now(
     clock: Clock = Clock.System,
     timeZone: TimeZone = KST,
 ): LocalTime = clock.now().toLocalDateTime(timeZone).time
 
-fun LocalDateTime.now(
+fun LocalDateTime.Companion.now(
     clock: Clock = Clock.System,
     timeZone: TimeZone = KST,
 ): LocalDateTime = clock.now().toLocalDateTime(timeZone)
 
-fun YearMonth.now(
+fun YearMonth.Companion.now(
     clock: Clock = Clock.System,
     timeZone: TimeZone = KST,
 ): YearMonth = clock.todayIn(timeZone).yearMonth

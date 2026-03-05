@@ -59,6 +59,7 @@ import com.yagubogu.ui.theme.PretendardRegular12
 import com.yagubogu.ui.theme.PretendardSemiBold
 import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.util.LocalSnackbarHostState
+import com.yagubogu.ui.util.getAppVersion
 import com.yagubogu.ui.util.showSingleSnackbar
 import com.yagubogu.ui.util.yyyyMMddFormatter
 import id.zelory.compressor.Compressor
@@ -102,8 +103,7 @@ fun SettingMainScreen(
     viewModel: SettingViewModel = koinViewModel(),
 ) {
     val snackbarHostState = LocalSnackbarHostState.current
-    val context: Context = LocalContext.current
-    val resources: Resources = LocalResources.current
+
     val scope: CoroutineScope = rememberCoroutineScope()
     val memberInfoItem: State<MemberInfoItem> =
         viewModel.myMemberInfoItem.collectAsStateWithLifecycle(MemberInfoItem())
@@ -136,7 +136,7 @@ fun SettingMainScreen(
                 }
 
                 is SettingEvent.NicknameEditFailure -> {
-                    val errorMessage = settingEvent.uiText.asString(context)
+                    val errorMessage = settingEvent.uiText.asString()
                     snackbarHostState.showSingleSnackbar(
                         scope = this,
                         message = errorMessage,
@@ -156,7 +156,7 @@ fun SettingMainScreen(
             showGallery = true
         },
         memberInfoItem = memberInfoItem.value,
-        appVersion = context.getAppVersion(),
+        appVersion = getAppVersion(),
         modifier = modifier,
     )
 
@@ -221,7 +221,7 @@ private fun ProfileImagePicker(
                             logger.e(exception) { "이미지 처리 중 예외 발생" }
                             snackbarHostState.showSingleSnackbar(
                                 scope = scope,
-                                message = context.getString(Res.string.setting_edit_profile_image_processing_failed),
+                                message = getString(  Res.string.setting_edit_profile_image_processing_failed ),
                             )
                         }
                     }
@@ -259,7 +259,7 @@ private fun ProfileImagePicker(
             LaunchedEffect(Unit) {
                 snackbarHostState.showSingleSnackbar(
                     scope = scope,
-                    message = context.getString(Res.string.setting_edit_profile_image_selection_failed),
+                    message = getString(Res.string.setting_edit_profile_image_selection_failed),
                 )
                 onClosePicker()
             }
