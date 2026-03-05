@@ -1,7 +1,6 @@
 package com.yagubogu.ui.setting
 
-import android.content.Context
-import android.content.Intent
+import com.yagubogu.BuildKonfig
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -27,7 +26,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,9 +35,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.touchlab.kermit.Logger
 import coil3.Uri
 import coil3.toUri
-import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import yagubogu.composeapp.generated.resources.Res
 import com.yagubogu.ui.common.component.profile.ProfileImage
+import com.yagubogu.ui.login.model.VersionInfo
 import com.yagubogu.ui.setting.component.SettingButton
 import com.yagubogu.ui.setting.component.SettingButtonGroup
 import com.yagubogu.ui.setting.component.dialog.NicknameEditDialog
@@ -53,7 +51,7 @@ import com.yagubogu.ui.theme.PretendardRegular12
 import com.yagubogu.ui.theme.PretendardSemiBold
 import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.util.LocalSnackbarHostState
-import com.yagubogu.ui.util.getAppVersion
+import com.yagubogu.ui.util.openUrl
 import com.yagubogu.ui.util.showSingleSnackbar
 import com.yagubogu.ui.util.yyyyMMddFormatter
 import io.github.ismoy.imagepickerkmp.domain.config.CameraCaptureConfig
@@ -85,6 +83,7 @@ fun SettingMainScreen(
     onSettingAccountClick: () -> Unit,
     onFavoriteTeamEditClick: () -> Unit,
     onFullScreenMode: (Boolean) -> Unit,
+    onOssLicenseClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SettingViewModel = koinViewModel(),
 ) {
@@ -141,13 +140,17 @@ fun SettingMainScreen(
         onProfileImageUpload = {
             showGallery = true
         },
+        onOssLicenseClick = onOssLicenseClick,
         memberInfoItem = memberInfoItem.value,
         appVersion = getAppVersion(),
         modifier = modifier,
     )
 
     if (showGallery) {
-        ProfileImagePicker(scope, viewModel::uploadProfileImage, onClosePicker = { showGallery = false })
+        ProfileImagePicker(
+            scope,
+            viewModel::uploadProfileImage,
+            onClosePicker = { showGallery = false })
     }
 
     if (showNicknameEditDialog) {
@@ -197,7 +200,7 @@ private fun ProfileImagePicker(
                     logger.e(exception) { "이미지 처리 중 예외 발생" }
                     snackbarHostState.showSingleSnackbar(
                         scope = scope,
-                        message = getString(  Res.string.setting_edit_profile_image_processing_failed ),
+                        message = getString(Res.string.setting_edit_profile_image_processing_failed),
                     )
                 }
             }
@@ -236,12 +239,11 @@ private fun SettingMainScreen(
     onNicknameEdit: () -> Unit,
     onProfileImageUpload: () -> Unit,
     onFavoriteTeamEditClick: () -> Unit,
+    onOssLicenseClick: () -> Unit,
     memberInfoItem: MemberInfoItem,
     appVersion: String,
     modifier: Modifier = Modifier,
 ) {
-    val context = LocalContext.current
-
     Column(
         modifier =
             modifier
@@ -275,15 +277,13 @@ private fun SettingMainScreen(
         SettingButtonGroup {
             SettingButton(
                 text = stringResource(Res.string.setting_notice),
-                onClick = { context.openUrl(NOTICE_URL) },
+                onClick = { openUrl(NOTICE_URL) },
             )
             SettingButton(
                 text = stringResource(Res.string.setting_contact_us),
-                onClick = { context.openUrl(CONTACT_URL) },
+                onClick = { openUrl(CONTACT_URL) },
             )
-            SettingButton(text = stringResource(Res.string.setting_open_source_license), onClick = {
-                context.startActivity(Intent(context, OssLicensesMenuActivity::class.java))
-            })
+            SettingButton(text = stringResource(Res.string.setting_open_source_license), onClick = onOssLicenseClick)
         }
 
         Text(
@@ -340,15 +340,22 @@ expect suspend fun handleImagePickerKMPCroppedImage(
     onProfileImageUpload: suspend (Uri, String, Long) -> Result<Unit>,
 )
 
-private fun Context.openUrl(url: String) {
-    val intent = Intent(Intent.ACTION_VIEW, url.toUri())
-    startActivity(intent)
+private fun getAppVersion(): String {
+    val appVersion = BuildKonfig.VERSION_CODE
+    val isDebug: Boolean = BuildKonfig.IS_DEBUG
+    val availableVersionInfo = VersionInfo.of(appVersion)
+    val versionName =
+        availableVersionInfo.major.toString() + "." + availableVersionInfo.minor.toString() + "." + availableVersionInfo.patch.toString()
+
+    return when (isDebug) {
+        true -> "$versionName.debug"
+        false -> versionName
+    }
 }
 
 private const val NOTICE_URL =
     "https://scented-allosaurus-6df.notion.site/251ad073c10b805baf8af1a7badd20e7?pvs=74"
 private const val CONTACT_URL = "https://forms.gle/wBhXjfTLyobZa19K8"
-private const val DEFAULT_VERSION_NAME = "x.x.x"
 
 @Preview(showBackground = true)
 @Composable
@@ -358,6 +365,7 @@ private fun SettingMainScreenPreview() {
         onNicknameEdit = {},
         onProfileImageUpload = {},
         onFavoriteTeamEditClick = {},
+        onOssLicenseClick = {},
         memberInfoItem = MemberInfoItem(nickName = "야구보구"),
         appVersion = "1.0.0",
     )
