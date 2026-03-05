@@ -25,7 +25,6 @@ import org.koin.core.context.startKoin
 class YaguBoguApplication : Application() {
     override fun onCreate() {
         super.onCreate()
-        instance = this
         setupLogging()
         setupAnalytics()
         setupKoin()
@@ -65,9 +64,5 @@ class YaguBoguApplication : Application() {
                 viewModelModule,
             )
         }
-    }
-    companion object {
-        lateinit var instance: YaguBoguApplication
-            private set
     }
 }

@@ -1,11 +1,11 @@
 package com.yagubogu.ui.setting
 
+import android.app.Application
 import android.graphics.Bitmap
 import androidx.compose.material3.SnackbarHostState
 import coil3.toUri
 import co.touchlab.kermit.Logger
 import coil3.Uri
-import com.yagubogu.YaguBoguApplication
 import com.yagubogu.ui.util.showSingleSnackbar
 import id.zelory.compressor.Compressor
 import id.zelory.compressor.constraint.format
@@ -14,6 +14,7 @@ import id.zelory.compressor.constraint.resolution
 import id.zelory.compressor.constraint.size
 import kotlinx.coroutines.CoroutineScope
 import org.jetbrains.compose.resources.getString
+import org.koin.core.context.GlobalContext
 import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.setting_edit_profile_image_processing_failed
 import yagubogu.composeapp.generated.resources.setting_edit_profile_image_upload_failed
@@ -26,7 +27,7 @@ actual suspend fun handleImagePickerKMPCroppedImage(
     sourceImageUri: Uri,
     onProfileImageUpload: suspend (Uri, String, Long) -> Result<Unit>
 ) {
-    val context = YaguBoguApplication.instance.applicationContext
+    val context = GlobalContext.get().get<Application>()
     runCatching {
         val originalFile = File(sourceImageUri.path ?: error("경로를 찾을 수 없음"))
         val convertedFile = Compressor.compress(context, originalFile) {
