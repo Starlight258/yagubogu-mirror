@@ -19,7 +19,6 @@ ksp = "2.3.6"
 ktlint = "13.0.0"
 googleServices = "4.4.3"
 firebaseCrashlytics = "3.0.5"
-googleOssLicenses = "0.10.7"
 
 # AndroidX Core
 coreKtx = "1.16.0"
@@ -59,7 +58,9 @@ firebaseBom = "34.0.0"
 # Google Services
 googleidVersion = "1.1.1"
 playServicesLocation = "21.3.0"
-playServicesOssLicenses = "17.2.2"
+
+# Oss-licenses
+aboutLibraries = "13.2.1"
 
 # Play In-App Update
 appUpdate = "2.1.0"
@@ -152,7 +153,10 @@ firebase-crashlytics-ndk = { module = "com.google.firebase:firebase-crashlytics-
 # Google Services
 google-googleid = { group = "com.google.android.libraries.identity.googleid", name = "googleid", version.ref = "googleidVersion" }
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
-play-services-oss-licenses = { module = "com.google.android.gms:play-services-oss-licenses", version.ref = "playServicesOssLicenses" }
+
+# Oss-licenses
+aboutlibraries-core = { module = "com.mikepenz:aboutlibraries-core", version.ref = "aboutLibraries" }
+aboutlibraries-compose-m3 = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "aboutLibraries" }
 
 # Play In-App Update
 app-update = { module = "com.google.android.play:app-update", version.ref = "appUpdate" }
@@ -201,9 +205,9 @@ kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", vers
 google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebaseCrashlytics" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize" }
-google-oss-licenses-plugin = { id = "com.google.android.gms.oss-licenses-plugin", version.ref = "googleOssLicenses" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 ktorfit = { id = "de.jensklingenberg.ktorfit", version.ref = "ktorfit" }
+aboutLibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "aboutLibraries" }
 
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
 composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "composeMultiplatform" }

@@ -72,6 +72,7 @@ fun SettingScreen(
                         onSettingAccountClick = { navigator.navigate(SettingNavKey.SettingAccount) },
                         onFavoriteTeamEditClick = { onFavoriteTeamEditClick() },
                         onFullScreenMode = { isFull: Boolean -> isTopBarVisible = !isFull },
+                        onOssLicenseClick = { navigator.navigate(SettingNavKey.OssLicense) }
                     )
                 }
                 entry<SettingNavKey.SettingAccount> {
@@ -88,6 +89,9 @@ fun SettingScreen(
                             onDeleteAccount()
                         },
                     )
+                }
+                entry<SettingNavKey.OssLicense> {
+                    OssLicenseScreen()
                 }
             }
 

@@ -11,6 +11,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.getString
 
 val LocalSnackbarHostState =
     staticCompositionLocalOf<SnackbarHostState> {
@@ -37,6 +39,22 @@ fun SnackbarHostState.showSingleSnackbar(
         )
     }
 }
+fun SnackbarHostState.showSingleSnackbar(
+    scope: CoroutineScope,
+    stringResource: StringResource,
+    actionLabel: String? = null,
+    duration: SnackbarDuration = SnackbarDuration.Short,
+) {
+    scope.launch {
+        currentSnackbarData?.dismiss()
+        showSnackbar(
+            message = getString(stringResource),
+            actionLabel = actionLabel,
+            duration = duration,
+        )
+    }
+}
+
 
 private object SnackBarConfig {
     val BottomNavBarHeight = 80.dp

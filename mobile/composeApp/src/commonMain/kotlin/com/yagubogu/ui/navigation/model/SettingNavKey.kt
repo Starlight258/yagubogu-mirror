@@ -6,6 +6,7 @@ import org.jetbrains.compose.resources.StringResource
 import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.setting_main_title
 import yagubogu.composeapp.generated.resources.setting_manage_account
+import yagubogu.composeapp.generated.resources.setting_open_source_license
 
 sealed interface SettingNavKey : NavKey {
     val label: StringResource
@@ -23,5 +24,9 @@ sealed interface SettingNavKey : NavKey {
     @Serializable
     data object SettingDeleteAccount : SettingNavKey {
         override val label: StringResource = Res.string.setting_manage_account
+    }
+    @Serializable
+    data object OssLicense : SettingNavKey {
+        override val label: StringResource = Res.string.setting_open_source_license
     }
 }

@@ -18,10 +18,10 @@ plugins {
     alias(libs.plugins.google.services)
     alias(libs.plugins.firebase.crashlytics)
     alias(libs.plugins.kotlin.parcelize)
-    alias(libs.plugins.google.oss.licenses.plugin)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.ktorfit)
+    alias(libs.plugins.aboutLibraries)
 }
 
 buildkonfig {
@@ -120,7 +120,6 @@ kotlin {
 
             // Google Services
             implementation(libs.play.services.location)
-            implementation(libs.play.services.oss.licenses)
 
             // Play In-App Update
             implementation(libs.app.update)
@@ -199,6 +198,10 @@ kotlin {
             // Logging
             implementation(libs.kermit)
             implementation(libs.kermit.crashlytics)
+
+            // Oss-licenses
+            implementation(libs.aboutlibraries.core)
+            implementation(libs.aboutlibraries.compose.m3)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -275,3 +278,11 @@ dependencies {
     add("kspAndroid", "de.jensklingenberg.ktorfit:ktorfit-ksp:2.7.2")
 }
 
+
+aboutLibraries {
+    export {
+        // "./gradlew :composeApp:exportLibraryDefinitions" 로 목록 생성
+        outputFile = file("src/commonMain/composeResources/files/aboutlibraries.json")
+        prettyPrint = true
+    }
+}
