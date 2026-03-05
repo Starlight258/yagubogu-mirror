@@ -26,6 +26,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -51,7 +52,6 @@ import com.yagubogu.ui.theme.PretendardRegular12
 import com.yagubogu.ui.theme.PretendardSemiBold
 import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.util.LocalSnackbarHostState
-import com.yagubogu.ui.util.openUrl
 import com.yagubogu.ui.util.showSingleSnackbar
 import com.yagubogu.ui.util.yyyyMMddFormatter
 import io.github.ismoy.imagepickerkmp.domain.config.CameraCaptureConfig
@@ -244,6 +244,8 @@ private fun SettingMainScreen(
     appVersion: String,
     modifier: Modifier = Modifier,
 ) {
+    val uriHandler = LocalUriHandler.current
+
     Column(
         modifier =
             modifier
@@ -277,11 +279,11 @@ private fun SettingMainScreen(
         SettingButtonGroup {
             SettingButton(
                 text = stringResource(Res.string.setting_notice),
-                onClick = { openUrl(NOTICE_URL) },
+                onClick = { uriHandler.openUri(NOTICE_URL) },
             )
             SettingButton(
                 text = stringResource(Res.string.setting_contact_us),
-                onClick = { openUrl(CONTACT_URL) },
+                onClick = { uriHandler.openUri(CONTACT_URL) },
             )
             SettingButton(text = stringResource(Res.string.setting_open_source_license), onClick = onOssLicenseClick)
         }
