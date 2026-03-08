@@ -22,8 +22,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.skydoves.balloon.compose.Balloon
-import com.skydoves.balloon.compose.BalloonWindow
 import com.yagubogu.analytics.AnalyticsLogger
 import com.yagubogu.ui.common.component.profile.ProfileImage
 import com.yagubogu.ui.home.model.VictoryFairyItem
@@ -41,8 +39,8 @@ import com.yagubogu.ui.theme.PretendardSemiBold16
 import com.yagubogu.ui.theme.Silver
 import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.theme.dpToSp
+import com.yagubogu.ui.util.BalloonTooltip
 import com.yagubogu.ui.util.noRippleClickable
-import com.yagubogu.ui.util.rememberBalloonBuilder
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -64,8 +62,6 @@ fun VictoryFairyRanking(
     onRankingItemClick: (Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val balloonBuilder = rememberBalloonBuilder(Res.string.home_victory_fairy_tooltip)
-
     Column(
         verticalArrangement = Arrangement.spacedBy(12.dp),
         modifier =
@@ -86,7 +82,9 @@ fun VictoryFairyRanking(
                     text = stringResource(Res.string.home_victory_fairy_ranking),
                     style = PretendardBold20,
                 )
-                Balloon(builder = balloonBuilder) { balloonWindow: BalloonWindow ->
+                BalloonTooltip(
+                    text = stringResource(Res.string.home_victory_fairy_tooltip),
+                ) { showTooltip ->
                     Icon(
                         painter = painterResource(Res.drawable.ic_info),
                         contentDescription = null,
@@ -95,7 +93,7 @@ fun VictoryFairyRanking(
                             Modifier
                                 .padding(horizontal = 8.dp)
                                 .noRippleClickable {
-                                    balloonWindow.showAlignBottom(yOff = -10)
+                                    showTooltip()
                                     AnalyticsLogger.logEvent("tooltip_victory_fairy_ranking")
                                 },
                     )

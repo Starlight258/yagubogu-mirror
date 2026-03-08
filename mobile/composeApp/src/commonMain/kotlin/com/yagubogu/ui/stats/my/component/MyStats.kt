@@ -15,14 +15,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.skydoves.balloon.compose.Balloon
-import com.skydoves.balloon.compose.BalloonWindow
 import com.yagubogu.analytics.AnalyticsLogger
 import com.yagubogu.ui.stats.my.model.StatsMyUiModel
 import com.yagubogu.ui.theme.Gray300
 import com.yagubogu.ui.theme.White
+import com.yagubogu.ui.util.BalloonTooltip
 import com.yagubogu.ui.util.noRippleClickable
-import com.yagubogu.ui.util.rememberBalloonBuilder
 import org.jetbrains.compose.resources.stringResource
 import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.stats_my_lucky_stadium
@@ -36,8 +34,6 @@ fun MyStats(
     statsMyUiModel: StatsMyUiModel,
     modifier: Modifier = Modifier,
 ) {
-    val balloonBuilder = rememberBalloonBuilder(Res.string.stats_my_lucky_stadium_tooltip)
-
     Row(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
@@ -58,10 +54,10 @@ fun MyStats(
             color = Gray300,
             modifier = Modifier.padding(vertical = 10.dp),
         )
-        Balloon(
-            builder = balloonBuilder,
+        BalloonTooltip(
+            text = stringResource(Res.string.stats_my_lucky_stadium_tooltip),
             modifier = Modifier.weight(1f),
-        ) { balloonWindow: BalloonWindow ->
+        ) { showTooltip ->
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center,
@@ -73,7 +69,7 @@ fun MyStats(
                     modifier =
                         Modifier
                             .noRippleClickable {
-                                balloonWindow.showAlignBottom(yOff = -10)
+                                showTooltip()
                                 AnalyticsLogger.logEvent("tooltip_lucky_stadium")
                             },
                 )

@@ -1,4 +1,3 @@
-
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 import com.android.build.gradle.internal.dsl.SigningConfig
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.BOOLEAN
@@ -192,7 +191,6 @@ kotlin {
 
             // UI Components
             implementation(libs.material)
-            implementation(libs.balloon.compose)
             implementation(libs.calendar.compose.multiplatform)
 
             // Logging

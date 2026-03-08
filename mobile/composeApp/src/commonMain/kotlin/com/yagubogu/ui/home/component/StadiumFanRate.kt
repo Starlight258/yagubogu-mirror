@@ -38,8 +38,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.skydoves.balloon.compose.Balloon
-import com.skydoves.balloon.compose.BalloonWindow
 import com.yagubogu.analytics.AnalyticsLogger
 import com.yagubogu.ui.common.component.HeartbeatAnimation
 import com.yagubogu.ui.common.component.ParallelogramShape
@@ -58,8 +56,8 @@ import com.yagubogu.ui.theme.PretendardRegular
 import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.theme.dpToSp
 import com.yagubogu.ui.util.color
+import com.yagubogu.ui.util.BalloonTooltip
 import com.yagubogu.ui.util.noRippleClickable
-import com.yagubogu.ui.util.rememberBalloonBuilder
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import yagubogu.composeapp.generated.resources.Res
@@ -78,8 +76,6 @@ fun StadiumFanRate(
     onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val balloonBuilder = rememberBalloonBuilder(Res.string.home_stadium_stats_tooltip)
-
     Column(
         modifier =
             modifier
@@ -102,7 +98,9 @@ fun StadiumFanRate(
                     text = stringResource(Res.string.home_stadium_stats_title),
                     style = PretendardBold20,
                 )
-                Balloon(builder = balloonBuilder) { balloonWindow: BalloonWindow ->
+                BalloonTooltip(
+                    text = stringResource(Res.string.home_stadium_stats_tooltip),
+                ) { showTooltip ->
                     Icon(
                         painter = painterResource(Res.drawable.ic_info),
                         contentDescription = null,
@@ -111,7 +109,7 @@ fun StadiumFanRate(
                             Modifier
                                 .padding(horizontal = 8.dp)
                                 .noRippleClickable {
-                                    balloonWindow.showAlignBottom(yOff = -10)
+                                    showTooltip()
                                     AnalyticsLogger.logEvent("tooltip_stadium_stats")
                                 },
                     )
