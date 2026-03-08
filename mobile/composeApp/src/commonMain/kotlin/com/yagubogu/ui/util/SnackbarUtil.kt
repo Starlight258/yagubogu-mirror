@@ -23,7 +23,6 @@ val LocalSnackbarScope =
         error("SnackbarScope 없음")
     }
 
-// TODO StringResource 자료형도 받도록 오버로딩??
 fun SnackbarHostState.showSingleSnackbar(
     scope: CoroutineScope,
     message: String,
@@ -39,6 +38,7 @@ fun SnackbarHostState.showSingleSnackbar(
         )
     }
 }
+
 fun SnackbarHostState.showSingleSnackbar(
     scope: CoroutineScope,
     stringResource: StringResource,
@@ -54,7 +54,6 @@ fun SnackbarHostState.showSingleSnackbar(
         )
     }
 }
-
 
 private object SnackBarConfig {
     val BottomNavBarHeight = 80.dp
