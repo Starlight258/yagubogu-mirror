@@ -1,15 +1,14 @@
 package com.yagubogu.ui.favorite
 
-import android.os.Parcelable
 import com.yagubogu.domain.model.Team
 import com.yagubogu.ui.util.emoji
-import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 
-@Parcelize
+@Serializable
 data class FavoriteTeamItem(
     val team: Team,
     val emoji: String,
-) : Parcelable {
+) {
     companion object {
         fun of(team: Team): FavoriteTeamItem {
             val emoji: String = team.emoji

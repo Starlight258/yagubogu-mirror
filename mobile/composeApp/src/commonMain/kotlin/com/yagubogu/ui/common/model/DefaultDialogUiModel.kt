@@ -1,13 +1,12 @@
 package com.yagubogu.ui.common.model
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 
-@Parcelize
+@Serializable
 data class DefaultDialogUiModel(
     val title: String,
     val emoji: String? = null,
     val message: String? = null,
     val negativeText: String? = null,
     val positiveText: String? = null,
-) : Parcelable
+)
