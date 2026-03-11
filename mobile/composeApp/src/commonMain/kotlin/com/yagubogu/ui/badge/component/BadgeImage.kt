@@ -5,16 +5,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
-import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import coil3.compose.AsyncImage
+import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
 import coil3.request.crossfade
-import yagubogu.composeapp.generated.resources.Res
 import com.yagubogu.ui.badge.model.BADGE_ID_0_ACQUIRED_FIXTURE
 import com.yagubogu.ui.badge.model.BadgeUiModel
+import org.jetbrains.compose.resources.stringResource
+import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.badge_image_description
 import yagubogu.composeapp.generated.resources.img_badge_lock
 
@@ -31,7 +31,7 @@ fun BadgeImage(
                 Res.drawable.img_badge_lock
             } else {
                 ImageRequest
-                    .Builder(LocalContext.current)
+                    .Builder(LocalPlatformContext.current)
                     .data(badge.imageUrl)
                     .crossfade(true)
                     .build()

@@ -67,7 +67,6 @@ appUpdate = "2.1.0"
 
 # Image Loading
 coilCompose = "3.3.0"
-coilNetworkOkhttp = "3.3.0"
 imagepickerkmp = "1.0.32"
 compressor = "3.0.1"
 
@@ -134,6 +133,7 @@ koin-compose-navigation3 = { module = "io.insert-koin:koin-compose-navigation3",
 ktorfit-lib = { module = "de.jensklingenberg.ktorfit:ktorfit-lib", version.ref = "ktorfit" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
+ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
@@ -163,7 +163,7 @@ app-update-ktx = { module = "com.google.android.play:app-update-ktx", version.re
 
 # Image Loading
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
-coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coilNetworkOkhttp" }
+coil-network-ktor3 = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coilCompose" }
 imagepickerkmp = { module = "io.github.ismoy:imagepickerkmp", version.ref = "imagepickerkmp" }
 compressor = { group = "id.zelory", name = "compressor", version.ref = "compressor" }
 

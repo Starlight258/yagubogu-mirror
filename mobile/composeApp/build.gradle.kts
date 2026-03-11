@@ -62,8 +62,6 @@ buildkonfig {
 
         buildConfigField(BOOLEAN, "IS_DEBUG", "false")
     }
-
-
 }
 
 kotlin {
@@ -79,7 +77,7 @@ kotlin {
 
     listOf(
         iosArm64(),
-        iosSimulatorArm64()
+        iosSimulatorArm64(),
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
@@ -106,6 +104,7 @@ kotlin {
             implementation(libs.androidx.activity)
             implementation(libs.androidx.fragment.ktx)
             implementation(libs.androidx.datastore.preferences)
+            implementation(libs.androidx.lifecycle.runtime.ktx)
 
             // Firebase
             implementation(project.dependencies.platform(libs.firebase.bom))
@@ -119,6 +118,14 @@ kotlin {
 
             // Google Services
             implementation(libs.play.services.location)
+
+            // Ktor
+            implementation(libs.ktor.client.okhttp)
+
+            // Navigation3
+            implementation(libs.androidx.navigation3.ui)
+            implementation(libs.androidx.navigation3.runtime)
+            implementation(libs.androidx.lifecycle.viewmodel.navigation3)
 
             // Play In-App Update
             implementation(libs.app.update)
@@ -140,9 +147,14 @@ kotlin {
 
             // Koin
             implementation(project.dependencies.platform(libs.koin.bom))
-            implementation(libs.koin.core)
+            implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
         }
+
+        iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
+        }
+
         commonMain.dependencies {
             // Compose
             implementation(libs.compose.runtime)
@@ -161,31 +173,21 @@ kotlin {
             // Ktor & Ktorfit
             implementation(libs.ktorfit.lib)
             implementation(libs.ktor.client.core)
-            implementation(libs.ktor.client.okhttp)
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.serialization.kotlinx.json)
             implementation(libs.ktor.client.auth)
             implementation(libs.ktor.client.logging)
 
-            // Compose
-            implementation(libs.androidx.lifecycle.runtime.ktx)
-
-            // Navigation3
-            implementation(libs.androidx.navigation3.ui)
-            implementation(libs.androidx.navigation3.runtime)
-            implementation(libs.androidx.lifecycle.viewmodel.navigation3)
-
             // Koin
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
-            implementation(libs.koin.android)
             implementation(libs.koin.compose)
             implementation(libs.koin.compose.viewmodel)
             implementation(libs.koin.compose.navigation3)
 
             // Image Loading
             implementation(libs.coil.compose)
-            implementation(libs.coil.network.okhttp)
+            implementation(libs.coil.network.ktor3)
             implementation(libs.imagepickerkmp)
             implementation(libs.compressor)
 
@@ -209,12 +211,21 @@ kotlin {
 
 android {
     namespace = "com.yagubogu"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
+    compileSdk =
+        libs.versions.android.compileSdk
+            .get()
+            .toInt()
 
     defaultConfig {
         applicationId = "com.yagubogu"
-        minSdk = libs.versions.android.minSdk.get().toInt()
-        targetSdk = libs.versions.android.targetSdk.get().toInt()
+        minSdk =
+            libs.versions.android.minSdk
+                .get()
+                .toInt()
+        targetSdk =
+            libs.versions.android.targetSdk
+                .get()
+                .toInt()
         versionCode = 2_02_01
         versionName = "2.2.1"
 
@@ -275,7 +286,6 @@ dependencies {
     debugImplementation(libs.compose.uiTooling)
     add("kspAndroid", "de.jensklingenberg.ktorfit:ktorfit-ksp:2.7.2")
 }
-
 
 aboutLibraries {
     export {
