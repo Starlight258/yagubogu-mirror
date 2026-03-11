@@ -1,15 +1,5 @@
 package com.yagubogu.ui.home
 
-import android.app.Activity
-import android.content.Context
-import android.content.Intent
-import android.content.res.Resources
-import android.net.Uri
-import android.provider.Settings
-import androidx.activity.compose.LocalActivity
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -27,8 +17,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -43,7 +31,9 @@ import com.yagubogu.ui.home.component.VictoryFairyRanking
 import com.yagubogu.ui.home.component.dialog.HomeDialog
 import com.yagubogu.ui.home.component.dialog.PermissionDeniedDialog
 import com.yagubogu.ui.home.model.CheckInUiEvent
+import com.yagubogu.ui.home.model.LocationPermissionManager
 import com.yagubogu.ui.home.model.MemberStatsUiModel
+import com.yagubogu.ui.home.model.PermissionState
 import com.yagubogu.ui.home.model.StadiumStatsUiModel
 import com.yagubogu.ui.home.model.VictoryFairyRanking
 import com.yagubogu.ui.theme.Gray050
@@ -57,6 +47,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.home_already_checked_in_message
@@ -67,6 +59,14 @@ import yagubogu.composeapp.generated.resources.home_check_in_out_of_range_messag
 import yagubogu.composeapp.generated.resources.home_check_in_success_message
 import yagubogu.composeapp.generated.resources.home_location_permission_denied_message
 import yagubogu.composeapp.generated.resources.home_location_settings_disabled
+
+@Composable
+expect fun rememberLocationPermissionManager(
+    onPermissionResult: (Map<String, Boolean>) -> Unit
+): LocationPermissionManager
+
+@Composable
+expect fun rememberAppSettingsOpener(): () -> Unit
 
 @Composable
 fun HomeScreen(
@@ -80,49 +80,36 @@ fun HomeScreen(
     val isStadiumStatsExpanded: Boolean by viewModel.isStadiumStatsExpanded.collectAsStateWithLifecycle()
     val victoryFairyRanking: VictoryFairyRanking by viewModel.victoryFairyRanking.collectAsStateWithLifecycle()
     val leftSecondsUntilOpening: StateFlow<Long> = viewModel.leftSecondsUntilOpening
-    var isPermissionDenied: Boolean by remember { mutableStateOf(false) }
 
-    val context: Context = LocalContext.current
-    val resources: Resources = LocalResources.current
-    val activity: Activity = LocalActivity.current ?: return
+    var permissionState: PermissionState by remember { mutableStateOf(PermissionState.IDLE) }
+
     val snackbarScope: CoroutineScope = LocalSnackbarScope.current
     val snackbarHostState = LocalSnackbarHostState.current
 
-    val locationPermissionManager: LocationPermissionManager =
-        remember { LocationPermissionManager(activity) }
-    val locationPermissionLauncher: ActivityResultLauncher<Array<String>> =
-        rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+    val locationSettingsDisabledMessage: String =
+        stringResource(Res.string.home_location_settings_disabled)
+    val locationPermissionDeniedMessage: String =
+        stringResource(Res.string.home_location_permission_denied_message)
+
+    val openAppSettings: () -> Unit = rememberAppSettingsOpener()
+
+    val locationPermissionManager = rememberLocationPermissionManager(
+        onPermissionResult = { permissions: Map<String, Boolean> ->
             val isPermissionGranted: Boolean = permissions.any { it.value }
-            val shouldShowRationale: Boolean =
-                permissions.any { locationPermissionManager.shouldShowRationale(it.key) }
-            when {
-                isPermissionGranted ->
-                    locationPermissionManager.checkLocationSettingsThenAction(
-                        onSuccess = viewModel::fetchStadiums,
-                        onSettingsDisabled = {
-                            snackbarHostState.showSingleSnackbar(
-                                scope = snackbarScope,
-                                message = resources.getString(Res.string.home_location_settings_disabled),
-                            )
-                        },
-                    )
-
-                shouldShowRationale -> {
-                    snackbarScope.launch {
-                        snackbarHostState.showSnackbar(resources.getString(Res.string.home_location_permission_denied_message))
-                    }
-                }
-
-                else -> isPermissionDenied = true
+            permissionState = if (isPermissionGranted) {
+                PermissionState.GRANTED
+            } else {
+                PermissionState.DENIED
             }
         }
+    )
 
     LaunchedEffect(Unit) {
         viewModel.fetchAll()
 
         launch {
             viewModel.checkInUiEvent.collect { event: CheckInUiEvent ->
-                snackbarHostState.showSnackbar(event.toMessage(context))
+                snackbarHostState.showSnackbar(event.toMessage())
             }
         }
 
@@ -133,21 +120,49 @@ fun HomeScreen(
         }
     }
 
-    BackPressHandler()
-
-    HomeScreen(
-        onCheckInClick = {
-            checkIn(
-                manager = locationPermissionManager,
-                launcher = locationPermissionLauncher,
+    LaunchedEffect(permissionState) {
+        if (permissionState == PermissionState.GRANTED) {
+            locationPermissionManager.checkLocationSettingsThenAction(
                 onSuccess = viewModel::fetchStadiums,
                 onSettingsDisabled = {
                     snackbarHostState.showSingleSnackbar(
                         scope = snackbarScope,
-                        message = resources.getString(Res.string.home_location_settings_disabled),
+                        message = locationSettingsDisabledMessage,
                     )
-                },
+                }
             )
+            permissionState = PermissionState.IDLE
+        }
+    }
+
+    BackPressHandler()
+
+    HomeScreen(
+        onCheckInClick = {
+            when {
+                locationPermissionManager.isPermissionGranted() -> {
+                    locationPermissionManager.checkLocationSettingsThenAction(
+                        onSuccess = viewModel::fetchStadiums,
+                        onSettingsDisabled = {
+                            snackbarHostState.showSingleSnackbar(
+                                scope = snackbarScope,
+                                message = locationSettingsDisabledMessage,
+                            )
+                        },
+                    )
+                }
+
+                locationPermissionManager.shouldShowRationale() -> {
+                    snackbarScope.launch {
+                        snackbarHostState.showSingleSnackbar(
+                            scope = snackbarScope,
+                            message = locationPermissionDeniedMessage
+                        )
+                    }
+                }
+
+                else -> locationPermissionManager.requestPermissions()
+            }
         },
         memberStatsUiModel = memberStatsUiModel,
         stadiumStatsUiModel = stadiumStatsUiModel,
@@ -162,14 +177,15 @@ fun HomeScreen(
     )
 
     HomeDialog(viewModel)
-    if (isPermissionDenied) {
+
+    if (permissionState == PermissionState.DENIED) {
         PermissionDeniedDialog(
             onOpenSettings = {
-                isPermissionDenied = false
-                openAppSettings(context)
+                permissionState = PermissionState.IDLE
+                openAppSettings()
             },
             onDismiss = {
-                isPermissionDenied = false
+                permissionState = PermissionState.IDLE
             },
         )
     }
@@ -241,49 +257,25 @@ private fun HomeScreen(
     }
 }
 
-private fun checkIn(
-    manager: LocationPermissionManager,
-    launcher: ActivityResultLauncher<Array<String>>,
-    onSuccess: () -> Unit,
-    onSettingsDisabled: () -> Unit,
-) {
-    if (manager.isPermissionGranted()) {
-        manager.checkLocationSettingsThenAction(
-            onSuccess = onSuccess,
-            onSettingsDisabled = onSettingsDisabled,
-        )
-    } else {
-        manager.requestPermissions(launcher)
-    }
-}
-
-private fun openAppSettings(context: Context) {
-    val intent =
-        Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-            data = Uri.fromParts("package", context.packageName, null)
-        }
-    context.startActivity(intent)
-}
-
-private fun CheckInUiEvent.toMessage(context: Context): String =
+private suspend fun CheckInUiEvent.toMessage(): String =
     when (this) {
         is CheckInUiEvent.Success ->
-            context.getString(Res.string.home_check_in_success_message, stadium.name)
+            getString(Res.string.home_check_in_success_message, stadium.name)
 
         CheckInUiEvent.NoGame ->
-            context.getString(Res.string.home_check_in_no_game_message)
+            getString(Res.string.home_check_in_no_game_message)
 
         CheckInUiEvent.OutOfRange ->
-            context.getString(Res.string.home_check_in_out_of_range_message)
+            getString(Res.string.home_check_in_out_of_range_message)
 
         CheckInUiEvent.AlreadyCheckedIn ->
-            context.getString(Res.string.home_already_checked_in_message)
+            getString(Res.string.home_already_checked_in_message)
 
         CheckInUiEvent.LocationFetchFailed ->
-            context.getString(Res.string.home_check_in_location_fetch_failed_message)
+            getString(Res.string.home_check_in_location_fetch_failed_message)
 
         CheckInUiEvent.NetworkFailed ->
-            context.getString(Res.string.home_check_in_network_failed_message)
+            getString(Res.string.home_check_in_network_failed_message)
     }
 
 @Preview
