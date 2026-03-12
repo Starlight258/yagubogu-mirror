@@ -14,6 +14,7 @@ import yagubogu.composeapp.generated.resources.ic_home
 import yagubogu.composeapp.generated.resources.ic_livetalk
 import yagubogu.composeapp.generated.resources.ic_stats
 
+@Serializable
 sealed interface BottomNavKey : NavKey {
     val icon: DrawableResource
 

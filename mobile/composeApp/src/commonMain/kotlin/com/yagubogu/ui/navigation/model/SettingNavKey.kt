@@ -8,6 +8,7 @@ import yagubogu.composeapp.generated.resources.setting_main_title
 import yagubogu.composeapp.generated.resources.setting_manage_account
 import yagubogu.composeapp.generated.resources.setting_open_source_license
 
+@Serializable
 sealed interface SettingNavKey : NavKey {
     val label: StringResource
 
