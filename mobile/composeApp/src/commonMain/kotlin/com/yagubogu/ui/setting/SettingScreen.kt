@@ -15,17 +15,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import org.jetbrains.compose.resources.stringResource
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
-import yagubogu.composeapp.generated.resources.Res
 import com.yagubogu.ui.common.component.DefaultToolbar
 import com.yagubogu.ui.navigation.model.Navigator
 import com.yagubogu.ui.navigation.model.SettingNavKey
 import com.yagubogu.ui.navigation.model.toEntries
 import com.yagubogu.ui.theme.Gray050
+import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
+import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.setting_main_title
 
 @Composable
@@ -37,6 +38,7 @@ fun SettingScreen(
     onDeleteAccountCancel: () -> Unit,
     onDeleteAccount: () -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: SettingViewModel = koinViewModel(),
 ) {
     var isTopBarVisible: Boolean by remember { mutableStateOf(true) }
 
@@ -69,6 +71,7 @@ fun SettingScreen(
             entryProvider {
                 entry<SettingNavKey.SettingMain> {
                     SettingMainScreen(
+                        viewModel = viewModel,
                         onSettingAccountClick = { navigator.navigate(SettingNavKey.SettingAccount) },
                         onFavoriteTeamEditClick = { onFavoriteTeamEditClick() },
                         onFullScreenMode = { isFull: Boolean -> isTopBarVisible = !isFull },
@@ -77,12 +80,14 @@ fun SettingScreen(
                 }
                 entry<SettingNavKey.SettingAccount> {
                     SettingAccountScreen(
+                        viewModel = viewModel,
                         onDeleteAccountClick = { navigator.navigate(SettingNavKey.SettingDeleteAccount) },
                         onLogout = onLogout,
                     )
                 }
                 entry<SettingNavKey.SettingDeleteAccount> {
                     SettingDeleteAccountScreen(
+                        viewModel = viewModel,
                         onDeleteAccountCancel = onDeleteAccountCancel,
                         onLogout = {
                             navigator.clearStack()

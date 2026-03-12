@@ -1,6 +1,5 @@
 package com.yagubogu.ui.setting
 
-import com.yagubogu.BuildKonfig
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,16 +25,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
-import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.touchlab.kermit.Logger
-import coil3.Uri
-import coil3.toUri
-import yagubogu.composeapp.generated.resources.Res
+import com.yagubogu.BuildKonfig
 import com.yagubogu.ui.common.component.profile.ProfileImage
 import com.yagubogu.ui.login.model.VersionInfo
 import com.yagubogu.ui.setting.component.SettingButton
@@ -63,7 +59,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.datetime.format
 import org.jetbrains.compose.resources.getString
-import org.koin.compose.viewmodel.koinViewModel
+import org.jetbrains.compose.resources.stringResource
+import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.setting_app_version
 import yagubogu.composeapp.generated.resources.setting_contact_us
 import yagubogu.composeapp.generated.resources.setting_edit_my_team
@@ -80,12 +77,12 @@ import yagubogu.composeapp.generated.resources.setting_open_source_license
 
 @Composable
 fun SettingMainScreen(
+    viewModel: SettingViewModel,
     onSettingAccountClick: () -> Unit,
     onFavoriteTeamEditClick: () -> Unit,
     onFullScreenMode: (Boolean) -> Unit,
     onOssLicenseClick: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: SettingViewModel = koinViewModel(),
 ) {
     val snackbarHostState = LocalSnackbarHostState.current
 
@@ -191,13 +188,13 @@ private fun ProfileImagePicker(
             scope.launch {
                 runCatching {
                     handleImagePickerKMPCroppedImage(
-                        onUploadFailure= {
+                        onUploadFailure = {
                             snackbarHostState.showSingleSnackbar(
                                 scope = scope,
                                 stringResource = Res.string.setting_edit_profile_image_upload_failed,
                             )
                         },
-                        onProcessingFailure= {
+                        onProcessingFailure = {
                             snackbarHostState.showSingleSnackbar(
                                 scope = scope,
                                 stringResource = Res.string.setting_edit_profile_image_processing_failed,
@@ -295,7 +292,10 @@ private fun SettingMainScreen(
                 text = stringResource(Res.string.setting_contact_us),
                 onClick = { uriHandler.openUri(CONTACT_URL) },
             )
-            SettingButton(text = stringResource(Res.string.setting_open_source_license), onClick = onOssLicenseClick)
+            SettingButton(
+                text = stringResource(Res.string.setting_open_source_license),
+                onClick = onOssLicenseClick
+            )
         }
 
         Text(

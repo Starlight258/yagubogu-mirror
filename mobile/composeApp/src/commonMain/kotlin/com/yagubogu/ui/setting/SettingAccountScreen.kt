@@ -26,7 +26,6 @@ import com.yagubogu.ui.util.LocalSnackbarScope
 import com.yagubogu.ui.util.showSingleSnackbar
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.viewmodel.koinViewModel
 import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.setting_delete_account
 import yagubogu.composeapp.generated.resources.setting_logout
@@ -34,10 +33,10 @@ import yagubogu.composeapp.generated.resources.setting_logout_alert
 
 @Composable
 fun SettingAccountScreen(
+    viewModel: SettingViewModel,
     onDeleteAccountClick: () -> Unit,
     onLogout: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: SettingViewModel = koinViewModel(),
 ) {
     val snackbarHostState = LocalSnackbarHostState.current
     val snackbarScope = LocalSnackbarScope.current
