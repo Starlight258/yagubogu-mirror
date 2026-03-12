@@ -7,7 +7,7 @@ import com.google.firebase.analytics.logEvent
 class FirebaseAnalyticsLogger : Analytics {
     override fun logEvent(
         event: String,
-        params: Map<String, Any>
+        params: Map<String, Any>,
     ) {
         Firebase.analytics.logEvent(event) {
             params.forEach { (key, value) ->

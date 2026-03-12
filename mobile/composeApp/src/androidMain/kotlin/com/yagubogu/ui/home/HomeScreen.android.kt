@@ -28,46 +28,48 @@ import com.google.android.gms.location.Priority
 import com.yagubogu.ui.home.model.LocationPermissionManager
 
 @Composable
-actual fun rememberLocationPermissionManager(
-    onPermissionResult: (Map<String, Boolean>) -> Unit
-): LocationPermissionManager {
+actual fun rememberLocationPermissionManager(onPermissionResult: (Map<String, Boolean>) -> Unit): LocationPermissionManager {
     val context: Context = LocalContext.current
     val activity: Activity? = LocalActivity.current
 
     // 권한 요청 런처
-    val permissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestMultiplePermissions(),
-        onResult = onPermissionResult
-    )
+    val permissionLauncher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestMultiplePermissions(),
+            onResult = onPermissionResult,
+        )
 
     // GPS 설정 다이얼로그(ResolvableApiException) 결과를 처리하기 위한 상태 및 런처
     var pendingSuccess by remember { mutableStateOf<(() -> Unit)?>(null) }
     var pendingDisabled by remember { mutableStateOf<(() -> Unit)?>(null) }
 
-    val settingResolutionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartIntentSenderForResult()
-    ) { result: ActivityResult ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            pendingSuccess?.invoke()
-        } else {
-            pendingDisabled?.invoke()
+    val settingResolutionLauncher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.StartIntentSenderForResult(),
+        ) { result: ActivityResult ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                pendingSuccess?.invoke()
+            } else {
+                pendingDisabled?.invoke()
+            }
+            // 실행 후 콜백 초기화
+            pendingSuccess = null
+            pendingDisabled = null
         }
-        // 실행 후 콜백 초기화
-        pendingSuccess = null
-        pendingDisabled = null
-    }
 
     return remember(context, activity) {
         object : LocationPermissionManager {
             override fun isPermissionGranted(): Boolean {
-                val isFineGranted: Boolean = ContextCompat.checkSelfPermission(
-                    context,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                ) == PackageManager.PERMISSION_GRANTED
-                val isCoarseGranted: Boolean = ContextCompat.checkSelfPermission(
-                    context,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                ) == PackageManager.PERMISSION_GRANTED
+                val isFineGranted: Boolean =
+                    ContextCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                    ) == PackageManager.PERMISSION_GRANTED
+                val isCoarseGranted: Boolean =
+                    ContextCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                    ) == PackageManager.PERMISSION_GRANTED
 
                 return isFineGranted || isCoarseGranted
             }
@@ -76,26 +78,26 @@ actual fun rememberLocationPermissionManager(
                 if (activity == null) return false
                 return ActivityCompat.shouldShowRequestPermissionRationale(
                     activity,
-                    Manifest.permission.ACCESS_FINE_LOCATION
+                    Manifest.permission.ACCESS_FINE_LOCATION,
                 ) ||
-                        ActivityCompat.shouldShowRequestPermissionRationale(
-                            activity,
-                            Manifest.permission.ACCESS_COARSE_LOCATION
-                        )
+                    ActivityCompat.shouldShowRequestPermissionRationale(
+                        activity,
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                    )
             }
 
             override fun requestPermissions() {
                 permissionLauncher.launch(
                     arrayOf(
                         Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                    )
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                    ),
                 )
             }
 
             override fun checkLocationSettingsThenAction(
                 onSuccess: () -> Unit,
-                onSettingsDisabled: () -> Unit
+                onSettingsDisabled: () -> Unit,
             ) {
                 if (activity == null) {
                     onSettingsDisabled()
@@ -104,12 +106,15 @@ actual fun rememberLocationPermissionManager(
 
                 val locationRequest =
                     LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 0).build()
-                val request = LocationSettingsRequest.Builder()
-                    .addLocationRequest(locationRequest)
-                    .setAlwaysShow(true)
-                    .build()
+                val request =
+                    LocationSettingsRequest
+                        .Builder()
+                        .addLocationRequest(locationRequest)
+                        .setAlwaysShow(true)
+                        .build()
 
-                LocationServices.getSettingsClient(activity)
+                LocationServices
+                    .getSettingsClient(activity)
                     .checkLocationSettings(request)
                     .addOnSuccessListener { onSuccess() }
                     .addOnFailureListener { exception: Exception ->
@@ -138,10 +143,11 @@ actual fun rememberAppSettingsOpener(): () -> Unit {
     val context: Context = LocalContext.current
     return remember {
         {
-            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                data = Uri.fromParts("package", context.packageName, null)
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            }
+            val intent =
+                Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                    data = Uri.fromParts("package", context.packageName, null)
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                }
             context.startActivity(intent)
         }
     }

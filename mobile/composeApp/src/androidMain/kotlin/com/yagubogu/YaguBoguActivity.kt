@@ -36,7 +36,9 @@ import org.koin.androidx.scope.activityScope
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.scope.Scope
 
-class YaguBoguActivity : ComponentActivity(), AndroidScopeComponent {
+class YaguBoguActivity :
+    ComponentActivity(),
+    AndroidScopeComponent {
     override val scope: Scope by activityScope()
 
     private val logger = Logger.withTag("YaguBoguActivity")

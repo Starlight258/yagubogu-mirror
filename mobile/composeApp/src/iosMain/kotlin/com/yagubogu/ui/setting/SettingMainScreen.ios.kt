@@ -21,7 +21,7 @@ actual suspend fun handleImagePickerKMPCroppedImage(
     onUploadFailure: () -> Unit,
     onProcessingFailure: () -> Unit,
     sourceImageUri: String,
-    onProfileImageUpload: suspend (String, String, Long) -> Result<Unit>
+    onProfileImageUpload: suspend (String, String, Long) -> Result<Unit>,
 ) {
     // Todo: 딸깍한 Ios 코드임, 구현 검증 필요
     runCatching {
@@ -68,6 +68,6 @@ actual suspend fun handleImagePickerKMPCroppedImage(
             if (e is CancellationException) throw e
             Logger.withTag("handleImagePickerKMPCroppedImage").e(e) { "iOS 이미지 전처리 실패" }
             onProcessingFailure()
-        }
+        },
     )
 }

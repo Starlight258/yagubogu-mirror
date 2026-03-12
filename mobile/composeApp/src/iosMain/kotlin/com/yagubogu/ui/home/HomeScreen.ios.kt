@@ -15,10 +15,12 @@ import platform.darwin.NSObject
 
 // 권한 상태 변경을 수신하기 위한 델리게이트
 private class LocationDelegate(
-    private val onPermissionResult: (Map<String, Boolean>) -> Unit
-) : NSObject(), CLLocationManagerDelegateProtocol {
+    private val onPermissionResult: (Map<String, Boolean>) -> Unit,
+) : NSObject(),
+    CLLocationManagerDelegateProtocol {
     override fun locationManagerDidChangeAuthorization(manager: CLLocationManager) {
-        val isGranted = manager.authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse ||
+        val isGranted =
+            manager.authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse ||
                 manager.authorizationStatus == kCLAuthorizationStatusAuthorizedAlways
 
         // NotDetermined 상태에서는 아직 선택 전이므로 콜백을 무시
@@ -29,22 +31,20 @@ private class LocationDelegate(
 }
 
 @Composable
-actual fun rememberLocationPermissionManager(
-    onPermissionResult: (Map<String, Boolean>) -> Unit
-): LocationPermissionManager {
-
+actual fun rememberLocationPermissionManager(onPermissionResult: (Map<String, Boolean>) -> Unit): LocationPermissionManager {
     val delegate = remember { LocationDelegate(onPermissionResult) }
 
     return remember {
         object : LocationPermissionManager {
-            private val locationManager = CLLocationManager().apply {
-                this.delegate = delegate
-            }
+            private val locationManager =
+                CLLocationManager().apply {
+                    this.delegate = delegate
+                }
 
             override fun isPermissionGranted(): Boolean {
                 val status = locationManager.authorizationStatus
                 return status == kCLAuthorizationStatusAuthorizedWhenInUse ||
-                        status == kCLAuthorizationStatusAuthorizedAlways
+                    status == kCLAuthorizationStatusAuthorizedAlways
             }
 
             override fun shouldShowRationale(): Boolean {
@@ -64,7 +64,7 @@ actual fun rememberLocationPermissionManager(
 
             override fun checkLocationSettingsThenAction(
                 onSuccess: () -> Unit,
-                onSettingsDisabled: () -> Unit
+                onSettingsDisabled: () -> Unit,
             ) {
                 // iOS의 시스템 위치 서비스 켜짐 여부 확인
                 if (CLLocationManager.locationServicesEnabled()) {
@@ -78,8 +78,8 @@ actual fun rememberLocationPermissionManager(
 }
 
 @Composable
-actual fun rememberAppSettingsOpener(): () -> Unit {
-    return remember {
+actual fun rememberAppSettingsOpener(): () -> Unit =
+    remember {
         {
             val url = NSURL(string = UIApplicationOpenSettingsURLString)
             if (UIApplication.sharedApplication.canOpenURL(url)) {
@@ -87,4 +87,3 @@ actual fun rememberAppSettingsOpener(): () -> Unit {
             }
         }
     }
-}

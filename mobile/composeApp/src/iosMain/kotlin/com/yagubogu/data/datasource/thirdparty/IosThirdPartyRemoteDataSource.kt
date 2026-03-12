@@ -16,30 +16,33 @@ import platform.posix.memcpy
 class IosThirdPartyRemoteDataSource(
     private val thirdPartyApiService: ThirdPartyApiService,
 ) : ThirdPartyDataSource {
-
     override suspend fun uploadImageToS3(
         url: String,
         imageFileUri: String,
         contentType: String,
         contentLength: Long,
-    ): Result<Unit> = safeApiCall {
-        val nsUrl = NSURL(string = imageFileUri)
-        val nsData = NSData.dataWithContentsOfURL(nsUrl)
-            ?: throw IllegalStateException("Failed to read data from $imageFileUri")
+    ): Result<Unit> =
+        safeApiCall {
+            val nsUrl = NSURL(string = imageFileUri)
+            val nsData =
+                NSData.dataWithContentsOfURL(nsUrl)
+                    ?: throw IllegalStateException("Failed to read data from $imageFileUri")
 
-        val byteArray = ByteArray(nsData.length.toInt())
-        if (byteArray.isNotEmpty()) {
-            byteArray.usePinned { pinned ->
-                memcpy(pinned.addressOf(0), nsData.bytes, nsData.length)
+            val byteArray = ByteArray(nsData.length.toInt())
+            if (byteArray.isNotEmpty()) {
+                byteArray.usePinned { pinned ->
+                    memcpy(pinned.addressOf(0), nsData.bytes, nsData.length)
+                }
             }
-        }
 
-        val requestBody = object : OutgoingContent.ByteArrayContent() {
-            override val contentType: ContentType = ContentType.parse(contentType)
-            override val contentLength: Long = contentLength
-            override fun bytes(): ByteArray = byteArray
-        }
+            val requestBody =
+                object : OutgoingContent.ByteArrayContent() {
+                    override val contentType: ContentType = ContentType.parse(contentType)
+                    override val contentLength: Long = contentLength
 
-        thirdPartyApiService.putImageToS3(url, requestBody)
-    }
+                    override fun bytes(): ByteArray = byteArray
+                }
+
+            thirdPartyApiService.putImageToS3(url, requestBody)
+        }
 }

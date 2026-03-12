@@ -9,14 +9,15 @@ import com.yagubogu.data.network.TokenManager
 import org.koin.android.ext.koin.androidApplication
 import org.koin.dsl.module
 
-actual val commonModule = module {
-    single<TokenManager> { TokenManager(context = androidApplication()) }
+actual val commonModule =
+    module {
+        single<TokenManager> { TokenManager(context = androidApplication()) }
 
-    single<ContentResolver> { androidApplication().contentResolver }
+        single<ContentResolver> { androidApplication().contentResolver }
 
-    single<FusedLocationProviderClient> {
-        LocationServices.getFusedLocationProviderClient(androidApplication())
+        single<FusedLocationProviderClient> {
+            LocationServices.getFusedLocationProviderClient(androidApplication())
+        }
+
+        single<Analytics> { FirebaseAnalyticsLogger() }
     }
-
-    single<Analytics> { FirebaseAnalyticsLogger() }
-}

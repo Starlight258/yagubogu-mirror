@@ -17,18 +17,19 @@ actual suspend fun handleImagePickerKMPCroppedImage(
     onUploadFailure: () -> Unit,
     onProcessingFailure: () -> Unit,
     sourceImageUri: String,
-    onProfileImageUpload: suspend (String, String, Long) -> Result<Unit>
+    onProfileImageUpload: suspend (String, String, Long) -> Result<Unit>,
 ) {
     val context = GlobalContext.get().get<Application>()
     runCatching {
         val uri = sourceImageUri.toUri()
         val originalFile = File(uri.path ?: error("경로를 찾을 수 없음"))
-        val convertedFile = Compressor.compress(context, originalFile) {
-            resolution(500, 500)
-            quality(90)
-            format(Bitmap.CompressFormat.JPEG)
-            size(5L * 1024L * 1024L)
-        }
+        val convertedFile =
+            Compressor.compress(context, originalFile) {
+                resolution(500, 500)
+                quality(90)
+                format(Bitmap.CompressFormat.JPEG)
+                size(5L * 1024L * 1024L)
+            }
 
         // File 객체의 경로를 String으로 뽑아서 Coil의 Uri로 변환
         val convertedImageUri = convertedFile.absolutePath

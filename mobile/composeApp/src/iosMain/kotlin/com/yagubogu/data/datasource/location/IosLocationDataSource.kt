@@ -20,28 +20,36 @@ class IosLocationDataSource : LocationDataSource {
     private var onFailureCallback: ((Exception) -> Unit)? = null
 
     // iOS의 Delegate 패턴을 Kotlin 객체로 구현 (메모리 해제 방지를 위해 멤버 변수로 유지)
-    private val locationDelegate = object : NSObject(), CLLocationManagerDelegateProtocol {
-        // 위치를 성공적으로 가져왔을 때 호출됨
-        override fun locationManager(manager: CLLocationManager, didUpdateLocations: List<*>) {
-            val location = didUpdateLocations.lastOrNull() as? CLLocation
-            if (location != null) {
-                // iOS의 CLLocationCoordinate2D 구조체 값은 useContents로 꺼내야 함
-                val coordinateDto = location.coordinate.useContents {
-                    CoordinateDto(latitude, longitude)
+    private val locationDelegate =
+        object : NSObject(), CLLocationManagerDelegateProtocol {
+            // 위치를 성공적으로 가져왔을 때 호출됨
+            override fun locationManager(
+                manager: CLLocationManager,
+                didUpdateLocations: List<*>,
+            ) {
+                val location = didUpdateLocations.lastOrNull() as? CLLocation
+                if (location != null) {
+                    // iOS의 CLLocationCoordinate2D 구조체 값은 useContents로 꺼내야 함
+                    val coordinateDto =
+                        location.coordinate.useContents {
+                            CoordinateDto(latitude, longitude)
+                        }
+                    onSuccessCallback?.invoke(coordinateDto)
+                } else {
+                    onFailureCallback?.invoke(Exception("위치 정보를 찾을 수 없습니다."))
                 }
-                onSuccessCallback?.invoke(coordinateDto)
-            } else {
-                onFailureCallback?.invoke(Exception("위치 정보를 찾을 수 없습니다."))
+                clearCallbacks()
             }
-            clearCallbacks()
-        }
 
-        // 위치를 가져오는 데 실패했을 때 호출됨
-        override fun locationManager(manager: CLLocationManager, didFailWithError: NSError) {
-            onFailureCallback?.invoke(Exception(didFailWithError.localizedDescription))
-            clearCallbacks()
+            // 위치를 가져오는 데 실패했을 때 호출됨
+            override fun locationManager(
+                manager: CLLocationManager,
+                didFailWithError: NSError,
+            ) {
+                onFailureCallback?.invoke(Exception(didFailWithError.localizedDescription))
+                clearCallbacks()
+            }
         }
-    }
 
     init {
         // 매니저에 Delegate 연결 및 정확도 설정

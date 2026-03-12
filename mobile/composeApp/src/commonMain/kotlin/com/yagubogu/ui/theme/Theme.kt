@@ -63,7 +63,6 @@ private val LightColorScheme =
         inversePrimary = Primary400,
     )
 
-@Suppress("ktlint:standard:function-naming")
 @Composable
 fun YaguBoguTheme(
     // TODO 다크모드 지원시 변경
