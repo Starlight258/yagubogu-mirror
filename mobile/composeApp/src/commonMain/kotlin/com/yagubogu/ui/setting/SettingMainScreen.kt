@@ -171,7 +171,7 @@ fun SettingMainScreen(
 @Composable
 private fun ProfileImagePicker(
     scope: CoroutineScope,
-    onUpload: suspend (Uri, String, Long) -> Result<Unit>,
+    onUpload: suspend (String, String, Long) -> Result<Unit>,
     onClosePicker: () -> Unit,
 ) {
     val logger: Logger = Logger.withTag("ProfileImagePicker")
@@ -203,7 +203,7 @@ private fun ProfileImagePicker(
                                 stringResource = Res.string.setting_edit_profile_image_processing_failed,
                             )
                         },
-                        sourceImageUri = photo.uri.toUri(),
+                        sourceImageUri = photo.uri,
                         onProfileImageUpload = onUpload,
                     )
                 }.getOrElse { exception: Throwable ->
@@ -348,8 +348,8 @@ private fun MyProfile(
 expect suspend fun handleImagePickerKMPCroppedImage(
     onUploadFailure: () -> Unit,
     onProcessingFailure: () -> Unit,
-    sourceImageUri: Uri,
-    onProfileImageUpload: suspend (Uri, String, Long) -> Result<Unit>,
+    sourceImageUri: String,
+    onProfileImageUpload: suspend (String, String, Long) -> Result<Unit>,
 )
 
 private fun getAppVersion(): String {

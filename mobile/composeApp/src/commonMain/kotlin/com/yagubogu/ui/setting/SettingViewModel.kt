@@ -102,7 +102,7 @@ class SettingViewModel(
     }
 
     suspend fun uploadProfileImage(
-        imageUri: Uri,
+        imageUri: String,
         mimeType: String,
         size: Long,
     ): Result<Unit> =

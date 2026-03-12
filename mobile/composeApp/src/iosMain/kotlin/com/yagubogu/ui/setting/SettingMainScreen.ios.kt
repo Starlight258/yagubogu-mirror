@@ -1,13 +1,12 @@
 package com.yagubogu.ui.setting
 
 import co.touchlab.kermit.Logger
-import coil3.Uri
-import coil3.toUri
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.CoreGraphics.CGRectMake
 import platform.CoreGraphics.CGSizeMake
 import platform.Foundation.NSDate
 import platform.Foundation.NSTemporaryDirectory
+import platform.Foundation.NSURL
 import platform.Foundation.timeIntervalSince1970
 import platform.Foundation.writeToFile
 import platform.UIKit.UIGraphicsBeginImageContextWithOptions
@@ -21,14 +20,17 @@ import kotlin.coroutines.cancellation.CancellationException
 actual suspend fun handleImagePickerKMPCroppedImage(
     onUploadFailure: () -> Unit,
     onProcessingFailure: () -> Unit,
-    sourceImageUri: Uri,
-    onProfileImageUpload: suspend (Uri, String, Long) -> Result<Unit>
+    sourceImageUri: String,
+    onProfileImageUpload: suspend (String, String, Long) -> Result<Unit>
 ) {
     // Todo: 딸깍한 Ios 코드임, 구현 검증 필요
     runCatching {
         // 1. 이미지 로드
-        val path = sourceImageUri.path ?: error("경로를 찾을 수 없음")
-        val originalImage = UIImage.imageWithContentsOfFile(path) ?: error("이미지를 불러올 수 없음")
+        // (file:// 로 시작하는 경우 URL 디코딩이 필요할 수 있으므로 NSURL을 거쳐서 path를 가져옴)
+        val nsUrl = NSURL(string = sourceImageUri)
+        val path = nsUrl.path ?: sourceImageUri.replaceFirst("file://", "")
+
+        val originalImage = UIImage.imageWithContentsOfFile(path) ?: error("이미지를 불러올 수 없음: $path")
 
         // 2. 리사이징 (500x500)
         val newSize = CGSizeMake(500.0, 500.0)
@@ -49,7 +51,7 @@ actual suspend fun handleImagePickerKMPCroppedImage(
         // NSData를 물리적 파일로 저장
         imageData.writeToFile(tempFilePath, true)
 
-        val convertedImageUri = tempFilePath.toUri()
+        val convertedImageUri = tempFilePath
         val fileSize = imageData.length.toLong()
         val mimeType = "image/jpeg"
 

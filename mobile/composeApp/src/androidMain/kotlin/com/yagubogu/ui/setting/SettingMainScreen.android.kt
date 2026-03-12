@@ -2,9 +2,8 @@ package com.yagubogu.ui.setting
 
 import android.app.Application
 import android.graphics.Bitmap
-import coil3.toUri
+import androidx.core.net.toUri
 import co.touchlab.kermit.Logger
-import coil3.Uri
 import id.zelory.compressor.Compressor
 import id.zelory.compressor.constraint.format
 import id.zelory.compressor.constraint.quality
@@ -17,12 +16,13 @@ import kotlin.coroutines.cancellation.CancellationException
 actual suspend fun handleImagePickerKMPCroppedImage(
     onUploadFailure: () -> Unit,
     onProcessingFailure: () -> Unit,
-    sourceImageUri: Uri,
-    onProfileImageUpload: suspend (Uri, String, Long) -> Result<Unit>
+    sourceImageUri: String,
+    onProfileImageUpload: suspend (String, String, Long) -> Result<Unit>
 ) {
     val context = GlobalContext.get().get<Application>()
     runCatching {
-        val originalFile = File(sourceImageUri.path ?: error("경로를 찾을 수 없음"))
+        val uri = sourceImageUri.toUri()
+        val originalFile = File(uri.path ?: error("경로를 찾을 수 없음"))
         val convertedFile = Compressor.compress(context, originalFile) {
             resolution(500, 500)
             quality(90)
@@ -31,7 +31,7 @@ actual suspend fun handleImagePickerKMPCroppedImage(
         }
 
         // File 객체의 경로를 String으로 뽑아서 Coil의 Uri로 변환
-        val convertedImageUri = convertedFile.absolutePath.toUri()
+        val convertedImageUri = convertedFile.absolutePath
         val fileSize = convertedFile.length()
         val mimeType = "image/jpeg"
 

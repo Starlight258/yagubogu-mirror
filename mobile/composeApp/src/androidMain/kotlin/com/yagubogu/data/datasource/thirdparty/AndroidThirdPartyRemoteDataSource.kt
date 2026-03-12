@@ -9,7 +9,7 @@ import io.ktor.http.content.OutgoingContent
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.jvm.javaio.toByteReadChannel
 
-class ThirdPartyRemoteDataSource(
+class AndroidThirdPartyRemoteDataSource(
     private val thirdPartyApiService: ThirdPartyApiService,
     private val contentResolver: ContentResolver,
 ) : ThirdPartyDataSource {
