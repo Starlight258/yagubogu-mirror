@@ -1,6 +1,5 @@
 package com.yagubogu.domain.model
 
-@JvmInline
 value class Longitude(
     val value: Double,
 ) {

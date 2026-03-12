@@ -35,6 +35,7 @@ val viewModelModule =
                 talkRepository = get(),
                 gameRepository = get(),
                 memberRepository = get(),
+                clock = get(),
             )
         }
 

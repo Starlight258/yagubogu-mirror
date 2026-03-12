@@ -1,6 +1,5 @@
 package com.yagubogu.domain.model
 
-@JvmInline
 value class Distance(
     val value: Double,
 ) {

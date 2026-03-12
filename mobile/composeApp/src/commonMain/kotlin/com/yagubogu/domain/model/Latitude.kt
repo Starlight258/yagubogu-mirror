@@ -1,6 +1,5 @@
 package com.yagubogu.domain.model
 
-@JvmInline
 value class Latitude(
     val value: Double,
 ) {

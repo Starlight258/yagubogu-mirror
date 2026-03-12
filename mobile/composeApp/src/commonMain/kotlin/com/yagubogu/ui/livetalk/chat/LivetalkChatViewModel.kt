@@ -20,6 +20,7 @@ import com.yagubogu.ui.mapper.toUiModel
 import com.yagubogu.ui.util.now
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,6 +40,7 @@ class LivetalkChatViewModel(
     private val talkRepository: TalkRepository,
     private val gameRepository: GameRepository,
     private val memberRepository: MemberRepository,
+    private val clock: Clock,
 ) : ViewModel() {
     private val logger = Logger.withTag("LivetalkChatViewModel")
 
@@ -125,7 +127,7 @@ class LivetalkChatViewModel(
             messageStateHolder.addPendingWriteChat(
                 LivetalkChatBubbleItem.MyPendingBubbleItem(
                     LivetalkChatItem(
-                        System.currentTimeMillis(),
+                        clock.now().toEpochMilliseconds(),
                         0L,
                         true,
                         message,
