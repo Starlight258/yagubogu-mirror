@@ -1,6 +1,6 @@
 package com.yagubogu.domain.model
 
-value class Longitude(
+data class Longitude(
     val value: Double,
 ) {
     init {

@@ -1,6 +1,6 @@
 package com.yagubogu.domain.model
 
-value class Distance(
+data class Distance(
     val value: Double,
 ) {
     init {
