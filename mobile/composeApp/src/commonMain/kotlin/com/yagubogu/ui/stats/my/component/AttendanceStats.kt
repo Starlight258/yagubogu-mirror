@@ -13,14 +13,15 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import yagubogu.composeapp.generated.resources.Res
 import com.yagubogu.ui.stats.my.model.AverageStats
 import com.yagubogu.ui.theme.Gray300
 import com.yagubogu.ui.theme.PretendardBold20
 import com.yagubogu.ui.theme.White
+import com.yagubogu.ui.util.formatOneDecimal
+import org.jetbrains.compose.resources.stringResource
+import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.stats_attendance_stats_title
 import yagubogu.composeapp.generated.resources.stats_average_count
 import yagubogu.composeapp.generated.resources.stats_average_score
@@ -55,7 +56,10 @@ fun AttendanceStats(
         ) {
             StatItem(
                 title = stringResource(Res.string.stats_gain_score),
-                value = stringResource(Res.string.stats_average_score, averageStats.averageRuns),
+                value = stringResource(
+                    Res.string.stats_average_score,
+                    averageStats.averageRuns.formatOneDecimal(),
+                ),
                 emoji = stringResource(Res.string.stats_gain_score_emoji),
                 modifier =
                     Modifier
@@ -69,7 +73,10 @@ fun AttendanceStats(
             )
             StatItem(
                 title = stringResource(Res.string.stats_loss_score),
-                value = stringResource(Res.string.stats_average_score, averageStats.concededRuns),
+                value = stringResource(
+                    Res.string.stats_average_score,
+                    averageStats.concededRuns.formatOneDecimal()
+                ),
                 emoji = stringResource(Res.string.stats_loss_score_emoji),
                 modifier =
                     Modifier
@@ -84,7 +91,10 @@ fun AttendanceStats(
         ) {
             StatItem(
                 title = stringResource(Res.string.stats_hit),
-                value = stringResource(Res.string.stats_average_count, averageStats.averageHits),
+                value = stringResource(
+                    Res.string.stats_average_count,
+                    averageStats.averageHits.formatOneDecimal()
+                ),
                 modifier = Modifier.weight(1f),
             )
             VerticalDivider(
@@ -94,7 +104,10 @@ fun AttendanceStats(
             )
             StatItem(
                 title = stringResource(Res.string.stats_hit_allowed),
-                value = stringResource(Res.string.stats_average_count, averageStats.concededHits),
+                value = stringResource(
+                    Res.string.stats_average_count,
+                    averageStats.concededHits.formatOneDecimal()
+                ),
                 modifier = Modifier.weight(1f),
             )
             VerticalDivider(
@@ -104,7 +117,10 @@ fun AttendanceStats(
             )
             StatItem(
                 title = stringResource(Res.string.stats_error),
-                value = stringResource(Res.string.stats_average_count, averageStats.averageErrors),
+                value = stringResource(
+                    Res.string.stats_average_count,
+                    averageStats.averageErrors.formatOneDecimal()
+                ),
                 modifier = Modifier.weight(1f),
             )
         }

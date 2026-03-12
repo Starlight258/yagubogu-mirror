@@ -22,14 +22,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import yagubogu.composeapp.generated.resources.Res
 import com.yagubogu.ui.common.component.Picker
 import com.yagubogu.ui.theme.Gray200
 import com.yagubogu.ui.theme.Gray500
@@ -41,6 +39,8 @@ import com.yagubogu.ui.util.minusYears
 import com.yagubogu.ui.util.now
 import kotlinx.datetime.YearMonth
 import kotlinx.datetime.number
+import org.jetbrains.compose.resources.stringResource
+import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.all_cancel
 import yagubogu.composeapp.generated.resources.all_confirm
 import yagubogu.composeapp.generated.resources.all_month
@@ -118,12 +118,11 @@ fun YearMonthPickerDialog(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    // TODO 문자열 포맷
                     Picker(
                         items = years,
                         onValueChange = { year = it },
                         startIndex = years.indexOf(year).coerceAtLeast(0),
-                        label = { yearFormat.replace("%d", it.toString()) },
+                        label = { yearFormat.replace($$"%1$d", it.toString()) },
                         textAlign = TextAlign.End,
                         modifier = Modifier.weight(1f),
                     )
@@ -131,7 +130,7 @@ fun YearMonthPickerDialog(
                         items = months,
                         onValueChange = { month = it },
                         startIndex = months.indexOf(month).coerceAtLeast(0),
-                        label = { monthFormat.replace("%d", it.toString()) },
+                        label = { monthFormat.replace($$"%1$d", it.toString()) },
                         textAlign = TextAlign.Start,
                         modifier = Modifier.weight(1f),
                     )

@@ -40,6 +40,7 @@ import com.yagubogu.ui.theme.PretendardSemiBold
 import com.yagubogu.ui.theme.PretendardSemiBold20
 import com.yagubogu.ui.theme.Primary600
 import com.yagubogu.ui.theme.Primary700
+import com.yagubogu.ui.util.formatOneDecimal
 import com.yagubogu.ui.util.noRippleClickable
 import com.yagubogu.ui.util.yyyyMMddFormatter
 import kotlinx.datetime.format
@@ -291,7 +292,7 @@ private fun VictoryFairyStatsRow(
             title = stringResource(Res.string.profile_victory_fairy_score),
             value =
                 if (memberProfile.victoryFairyScore != null) {
-                    stringResource(Res.string.all_score_first_float, memberProfile.victoryFairyScore)
+                    stringResource(Res.string.all_score_first_float, memberProfile.victoryFairyScore.formatOneDecimal())
                 } else {
                     null
                 },
@@ -328,7 +329,7 @@ private fun CheckInStatsRow(
             title = stringResource(Res.string.profile_winning_percentage),
             value =
                 if (memberProfile.checkInWinRate != null) {
-                    stringResource(Res.string.all_win_rate, memberProfile.checkInWinRate)
+                    stringResource(Res.string.all_win_rate, memberProfile.checkInWinRate.formatOneDecimal())
                 } else {
                     null
                 },

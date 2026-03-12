@@ -39,6 +39,7 @@ import com.yagubogu.ui.theme.PretendardRegular12
 import com.yagubogu.ui.theme.Primary500
 import com.yagubogu.ui.theme.Primary700
 import com.yagubogu.ui.theme.White
+import com.yagubogu.ui.util.formatOneDecimal
 import com.yagubogu.ui.util.yyyyMMddFormatter
 import kotlinx.datetime.format
 import yagubogu.composeapp.generated.resources.badge_achieved_date
@@ -178,7 +179,7 @@ private fun UnacquiredBadgeContent(
         text =
             stringResource(
                 Res.string.badge_progress_rate,
-                badgeInfo.progressRate,
+                badgeInfo.progressRate.formatOneDecimal(),
             ),
         style = PretendardRegular12,
         color = Gray500,

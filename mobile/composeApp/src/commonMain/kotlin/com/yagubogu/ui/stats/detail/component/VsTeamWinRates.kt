@@ -30,6 +30,7 @@ import com.yagubogu.ui.theme.PretendardMedium12
 import com.yagubogu.ui.theme.PretendardRegular16
 import com.yagubogu.ui.theme.PretendardSemiBold
 import com.yagubogu.ui.theme.White
+import com.yagubogu.ui.util.formatOneDecimal
 import com.yagubogu.ui.util.noRippleClickable
 import yagubogu.composeapp.generated.resources.all_win_rate
 import yagubogu.composeapp.generated.resources.stats_vs_team_stats
@@ -113,7 +114,7 @@ private fun VsTeamStatItem(
                 color = Gray400,
             )
         }
-        Text(text = stringResource(Res.string.all_win_rate, vsTeamStatItem.winningPercentage))
+        Text(text = stringResource(Res.string.all_win_rate, vsTeamStatItem.winningPercentage.formatOneDecimal()))
     }
 }
 

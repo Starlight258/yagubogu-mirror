@@ -29,6 +29,7 @@ import com.yagubogu.domain.model.Team
 import com.yagubogu.ui.theme.Gray050
 import com.yagubogu.ui.theme.PretendardMedium16
 import com.yagubogu.ui.util.emoji
+import com.yagubogu.ui.util.formatWithComma
 import com.yagubogu.ui.util.noRippleClickable
 import com.yagubogu.ui.util.shimmerIf
 import yagubogu.composeapp.generated.resources.livetalk_like_count_message
@@ -55,7 +56,7 @@ fun LivetalkChatCheeringBar(
             stringResource(
                 Res.string.livetalk_like_count_message,
                 team.shortname,
-                cheeringCount ?: 0L,
+                (cheeringCount ?: 0L).formatWithComma(),
             )
 
         Box(

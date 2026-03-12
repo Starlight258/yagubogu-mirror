@@ -40,6 +40,7 @@ import com.yagubogu.ui.theme.Silver
 import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.theme.dpToSp
 import com.yagubogu.ui.util.BalloonTooltip
+import com.yagubogu.ui.util.formatOneDecimal
 import com.yagubogu.ui.util.noRippleClickable
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
@@ -188,7 +189,7 @@ private fun VictoryFairyRankingItem(
         }
 
         Text(
-            text = stringResource(Res.string.home_victory_fairy_score_format, item.score),
+            text = stringResource(Res.string.home_victory_fairy_score_format, item.score.formatOneDecimal()),
             style = PretendardRegular16,
         )
     }

@@ -56,6 +56,8 @@ import com.yagubogu.ui.theme.PretendardRegular
 import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.theme.dpToSp
 import com.yagubogu.ui.util.color
+import com.yagubogu.ui.util.formatOneDecimal
+import com.yagubogu.ui.util.zeroPad
 import com.yagubogu.ui.util.BalloonTooltip
 import com.yagubogu.ui.util.noRippleClickable
 import org.jetbrains.compose.resources.painterResource
@@ -123,8 +125,8 @@ fun StadiumFanRate(
                     text =
                         stringResource(
                             Res.string.home_stadium_stats_refresh_time,
-                            uiModel.refreshTime.hour,
-                            uiModel.refreshTime.minute,
+                            uiModel.refreshTime.hour.zeroPad(2),
+                            uiModel.refreshTime.minute.zeroPad(2),
                         ),
                     style = PretendardRegular.copy(fontSize = 14.sp, color = Gray400),
                 )
@@ -227,7 +229,7 @@ private fun StadiumFanRateItem(
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = stringResource(Res.string.all_win_rate, item.awayTeamPercentage),
+                        text = stringResource(Res.string.all_win_rate, item.awayTeamPercentage.formatOneDecimal()),
                         style = PretendardMedium.copy(fontSize = 16.dpToSp, color = White),
                     )
                 }
@@ -249,7 +251,7 @@ private fun StadiumFanRateItem(
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = stringResource(Res.string.all_win_rate, item.homeTeamPercentage),
+                        text = stringResource(Res.string.all_win_rate, item.homeTeamPercentage.formatOneDecimal()),
                         style = PretendardMedium.copy(fontSize = 16.dpToSp, color = White),
                     )
                 }
