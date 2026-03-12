@@ -8,8 +8,6 @@ import java.io.FileInputStream
 import java.util.Properties
 
 plugins {
-    kotlin("native.cocoapods")
-
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.android.application)
     alias(libs.plugins.composeMultiplatform)
@@ -87,22 +85,16 @@ kotlin {
         optIn.add("kotlin.time.ExperimentalTime")
     }
 
-    iosArm64()
-    iosSimulatorArm64()
-
-    cocoapods {
-        version = "1.0"
-        summary = "YaguBogu KMP Shared Module"
-        homepage = "https://github.com/woowacourse-teams/2025-yagu-bogu"
-        ios.deploymentTarget = "16.0"
-
-        framework {
+    iosArm64 {
+        binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
         }
-
-        pod("GoogleSignIn") {
-            version = "~> 8.0"
+    }
+    iosSimulatorArm64 {
+        binaries.framework {
+            baseName = "ComposeApp"
+            isStatic = true
         }
     }
 
