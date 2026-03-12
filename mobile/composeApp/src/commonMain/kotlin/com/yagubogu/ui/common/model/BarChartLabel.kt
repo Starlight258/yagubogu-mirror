@@ -1,5 +1,6 @@
 package com.yagubogu.ui.common.model
 
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -13,17 +14,19 @@ data class BarChartLabel(
     val textStyle: TextStyle,
 ) {
     companion object {
-        val DefaultBarChartTitleLabel =
-            BarChartLabel(
-                value = "Title",
-                gap = 20.dp,
-                textStyle = PretendardMedium.copy(fontSize = 14.sp),
-            )
-        val DefaultBarChartDataLabel =
-            BarChartLabel(
-                value = "Data",
-                gap = 8.dp,
-                textStyle = PretendardMedium12,
-            )
+        val DefaultBarChartTitleLabel
+            @Composable get() =
+                BarChartLabel(
+                    value = "Title",
+                    gap = 20.dp,
+                    textStyle = PretendardMedium.copy(fontSize = 14.sp),
+                )
+        val DefaultBarChartDataLabel
+            @Composable get() =
+                BarChartLabel(
+                    value = "Data",
+                    gap = 8.dp,
+                    textStyle = PretendardMedium12,
+                )
     }
 }
