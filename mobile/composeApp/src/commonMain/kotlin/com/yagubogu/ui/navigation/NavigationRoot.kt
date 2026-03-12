@@ -79,16 +79,19 @@ fun NavigationRoot(
                         onFavoriteTeamEditClick = { rootNavigator.navigate(Route.FavoriteTeam) },
                         onLogout = {
                             mainNavigator.navigate(BottomNavKey.Home)
+                            settingNavigator.clearStack()
                             rootNavigator.clearStack()
                             rootNavigator.navigate(Route.Login)
                         },
                         onDeleteAccountCancel = {
                             mainNavigator.navigate(BottomNavKey.Home)
+                            settingNavigator.clearStack()
                             rootNavigator.clearStack()
                             rootNavigator.navigate(Route.Main)
                         },
                         onDeleteAccount = {
                             mainNavigator.navigate(BottomNavKey.Home)
+                            settingNavigator.clearStack()
                             rootNavigator.clearStack()
                             rootNavigator.navigate(Route.Login)
                         },
@@ -120,7 +123,10 @@ fun NavigationRoot(
             NavDisplay(
                 modifier = modifier.fillMaxSize(),
                 entries = rootNavigator.state.toEntries(entryProvider),
-                onBack = { rootNavigator.goBack() },
+                onBack = {
+                    if (rootNavigator.currentRoute is Route.FavoriteTeam) return@NavDisplay
+                    rootNavigator.goBack()
+                },
             )
 
             SnackbarHost(

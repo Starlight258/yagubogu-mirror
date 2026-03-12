@@ -40,7 +40,7 @@ buildkonfig {
 
         val fixedDate = gradleLocalProperties(rootDir, providers).getProperty("DEBUG_FIXED_DATE")
         if (fixedDate != null) {
-            buildConfigField(STRING, "DEBUG_FIXED_DATE", "\"$fixedDate\"")
+            buildConfigField(STRING, "DEBUG_FIXED_DATE", fixedDate)
         } else {
             buildConfigField(STRING, "DEBUG_FIXED_DATE", "null")
         }
@@ -122,11 +122,6 @@ kotlin {
             // Ktor
             implementation(libs.ktor.client.okhttp)
 
-            // Navigation3
-            implementation(libs.androidx.navigation3.ui)
-            implementation(libs.androidx.navigation3.runtime)
-            implementation(libs.androidx.lifecycle.viewmodel.navigation3)
-
             // Play In-App Update
             implementation(libs.app.update)
             implementation(libs.app.update.ktx)
@@ -185,6 +180,10 @@ kotlin {
             implementation(libs.koin.compose.viewmodel)
             implementation(libs.koin.compose.navigation3)
 
+            // Navigation3
+            implementation(libs.jetbrains.navigation3.ui)
+            implementation(libs.jetbrains.lifecycle.viewmodelNavigation3)
+
             // Image Loading
             implementation(libs.coil.compose)
             implementation(libs.coil.network.ktor3)
@@ -211,43 +210,32 @@ kotlin {
 
 android {
     namespace = "com.yagubogu"
-    compileSdk =
-        libs.versions.android.compileSdk
-            .get()
-            .toInt()
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
         applicationId = "com.yagubogu"
-        minSdk =
-            libs.versions.android.minSdk
-                .get()
-                .toInt()
-        targetSdk =
-            libs.versions.android.targetSdk
-                .get()
-                .toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+        targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 2_02_01
         versionName = "2.2.1"
 
         manifestPlaceholders["appName"] = "@string/app_name"
     }
     val signingFile = rootProject.file("keystore.properties")
-    val releaseSigningConfig: SigningConfig? =
-        if (signingFile.exists()) {
-            val keystoreProperties =
-                Properties().apply {
-                    load(FileInputStream(signingFile))
-                }
-
-            signingConfigs.create("release") {
-                storeFile = file("yagubogu-keystore")
-                keyAlias = "${keystoreProperties["KEY_ALIAS"]}"
-                keyPassword = "${keystoreProperties["KEY_PASSWORD"]}"
-                storePassword = "${keystoreProperties["KEYSTORE_PASSWORD"]}"
-            }
-        } else {
-            null
+    val releaseSigningConfig: SigningConfig? = if (signingFile.exists()) {
+        val keystoreProperties = Properties().apply {
+            load(FileInputStream(signingFile))
         }
+
+        signingConfigs.create("release") {
+            storeFile = file("yagubogu-keystore")
+            keyAlias = "${keystoreProperties["KEY_ALIAS"]}"
+            keyPassword = "${keystoreProperties["KEY_PASSWORD"]}"
+            storePassword = "${keystoreProperties["KEYSTORE_PASSWORD"]}"
+        }
+    } else {
+        null
+    }
 
     packaging {
         resources {
