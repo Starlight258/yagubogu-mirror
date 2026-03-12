@@ -12,7 +12,7 @@ import platform.Foundation.NSURL
 import platform.Foundation.dataWithContentsOfURL
 import platform.posix.memcpy
 
-@ExperimentalForeignApi
+@OptIn(ExperimentalForeignApi::class)
 class IosThirdPartyRemoteDataSource(
     private val thirdPartyApiService: ThirdPartyApiService,
 ) : ThirdPartyDataSource {
