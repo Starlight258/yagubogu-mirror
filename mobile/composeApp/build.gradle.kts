@@ -151,6 +151,9 @@ kotlin {
         }
 
         commonMain.dependencies {
+            // AndroidX
+            implementation(libs.androidx.datastore.preferences)
+
             // Compose
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)

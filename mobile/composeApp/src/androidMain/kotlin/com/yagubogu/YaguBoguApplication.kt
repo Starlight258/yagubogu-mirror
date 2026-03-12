@@ -13,6 +13,7 @@ import com.yagubogu.analytics.FirebaseAnalyticsLogger
 import com.yagubogu.di.authModule
 import com.yagubogu.di.commonModule
 import com.yagubogu.di.datasourceModule
+import com.yagubogu.di.localModule
 import com.yagubogu.di.networkModule
 import com.yagubogu.di.repositoryModule
 import com.yagubogu.di.serviceModule
@@ -62,6 +63,7 @@ class YaguBoguApplication : Application() {
                 serviceModule,
                 timeModule,
                 viewModelModule,
+                localModule,
             )
         }
     }
