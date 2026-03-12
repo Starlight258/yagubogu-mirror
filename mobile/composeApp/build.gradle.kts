@@ -8,6 +8,8 @@ import java.io.FileInputStream
 import java.util.Properties
 
 plugins {
+    kotlin("native.cocoapods")
+
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.android.application)
     alias(libs.plugins.composeMultiplatform)
@@ -37,6 +39,11 @@ buildkonfig {
             "WEB_CLIENT_ID",
             "${gradleLocalProperties(rootDir, providers).getProperty("WEB_CLIENT_ID")}",
         )
+        buildConfigField(
+            type = STRING,
+            "IOS_CLIENT_ID",
+            "${gradleLocalProperties(rootDir, providers).getProperty("IOS_CLIENT_ID")}",
+        )
 
         val fixedDate = gradleLocalProperties(rootDir, providers).getProperty("DEBUG_FIXED_DATE")
         if (fixedDate != null) {
@@ -59,6 +66,11 @@ buildkonfig {
             "WEB_CLIENT_ID",
             "${gradleLocalProperties(rootDir, providers).getProperty("WEB_CLIENT_ID")}",
         )
+        buildConfigField(
+            type = STRING,
+            "IOS_CLIENT_ID",
+            "${gradleLocalProperties(rootDir, providers).getProperty("IOS_CLIENT_ID")}",
+        )
 
         buildConfigField(BOOLEAN, "IS_DEBUG", "false")
     }
@@ -75,13 +87,22 @@ kotlin {
         optIn.add("kotlin.time.ExperimentalTime")
     }
 
-    listOf(
-        iosArm64(),
-        iosSimulatorArm64(),
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
+    iosArm64()
+    iosSimulatorArm64()
+
+    cocoapods {
+        version = "1.0"
+        summary = "YaguBogu KMP Shared Module"
+        homepage = "https://github.com/woowacourse-teams/2025-yagu-bogu"
+        ios.deploymentTarget = "16.0"
+
+        framework {
             baseName = "ComposeApp"
             isStatic = true
+        }
+
+        pod("GoogleSignIn") {
+            version = "~> 8.0"
         }
     }
 
@@ -144,6 +165,10 @@ kotlin {
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
+
+            // UI
+            implementation(libs.material)
+            implementation(libs.compressor)
         }
 
         iosMain.dependencies {
@@ -181,7 +206,6 @@ kotlin {
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
             implementation(libs.koin.compose.viewmodel)
-            implementation(libs.koin.compose.navigation3)
 
             // Navigation3
             implementation(libs.jetbrains.navigation3.ui)
@@ -191,10 +215,8 @@ kotlin {
             implementation(libs.coil.compose)
             implementation(libs.coil.network.ktor3)
             implementation(libs.imagepickerkmp)
-            implementation(libs.compressor)
 
             // UI Components
-            implementation(libs.material)
             implementation(libs.calendar.compose.multiplatform)
 
             // Logging
@@ -284,4 +306,8 @@ aboutLibraries {
         outputFile = file("src/commonMain/composeResources/files/aboutlibraries.json")
         prettyPrint = true
     }
+}
+
+ktorfit {
+    compilerPluginVersion.set("2.3.3")
 }
