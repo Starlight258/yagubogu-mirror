@@ -1,0 +1,78 @@
+name: YaguBogu KMP CI
+
+on:
+  push:
+    branches: [ "dev-an" ]
+  pull_request:
+    branches: [ "dev-an" ]
+  workflow_dispatch:
+
+env:
+  GOOGLE_SERVICES_JSON_DEBUG: ${{ secrets.GOOGLE_SERVICES_JSON_DEBUG }}
+  IOS_CONFIG_XCCONFIG: ${{ secrets.IOS_CONFIG_XCCONFIG }}
+
+jobs:
+  android-build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Create google-services.json
+        run: |
+          mkdir -p ./composeApp
+          echo "$GOOGLE_SERVICES_JSON_DEBUG" | base64 --decode > ./composeApp/google-services.json
+
+      - name: Android Build & Lint
+        run: |
+          ./gradlew :composeApp:assembleDebug
+          ./gradlew ktlintCheck
+
+  ios-build:
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Restore iOS Config.xcconfig
+        run: |
+          mkdir -p iosApp/Configuration
+          echo "$IOS_CONFIG_XCCONFIG" | base64 --decode > iosApp/Configuration/Config.xcconfig
+
+      - name: Resolve Xcode Package Dependencies
+        run: |
+          xcodebuild -resolvePackageDependencies -project iosApp/iosApp.xcodeproj -scheme iosApp
+
+      - name: iOS Build Test
+        run: |
+          ./gradlew :composeApp:iosSimulatorArm64Test
+
+      - name: Xcode Project Build Check
+        run: |
+          xcodebuild build \
+            -project iosApp/iosApp.xcodeproj \
+            -scheme iosApp \
+            -sdk iphonesimulator \
+            -destination 'platform=iOS Simulator,name=iPhone 16,OS=latest'
