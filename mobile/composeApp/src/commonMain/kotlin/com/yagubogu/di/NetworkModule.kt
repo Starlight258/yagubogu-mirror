@@ -16,8 +16,8 @@ import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
+import com.yagubogu.data.network.PrettyHttpLogger
 import io.ktor.client.plugins.logging.LogLevel
-import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.sse.SSE
 import io.ktor.client.request.HttpRequestBuilder
@@ -29,7 +29,6 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.Json
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
-import co.touchlab.kermit.Logger as KermitLogger
 
 expect fun createHttpClient(block: HttpClientConfig<*>.() -> Unit): HttpClient
 
@@ -130,11 +129,7 @@ private fun HttpClientConfig<*>.configureBase(json: Json) {
 
     install(Logging) {
         level = if (BuildKonfig.IS_DEBUG) LogLevel.ALL else LogLevel.NONE
-        logger = object : Logger {
-            override fun log(message: String) {
-                KermitLogger.withTag(tag = "Ktor").i { message }
-            }
-        }
+        logger = PrettyHttpLogger
     }
 }
 
