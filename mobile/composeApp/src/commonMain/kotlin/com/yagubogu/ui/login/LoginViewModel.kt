@@ -9,6 +9,7 @@ import com.yagubogu.data.repository.member.MemberRepository
 import com.yagubogu.ui.login.auth.GoogleCredentialManager
 import com.yagubogu.ui.login.auth.GoogleCredentialResult
 import com.yagubogu.ui.login.model.LoginResult
+import com.yagubogu.ui.login.model.OAuthProvider
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -33,7 +34,7 @@ class LoginViewModel(
                     is GoogleCredentialResult.Success -> {
                         val idToken: String = googleCredentialResult.idToken
                         authRepository
-                            .login(idToken)
+                            .login(idToken = idToken, provider = OAuthProvider.GOOGLE.name)
                             .fold(
                                 onSuccess = { result: LoginResultResponse ->
                                     val isNewUser: Boolean =
