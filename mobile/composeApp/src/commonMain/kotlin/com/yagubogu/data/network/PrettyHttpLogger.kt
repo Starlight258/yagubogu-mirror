@@ -10,17 +10,8 @@ internal object PrettyHttpLogger : KtorLogger {
 
     private val prettyJson = Json { prettyPrint = true }
 
-    private val authHeaderRegex = Regex(
-        pattern = """(Authorization:\s*)(\S+)""",
-        option = RegexOption.IGNORE_CASE,
-    )
-
     override fun log(message: String) {
-        val sanitized = authHeaderRegex.replace(message) { result ->
-            "${result.groupValues[1]}***"
-        }
-
-        val lines = sanitized.lines()
+        val lines = message.lines()
         val firstLine = lines.firstOrNull() ?: return
 
         val prefix = when {
