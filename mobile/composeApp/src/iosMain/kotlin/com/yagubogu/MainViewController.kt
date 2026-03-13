@@ -14,6 +14,7 @@ import com.yagubogu.di.repositoryModule
 import com.yagubogu.di.serviceModule
 import com.yagubogu.di.timeModule
 import com.yagubogu.di.viewModelModule
+import com.yagubogu.ui.login.GoogleSignInDelegate
 import com.yagubogu.ui.main.YaguBoguViewModel
 import com.yagubogu.ui.main.model.AutoLoginState
 import com.yagubogu.ui.navigation.YaguBoguRoute
@@ -22,12 +23,14 @@ import com.yagubogu.ui.theme.YaguBoguTheme
 import org.koin.compose.KoinApplication
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.dsl.koinConfiguration
+import org.koin.dsl.module
 
-fun MainViewController() = ComposeUIViewController {
+fun MainViewController(googleSignInDelegate: GoogleSignInDelegate) = ComposeUIViewController {
     KoinApplication(
         configuration = koinConfiguration(
             declaration = {
                 modules(
+                    module { single<GoogleSignInDelegate> { googleSignInDelegate } },
                     authModule,
                     commonModule,
                     datasourceModule,
