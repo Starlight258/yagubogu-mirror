@@ -30,7 +30,7 @@ import co.touchlab.kermit.Logger
 import com.yagubogu.analytics.AnalyticsLogger
 import com.yagubogu.ui.common.platform.PlatformType
 import com.yagubogu.ui.common.platform.currentPlatform
-import com.yagubogu.ui.login.auth.GoogleCredentialManager
+import com.yagubogu.ui.login.auth.OAuthCredentialManager
 import com.yagubogu.ui.login.model.LoginResult
 import com.yagubogu.ui.login.model.OAuthProvider
 import com.yagubogu.ui.theme.Dimming025
@@ -45,8 +45,10 @@ import com.yagubogu.ui.util.noRippleClickable
 import kotlinx.coroutines.flow.SharedFlow
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import com.yagubogu.di.Qualifier
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.qualifier.named
 import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.app_name
 import yagubogu.composeapp.generated.resources.ic_apple_logo
@@ -64,7 +66,8 @@ fun LoginScreen(
     onSignIn: () -> Unit,
     onSignUp: () -> Unit,
     modifier: Modifier = Modifier,
-    googleCredentialManager: GoogleCredentialManager = koinInject(),
+    googleCredentialManager: OAuthCredentialManager = koinInject(named<Qualifier.Google>()),
+    appleCredentialManager: OAuthCredentialManager = koinInject(named<Qualifier.Apple>()),
     viewModel: LoginViewModel = koinViewModel(),
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -72,7 +75,7 @@ fun LoginScreen(
     Box(modifier = modifier) {
         LoginScreen(
             onGoogleLoginClick = { viewModel.signInWithGoogle(googleCredentialManager) },
-            onAppleLoginClick = {},
+            onAppleLoginClick = { viewModel.signInWithApple(appleCredentialManager) },
         )
         SnackbarHost(
             hostState = snackbarHostState,

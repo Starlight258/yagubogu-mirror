@@ -14,8 +14,8 @@ import co.touchlab.kermit.Logger
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
-import com.yagubogu.ui.login.auth.GoogleCredentialManager
-import com.yagubogu.ui.login.auth.GoogleCredentialResult
+import com.yagubogu.ui.login.auth.OAuthCredentialManager
+import com.yagubogu.ui.login.auth.OAuthCredentialResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -31,7 +31,7 @@ class AndroidGoogleCredentialManager(
     private val context: Context,
     serverClientId: String,
     nonce: String,
-) : GoogleCredentialManager {
+) : OAuthCredentialManager {
     private val credentialManager = CredentialManager.create(context)
 
     /**
@@ -66,20 +66,18 @@ class AndroidGoogleCredentialManager(
     private val credentialRequestWithSignIn: GetCredentialRequest =
         buildCredentialRequest(signInWithGoogleOption)
 
-    override suspend fun getGoogleCredentialResult(): GoogleCredentialResult {
+    override suspend fun getCredentialResult(): OAuthCredentialResult {
         // 기존 로그인된 계정 우선 요청 (silent sign-in)
         val googleIdOptionResponseResult: Result<GetCredentialResponse> =
             getCredentialResponseResult(credentialRequestWithGoogleIdOption)
-        val googleIdOptionCredentialResult: GoogleCredentialResult =
-            handleGoogleCredentialResponseResult(googleIdOptionResponseResult)
+        val googleIdOptionCredentialResult: OAuthCredentialResult =
+            handleCredentialResponseResult(googleIdOptionResponseResult)
 
         // 실패 시 명시적 로그인 UI 요청 (explicit sign-in)
-        return if (googleIdOptionCredentialResult is GoogleCredentialResult.Suspending) {
+        return if (googleIdOptionCredentialResult is OAuthCredentialResult.Suspending) {
             val signInRequestResult: Result<GetCredentialResponse> =
                 getCredentialResponseResult(credentialRequestWithSignIn)
-            val signInCredentialResult: GoogleCredentialResult =
-                handleGoogleCredentialResponseResult(signInRequestResult)
-            signInCredentialResult
+            handleCredentialResponseResult(signInRequestResult)
         } else {
             googleIdOptionCredentialResult
         }
@@ -100,10 +98,10 @@ class AndroidGoogleCredentialManager(
      * - 성공 시: Credential 파싱 시도
      * - 실패 시: GetCredentialException 발생 시, Suspending 전달
      */
-    private fun handleGoogleCredentialResponseResult(result: Result<GetCredentialResponse>): GoogleCredentialResult =
+    private fun handleCredentialResponseResult(result: Result<GetCredentialResponse>): OAuthCredentialResult =
         result.fold(
-            onSuccess = { handleGoogleCredentialResponse(it) },
-            onFailure = { handleGoogleCredentialException(it) },
+            onSuccess = { handleCredentialResponse(it) },
+            onFailure = { handleCredentialException(it) },
         )
 
     /**
@@ -111,40 +109,40 @@ class AndroidGoogleCredentialManager(
      * - 유효한 CustomCredential 타입인지 확인
      * - GoogleIdTokenCredential 생성 시도
      */
-    private fun handleGoogleCredentialResponse(response: GetCredentialResponse): GoogleCredentialResult {
+    private fun handleCredentialResponse(response: GetCredentialResponse): OAuthCredentialResult {
         val credential = response.credential
 
         // Google ID 토큰이 담긴 CustomCredential인지 확인
         if (credential !is CustomCredential ||
             credential.type != GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
         ) {
-            return GoogleCredentialResult.Failure(NoCredentialException())
+            return OAuthCredentialResult.Failure(NoCredentialException())
         }
 
         // ID 토큰 파싱 시도
         return try {
             val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
-            GoogleCredentialResult.Success(googleIdTokenCredential.idToken)
+            OAuthCredentialResult.Success(googleIdTokenCredential.idToken)
         } catch (e: Throwable) {
             Logger.withTag("GoogleCredentialManager").d { e.toString() }
-            handleGoogleCredentialException(e)
+            handleCredentialException(e)
         }
     }
 
     /**
      * Credential 요청 중 발생한 예외 처리
      */
-    private fun handleGoogleCredentialException(exception: Throwable): GoogleCredentialResult {
+    private fun handleCredentialException(exception: Throwable): OAuthCredentialResult {
         Logger.withTag("GoogleCredentialManager").d { exception.toString() }
 
         return when (exception) {
             // 사용자가 로그인 UI를 취소한 경우 (진행 중단)
-            is GetCredentialCancellationException -> GoogleCredentialResult.Cancel
+            is GetCredentialCancellationException -> OAuthCredentialResult.Cancel
 
             // 로그인 정보가 없는 경우 (계속 진행)
-            is GetCredentialException -> GoogleCredentialResult.Suspending
+            is GetCredentialException -> OAuthCredentialResult.Suspending
 
-            else -> GoogleCredentialResult.Failure(exception)
+            else -> OAuthCredentialResult.Failure(exception)
         }
     }
 

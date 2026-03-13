@@ -8,4 +8,8 @@ sealed interface Qualifier {
     data object StreamClient : Qualifier
 
     data object TokenRefreshMutex : Qualifier
+
+    data object Google : Qualifier
+
+    data object Apple : Qualifier
 }
