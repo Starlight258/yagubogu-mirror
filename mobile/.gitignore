@@ -17,3 +17,9 @@ captures
 !*.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
 node_modules/
+app/release/
+iosApp/Pods/
+iosApp/Configuration/Config.xcconfig
+**/google-services.json
+app/yagubogu-keystore
+keystore.properties
