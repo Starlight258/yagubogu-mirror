@@ -1,5 +1,8 @@
 package com.yagubogu.ui.navigation
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -16,6 +19,7 @@ import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
+import androidx.navigationevent.NavigationEvent
 import com.yagubogu.ui.badge.component.BadgeScreen
 import com.yagubogu.ui.favorite.FavoriteTeamScreen
 import com.yagubogu.ui.livetalk.chat.LivetalkChatScreen
@@ -124,6 +128,44 @@ fun NavigationRoot(
                 modifier = modifier.fillMaxSize(),
                 entries = rootNavigator.state.toEntries(entryProvider),
                 onBack = { rootNavigator.goBack() },
+                transitionSpec = {
+                    slideIntoContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                        animationSpec = tween(TRANSITION_DURATION_MILLISECOND),
+                    ) togetherWith
+                            slideOutOfContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                                targetOffset = { it / 4},
+                                animationSpec = tween(TRANSITION_DURATION_MILLISECOND),
+                            )
+                },
+                popTransitionSpec = {
+                    slideIntoContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                        initialOffset = { it / 4 },
+                        animationSpec = tween(TRANSITION_DURATION_MILLISECOND),
+                    ) togetherWith
+                            slideOutOfContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                                animationSpec = tween(TRANSITION_DURATION_MILLISECOND),
+                            )
+                },
+                predictivePopTransitionSpec = {edge ->
+                    val towards = if (edge == NavigationEvent.EDGE_LEFT) {
+                        AnimatedContentTransitionScope.SlideDirection.Right
+                    } else {
+                        AnimatedContentTransitionScope.SlideDirection.Left
+                    }
+                    slideIntoContainer(
+                        towards = towards,
+                        initialOffset = { it / 4 },
+                        animationSpec = tween(TRANSITION_DURATION_MILLISECOND),
+                    ) togetherWith
+                            slideOutOfContainer(
+                                towards = towards,
+                                animationSpec = tween(TRANSITION_DURATION_MILLISECOND),
+                            )
+                },
             )
 
             SnackbarHost(
@@ -138,3 +180,5 @@ fun NavigationRoot(
         }
     }
 }
+
+private const val TRANSITION_DURATION_MILLISECOND = 500
