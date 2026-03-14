@@ -37,8 +37,8 @@ class StatsViewModel(
     private val _year = MutableStateFlow(LocalDate.now().year)
     val year: StateFlow<Int> = _year.asStateFlow()
 
-    private val _statsMyUiModel = MutableStateFlow(StatsMyUiModel())
-    val statsMyUiModel: StateFlow<StatsMyUiModel> = _statsMyUiModel.asStateFlow()
+    private val _statsMyUiModel: MutableStateFlow<StatsMyUiModel?> = MutableStateFlow(null)
+    val statsMyUiModel: StateFlow<StatsMyUiModel?> = _statsMyUiModel.asStateFlow()
 
     private val _averageStats = MutableStateFlow(AverageStats())
     val averageStats: StateFlow<AverageStats> = _averageStats.asStateFlow()

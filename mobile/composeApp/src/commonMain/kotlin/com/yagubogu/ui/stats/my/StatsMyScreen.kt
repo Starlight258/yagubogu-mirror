@@ -22,6 +22,7 @@ import com.yagubogu.ui.stats.my.component.WinRates
 import com.yagubogu.ui.stats.my.model.AverageStats
 import com.yagubogu.ui.stats.my.model.StatsMyUiModel
 import com.yagubogu.ui.theme.Gray050
+import com.yagubogu.ui.util.shimmerLoading
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import org.koin.compose.viewmodel.koinViewModel
@@ -33,7 +34,7 @@ fun StatsMyScreen(
     modifier: Modifier = Modifier,
     viewModel: StatsViewModel = koinViewModel(),
 ) {
-    val statsMyUiModel: StatsMyUiModel by viewModel.statsMyUiModel.collectAsStateWithLifecycle()
+    val statsMyUiModel: StatsMyUiModel? by viewModel.statsMyUiModel.collectAsStateWithLifecycle()
     val averageStats: AverageStats by viewModel.averageStats.collectAsStateWithLifecycle()
 
     LaunchedEffect(year) {
@@ -50,7 +51,7 @@ fun StatsMyScreen(
 
 @Composable
 private fun StatsMyScreen(
-    statsMyUiModel: StatsMyUiModel,
+    statsMyUiModel: StatsMyUiModel?,
     averageStats: AverageStats,
     modifier: Modifier = Modifier,
     scrollToTopEvent: SharedFlow<Unit> = MutableSharedFlow(),

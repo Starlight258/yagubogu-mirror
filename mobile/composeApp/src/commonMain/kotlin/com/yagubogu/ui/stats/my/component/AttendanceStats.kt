@@ -56,10 +56,10 @@ fun AttendanceStats(
         ) {
             StatItem(
                 title = stringResource(Res.string.stats_gain_score),
-                value = stringResource(
+                value = StatItemValue.Data(stringResource(
                     Res.string.stats_average_score,
                     averageStats.averageRuns.formatOneDecimal(),
-                ),
+                )),
                 emoji = stringResource(Res.string.stats_gain_score_emoji),
                 modifier =
                     Modifier
@@ -73,10 +73,10 @@ fun AttendanceStats(
             )
             StatItem(
                 title = stringResource(Res.string.stats_loss_score),
-                value = stringResource(
+                value = StatItemValue.Data(stringResource(
                     Res.string.stats_average_score,
                     averageStats.concededRuns.formatOneDecimal()
-                ),
+                )),
                 emoji = stringResource(Res.string.stats_loss_score_emoji),
                 modifier =
                     Modifier
@@ -91,10 +91,10 @@ fun AttendanceStats(
         ) {
             StatItem(
                 title = stringResource(Res.string.stats_hit),
-                value = stringResource(
+                value = StatItemValue.Data(stringResource(
                     Res.string.stats_average_count,
                     averageStats.averageHits.formatOneDecimal()
-                ),
+                )),
                 modifier = Modifier.weight(1f),
             )
             VerticalDivider(
@@ -104,10 +104,10 @@ fun AttendanceStats(
             )
             StatItem(
                 title = stringResource(Res.string.stats_hit_allowed),
-                value = stringResource(
+                value = StatItemValue.Data(stringResource(
                     Res.string.stats_average_count,
                     averageStats.concededHits.formatOneDecimal()
-                ),
+                )),
                 modifier = Modifier.weight(1f),
             )
             VerticalDivider(
@@ -117,10 +117,10 @@ fun AttendanceStats(
             )
             StatItem(
                 title = stringResource(Res.string.stats_error),
-                value = stringResource(
+                value = StatItemValue.Data(stringResource(
                     Res.string.stats_average_count,
                     averageStats.averageErrors.formatOneDecimal()
-                ),
+                )),
                 modifier = Modifier.weight(1f),
             )
         }

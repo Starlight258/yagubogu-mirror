@@ -17,6 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.yagubogu.analytics.AnalyticsLogger
 import com.yagubogu.ui.stats.my.model.StatsMyUiModel
+import com.yagubogu.ui.stats.my.model.toStatItemValue
 import com.yagubogu.ui.theme.Gray300
 import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.util.BalloonTooltip
@@ -31,7 +32,7 @@ import yagubogu.composeapp.generated.resources.stats_my_team_emoji
 
 @Composable
 fun MyStats(
-    statsMyUiModel: StatsMyUiModel,
+    statsMyUiModel: StatsMyUiModel?,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -45,7 +46,7 @@ fun MyStats(
     ) {
         StatItem(
             title = stringResource(Res.string.stats_my_team),
-            value = statsMyUiModel.myTeam,
+            value = statsMyUiModel.toStatItemValue({it.myTeam}),
             emoji = stringResource(Res.string.stats_my_team_emoji),
             modifier = Modifier.weight(1f),
         )
@@ -64,7 +65,7 @@ fun MyStats(
             ) {
                 StatItem(
                     title = stringResource(Res.string.stats_my_lucky_stadium),
-                    value = statsMyUiModel.luckyStadium,
+                    value = statsMyUiModel.toStatItemValue({it.luckyStadium}),
                     emoji = stringResource(Res.string.stats_my_lucky_stadium_emoji),
                     modifier =
                         Modifier

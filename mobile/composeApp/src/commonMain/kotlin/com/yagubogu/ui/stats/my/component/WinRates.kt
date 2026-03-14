@@ -51,7 +51,7 @@ import kotlin.math.roundToInt
 
 @Composable
 fun WinRates(
-    statsMyUiModel: StatsMyUiModel,
+    statsMyUiModel: StatsMyUiModel?,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -85,8 +85,8 @@ fun WinRates(
                 )
             }
         }
-        WinRatePieChart(statsMyUiModel)
-        WinDrawLoseCounts(statsMyUiModel)
+//        WinRatePieChart(statsMyUiModel)
+//        WinDrawLoseCounts(statsMyUiModel)
     }
 }
 
