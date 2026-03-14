@@ -1,6 +1,5 @@
 package com.yagubogu.ui.navigation.model
 
-import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import co.touchlab.kermit.Logger
 
@@ -15,7 +14,7 @@ class Navigator(
     private val logger = Logger.withTag("Navigator")
 
     fun navigate(route: NavKey) {
-        if (route in state.backStacks.keys) {
+        if (route in state.topLevelRoutes) {
             // This is a top level route, just switch to it.
             state.topLevelRoute = route
         } else {
@@ -40,7 +39,7 @@ class Navigator(
     }
 
     private fun showBackStack() {
-        logger.d { "backStacks: ${state.backStacks.keys}" }
+        logger.d { "topLevelRoutes: ${state.topLevelRoutes}" }
         logger.d { "currentStack: ${state.currentStack.joinToString()}" }
     }
 }

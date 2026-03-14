@@ -55,6 +55,10 @@ class NavigationState(
     val backStacks: Map<NavKey, NavBackStack<NavKey>>,
 ) {
     var topLevelRoute: NavKey by topLevelRoute
+
+    val topLevelRoutes: Set<NavKey>
+        get() = backStacks.keys
+
     val stacksInUse: List<NavKey>
         get() = listOf(topLevelRoute)
 
