@@ -97,6 +97,8 @@ private fun WinRatePieChart(
     statsMyUiModel: StatsMyUiModel?,
     modifier: Modifier = Modifier,
 ) {
+    val pieChartSize = 200.dp
+
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier.fillMaxWidth(),
@@ -106,20 +108,30 @@ private fun WinRatePieChart(
             winRate = statsMyUiModel.toStatItemValue { it.winningPercentage.roundToInt() },
             totalCount = statsMyUiModel.toStatItemValue { it.totalCount }
         )
-//        AnimatedPieChart(
-//            modifier = Modifier.size(200.dp),
-//            items =
-//                listOf(
-//                    PieChartItemValue(
-//                        strokeColor = Primary500,
-//                        percentage = statsMyUiModel.winningPercentage,
-//                    ),
-//                    PieChartItemValue(
-//                        strokeColor = Gray300,
-//                        percentage = statsMyUiModel.etcPercentage,
-//                    ),
-//                ),
-//        )
+        when (statsMyUiModel) {
+            null -> {
+                Box(
+                    modifier = Modifier
+                        .size(pieChartSize)
+                )
+            }
+            else -> {
+                AnimatedPieChart(
+                    modifier = Modifier.size(pieChartSize),
+                    items =
+                        listOf(
+                            PieChartItemValue(
+                                strokeColor = Primary500,
+                                percentage = statsMyUiModel.winningPercentage,
+                            ),
+                            PieChartItemValue(
+                                strokeColor = Gray300,
+                                percentage = statsMyUiModel.etcPercentage,
+                            ),
+                        ),
+                )
+            }
+        }
     }
 }
 
