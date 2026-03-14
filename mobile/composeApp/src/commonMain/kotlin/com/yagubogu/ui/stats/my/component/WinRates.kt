@@ -139,7 +139,7 @@ private fun WinRatePieChart(
 
 @Composable
 private fun WinDrawLoseCounts(
-    statsMyUiModel: StatsMyUiModel,
+    statsMyUiModel: StatsMyUiModel?,
     modifier: Modifier = Modifier,
 ) {
     Row(modifier = modifier.padding(top = 10.dp)) {

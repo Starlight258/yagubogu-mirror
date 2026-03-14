@@ -13,7 +13,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.yagubogu.ui.stats.my.model.StatsMyUiModel
 import yagubogu.composeapp.generated.resources.Res
 import com.yagubogu.ui.theme.Gray500
 import com.yagubogu.ui.theme.PretendardRegular12
@@ -60,12 +59,6 @@ fun StatItem(
         Spacer(modifier = Modifier.height(4.dp))
         Text(text = title, style = PretendardRegular12, color = Gray500)
     }
-}
-
-sealed interface StatItemValue {
-    data object Loading : StatItemValue
-    data object NoData : StatItemValue
-    data class Data(val text: String) : StatItemValue
 }
 
 
