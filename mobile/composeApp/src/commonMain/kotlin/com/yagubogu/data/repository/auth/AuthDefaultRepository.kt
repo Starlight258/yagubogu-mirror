@@ -19,8 +19,8 @@ class AuthDefaultRepository(
         }
     }
 
-    override suspend fun login(idToken: String): Result<LoginResultResponse> =
-        authDataSource.login(idToken).map { loginResponse: LoginResponse ->
+    override suspend fun login(idToken: String, provider: String): Result<LoginResultResponse> =
+        authDataSource.login(idToken, provider).map { loginResponse: LoginResponse ->
             tokenManager.saveTokens(loginResponse.accessToken, loginResponse.refreshToken)
             when (loginResponse.isNew) {
                 true -> LoginResultResponse.SignUp
