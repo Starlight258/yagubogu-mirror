@@ -40,6 +40,7 @@ fun YaguBoguRoute(
                 setOf(
                     Route.Main,
                     Route.Login,
+                    Route.FavoriteTeam,
                 ),
             savedStateConfig = rootSavedStateConfig,
         )
