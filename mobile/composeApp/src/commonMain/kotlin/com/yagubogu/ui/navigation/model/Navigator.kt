@@ -34,10 +34,7 @@ class Navigator(
     fun canGoBack(): Boolean = currentRoute != state.topLevelRoute
 
     fun goBack() {
-        // If we're at the base of the current route, go back to the start route stack.
-        if (!canGoBack()) {
-            state.topLevelRoute = state.startRoute
-        } else {
+        if (canGoBack()) {
             currentStack.removeLastOrNull()
         }
         showBackStack()

@@ -101,8 +101,8 @@ fun NavigationRoot(
                     FavoriteTeamScreen(
                         onFavoriteTeamUpdate = {
                             mainNavigator.navigate(BottomNavKey.Home)
-                            rootNavigator.navigate(Route.Main)
                             rootNavigator.clearStack()
+                            rootNavigator.navigate(Route.Main)
                         },
                     )
                 }
@@ -123,10 +123,7 @@ fun NavigationRoot(
             NavDisplay(
                 modifier = modifier.fillMaxSize(),
                 entries = rootNavigator.state.toEntries(entryProvider),
-                onBack = {
-                    if (rootNavigator.currentRoute is Route.FavoriteTeam) return@NavDisplay
-                    rootNavigator.goBack()
-                },
+                onBack = { rootNavigator.goBack() },
             )
 
             SnackbarHost(
