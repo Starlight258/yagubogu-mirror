@@ -2,7 +2,6 @@ package com.yagubogu.ui.login
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,7 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -29,13 +28,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import co.touchlab.kermit.Logger
 import com.yagubogu.analytics.AnalyticsLogger
-import com.yagubogu.ui.login.auth.GoogleCredentialManager
+import com.yagubogu.ui.common.platform.PlatformType
+import com.yagubogu.ui.common.platform.currentPlatform
+import com.yagubogu.ui.login.auth.OAuthCredentialManager
 import com.yagubogu.ui.login.model.LoginResult
+import com.yagubogu.ui.login.model.OAuthProvider
 import com.yagubogu.ui.theme.Dimming025
 import com.yagubogu.ui.theme.Dimming050
 import com.yagubogu.ui.theme.EsamanruBold
 import com.yagubogu.ui.theme.EsamanruLight
-import com.yagubogu.ui.theme.Gray300
 import com.yagubogu.ui.theme.PretendardSemiBold
 import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.theme.dpToSp
@@ -44,13 +45,18 @@ import com.yagubogu.ui.util.noRippleClickable
 import kotlinx.coroutines.flow.SharedFlow
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import com.yagubogu.di.Qualifier
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.qualifier.named
 import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.app_name
+import yagubogu.composeapp.generated.resources.ic_apple_logo
 import yagubogu.composeapp.generated.resources.ic_google_g_logo
 import yagubogu.composeapp.generated.resources.img_login
 import yagubogu.composeapp.generated.resources.login_app_description
+import yagubogu.composeapp.generated.resources.login_apple_icon_description
+import yagubogu.composeapp.generated.resources.login_button_apple_account
 import yagubogu.composeapp.generated.resources.login_button_google_account
 import yagubogu.composeapp.generated.resources.login_failed_message
 import yagubogu.composeapp.generated.resources.login_google_icon_description
@@ -60,7 +66,8 @@ fun LoginScreen(
     onSignIn: () -> Unit,
     onSignUp: () -> Unit,
     modifier: Modifier = Modifier,
-    googleCredentialManager: GoogleCredentialManager = koinInject(),
+    googleCredentialManager: OAuthCredentialManager = koinInject(named<Qualifier.Google>()),
+    appleCredentialManager: OAuthCredentialManager = koinInject(named<Qualifier.Apple>()),
     viewModel: LoginViewModel = koinViewModel(),
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -68,6 +75,7 @@ fun LoginScreen(
     Box(modifier = modifier) {
         LoginScreen(
             onGoogleLoginClick = { viewModel.signInWithGoogle(googleCredentialManager) },
+            onAppleLoginClick = { viewModel.signInWithApple(appleCredentialManager) },
         )
         SnackbarHost(
             hostState = snackbarHostState,
@@ -87,6 +95,7 @@ fun LoginScreen(
 @Composable
 private fun LoginScreen(
     onGoogleLoginClick: () -> Unit,
+    onAppleLoginClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -127,10 +136,24 @@ private fun LoginScreen(
                 color = White,
             )
             Spacer(modifier = Modifier.weight(1f))
-            LoginButton(
-                onClick = onGoogleLoginClick,
+
+            Column(
                 modifier = Modifier.padding(horizontal = 20.dp),
-            )
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(20.dp),
+            ) {
+                LoginButton(
+                    provider = OAuthProvider.GOOGLE,
+                    onClick = onGoogleLoginClick,
+                )
+
+                if (currentPlatform == PlatformType.IOS) {
+                    LoginButton(
+                        provider = OAuthProvider.APPLE,
+                        onClick = onAppleLoginClick,
+                    )
+                }
+            }
             Spacer(modifier = Modifier.height(180.dp))
         }
     }
@@ -138,6 +161,7 @@ private fun LoginScreen(
 
 @Composable
 private fun LoginButton(
+    provider: OAuthProvider,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -145,8 +169,7 @@ private fun LoginButton(
         modifier =
             modifier
                 .fillMaxWidth()
-                .background(White, RoundedCornerShape(4.dp))
-                .border(1.dp, Gray300, RoundedCornerShape(4.dp))
+                .background(White, CircleShape)
                 .noRippleClickable { onClick() },
         contentAlignment = Alignment.Center,
     ) {
@@ -156,12 +179,27 @@ private fun LoginButton(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Image(
-                painter = painterResource(Res.drawable.ic_google_g_logo),
-                contentDescription = stringResource(Res.string.login_google_icon_description),
+                painter = painterResource(
+                    when (provider) {
+                        OAuthProvider.GOOGLE -> Res.drawable.ic_google_g_logo
+                        OAuthProvider.APPLE -> Res.drawable.ic_apple_logo
+                    }
+                ),
+                contentDescription = stringResource(
+                    when (provider) {
+                        OAuthProvider.GOOGLE -> Res.string.login_google_icon_description
+                        OAuthProvider.APPLE -> Res.string.login_apple_icon_description
+                    }
+                ),
                 modifier = Modifier.size(20.dp),
             )
             Text(
-                text = stringResource(Res.string.login_button_google_account),
+                text = stringResource(
+                    when (provider) {
+                        OAuthProvider.GOOGLE -> Res.string.login_button_google_account
+                        OAuthProvider.APPLE -> Res.string.login_button_apple_account
+                    }
+                ),
                 style = PretendardSemiBold,
                 fontSize = 18.dpToSp,
             )
@@ -210,5 +248,5 @@ fun LoginResultHandler(
 @Preview
 @Composable
 private fun LoginScreenPreview() {
-    LoginScreen(onGoogleLoginClick = {})
+    LoginScreen(onGoogleLoginClick = {}, onAppleLoginClick = {})
 }
