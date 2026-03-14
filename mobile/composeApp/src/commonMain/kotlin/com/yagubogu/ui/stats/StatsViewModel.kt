@@ -40,8 +40,8 @@ class StatsViewModel(
     private val _statsMyUiModel: MutableStateFlow<StatsMyUiModel?> = MutableStateFlow(null)
     val statsMyUiModel: StateFlow<StatsMyUiModel?> = _statsMyUiModel.asStateFlow()
 
-    private val _averageStats = MutableStateFlow(AverageStats())
-    val averageStats: StateFlow<AverageStats> = _averageStats.asStateFlow()
+    private val _averageStats: MutableStateFlow<AverageStats?> = MutableStateFlow(null)
+    val averageStats: StateFlow<AverageStats?> = _averageStats.asStateFlow()
 
     private val _isVsTeamStatsExpanded = MutableStateFlow(false)
     val isVsTeamStatsExpanded: StateFlow<Boolean> = _isVsTeamStatsExpanded.asStateFlow()
