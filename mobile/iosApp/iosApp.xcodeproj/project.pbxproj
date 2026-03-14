@@ -11,7 +11,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		FFF6CA430C2A4F296D16E945 /* iosApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iosApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		FFF6CA430C2A4F296D16E945 /* 야구보구.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "야구보구.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -64,7 +64,7 @@
 		A805759114D82133E2A63969 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				FFF6CA430C2A4F296D16E945 /* iosApp.app */,
+				FFF6CA430C2A4F296D16E945 /* 야구보구.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -93,7 +93,7 @@
 				B1C2D3E4F5A6B1C2D3E4F5A6 /* GoogleSignIn */,
 			);
 			productName = iosApp;
-			productReference = FFF6CA430C2A4F296D16E945 /* iosApp.app */;
+			productReference = FFF6CA430C2A4F296D16E945 /* 야구보구.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -202,7 +202,7 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.yagubogu.YaguBogu.debug;
-				PRODUCT_NAME = iosApp;
+				PRODUCT_NAME = "야구보구";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
@@ -304,7 +304,7 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.yagubogu.YaguBogu;
-				PRODUCT_NAME = iosApp;
+				PRODUCT_NAME = "야구보구";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
