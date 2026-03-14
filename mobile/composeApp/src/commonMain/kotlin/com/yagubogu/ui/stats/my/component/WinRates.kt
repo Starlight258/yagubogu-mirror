@@ -258,10 +258,10 @@ private fun WinDrawLoseItem(
                 )
             }
             StatItemValue.Loading -> {
-                Box(
-                    modifier = Modifier
-                        .size(width = 40.dp, height = 32.dp)
-                        .shimmerLoading()
+                Text(
+                    text = "00",
+                    style = PretendardBold32,
+                    modifier = Modifier.shimmerLoading(),
                 )
             }
             StatItemValue.NoData -> {
