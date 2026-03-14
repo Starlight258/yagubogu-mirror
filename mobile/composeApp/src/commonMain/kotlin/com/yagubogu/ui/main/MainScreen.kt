@@ -1,5 +1,9 @@
 package com.yagubogu.ui.main
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -139,8 +143,18 @@ fun MainScreen(
                         .fillMaxSize(),
                 entries = navigator.state.toEntries(entryProvider),
                 onBack = { navigator.goBack() },
+                transitionSpec = {
+                    fadeIn(tween(TRANSITION_DURATION_MILLISECOND)) togetherWith
+                            fadeOut(tween(TRANSITION_DURATION_MILLISECOND))
+                },
+                popTransitionSpec = {
+                    fadeIn(tween(TRANSITION_DURATION_MILLISECOND)) togetherWith
+                            fadeOut(tween(TRANSITION_DURATION_MILLISECOND))
+                },
             )
         }
         LoadingOverlay(isLoading = isLoading)
     }
 }
+
+private const val TRANSITION_DURATION_MILLISECOND = 700
