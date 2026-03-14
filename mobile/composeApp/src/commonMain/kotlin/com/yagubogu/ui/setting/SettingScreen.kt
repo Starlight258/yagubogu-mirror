@@ -24,7 +24,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import androidx.navigationevent.NavigationEvent
 import com.yagubogu.ui.common.component.DefaultToolbar
-import com.yagubogu.ui.navigation.model.Navigator
+import com.yagubogu.ui.navigation.model.NavigationState
 import com.yagubogu.ui.navigation.model.SettingNavKey
 import com.yagubogu.ui.navigation.model.toEntries
 import com.yagubogu.ui.theme.Gray050
@@ -35,8 +35,9 @@ import yagubogu.composeapp.generated.resources.setting_main_title
 
 @Composable
 fun SettingScreen(
-    navigator: Navigator,
+    navigationState: NavigationState,
     onBackClick: () -> Unit,
+    onSettingItemClick: (SettingNavKey) -> Unit,
     onFavoriteTeamEditClick: () -> Unit,
     onLogout: () -> Unit,
     onDeleteAccountCancel: () -> Unit,
@@ -55,15 +56,10 @@ fun SettingScreen(
                 exit = shrinkVertically() + fadeOut(),
             ) {
                 DefaultToolbar(
-                    onBackClick = {
-                        when (navigator.canGoBack()) {
-                            true -> navigator.goBack()
-                            false -> onBackClick()
-                        }
-                    },
+                    onBackClick = onBackClick,
                     title =
                         stringResource(
-                            (navigator.state.currentRoute as? SettingNavKey)?.label
+                            (navigationState.currentRoute as? SettingNavKey)?.label
                                 ?: Res.string.setting_main_title,
                         ),
                 )
@@ -76,16 +72,16 @@ fun SettingScreen(
                 entry<SettingNavKey.SettingMain> {
                     SettingMainScreen(
                         viewModel = viewModel,
-                        onSettingAccountClick = { navigator.navigate(SettingNavKey.SettingAccount) },
+                        onSettingAccountClick = { onSettingItemClick(SettingNavKey.SettingAccount) },
                         onFavoriteTeamEditClick = { onFavoriteTeamEditClick() },
                         onFullScreenMode = { isFull: Boolean -> isTopBarVisible = !isFull },
-                        onOssLicenseClick = { navigator.navigate(SettingNavKey.OssLicense) }
+                        onOssLicenseClick = { onSettingItemClick(SettingNavKey.OssLicense) }
                     )
                 }
                 entry<SettingNavKey.SettingAccount> {
                     SettingAccountScreen(
                         viewModel = viewModel,
-                        onDeleteAccountClick = { navigator.navigate(SettingNavKey.SettingDeleteAccount) },
+                        onDeleteAccountClick = { onSettingItemClick(SettingNavKey.SettingDeleteAccount) },
                         onLogout = onLogout,
                     )
                 }
@@ -93,10 +89,7 @@ fun SettingScreen(
                     SettingDeleteAccountScreen(
                         viewModel = viewModel,
                         onDeleteAccountCancel = onDeleteAccountCancel,
-                        onLogout = {
-                            navigator.clearStack()
-                            onDeleteAccount()
-                        },
+                        onLogout = onDeleteAccount,
                     )
                 }
                 entry<SettingNavKey.OssLicense> {
@@ -109,8 +102,8 @@ fun SettingScreen(
                 Modifier
                     .padding(innerPadding)
                     .fillMaxSize(),
-            entries = navigator.state.toEntries(entryProvider),
-            onBack = { navigator.goBack() },
+            entries = navigationState.toEntries(entryProvider),
+            onBack = onBackClick,
             transitionSpec = {
                 slideIntoContainer(
                     towards = AnimatedContentTransitionScope.SlideDirection.Left,

@@ -28,6 +28,7 @@ import com.yagubogu.ui.main.MainScreen
 import com.yagubogu.ui.navigation.model.BottomNavKey
 import com.yagubogu.ui.navigation.model.Navigator
 import com.yagubogu.ui.navigation.model.Route
+import com.yagubogu.ui.navigation.model.SettingNavKey
 import com.yagubogu.ui.navigation.model.toEntries
 import com.yagubogu.ui.setting.SettingScreen
 import com.yagubogu.ui.util.LocalSnackbarHostState
@@ -82,8 +83,16 @@ fun NavigationRoot(
                 }
                 entry<Route.Setting> {
                     SettingScreen(
-                        navigator = settingNavigator,
-                        onBackClick = { rootNavigator.goBack() },
+                        navigationState = settingNavigator.state,
+                        onBackClick = {
+                            when (settingNavigator.canGoBack()) {
+                                true -> settingNavigator.goBack()
+                                false -> rootNavigator.goBack()
+                            }
+                        },
+                        onSettingItemClick = { item: SettingNavKey ->
+                            settingNavigator.navigate(item)
+                        },
                         onFavoriteTeamEditClick = { rootNavigator.navigate(Route.FavoriteTeam) },
                         onLogout = {
                             mainNavigator.navigate(BottomNavKey.Home)
