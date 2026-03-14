@@ -14,28 +14,21 @@ class Navigator(
 ) {
     private val logger = Logger.withTag("Navigator")
 
-    private val currentStack: NavBackStack<NavKey>
-        get() =
-            state.backStacks[state.topLevelRoute]
-                ?: error("Stack for ${state.topLevelRoute} not found")
-    val currentRoute: NavKey
-        get() = currentStack.last()
-
     fun navigate(route: NavKey) {
         if (route in state.backStacks.keys) {
             // This is a top level route, just switch to it.
             state.topLevelRoute = route
         } else {
-            currentStack.add(route)
+            state.currentStack.add(route)
         }
         showBackStack()
     }
 
-    fun canGoBack(): Boolean = currentRoute != state.topLevelRoute
+    fun canGoBack(): Boolean = state.currentRoute != state.topLevelRoute
 
     fun goBack() {
         if (canGoBack()) {
-            currentStack.removeLastOrNull()
+            state.currentStack.removeLastOrNull()
         }
         showBackStack()
     }
@@ -48,6 +41,6 @@ class Navigator(
 
     private fun showBackStack() {
         logger.d { "backStacks: ${state.backStacks.keys}" }
-        logger.d { "currentStack: ${currentStack.joinToString()}" }
+        logger.d { "currentStack: ${state.currentStack.joinToString()}" }
     }
 }

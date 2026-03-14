@@ -68,7 +68,11 @@ fun NavigationRoot(
                 }
                 entry<Route.Main> {
                     MainScreen(
-                        navigator = mainNavigator,
+                        navigationState = mainNavigator.state,
+                        onBackClick = { mainNavigator.goBack() },
+                        onBottomItemClick = { item: BottomNavKey ->
+                            mainNavigator.navigate(item)
+                        },
                         onSettingsClick = { rootNavigator.navigate(Route.Setting) },
                         onBadgeClick = { rootNavigator.navigate(Route.Badge) },
                         onLivetalkItemClick = { gameId: Long, isVerified: Boolean ->
@@ -135,7 +139,7 @@ fun NavigationRoot(
                     ) togetherWith
                             slideOutOfContainer(
                                 towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                                targetOffset = { it / 4},
+                                targetOffset = { it / 4 },
                                 animationSpec = tween(TRANSITION_DURATION_MILLISECOND),
                             )
                 },
@@ -150,7 +154,7 @@ fun NavigationRoot(
                                 animationSpec = tween(TRANSITION_DURATION_MILLISECOND),
                             )
                 },
-                predictivePopTransitionSpec = {edge ->
+                predictivePopTransitionSpec = { edge ->
                     val towards = if (edge == NavigationEvent.EDGE_LEFT) {
                         AnimatedContentTransitionScope.SlideDirection.Right
                     } else {
@@ -173,7 +177,7 @@ fun NavigationRoot(
                 modifier =
                     Modifier
                         .align(Alignment.BottomCenter)
-                        .padding(bottom = snackbarPadding(isMainScreen = rootNavigator.currentRoute is Route.Main)),
+                        .padding(bottom = snackbarPadding(isMainScreen = rootNavigator.state.currentRoute is Route.Main)),
             ) {
                 Snackbar(snackbarData = it)
             }

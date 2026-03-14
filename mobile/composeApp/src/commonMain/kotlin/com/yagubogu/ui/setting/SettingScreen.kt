@@ -63,7 +63,7 @@ fun SettingScreen(
                     },
                     title =
                         stringResource(
-                            (navigator.currentRoute as? SettingNavKey)?.label
+                            (navigator.state.currentRoute as? SettingNavKey)?.label
                                 ?: Res.string.setting_main_title,
                         ),
                 )
