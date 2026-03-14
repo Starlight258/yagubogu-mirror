@@ -17,6 +17,7 @@ import com.yagubogu.ui.util.mapList
 import com.yagubogu.ui.util.mapListIndexed
 import com.yagubogu.ui.util.now
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -62,6 +63,9 @@ class StatsViewModel(
     private val _stadiumVisitCounts = MutableStateFlow<List<StadiumVisitCount>>(emptyList())
     val stadiumVisitCounts: StateFlow<List<StadiumVisitCount>> = _stadiumVisitCounts.asStateFlow()
 
+    private var attendanceJob: Job? = null
+    private var averageStatsJob: Job? = null
+
     fun fetchMyStats() {
         fetchMyAttendanceStats()
         fetchMyAverageStats()
@@ -73,6 +77,9 @@ class StatsViewModel(
     }
 
     fun updateYear(year: Int) {
+        if(_year.value == year) return
+        _statsMyUiModel.value = null
+        _averageStats.value = null
         _year.value = year
     }
 
@@ -81,7 +88,8 @@ class StatsViewModel(
     }
 
     private fun fetchMyAttendanceStats() {
-        viewModelScope.launch {
+        attendanceJob?.cancel()
+        attendanceJob = viewModelScope.launch {
             val year: Int = year.value
             val statsCountsDeferred: Deferred<Result<StatsCounts>> =
                 async { statsRepository.getStatsCounts(year).map { it.toUiModel() } }
@@ -125,7 +133,8 @@ class StatsViewModel(
     }
 
     private fun fetchMyAverageStats() {
-        viewModelScope.launch {
+        averageStatsJob?.cancel()
+        averageStatsJob = viewModelScope.launch {
             val year: Int = year.value
             statsRepository
                 .getAverageStats(year)
