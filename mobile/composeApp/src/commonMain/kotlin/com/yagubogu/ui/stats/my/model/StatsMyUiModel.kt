@@ -18,10 +18,19 @@ data class StatsMyUiModel(
     }
 }
 
-fun StatsMyUiModel?.toStatItemValue(
-    propertySelector: (StatsMyUiModel) -> String?
+fun <T> StatsMyUiModel?.toStatItemValue(
+    propertySelector: (StatsMyUiModel) -> T?
 ): StatItemValue {
+    // 1. 전체 모델이 null이면 로딩
     val model = this ?: return StatItemValue.Loading
+
+    // 2. 선택된 프로퍼티 값 가져오기
     val value = propertySelector(model)
-    return if (value != null) StatItemValue.Data(value) else StatItemValue.NoData
+
+    // 3. 값이 null이면 NoData, 아니면 String으로 변환하여 반환
+    return if (value != null) {
+        StatItemValue.Data(value.toString())
+    } else {
+        StatItemValue.NoData
+    }
 }
