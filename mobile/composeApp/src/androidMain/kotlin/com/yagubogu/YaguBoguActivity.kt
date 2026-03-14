@@ -75,7 +75,15 @@ class YaguBoguActivity :
                     val autoLoginState: AutoLoginState by viewModel.autoLoginState.collectAsStateWithLifecycle()
 
                     if (autoLoginState !is AutoLoginState.Loading) {
-                        YaguBoguRoute(startRoute = setStartRoute(autoLoginState))
+                        YaguBoguRoute(
+                            startRoute = when (autoLoginState) {
+                                AutoLoginState.SignIn -> Route.Main
+                                AutoLoginState.SignUp,
+                                AutoLoginState.Failure,
+                                AutoLoginState.Loading,
+                                    -> Route.Login
+                            }
+                        )
                     }
                 }
             }
@@ -86,15 +94,6 @@ class YaguBoguActivity :
         val splashScreen: SplashScreen = installSplashScreen()
         splashScreen.setKeepOnScreenCondition { shouldImmediateUpdate || !isAppInitialized }
     }
-
-    private fun setStartRoute(autoLoginState: AutoLoginState): Route =
-        when (autoLoginState) {
-            AutoLoginState.SignIn -> Route.Main
-            AutoLoginState.SignUp -> Route.FavoriteTeam
-            AutoLoginState.Failure,
-            AutoLoginState.Loading,
-            -> Route.Login
-        }
 
     private fun handleInAppUpdate(onSuccess: () -> Unit) {
         val appUpdateManager: AppUpdateManager = AppUpdateManagerFactory.create(this)

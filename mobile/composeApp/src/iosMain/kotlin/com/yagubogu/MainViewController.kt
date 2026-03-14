@@ -68,7 +68,7 @@ private fun YaguBoguIosApp() {
             YaguBoguRoute(
                 startRoute = when (autoLoginState) {
                     AutoLoginState.SignIn -> Route.Main
-                    AutoLoginState.SignUp -> Route.FavoriteTeam
+                    AutoLoginState.SignUp,
                     AutoLoginState.Failure,
                     AutoLoginState.Loading,
                         -> Route.Login
