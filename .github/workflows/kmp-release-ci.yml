@@ -26,7 +26,7 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
-          cache: gradle
+          cache: gradle  # Gradle 의존성 캐시
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Run ktlint check
@@ -45,7 +45,7 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
-          cache: gradle
+          cache: gradle  # Gradle 의존성 캐시
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
@@ -72,7 +72,26 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
-          cache: gradle
+          cache: gradle  # Gradle 의존성 캐시
+
+      # Kotlin/Native 컴파일러 캐시
+      # 툴체인 바이너리이므로 릴리즈 결과물에 영향 없음
+      - name: Cache Kotlin/Native compiler
+        uses: actions/cache@v4
+        with:
+          path: ~/.konan
+          key: ${{ runner.os }}-konan-${{ hashFiles('**/libs.versions.toml') }}
+          restore-keys: ${{ runner.os }}-konan-
+
+      # SPM 패키지 캐시 (~/.swiftpm 만)
+      # DerivedData는 이전 빌드 산출물이 포함되므로 제외
+      # ~/.swiftpm 은 패키지 소스 다운로드 캐시이므로 안전
+      - name: Cache SPM packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.swiftpm
+          key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+          restore-keys: ${{ runner.os }}-spm-
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew

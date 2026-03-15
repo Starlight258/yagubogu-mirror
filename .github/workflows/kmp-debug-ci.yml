@@ -26,7 +26,7 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
-          cache: gradle
+          cache: gradle  # Gradle 의존성 캐시
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Run ktlint check
@@ -45,7 +45,17 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
-          cache: gradle
+          cache: gradle  # Gradle 의존성 캐시
+
+      # Gradle 빌드 캐시 (증분 빌드 결과물)
+      # ~/.gradle/caches/build-cache에 태스크 출력물을 저장해
+      # 소스 변경이 없는 모듈은 재컴파일 없이 캐시에서 복원됨
+      - name: Cache Gradle build cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.gradle/caches/build-cache
+          key: ${{ runner.os }}-gradle-build-${{ hashFiles('mobile/**/*.kt', 'mobile/**/*.kts') }}
+          restore-keys: ${{ runner.os }}-gradle-build-
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
@@ -72,7 +82,29 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
-          cache: gradle
+          cache: gradle  # Gradle 의존성 캐시
+
+      # Kotlin/Native 컴파일러 캐시
+      # KMP iOS 빌드 시 Kotlin/Native 툴체인이 여기에 다운로드됨
+      # libs.versions.toml 해시 기반 → Kotlin 버전 변경 시 자동 갱신
+      - name: Cache Kotlin/Native compiler
+        uses: actions/cache@v4
+        with:
+          path: ~/.konan
+          key: ${{ runner.os }}-konan-${{ hashFiles('**/libs.versions.toml') }}
+          restore-keys: ${{ runner.os }}-konan-
+
+      # SPM 패키지 캐시
+      # xcodebuild -resolvePackageDependencies 단계에서 다운로드되는 패키지들을 보존
+      # Package.resolved 해시 기반 → 의존성 변경 시 자동 갱신
+      - name: Cache SPM packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Developer/Xcode/DerivedData
+            ~/.swiftpm
+          key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+          restore-keys: ${{ runner.os }}-spm-
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
