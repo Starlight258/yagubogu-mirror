@@ -24,10 +24,9 @@ class IosThirdPartyRemoteDataSource(
     ): Result<Unit> =
         safeApiCall {
             // 로컬 파일 경로용 URL 객체 생성
-            val nsUrl = if (imageFileUri.startsWith("file://")) {
-                NSURL(string = imageFileUri)
-            } else {
-                NSURL.fileURLWithPath(imageFileUri)
+            val nsUrl = when {
+                imageFileUri.startsWith("file://") -> NSURL(string = imageFileUri)
+                else ->  NSURL.fileURLWithPath(imageFileUri)
             }
 
             val nsData = NSData.dataWithContentsOfURL(nsUrl)
