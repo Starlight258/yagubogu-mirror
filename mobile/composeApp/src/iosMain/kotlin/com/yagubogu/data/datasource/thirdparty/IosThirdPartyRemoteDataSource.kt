@@ -31,7 +31,7 @@ class IosThirdPartyRemoteDataSource(
             }
 
             val nsData = NSData.dataWithContentsOfURL(nsUrl)
-                ?: throw IllegalStateException("Failed to read data from $imageFileUri (Resolved URL: ${nsUrl?.absoluteString})")
+                ?: throw IllegalStateException("Failed to read data from $imageFileUri (Resolved URL: ${nsUrl.absoluteString})")
 
             // 데이터 크기 검증 (넘겨받은 contentLength와 실제 읽은 데이터 크기 비교)
             val actualLength = nsData.length.toLong()
