@@ -45,18 +45,17 @@ actual suspend fun handleImagePickerKMPCroppedImage(
         val imageData = UIImageJPEGRepresentation(resizedImage, 0.9) ?: error("이미지 압축 실패")
 
         // 4. 임시 파일로 저장 (파일 크기 및 URI 획득을 위함)
-        val tempFileName = "profile_${NSDate().timeIntervalSince1970}.jpg"
-        val tempFilePath = NSTemporaryDirectory() + tempFileName
+        val timestamp = (NSDate().timeIntervalSince1970 * 1000).toLong()
+        val tempFileName = "profile_$timestamp.jpg"
+        val tmpDir = NSTemporaryDirectory()
+        val tempFilePath = if (tmpDir.endsWith("/")) "$tmpDir$tempFileName" else "$tmpDir/$tempFileName"
 
-        // NSData를 물리적 파일로 저장
-        imageData.writeToFile(tempFilePath, true)
-
-        val convertedImageUri = tempFilePath
-        val fileSize = imageData.length.toLong()
+        // 파일 쓰기
+        val success = imageData.writeToFile(tempFilePath, true)
+        if (!success) error("임시 파일 저장 실패")
         val mimeType = "image/jpeg"
 
-        // 5. 서버 업로드 실행
-        onProfileImageUpload(convertedImageUri, mimeType, fileSize)
+        onProfileImageUpload(tempFilePath, mimeType, imageData.length.toLong())
     }.fold(
         onSuccess = { result ->
             result.onFailure { e ->
