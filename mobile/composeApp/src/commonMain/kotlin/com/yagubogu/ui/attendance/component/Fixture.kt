@@ -16,7 +16,7 @@ val ATTENDANCE_HISTORY_ITEM_PLAYED =
         summary =
             AttendanceHistoryItem.Summary(
                 id = 0L,
-                attendanceDate = LocalDate.now(),
+                attendanceDate = LocalDate.now().minusDays(1),
                 stadiumName = "잠실 야구장",
                 awayTeam =
                     GameTeam(

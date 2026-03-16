@@ -35,6 +35,7 @@ import com.yagubogu.ui.attendance.model.PastGameUiState
 import com.yagubogu.ui.theme.PretendardBold16
 import com.yagubogu.ui.theme.Primary500
 import com.yagubogu.ui.theme.White
+import com.yagubogu.ui.util.minusDays
 import com.yagubogu.ui.util.minusMonths
 import com.yagubogu.ui.util.now
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -112,7 +113,7 @@ fun AttendanceCalendarContent(
                 currentItems.forEach { item: AttendanceHistoryItem ->
                     AttendanceItem(item = item, isExpanded = true)
                 }
-            } else {
+            } else if (selectedDate != LocalDate.now()) {
                 AttendanceAdditionButton(
                     onClick = {
                         onPastGamesRequest(selectedDate)
@@ -185,7 +186,7 @@ private fun AttendanceCalendarContentPreview() {
         endMonth = YearMonth.now(),
         selectedMonth = YearMonth.now(),
         onMonthChange = {},
-        selectedDate = LocalDate.now(),
+        selectedDate = LocalDate.now().minusDays(3),
         onDateChange = {},
         pastGameUiState = PastGameUiState.Loading,
         onPastGamesRequest = {},
