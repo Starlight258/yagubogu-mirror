@@ -1,13 +1,10 @@
 package com.yagubogu.ui.setting
 
-import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -22,12 +19,14 @@ import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
-import androidx.navigationevent.NavigationEvent
 import com.yagubogu.ui.common.component.DefaultToolbar
 import com.yagubogu.ui.navigation.model.NavigationState
 import com.yagubogu.ui.navigation.model.SettingNavKey
 import com.yagubogu.ui.navigation.model.toEntries
 import com.yagubogu.ui.theme.Gray050
+import com.yagubogu.ui.util.slidePopTransition
+import com.yagubogu.ui.util.slidePredictivePopTransition
+import com.yagubogu.ui.util.slidePushTransition
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import yagubogu.composeapp.generated.resources.Res
@@ -104,46 +103,11 @@ fun SettingScreen(
                     .fillMaxSize(),
             entries = navigationState.toEntries(entryProvider),
             onBack = onBackClick,
-            transitionSpec = {
-                slideIntoContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                    animationSpec = tween(TRANSITION_DURATION_MILLISECOND),
-                ) togetherWith
-                        slideOutOfContainer(
-                            towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                            targetOffset = { it / 4 },
-                            animationSpec = tween(TRANSITION_DURATION_MILLISECOND),
-                        )
-            },
-            popTransitionSpec = {
-                slideIntoContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                    initialOffset = { it / 4 },
-                    animationSpec = tween(TRANSITION_DURATION_MILLISECOND),
-                ) togetherWith
-                        slideOutOfContainer(
-                            towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                            animationSpec = tween(TRANSITION_DURATION_MILLISECOND),
-                        )
-            },
+            transitionSpec = { slidePushTransition() },
+            popTransitionSpec = { slidePopTransition() },
             predictivePopTransitionSpec = { edge ->
-                val towards = if (edge == NavigationEvent.EDGE_LEFT) {
-                    AnimatedContentTransitionScope.SlideDirection.Right
-                } else {
-                    AnimatedContentTransitionScope.SlideDirection.Left
-                }
-                slideIntoContainer(
-                    towards = towards,
-                    initialOffset = { it / 4 },
-                    animationSpec = tween(TRANSITION_DURATION_MILLISECOND),
-                ) togetherWith
-                        slideOutOfContainer(
-                            towards = towards,
-                            animationSpec = tween(TRANSITION_DURATION_MILLISECOND),
-                        )
+                slidePredictivePopTransition(edge)
             },
         )
     }
 }
-
-private const val TRANSITION_DURATION_MILLISECOND = 500

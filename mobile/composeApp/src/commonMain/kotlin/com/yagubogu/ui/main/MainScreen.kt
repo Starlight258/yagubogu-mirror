@@ -1,9 +1,5 @@
 package com.yagubogu.ui.main
 
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -37,6 +33,7 @@ import com.yagubogu.ui.navigation.model.toEntries
 import com.yagubogu.ui.stats.StatsScreen
 import com.yagubogu.ui.theme.Gray050
 import com.yagubogu.ui.theme.White
+import com.yagubogu.ui.util.fadeTransition
 import kotlinx.coroutines.flow.MutableSharedFlow
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -61,7 +58,9 @@ fun MainScreen(
     val scrollToTopEvent = remember { MutableSharedFlow<Unit>(extraBufferCapacity = 1) }
 
     LaunchedEffect(Unit) {
-        viewModel.selectBottomNavKey(navigationState.currentRoute as? BottomNavKey ?: BottomNavKey.Home)
+        viewModel.selectBottomNavKey(
+            navigationState.currentRoute as? BottomNavKey ?: BottomNavKey.Home
+        )
     }
 
     val selectedItemLabel: String = stringResource(selectedItem.label)
@@ -145,18 +144,10 @@ fun MainScreen(
                         .fillMaxSize(),
                 entries = navigationState.toEntries(entryProvider),
                 onBack = onBackClick,
-                transitionSpec = {
-                    fadeIn(tween(TRANSITION_DURATION_MILLISECOND)) togetherWith
-                            fadeOut(tween(TRANSITION_DURATION_MILLISECOND))
-                },
-                popTransitionSpec = {
-                    fadeIn(tween(TRANSITION_DURATION_MILLISECOND)) togetherWith
-                            fadeOut(tween(TRANSITION_DURATION_MILLISECOND))
-                },
+                transitionSpec = { fadeTransition() },
+                popTransitionSpec = { fadeTransition() },
             )
         }
         LoadingOverlay(isLoading = isLoading)
     }
 }
-
-private const val TRANSITION_DURATION_MILLISECOND = 700
