@@ -40,7 +40,7 @@ fun StatItem(
                 Text(
                     text = "로딩",
                     style = PretendardSemiBold20,
-                    modifier = Modifier.shimmerLoading()
+                    modifier = Modifier.shimmerLoading(roundCorner = 12.dp)
                 )
             }
             is StatItemValue.Data -> {

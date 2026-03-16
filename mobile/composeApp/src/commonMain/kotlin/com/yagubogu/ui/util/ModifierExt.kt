@@ -12,6 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -53,7 +54,7 @@ fun Modifier.crop(
         }
     }
 
-fun Modifier.shimmerLoading(): Modifier =
+fun Modifier.shimmerLoading(roundCorner: Dp = 0.dp): Modifier =
     composed {
         // 무한 반복 애니메이션 정의
         val transition = rememberInfiniteTransition(label = "shimmerTransition")
@@ -89,8 +90,20 @@ fun Modifier.shimmerLoading(): Modifier =
                     start = Offset(translateAnim.value - size.width, 0f),
                     end = Offset(translateAnim.value, size.height),
                 )
-            drawRect(brush = brush)
+            when {
+                roundCorner > 0.dp -> {
+                    val cornerRadiusPx = roundCorner.toPx()
+                    drawRoundRect(
+                        brush = brush,
+                        cornerRadius = CornerRadius(cornerRadiusPx, cornerRadiusPx)
+                    )
+                }
+                else -> {
+                    drawRect(brush = brush)
+                }
+            }
         }
+
     }
 
 fun Modifier.shimmerIf(condition: Boolean): Modifier =

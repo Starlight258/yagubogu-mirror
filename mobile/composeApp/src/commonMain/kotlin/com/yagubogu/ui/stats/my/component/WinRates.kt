@@ -159,7 +159,7 @@ private fun PieChartInnerText(
                 Box(
                     modifier = Modifier
                         .size(width = 80.dp, height = 48.dp)
-                        .shimmerLoading()
+                        .shimmerLoading(roundCorner = 12.dp)
                 )
             }
             StatItemValue.NoData -> {
@@ -186,7 +186,7 @@ private fun PieChartInnerText(
                     modifier = Modifier
                         .padding(top = 4.dp)
                         .size(width = 60.dp, height = 20.dp)
-                        .shimmerLoading()
+                        .shimmerLoading(roundCorner = 12.dp)
                 )
             }
             StatItemValue.NoData -> {
@@ -261,7 +261,7 @@ private fun WinDrawLoseItem(
                 Text(
                     text = "00",
                     style = PretendardBold32,
-                    modifier = Modifier.shimmerLoading(),
+                    modifier = Modifier.shimmerLoading(roundCorner = 12.dp),
                 )
             }
             StatItemValue.NoData -> {
