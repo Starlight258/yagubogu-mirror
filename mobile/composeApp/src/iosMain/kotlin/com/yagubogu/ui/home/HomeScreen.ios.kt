@@ -91,7 +91,11 @@ actual fun rememberAppSettingsOpener(): () -> Unit =
         {
             val url = NSURL(string = UIApplicationOpenSettingsURLString)
             if (UIApplication.sharedApplication.canOpenURL(url)) {
-                UIApplication.sharedApplication.openURL(url)
+                UIApplication.sharedApplication.openURL(
+                    url = url,
+                    options = emptyMap<Any?, Any>(),
+                    completionHandler = null,
+                )
             }
         }
     }
