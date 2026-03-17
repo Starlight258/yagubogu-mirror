@@ -1,5 +1,16 @@
 package com.yagubogu.member.service;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.yagubogu.auth.config.AuthTestConfig;
 import com.yagubogu.global.config.JpaAuditingConfig;
 import com.yagubogu.global.config.S3Properties;
@@ -33,17 +44,6 @@ import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequ
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest.Builder;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 @Import({AuthTestConfig.class, JpaAuditingConfig.class})
 @ExtendWith(MockitoExtension.class)
 @DataJpaTest
@@ -53,6 +53,7 @@ class ProfileImageServiceTest {
     private static final Duration TEST_PRESIGN_EXPIRATION = Duration.ofMinutes(10);
     private static final String TEST_ENDPOINT = "https://test-namespace.compat.objectstorage.ap-chuncheon-1.oraclecloud.com";
     private static final String TEST_REGION = "ap-chuncheon-1";
+    private static final String TEST_DEFAULT_PROFILE_IMAGE_URL = "https://test-namespace.compat.objectstorage.ap-chuncheon-1.oraclecloud.com/yagubogu/images/defaults/profile.png";
 
     @Mock
     private MemberService memberService;
@@ -71,17 +72,17 @@ class ProfileImageServiceTest {
 
     @BeforeEach
     void setUp() {
-        s3Properties = new S3Properties(TEST_BUCKET, TEST_PRESIGN_EXPIRATION, TEST_ENDPOINT, TEST_REGION);
+        s3Properties = new S3Properties(TEST_BUCKET, TEST_PRESIGN_EXPIRATION, TEST_ENDPOINT, TEST_REGION,
+                TEST_DEFAULT_PROFILE_IMAGE_URL);
         profileImageService = new ProfileImageService(s3Presigner, s3Client, s3Properties, memberService);
     }
-
 
     @DisplayName("pre-signed url을 발급한다")
     @Test
     void issuePreSignedUrl_success() throws MalformedURLException {
         // given
         PreSignedUrlStartRequest request = new PreSignedUrlStartRequest("image/jpeg", 1_000_000L);
-        String fakeKeyPrefix = "yagubogu/images/profiles/";
+        String fakeKeyPrefix = "images/profiles/";
         String fakeUrl = "https://test-bucket.s3.ap-northeast-2.amazonaws.com/" + fakeKeyPrefix + "some-uuid";
         when(presignedPutObjectRequest.url()).thenReturn(new URL(fakeUrl));
         when(s3Presigner.presignPutObject(any(Consumer.class))).thenReturn(
@@ -107,7 +108,6 @@ class ProfileImageServiceTest {
         });
     }
 
-
     @DisplayName("예외: contentLength가 최대 길이를 초과하면 예외를 던진다")
     @Test
     void issuePreSignedUrl_tooLarge() {
@@ -127,7 +127,7 @@ class ProfileImageServiceTest {
     @Test
     void completeUpload_success() {
         // given
-        String key = "yagubogu/images/profiles/abc-123";
+        String key = "images/profiles/abc-123";
         PreSignedUrlCompleteRequest request = new PreSignedUrlCompleteRequest(key);
         Member member = memberFactory.save(builder -> builder.build());
 
@@ -137,7 +137,8 @@ class ProfileImageServiceTest {
         // 1. s3Client.headObject가 정상 응답을 반환하도록 설정
         when(s3Client.headObject(any(HeadObjectRequest.class))).thenReturn(HeadObjectResponse.builder().build());
 
-        // 2. memberService.updateProfileImageUrl이 호출되었을 때, member 객체의 imageUrl을 직접 수정하도록 설정
+        // 2. memberService.updateProfileImageUrl이 호출되었을 때, member 객체의 imageUrl을 직접
+        // 수정하도록 설정
         doAnswer(invocation -> {
             Long memberId = invocation.getArgument(0);
             String imageUrl = invocation.getArgument(1);
