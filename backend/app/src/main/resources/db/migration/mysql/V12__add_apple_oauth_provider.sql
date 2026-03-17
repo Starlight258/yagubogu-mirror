@@ -1,0 +1,2 @@
+ALTER TABLE members
+    MODIFY COLUMN provider ENUM ('GOOGLE','APPLE') NOT NULL;

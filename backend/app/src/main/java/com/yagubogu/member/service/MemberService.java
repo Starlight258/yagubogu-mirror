@@ -29,6 +29,7 @@ import com.yagubogu.team.repository.TeamRepository;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +45,9 @@ public class MemberService {
     private final MemberBadgeRepository memberBadgeRepository;
     private final ApplicationEventPublisher publisher;
     private final StatService statService;
+
+    @Value("${app.s3.default-profile-image-url}")
+    private String defaultProfileImageUrl;
 
     @Transactional
     public MemberNicknameResponse patchNickname(final long memberId, final MemberNicknameRequest request) {
@@ -139,10 +143,14 @@ public class MemberService {
 
     @Transactional
     public MemberFindResultParam findMember(final AuthParam response) {
-        return memberRepository.findByOauthIdAndDeletedAtIsNull(response.oauthId())
+        Member draftMember = response.toMember(defaultProfileImageUrl);
+        return memberRepository.findByOauthIdAndProviderAndDeletedAtIsNull(
+                        response.oauthId(),
+                        draftMember.getProvider()
+                )
                 .map(m -> new MemberFindResultParam(m, false))
                 .orElseGet(() -> {
-                    Member savedMember = memberRepository.save(response.toMember());
+                    Member savedMember = memberRepository.save(draftMember);
                     publisher.publishEvent(new SignUpEvent(savedMember));
                     return new MemberFindResultParam(savedMember, true);
                 });

@@ -13,6 +13,7 @@ import com.yagubogu.auth.repository.RefreshTokenRepository;
 import com.yagubogu.auth.support.AuthTokenProvider;
 import com.yagubogu.auth.support.AuthValidator;
 import com.yagubogu.global.exception.UnAuthorizedException;
+
 import com.yagubogu.member.domain.Member;
 import com.yagubogu.member.domain.OAuthProvider;
 import com.yagubogu.member.domain.Role;
@@ -38,8 +39,9 @@ public class AuthService {
 
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public LoginResponse login(final LoginParam request) {
+        OAuthProvider provider = request.provider() != null ? request.provider() : OAuthProvider.GOOGLE;
         AuthParam response = authGateway.validateToken(request);
-        validateToken(response, OAuthProvider.GOOGLE);
+        validateToken(response, provider);
 
         MemberFindResultParam memberFindResultParam = memberService.findMember(response);
         Member member = memberFindResultParam.member();
@@ -90,8 +92,7 @@ public class AuthService {
 
     private void validateToken(
             final AuthParam response,
-            final OAuthProvider provider
-    ) {
+            final OAuthProvider provider) {
         authValidators.stream()
                 .filter(v -> v.supports(provider))
                 .findFirst()
@@ -99,15 +100,13 @@ public class AuthService {
                         validator -> invokeValidator(validator, response),
                         () -> {
                             throw new UnsupportedOperationException("No validator for: " + provider);
-                        }
-                );
+                        });
     }
 
     @SuppressWarnings("unchecked")
     private <T extends AuthParam> void invokeValidator(
             final AuthValidator<?> validator,
-            final AuthParam response
-    ) {
+            final AuthParam response) {
         ((AuthValidator<T>) validator).validate((T) response);
     }
 
