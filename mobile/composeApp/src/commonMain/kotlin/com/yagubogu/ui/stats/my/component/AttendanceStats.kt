@@ -16,10 +16,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.yagubogu.ui.stats.my.model.AverageStats
+import com.yagubogu.ui.stats.my.model.toStatItemValue
 import com.yagubogu.ui.theme.Gray300
 import com.yagubogu.ui.theme.PretendardBold20
 import com.yagubogu.ui.theme.White
-import com.yagubogu.ui.util.formatOneDecimal
 import org.jetbrains.compose.resources.stringResource
 import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.stats_attendance_stats_title
@@ -35,7 +35,7 @@ import yagubogu.composeapp.generated.resources.stats_loss_score_emoji
 
 @Composable
 fun AttendanceStats(
-    averageStats: AverageStats,
+    averageStats: AverageStats?,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -56,10 +56,10 @@ fun AttendanceStats(
         ) {
             StatItem(
                 title = stringResource(Res.string.stats_gain_score),
-                value = stringResource(
-                    Res.string.stats_average_score,
-                    averageStats.averageRuns.formatOneDecimal(),
-                ),
+                value = averageStats.toStatItemValue(
+                        Res.string.stats_average_score,
+                AverageStats::averageRuns
+            ),
                 emoji = stringResource(Res.string.stats_gain_score_emoji),
                 modifier =
                     Modifier
@@ -73,9 +73,9 @@ fun AttendanceStats(
             )
             StatItem(
                 title = stringResource(Res.string.stats_loss_score),
-                value = stringResource(
+                value = averageStats.toStatItemValue(
                     Res.string.stats_average_score,
-                    averageStats.concededRuns.formatOneDecimal()
+                    AverageStats::concededRuns
                 ),
                 emoji = stringResource(Res.string.stats_loss_score_emoji),
                 modifier =
@@ -91,10 +91,10 @@ fun AttendanceStats(
         ) {
             StatItem(
                 title = stringResource(Res.string.stats_hit),
-                value = stringResource(
-                    Res.string.stats_average_count,
-                    averageStats.averageHits.formatOneDecimal()
-                ),
+                value = averageStats.toStatItemValue(
+                        Res.string.stats_average_count,
+                AverageStats::averageHits
+            ),
                 modifier = Modifier.weight(1f),
             )
             VerticalDivider(
@@ -104,10 +104,10 @@ fun AttendanceStats(
             )
             StatItem(
                 title = stringResource(Res.string.stats_hit_allowed),
-                value = stringResource(
-                    Res.string.stats_average_count,
-                    averageStats.concededHits.formatOneDecimal()
-                ),
+                value = averageStats.toStatItemValue(
+                        Res.string.stats_average_count,
+                AverageStats::concededHits
+            ),
                 modifier = Modifier.weight(1f),
             )
             VerticalDivider(
@@ -117,10 +117,10 @@ fun AttendanceStats(
             )
             StatItem(
                 title = stringResource(Res.string.stats_error),
-                value = stringResource(
-                    Res.string.stats_average_count,
-                    averageStats.averageErrors.formatOneDecimal()
-                ),
+                value = averageStats.toStatItemValue(
+                        Res.string.stats_average_count,
+                AverageStats::averageErrors
+            ),
                 modifier = Modifier.weight(1f),
             )
         }

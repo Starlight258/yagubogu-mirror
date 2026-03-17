@@ -33,8 +33,8 @@ fun StatsMyScreen(
     modifier: Modifier = Modifier,
     viewModel: StatsViewModel = koinViewModel(),
 ) {
-    val statsMyUiModel: StatsMyUiModel by viewModel.statsMyUiModel.collectAsStateWithLifecycle()
-    val averageStats: AverageStats by viewModel.averageStats.collectAsStateWithLifecycle()
+    val statsMyUiModel: StatsMyUiModel? by viewModel.statsMyUiModel.collectAsStateWithLifecycle()
+    val averageStats: AverageStats? by viewModel.averageStats.collectAsStateWithLifecycle()
 
     LaunchedEffect(year) {
         viewModel.fetchMyStats()
@@ -50,8 +50,8 @@ fun StatsMyScreen(
 
 @Composable
 private fun StatsMyScreen(
-    statsMyUiModel: StatsMyUiModel,
-    averageStats: AverageStats,
+    statsMyUiModel: StatsMyUiModel?,
+    averageStats: AverageStats?,
     modifier: Modifier = Modifier,
     scrollToTopEvent: SharedFlow<Unit> = MutableSharedFlow(),
 ) {
