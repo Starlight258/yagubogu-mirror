@@ -12,7 +12,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.buildkonfig)
-
+    alias(libs.plugins.ktlint)
     alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.google.services)
     alias(libs.plugins.firebase.crashlytics)
@@ -227,32 +227,43 @@ kotlin {
 
 android {
     namespace = "com.yagubogu"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
+    compileSdk =
+        libs.versions.android.compileSdk
+            .get()
+            .toInt()
 
     defaultConfig {
         applicationId = "com.yagubogu"
-        minSdk = libs.versions.android.minSdk.get().toInt()
-        targetSdk = libs.versions.android.targetSdk.get().toInt()
+        minSdk =
+            libs.versions.android.minSdk
+                .get()
+                .toInt()
+        targetSdk =
+            libs.versions.android.targetSdk
+                .get()
+                .toInt()
         versionCode = 2_02_01
         versionName = "2.2.1"
 
         manifestPlaceholders["appName"] = "@string/app_name"
     }
     val signingFile = rootProject.file("keystore.properties")
-    val releaseSigningConfig: SigningConfig? = if (signingFile.exists()) {
-        val keystoreProperties = Properties().apply {
-            load(FileInputStream(signingFile))
-        }
+    val releaseSigningConfig: SigningConfig? =
+        if (signingFile.exists()) {
+            val keystoreProperties =
+                Properties().apply {
+                    load(FileInputStream(signingFile))
+                }
 
-        signingConfigs.create("release") {
-            storeFile = file("yagubogu-keystore")
-            keyAlias = "${keystoreProperties["KEY_ALIAS"]}"
-            keyPassword = "${keystoreProperties["KEY_PASSWORD"]}"
-            storePassword = "${keystoreProperties["KEYSTORE_PASSWORD"]}"
+            signingConfigs.create("release") {
+                storeFile = file("yagubogu-keystore")
+                keyAlias = "${keystoreProperties["KEY_ALIAS"]}"
+                keyPassword = "${keystoreProperties["KEY_PASSWORD"]}"
+                storePassword = "${keystoreProperties["KEYSTORE_PASSWORD"]}"
+            }
+        } else {
+            null
         }
-    } else {
-        null
-    }
 
     packaging {
         resources {
@@ -302,4 +313,10 @@ aboutLibraries {
 
 ktorfit {
     compilerPluginVersion.set("2.3.3")
+}
+
+// ktlint와 ksp 태스크 간의 순서를 명시적으로 지정하여 Gradle의 암시적 종속성 경고를 해결합니다.
+// 생성된 코드는 .editorconfig의 ktlint 필터에서 제외되지만, 태스크 구조상 순서 정의가 필요합니다.
+tasks.matching { it.name.contains("ktlint", ignoreCase = true) }.configureEach {
+    mustRunAfter(tasks.matching { it.name.contains("ksp", ignoreCase = true) })
 }
