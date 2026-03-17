@@ -69,26 +69,32 @@ fun YaguBoguRoute(
     )
 }
 
-private val rootSavedStateConfig = SavedStateConfiguration {
-    serializersModule = SerializersModule {
-        polymorphic(NavKey::class) {
-            subclassesOfSealed<Route>()
-        }
+private val rootSavedStateConfig =
+    SavedStateConfiguration {
+        serializersModule =
+            SerializersModule {
+                polymorphic(NavKey::class) {
+                    subclassesOfSealed<Route>()
+                }
+            }
     }
-}
 
-private val mainSavedStateConfig = SavedStateConfiguration {
-    serializersModule = SerializersModule {
-        polymorphic(NavKey::class) {
-            subclassesOfSealed<BottomNavKey>()
-        }
+private val mainSavedStateConfig =
+    SavedStateConfiguration {
+        serializersModule =
+            SerializersModule {
+                polymorphic(NavKey::class) {
+                    subclassesOfSealed<BottomNavKey>()
+                }
+            }
     }
-}
 
-private val settingSavedStateConfig = SavedStateConfiguration {
-    serializersModule = SerializersModule {
-        polymorphic(NavKey::class) {
-            subclassesOfSealed<SettingNavKey>()
-        }
+private val settingSavedStateConfig =
+    SavedStateConfiguration {
+        serializersModule =
+            SerializersModule {
+                polymorphic(NavKey::class) {
+                    subclassesOfSealed<SettingNavKey>()
+                }
+            }
     }
-}

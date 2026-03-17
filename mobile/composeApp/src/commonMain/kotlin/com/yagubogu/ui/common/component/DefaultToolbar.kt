@@ -8,13 +8,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import yagubogu.composeapp.generated.resources.Res
 import com.yagubogu.ui.theme.Black
 import com.yagubogu.ui.theme.Gray050
 import com.yagubogu.ui.theme.PretendardBold20
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
+import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.all_back_button_content_description
 import yagubogu.composeapp.generated.resources.ic_arrow_left
 
@@ -40,6 +40,7 @@ fun DefaultToolbar(
                 containerColor = Gray050,
                 navigationIconContentColor = Black,
                 titleContentColor = Black,
+                subtitleContentColor = Black,
                 actionIconContentColor = Black,
                 scrolledContainerColor = Gray050,
             ),

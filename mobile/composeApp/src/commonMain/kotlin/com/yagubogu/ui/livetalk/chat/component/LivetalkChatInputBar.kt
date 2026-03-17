@@ -25,12 +25,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import yagubogu.composeapp.generated.resources.Res
 import com.yagubogu.ui.theme.Gray050
 import com.yagubogu.ui.theme.Gray100
 import com.yagubogu.ui.theme.Gray300
@@ -40,6 +37,9 @@ import com.yagubogu.ui.theme.Primary400
 import com.yagubogu.ui.theme.Primary500
 import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.util.shimmerIf
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
+import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.ic_lock
 import yagubogu.composeapp.generated.resources.ic_send
 import yagubogu.composeapp.generated.resources.livetalk_chat_input_hint

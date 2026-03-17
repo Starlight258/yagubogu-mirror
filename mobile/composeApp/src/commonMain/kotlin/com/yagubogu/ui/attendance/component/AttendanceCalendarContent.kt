@@ -199,14 +199,16 @@ private fun AttendanceCalendarContentPreview() {
 @Composable
 private fun AttendanceCalendarContentTodayItemPreview() {
     AttendanceCalendarContent(
-        items = listOf(
-            ATTENDANCE_HISTORY_ITEM_PLAYED.copy(
-                summary =
-                    ATTENDANCE_HISTORY_ITEM_PLAYED.summary.copy(
-                        id = 2L,
-                        attendanceDate = LocalDate.now(),
-                    ),
-            )),
+        items =
+            listOf(
+                ATTENDANCE_HISTORY_ITEM_PLAYED.copy(
+                    summary =
+                        ATTENDANCE_HISTORY_ITEM_PLAYED.summary.copy(
+                            id = 2L,
+                            attendanceDate = LocalDate.now(),
+                        ),
+                ),
+            ),
         startMonth = YearMonth.now().minusMonths(1),
         endMonth = YearMonth.now(),
         selectedMonth = YearMonth.now(),

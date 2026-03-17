@@ -5,7 +5,10 @@ import com.yagubogu.data.dto.response.auth.LoginResultResponse
 interface AuthRepository {
     suspend fun refreshToken(): Result<Unit>
 
-    suspend fun login(idToken: String, provider: String): Result<LoginResultResponse>
+    suspend fun login(
+        idToken: String,
+        provider: String,
+    ): Result<LoginResultResponse>
 
     suspend fun logout(): Result<Unit>
 }

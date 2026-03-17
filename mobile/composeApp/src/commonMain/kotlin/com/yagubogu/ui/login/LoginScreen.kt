@@ -28,6 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import co.touchlab.kermit.Logger
 import com.yagubogu.analytics.AnalyticsLogger
+import com.yagubogu.di.Qualifier
 import com.yagubogu.ui.common.platform.PlatformType
 import com.yagubogu.ui.common.platform.currentPlatform
 import com.yagubogu.ui.login.auth.OAuthCredentialManager
@@ -45,7 +46,6 @@ import com.yagubogu.ui.util.noRippleClickable
 import kotlinx.coroutines.flow.SharedFlow
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import com.yagubogu.di.Qualifier
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.qualifier.named
@@ -179,27 +179,30 @@ private fun LoginButton(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Image(
-                painter = painterResource(
-                    when (provider) {
-                        OAuthProvider.GOOGLE -> Res.drawable.ic_google_g_logo
-                        OAuthProvider.APPLE -> Res.drawable.ic_apple_logo
-                    }
-                ),
-                contentDescription = stringResource(
-                    when (provider) {
-                        OAuthProvider.GOOGLE -> Res.string.login_google_icon_description
-                        OAuthProvider.APPLE -> Res.string.login_apple_icon_description
-                    }
-                ),
+                painter =
+                    painterResource(
+                        when (provider) {
+                            OAuthProvider.GOOGLE -> Res.drawable.ic_google_g_logo
+                            OAuthProvider.APPLE -> Res.drawable.ic_apple_logo
+                        },
+                    ),
+                contentDescription =
+                    stringResource(
+                        when (provider) {
+                            OAuthProvider.GOOGLE -> Res.string.login_google_icon_description
+                            OAuthProvider.APPLE -> Res.string.login_apple_icon_description
+                        },
+                    ),
                 modifier = Modifier.size(20.dp),
             )
             Text(
-                text = stringResource(
-                    when (provider) {
-                        OAuthProvider.GOOGLE -> Res.string.login_button_google_account
-                        OAuthProvider.APPLE -> Res.string.login_button_apple_account
-                    }
-                ),
+                text =
+                    stringResource(
+                        when (provider) {
+                            OAuthProvider.GOOGLE -> Res.string.login_button_google_account
+                            OAuthProvider.APPLE -> Res.string.login_button_apple_account
+                        },
+                    ),
                 style = PretendardSemiBold,
                 fontSize = 18.dpToSp,
             )
@@ -223,7 +226,8 @@ fun LoginResultHandler(
                     Logger.withTag("LoginResult").d { loginResult.toString() }
                     snackbarHostState.showSnackbar(loginFailedMessage)
                     AnalyticsLogger.logEvent(
-                        "login_failure", mapOf("reason" to "${loginResult.exception}")
+                        "login_failure",
+                        mapOf("reason" to "${loginResult.exception}"),
                     )
                 }
 

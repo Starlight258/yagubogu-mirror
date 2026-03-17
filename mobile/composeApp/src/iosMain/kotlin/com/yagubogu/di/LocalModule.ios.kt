@@ -7,8 +7,9 @@ import com.yagubogu.data.local.createDataStore
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
-actual val localModule = module {
-    single<DataStore<Preferences>>(named(AUTH_PREFS)) {
-        createDataStore(fileName = AUTH_PREFS)
+actual val localModule =
+    module {
+        single<DataStore<Preferences>>(named(AUTH_PREFS)) {
+            createDataStore(fileName = AUTH_PREFS)
+        }
     }
-}

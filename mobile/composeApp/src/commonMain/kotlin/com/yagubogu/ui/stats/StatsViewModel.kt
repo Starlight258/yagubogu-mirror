@@ -79,7 +79,7 @@ class StatsViewModel(
     }
 
     fun updateYear(year: Int) {
-        if(_year.value == year) return
+        if (_year.value == year) return
         _statsMyUiModel.value = null
         _averageStats.value = null
         _vsTeamStatItems.value = emptyList()
@@ -93,97 +93,101 @@ class StatsViewModel(
 
     private fun fetchMyAttendanceStats() {
         attendanceJob?.cancel()
-        attendanceJob = viewModelScope.launch {
-            val year: Int = year.value
-            val statsCountsDeferred: Deferred<Result<StatsCounts>> =
-                async { statsRepository.getStatsCounts(year).map { it.toUiModel() } }
-            val winRateDeferred: Deferred<Result<Double>> =
-                async { statsRepository.getStatsWinRate(year) }
-            val myTeamDeferred: Deferred<Result<String?>> =
-                async { memberRepository.getFavoriteTeam() }
-            val luckyStadiumDeferred: Deferred<Result<String?>> =
-                async { statsRepository.getLuckyStadiums(year) }
+        attendanceJob =
+            viewModelScope.launch {
+                val year: Int = year.value
+                val statsCountsDeferred: Deferred<Result<StatsCounts>> =
+                    async { statsRepository.getStatsCounts(year).map { it.toUiModel() } }
+                val winRateDeferred: Deferred<Result<Double>> =
+                    async { statsRepository.getStatsWinRate(year) }
+                val myTeamDeferred: Deferred<Result<String?>> =
+                    async { memberRepository.getFavoriteTeam() }
+                val luckyStadiumDeferred: Deferred<Result<String?>> =
+                    async { statsRepository.getLuckyStadiums(year) }
 
-            val statsCountsResult: Result<StatsCounts> = statsCountsDeferred.await()
-            val winRateResult: Result<Double> = winRateDeferred.await()
-            val myTeamResult: Result<String?> = myTeamDeferred.await()
-            val luckyStadiumResult: Result<String?> = luckyStadiumDeferred.await()
+                val statsCountsResult: Result<StatsCounts> = statsCountsDeferred.await()
+                val winRateResult: Result<Double> = winRateDeferred.await()
+                val myTeamResult: Result<String?> = myTeamDeferred.await()
+                val luckyStadiumResult: Result<String?> = luckyStadiumDeferred.await()
 
-            if (statsCountsResult.isSuccess && winRateResult.isSuccess && myTeamResult.isSuccess && luckyStadiumResult.isSuccess) {
-                val statsCounts: StatsCounts = statsCountsResult.getOrThrow()
-                val winRate: Double = winRateResult.getOrThrow()
-                val myTeam: String? = myTeamResult.getOrThrow()
-                val luckyStadium: String? = luckyStadiumResult.getOrThrow()
+                if (statsCountsResult.isSuccess && winRateResult.isSuccess && myTeamResult.isSuccess && luckyStadiumResult.isSuccess) {
+                    val statsCounts: StatsCounts = statsCountsResult.getOrThrow()
+                    val winRate: Double = winRateResult.getOrThrow()
+                    val myTeam: String? = myTeamResult.getOrThrow()
+                    val luckyStadium: String? = luckyStadiumResult.getOrThrow()
 
-                val statsMyUiModel =
-                    StatsMyUiModel(
-                        winCount = statsCounts.winCounts,
-                        drawCount = statsCounts.drawCounts,
-                        loseCount = statsCounts.loseCounts,
-                        totalCount = statsCounts.favoriteCheckInCounts,
-                        winningPercentage = winRate.toFloat(),
-                        myTeam = myTeam,
-                        luckyStadium = luckyStadium,
-                    )
-                _statsMyUiModel.value = statsMyUiModel
-            } else {
-                val errors: List<String> =
-                    listOf(statsCountsResult, winRateResult, myTeamResult, luckyStadiumResult)
-                        .filter { it.isFailure }
-                        .mapNotNull { it.exceptionOrNull()?.message }
-                logger.w { "API 호출 실패: ${errors.joinToString()}" }
+                    val statsMyUiModel =
+                        StatsMyUiModel(
+                            winCount = statsCounts.winCounts,
+                            drawCount = statsCounts.drawCounts,
+                            loseCount = statsCounts.loseCounts,
+                            totalCount = statsCounts.favoriteCheckInCounts,
+                            winningPercentage = winRate.toFloat(),
+                            myTeam = myTeam,
+                            luckyStadium = luckyStadium,
+                        )
+                    _statsMyUiModel.value = statsMyUiModel
+                } else {
+                    val errors: List<String> =
+                        listOf(statsCountsResult, winRateResult, myTeamResult, luckyStadiumResult)
+                            .filter { it.isFailure }
+                            .mapNotNull { it.exceptionOrNull()?.message }
+                    logger.w { "API 호출 실패: ${errors.joinToString()}" }
+                }
             }
-        }
     }
 
     private fun fetchMyAverageStats() {
         averageStatsJob?.cancel()
-        averageStatsJob = viewModelScope.launch {
-            val year: Int = year.value
-            statsRepository
-                .getAverageStats(year)
-                .map { it.toUiModel() }
-                .onSuccess { averageStats: AverageStats ->
-                    _averageStats.value = averageStats
-                }.onFailure { exception: Throwable ->
-                    logger.w(exception) { "API 호출 실패" }
-                }
-        }
+        averageStatsJob =
+            viewModelScope.launch {
+                val year: Int = year.value
+                statsRepository
+                    .getAverageStats(year)
+                    .map { it.toUiModel() }
+                    .onSuccess { averageStats: AverageStats ->
+                        _averageStats.value = averageStats
+                    }.onFailure { exception: Throwable ->
+                        logger.w(exception) { "API 호출 실패" }
+                    }
+            }
     }
 
     private fun fetchVsTeamStats() {
         vsTeamStatsJob?.cancel()
-        vsTeamStatsJob = viewModelScope.launch {
-            val year: Int = year.value
-            val vsTeamStatsResult: Result<List<VsTeamStatItem>> =
-                statsRepository
-                    .getVsTeamStats(year)
-                    .mapListIndexed { index: Int, item: OpponentWinRateTeamDto ->
-                        item.toUiModel(rank = index + 1)
+        vsTeamStatsJob =
+            viewModelScope.launch {
+                val year: Int = year.value
+                val vsTeamStatsResult: Result<List<VsTeamStatItem>> =
+                    statsRepository
+                        .getVsTeamStats(year)
+                        .mapListIndexed { index: Int, item: OpponentWinRateTeamDto ->
+                            item.toUiModel(rank = index + 1)
+                        }
+                vsTeamStatsResult
+                    .onSuccess { updatedVsTeamStats: List<VsTeamStatItem> ->
+                        _vsTeamStatItems.value = updatedVsTeamStats
+                    }.onFailure { exception: Throwable ->
+                        logger.w(exception) { "API 호출 실패" }
                     }
-            vsTeamStatsResult
-                .onSuccess { updatedVsTeamStats: List<VsTeamStatItem> ->
-                    _vsTeamStatItems.value = updatedVsTeamStats
-                }.onFailure { exception: Throwable ->
-                    logger.w(exception) { "API 호출 실패" }
-                }
-        }
+            }
     }
 
     private fun fetchStadiumVisitCounts() {
         stadiumVisitCountsJob?.cancel()
-        stadiumVisitCountsJob = viewModelScope.launch {
-            val year: Int = year.value
-            val stadiumVisitCountsResult: Result<List<StadiumVisitCount>> =
-                checkInRepository.getStadiumCheckInCounts(year).mapList { it.toUiModel() }
-            stadiumVisitCountsResult
-                .onSuccess { stadiumVisitCounts: List<StadiumVisitCount> ->
-                    _stadiumVisitCounts.value =
-                        stadiumVisitCounts.sortedByDescending { it.visitCounts }
-                }.onFailure { exception: Throwable ->
-                    logger.w(exception) { "API 호출 실패" }
-                }
-        }
+        stadiumVisitCountsJob =
+            viewModelScope.launch {
+                val year: Int = year.value
+                val stadiumVisitCountsResult: Result<List<StadiumVisitCount>> =
+                    checkInRepository.getStadiumCheckInCounts(year).mapList { it.toUiModel() }
+                stadiumVisitCountsResult
+                    .onSuccess { stadiumVisitCounts: List<StadiumVisitCount> ->
+                        _stadiumVisitCounts.value =
+                            stadiumVisitCounts.sortedByDescending { it.visitCounts }
+                    }.onFailure { exception: Throwable ->
+                        logger.w(exception) { "API 호출 실패" }
+                    }
+            }
     }
 
     companion object {

@@ -95,7 +95,7 @@ fun Modifier.shimmerLoading(roundCorner: Dp = 0.dp): Modifier =
                     val cornerRadiusPx = roundCorner.toPx()
                     drawRoundRect(
                         brush = brush,
-                        cornerRadius = CornerRadius(cornerRadiusPx, cornerRadiusPx)
+                        cornerRadius = CornerRadius(cornerRadiusPx, cornerRadiusPx),
                     )
                 }
                 else -> {
@@ -103,7 +103,6 @@ fun Modifier.shimmerLoading(roundCorner: Dp = 0.dp): Modifier =
                 }
             }
         }
-
     }
 
 fun Modifier.shimmerIf(condition: Boolean): Modifier =

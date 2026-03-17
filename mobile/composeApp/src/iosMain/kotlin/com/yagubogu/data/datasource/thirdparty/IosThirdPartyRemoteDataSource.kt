@@ -24,13 +24,15 @@ class IosThirdPartyRemoteDataSource(
     ): Result<Unit> =
         safeApiCall {
             // 로컬 파일 경로용 URL 객체 생성
-            val nsUrl = when {
-                imageFileUri.startsWith("file://") -> NSURL(string = imageFileUri)
-                else ->  NSURL.fileURLWithPath(imageFileUri)
-            }
+            val nsUrl =
+                when {
+                    imageFileUri.startsWith("file://") -> NSURL(string = imageFileUri)
+                    else -> NSURL.fileURLWithPath(imageFileUri)
+                }
 
-            val nsData = NSData.dataWithContentsOfURL(nsUrl)
-                ?: throw IllegalStateException("Failed to read data from $imageFileUri (Resolved URL: ${nsUrl.absoluteString})")
+            val nsData =
+                NSData.dataWithContentsOfURL(nsUrl)
+                    ?: throw IllegalStateException("Failed to read data from $imageFileUri (Resolved URL: ${nsUrl.absoluteString})")
 
             // 데이터 크기 검증 (넘겨받은 contentLength와 실제 읽은 데이터 크기 비교)
             val actualLength = nsData.length.toLong()
@@ -42,11 +44,13 @@ class IosThirdPartyRemoteDataSource(
                 }
             }
 
-            val requestBody = object : OutgoingContent.ByteArrayContent() {
-                override val contentType: ContentType = ContentType.parse(contentType)
-                override val contentLength: Long = actualLength
-                override fun bytes(): ByteArray = byteArray
-            }
+            val requestBody =
+                object : OutgoingContent.ByteArrayContent() {
+                    override val contentType: ContentType = ContentType.parse(contentType)
+                    override val contentLength: Long = actualLength
+
+                    override fun bytes(): ByteArray = byteArray
+                }
 
             thirdPartyApiService.putImageToS3(url, requestBody)
         }

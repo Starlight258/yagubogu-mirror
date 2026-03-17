@@ -59,7 +59,7 @@ fun MainScreen(
 
     LaunchedEffect(Unit) {
         viewModel.selectBottomNavKey(
-            navigationState.currentRoute as? BottomNavKey ?: BottomNavKey.Home
+            navigationState.currentRoute as? BottomNavKey ?: BottomNavKey.Home,
         )
     }
 

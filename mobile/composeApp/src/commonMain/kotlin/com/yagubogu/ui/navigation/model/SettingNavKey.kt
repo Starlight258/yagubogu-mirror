@@ -26,6 +26,7 @@ sealed interface SettingNavKey : NavKey {
     data object SettingDeleteAccount : SettingNavKey {
         override val label: StringResource = Res.string.setting_manage_account
     }
+
     @Serializable
     data object OssLicense : SettingNavKey {
         override val label: StringResource = Res.string.setting_open_source_license

@@ -124,10 +124,11 @@ private fun VsTeamStatItem(
             )
         }
         Text(
-            text = stringResource(
-                Res.string.all_win_rate,
-                vsTeamStatItem.winningPercentage.formatOneDecimal()
-            )
+            text =
+                stringResource(
+                    Res.string.all_win_rate,
+                    vsTeamStatItem.winningPercentage.formatOneDecimal(),
+                ),
         )
     }
 }
@@ -136,11 +137,12 @@ private fun VsTeamStatItem(
 private fun VsTeamStatItemShimmer(modifier: Modifier = Modifier) {
     repeat(5) {
         Box(
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp)
-                .height(40.dp)
-                .shimmerLoading(12.dp)
+            modifier =
+                modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+                    .height(40.dp)
+                    .shimmerLoading(12.dp),
         )
     }
 }

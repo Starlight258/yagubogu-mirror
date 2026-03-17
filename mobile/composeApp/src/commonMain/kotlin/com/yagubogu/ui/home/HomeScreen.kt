@@ -61,9 +61,7 @@ import yagubogu.composeapp.generated.resources.home_location_permission_denied_m
 import yagubogu.composeapp.generated.resources.home_location_settings_disabled
 
 @Composable
-expect fun rememberLocationPermissionManager(
-    onPermissionResult: (Map<String, Boolean>) -> Unit
-): LocationPermissionManager
+expect fun rememberLocationPermissionManager(onPermissionResult: (Map<String, Boolean>) -> Unit): LocationPermissionManager
 
 @Composable
 expect fun rememberAppSettingsOpener(): () -> Unit
@@ -93,16 +91,18 @@ fun HomeScreen(
 
     val openAppSettings: () -> Unit = rememberAppSettingsOpener()
 
-    val locationPermissionManager = rememberLocationPermissionManager(
-        onPermissionResult = { permissions: Map<String, Boolean> ->
-            val isPermissionGranted: Boolean = permissions.any { it.value }
-            permissionState = if (isPermissionGranted) {
-                PermissionState.GRANTED
-            } else {
-                PermissionState.DENIED
-            }
-        }
-    )
+    val locationPermissionManager =
+        rememberLocationPermissionManager(
+            onPermissionResult = { permissions: Map<String, Boolean> ->
+                val isPermissionGranted: Boolean = permissions.any { it.value }
+                permissionState =
+                    if (isPermissionGranted) {
+                        PermissionState.GRANTED
+                    } else {
+                        PermissionState.DENIED
+                    }
+            },
+        )
 
     LaunchedEffect(Unit) {
         viewModel.fetchAll()
@@ -129,7 +129,7 @@ fun HomeScreen(
                         scope = snackbarScope,
                         message = locationSettingsDisabledMessage,
                     )
-                }
+                },
             )
             permissionState = PermissionState.IDLE
         }
@@ -156,7 +156,7 @@ fun HomeScreen(
                     snackbarScope.launch {
                         snackbarHostState.showSingleSnackbar(
                             scope = snackbarScope,
-                            message = locationPermissionDeniedMessage
+                            message = locationPermissionDeniedMessage,
                         )
                     }
                 }

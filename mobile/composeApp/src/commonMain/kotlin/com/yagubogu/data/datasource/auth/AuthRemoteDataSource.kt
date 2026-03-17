@@ -17,7 +17,10 @@ class AuthRemoteDataSource(
             authApiService.postRefresh(tokenRequest)
         }
 
-    override suspend fun login(idToken: String, provider: String): Result<LoginResponse> =
+    override suspend fun login(
+        idToken: String,
+        provider: String,
+    ): Result<LoginResponse> =
         safeApiCall {
             val loginRequest = LoginRequest(idToken, provider)
             authApiService.postLogin(loginRequest)

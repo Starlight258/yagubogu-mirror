@@ -81,19 +81,21 @@ fun BalloonTooltip(
     val transitionState = remember { MutableTransitionState(false) }
     transitionState.targetState = isVisible
 
-    val positionProvider = remember {
-        object : PopupPositionProvider {
-            override fun calculatePosition(
-                anchorBounds: IntRect,
-                windowSize: IntSize,
-                layoutDirection: LayoutDirection,
-                popupContentSize: IntSize,
-            ): IntOffset = IntOffset(
-                x = anchorBounds.left + (anchorBounds.width - popupContentSize.width) / 2,
-                y = anchorBounds.bottom,
-            )
+    val positionProvider =
+        remember {
+            object : PopupPositionProvider {
+                override fun calculatePosition(
+                    anchorBounds: IntRect,
+                    windowSize: IntSize,
+                    layoutDirection: LayoutDirection,
+                    popupContentSize: IntSize,
+                ): IntOffset =
+                    IntOffset(
+                        x = anchorBounds.left + (anchorBounds.width - popupContentSize.width) / 2,
+                        y = anchorBounds.bottom,
+                    )
+            }
         }
-    }
 
     Box(modifier = modifier) {
         content { isVisible = !isVisible }

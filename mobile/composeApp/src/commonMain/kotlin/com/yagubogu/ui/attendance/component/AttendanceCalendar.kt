@@ -139,21 +139,21 @@ private fun Day(
                 .padding(horizontal = 4.dp)
                 .padding(bottom = 4.dp)
                 .background(
-                    color = when {
-                        isSelected -> Primary050
-                        else -> Color.Transparent
-                    },
-                    shape = RoundedCornerShape(4.dp)
-                )
-                .border(
+                    color =
+                        when {
+                            isSelected -> Primary050
+                            else -> Color.Transparent
+                        },
+                    shape = RoundedCornerShape(4.dp),
+                ).border(
                     width = 1.dp,
-                    color = when {
-                        isSelected -> Primary500
-                        else -> Color.Transparent
-                    },
-                    shape = RoundedCornerShape(4.dp)
-                )
-                .noRippleClickable(
+                    color =
+                        when {
+                            isSelected -> Primary500
+                            else -> Color.Transparent
+                        },
+                    shape = RoundedCornerShape(4.dp),
+                ).noRippleClickable(
                     enabled = day.position == DayPosition.MonthDate && day.date <= today,
                     onClick = { onClick(day) },
                 ),
@@ -176,13 +176,13 @@ private fun Day(
                     .padding(top = 2.dp)
                     .size(30.dp)
                     .background(
-                        color = when {
-                            isToday -> Primary500
-                            else -> Color.Transparent
-                        },
+                        color =
+                            when {
+                                isToday -> Primary500
+                                else -> Color.Transparent
+                            },
                         shape = CircleShape,
-                    )
-                    .padding(2.dp)
+                    ).padding(2.dp)
                     .wrapContentHeight(align = Alignment.CenterVertically),
         )
 

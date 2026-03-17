@@ -46,7 +46,7 @@ fun MyStats(
     ) {
         StatItem(
             title = stringResource(Res.string.stats_my_team),
-            value = statsMyUiModel.toStatItemValue({it.myTeam}),
+            value = statsMyUiModel.toStatItemValue({ it.myTeam }),
             emoji = stringResource(Res.string.stats_my_team_emoji),
             modifier = Modifier.weight(1f),
         )
@@ -65,7 +65,7 @@ fun MyStats(
             ) {
                 StatItem(
                     title = stringResource(Res.string.stats_my_lucky_stadium),
-                    value = statsMyUiModel.toStatItemValue({it.luckyStadium}),
+                    value = statsMyUiModel.toStatItemValue({ it.luckyStadium }),
                     emoji = stringResource(Res.string.stats_my_lucky_stadium_emoji),
                     modifier =
                         Modifier

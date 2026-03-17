@@ -14,20 +14,22 @@ internal object PrettyHttpLogger : KtorLogger {
         val lines = message.lines()
         val firstLine = lines.firstOrNull() ?: return
 
-        val prefix = when {
-            firstLine.startsWith("REQUEST") -> "→"
-            firstLine.startsWith("RESPONSE") -> "←"
-            else -> "·"
-        }
-
-        val formatted = buildString {
-            appendLine(DIVIDER)
-            appendLine("$prefix $firstLine")
-            lines.drop(1).forEach { line ->
-                if (line.isNotBlank()) appendLine(prettyFormatLine(line))
+        val prefix =
+            when {
+                firstLine.startsWith("REQUEST") -> "→"
+                firstLine.startsWith("RESPONSE") -> "←"
+                else -> "·"
             }
-            append(DIVIDER)
-        }
+
+        val formatted =
+            buildString {
+                appendLine(DIVIDER)
+                appendLine("$prefix $firstLine")
+                lines.drop(1).forEach { line ->
+                    if (line.isNotBlank()) appendLine(prettyFormatLine(line))
+                }
+                append(DIVIDER)
+            }
 
         logger.d { formatted }
     }

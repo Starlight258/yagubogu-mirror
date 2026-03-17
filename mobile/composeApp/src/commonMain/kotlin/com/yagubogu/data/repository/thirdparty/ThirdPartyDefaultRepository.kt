@@ -10,6 +10,5 @@ class ThirdPartyDefaultRepository(
         imageFileUri: String,
         contentType: String,
         contentLength: Long,
-    ): Result<Unit> =
-        thirdPartyDataSource.uploadImageToS3(url, imageFileUri, contentType, contentLength)
+    ): Result<Unit> = thirdPartyDataSource.uploadImageToS3(url, imageFileUri, contentType, contentLength)
 }

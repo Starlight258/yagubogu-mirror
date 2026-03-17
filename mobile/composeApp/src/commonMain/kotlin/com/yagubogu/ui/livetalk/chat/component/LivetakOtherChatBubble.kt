@@ -19,11 +19,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import yagubogu.composeapp.generated.resources.Res
 import com.yagubogu.ui.common.component.profile.ProfileImage
 import com.yagubogu.ui.livetalk.chat.model.LivetalkChatItem
 import com.yagubogu.ui.theme.Black
@@ -39,6 +36,9 @@ import com.yagubogu.ui.util.formatToAmPm
 import com.yagubogu.ui.util.noRippleClickable
 import com.yagubogu.ui.util.now
 import kotlinx.datetime.LocalDateTime
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
+import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.all_fan
 import yagubogu.composeapp.generated.resources.ic_flag
 import yagubogu.composeapp.generated.resources.livetalk_reported_chat_message

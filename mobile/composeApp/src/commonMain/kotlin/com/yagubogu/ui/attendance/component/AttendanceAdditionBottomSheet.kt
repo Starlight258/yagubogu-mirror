@@ -32,13 +32,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import yagubogu.composeapp.generated.resources.Res
 import com.yagubogu.ui.attendance.model.PastGameUiModel
 import com.yagubogu.ui.attendance.model.PastGameUiState
 import com.yagubogu.ui.theme.EsamanruBold32
@@ -55,6 +52,9 @@ import com.yagubogu.ui.util.hhmmFormatter
 import com.yagubogu.ui.util.shimmerLoading
 import com.yagubogu.ui.util.yyyyMMddFormatter
 import kotlinx.datetime.format
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
+import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.attendance_history_add_attendance_description
 import yagubogu.composeapp.generated.resources.attendance_history_no_game_description
 import yagubogu.composeapp.generated.resources.img_baseball_fly_error
