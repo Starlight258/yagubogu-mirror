@@ -29,10 +29,10 @@ jobs:
           cache: gradle  # Gradle 의존성 캐시
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-      - name: Create google-services.json (Release)
+      - name: Create google-services.json
         run: |
           mkdir -p ./composeApp
-          echo "$GOOGLE_SERVICES_JSON_RELEASE" | base64 --decode > ./composeApp/google-services.json
+          echo "$GOOGLE_SERVICES_JSON_FULL" | base64 --decode > ./composeApp/google-services.json
       - name: Run ktlint check
         run: ./gradlew ktlintCheck
 
@@ -54,10 +54,10 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Create google-services.json (Release)
+      - name: Create google-services.json
         run: |
           mkdir -p ./composeApp
-          echo "$GOOGLE_SERVICES_JSON_RELEASE" | base64 --decode > ./composeApp/google-services.json
+          echo "$GOOGLE_SERVICES_JSON_FULL" | base64 --decode > ./composeApp/google-services.json
 
       - name: Android Release Build
         run: |

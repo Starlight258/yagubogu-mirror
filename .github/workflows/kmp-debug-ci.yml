@@ -32,7 +32,7 @@ jobs:
       - name: Create google-services.json
         run: |
           mkdir -p ./composeApp
-          echo "$GOOGLE_SERVICES_JSON_DEBUG" | base64 --decode > ./composeApp/google-services.json
+          echo "$GOOGLE_SERVICES_JSON_FULL" | base64 --decode > ./composeApp/google-services.json
       - name: Run ktlint check
         run: ./gradlew ktlintCheck
 
@@ -67,7 +67,7 @@ jobs:
       - name: Create google-services.json
         run: |
           mkdir -p ./composeApp
-          echo "$GOOGLE_SERVICES_JSON_DEBUG" | base64 --decode > ./composeApp/google-services.json
+          echo "$GOOGLE_SERVICES_JSON_FULL" | base64 --decode > ./composeApp/google-services.json
 
       - name: Android Build
         run: |
