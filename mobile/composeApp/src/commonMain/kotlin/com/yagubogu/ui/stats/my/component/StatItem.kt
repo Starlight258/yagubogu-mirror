@@ -76,7 +76,7 @@ private fun StatItemAllStatesPreview() {
             emoji = "🍀"
         )
 
-        // 2. 데이터가 없는 境遇
+        // 2. 데이터가 없는 경우
         StatItem(
             title = "행운의 구장",
             value = StatItemValue.NoData,
