@@ -1,13 +1,13 @@
 package com.yagubogu.ui.livetalk.chat.component
 
 import androidx.compose.runtime.Composable
-import org.jetbrains.compose.resources.stringResource
-import yagubogu.composeapp.generated.resources.Res
 import com.yagubogu.ui.common.component.DefaultDialog
 import com.yagubogu.ui.common.component.profile.ProfileDialog
 import com.yagubogu.ui.common.model.DefaultDialogUiModel
 import com.yagubogu.ui.livetalk.chat.model.LivetalkChatScreenActions
 import com.yagubogu.ui.livetalk.chat.model.LivetalkChatScreenStates
+import org.jetbrains.compose.resources.stringResource
+import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.all_cancel
 import yagubogu.composeapp.generated.resources.livetalk_trash_btn
 import yagubogu.composeapp.generated.resources.livetalk_trash_dialog_message

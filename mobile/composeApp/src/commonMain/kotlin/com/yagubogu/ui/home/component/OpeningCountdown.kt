@@ -21,12 +21,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.shadow.Shadow
-import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import yagubogu.composeapp.generated.resources.Res
 import com.yagubogu.ui.theme.Dimming025
 import com.yagubogu.ui.theme.EsamanruBold
 import com.yagubogu.ui.theme.EsamanruMedium
@@ -40,6 +38,8 @@ import com.yagubogu.ui.theme.dpToSp
 import com.yagubogu.ui.util.cssShadow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import org.jetbrains.compose.resources.stringResource
+import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.d_day_with_days
 import yagubogu.composeapp.generated.resources.home_opening_countdown_left_time
 

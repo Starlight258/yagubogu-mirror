@@ -14,10 +14,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import yagubogu.composeapp.generated.resources.Res
 import com.yagubogu.ui.home.model.MemberStatsUiModel
 import com.yagubogu.ui.theme.Gray500
 import com.yagubogu.ui.theme.PretendardBold20
@@ -25,6 +23,8 @@ import com.yagubogu.ui.theme.PretendardRegular12
 import com.yagubogu.ui.theme.Primary100
 import com.yagubogu.ui.theme.Primary700
 import com.yagubogu.ui.theme.White
+import org.jetbrains.compose.resources.stringResource
+import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.all_rounded_win_rate
 import yagubogu.composeapp.generated.resources.home_attendance_count
 import yagubogu.composeapp.generated.resources.home_my_team

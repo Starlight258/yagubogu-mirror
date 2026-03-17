@@ -74,7 +74,7 @@ fun SettingScreen(
                         onSettingAccountClick = { onSettingItemClick(SettingNavKey.SettingAccount) },
                         onFavoriteTeamEditClick = { onFavoriteTeamEditClick() },
                         onFullScreenMode = { isFull: Boolean -> isTopBarVisible = !isFull },
-                        onOssLicenseClick = { onSettingItemClick(SettingNavKey.OssLicense) }
+                        onOssLicenseClick = { onSettingItemClick(SettingNavKey.OssLicense) },
                     )
                 }
                 entry<SettingNavKey.SettingAccount> {

@@ -1,8 +1,8 @@
 package com.yagubogu.di
 
+import com.yagubogu.di.Qualifier
 import com.yagubogu.ui.login.IosAppleCredentialManager
 import com.yagubogu.ui.login.IosGoogleCredentialManager
-import com.yagubogu.di.Qualifier
 import com.yagubogu.ui.login.auth.OAuthCredentialManager
 import org.koin.core.qualifier.named
 import org.koin.dsl.module

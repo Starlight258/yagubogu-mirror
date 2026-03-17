@@ -62,11 +62,12 @@ fun StadiumVisitCounts(
 private fun StadiumVisitCountsShimmer(modifier: Modifier = Modifier) {
     repeat(9) {
         Box(
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(vertical = 2.dp)
-                .height(24.dp)
-                .shimmerLoading(8.dp)
+            modifier =
+                modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 2.dp)
+                    .height(24.dp)
+                    .shimmerLoading(8.dp),
         )
     }
 }
@@ -88,10 +89,11 @@ private fun List<StadiumVisitCount>.toBarChartItems(): List<BarChartItemValue> =
                     value =
                         when {
                             stadiumVisitCount.visitCounts <= 0 -> "-"
-                            else -> stringResource(
-                                Res.string.all_count,
-                                stadiumVisitCount.visitCounts
-                            )
+                            else ->
+                                stringResource(
+                                    Res.string.all_count,
+                                    stadiumVisitCount.visitCounts,
+                                )
                         },
                     gap =
                         when {

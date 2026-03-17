@@ -22,8 +22,7 @@ actual val authModule =
         // Apple 로그인을 Android에서 사용하지 않으므로 익명 객체 생성
         single<OAuthCredentialManager>(named<Qualifier.Apple>()) {
             object : OAuthCredentialManager {
-                override suspend fun getCredentialResult(): OAuthCredentialResult =
-                    OAuthCredentialResult.Cancel
+                override suspend fun getCredentialResult(): OAuthCredentialResult = OAuthCredentialResult.Cancel
 
                 override suspend fun signOut(): Result<Unit> = Result.success(Unit)
             }

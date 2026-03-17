@@ -5,6 +5,10 @@ import androidx.compose.runtime.Immutable
 @Immutable
 sealed interface StatItemValue {
     data object Loading : StatItemValue
+
     data object NoData : StatItemValue
-    data class Data(val text: String) : StatItemValue
+
+    data class Data(
+        val text: String,
+    ) : StatItemValue
 }

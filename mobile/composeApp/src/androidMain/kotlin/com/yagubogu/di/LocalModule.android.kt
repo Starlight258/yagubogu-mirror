@@ -8,8 +8,9 @@ import org.koin.android.ext.koin.androidApplication
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
-actual val localModule = module {
-    single<DataStore<Preferences>>(named(AUTH_PREFS)) {
-        createDataStore(context = androidApplication(), fileName = AUTH_PREFS)
+actual val localModule =
+    module {
+        single<DataStore<Preferences>>(named(AUTH_PREFS)) {
+            createDataStore(context = androidApplication(), fileName = AUTH_PREFS)
+        }
     }
-}

@@ -2,9 +2,7 @@ package com.yagubogu.ui.home.component.dialog
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import yagubogu.composeapp.generated.resources.Res
 import com.yagubogu.domain.model.Coordinate
 import com.yagubogu.domain.model.Latitude
 import com.yagubogu.domain.model.Longitude
@@ -12,6 +10,8 @@ import com.yagubogu.ui.common.component.DefaultDialog
 import com.yagubogu.ui.common.model.DefaultDialogUiModel
 import com.yagubogu.ui.home.HomeViewModel
 import com.yagubogu.ui.home.model.StadiumWithGame
+import org.jetbrains.compose.resources.stringResource
+import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.all_cancel
 import yagubogu.composeapp.generated.resources.home_check_in_caution
 import yagubogu.composeapp.generated.resources.home_check_in_confirm

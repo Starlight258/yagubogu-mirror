@@ -17,7 +17,7 @@ data class AverageStats(
 @Composable
 fun AverageStats?.toStatItemValue(
     resource: StringResource,
-    selector: (AverageStats) -> Double
+    selector: (AverageStats) -> Double,
 ): StatItemValue {
     // 1. 전체 데이터가 null이면 로딩 상태 반환
     val stats = this ?: return StatItemValue.Loading
@@ -27,6 +27,6 @@ fun AverageStats?.toStatItemValue(
 
     // 3. 리소스와 함께 포맷팅하여 Data 상태로 반환
     return StatItemValue.Data(
-        stringResource(resource, rawValue.formatOneDecimal())
+        stringResource(resource, rawValue.formatOneDecimal()),
     )
 }

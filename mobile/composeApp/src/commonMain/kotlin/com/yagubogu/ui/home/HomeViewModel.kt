@@ -27,8 +27,8 @@ import com.yagubogu.ui.home.model.VictoryFairyRanking
 import com.yagubogu.ui.mapper.toDomain
 import com.yagubogu.ui.mapper.toUiModel
 import com.yagubogu.ui.util.mapList
-import com.yagubogu.ui.util.toInstant
 import com.yagubogu.ui.util.now
+import com.yagubogu.ui.util.toInstant
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async

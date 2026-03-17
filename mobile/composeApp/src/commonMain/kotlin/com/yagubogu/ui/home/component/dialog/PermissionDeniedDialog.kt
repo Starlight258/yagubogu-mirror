@@ -2,11 +2,11 @@ package com.yagubogu.ui.home.component.dialog
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import yagubogu.composeapp.generated.resources.Res
 import com.yagubogu.ui.common.component.DefaultDialog
 import com.yagubogu.ui.common.model.DefaultDialogUiModel
+import org.jetbrains.compose.resources.stringResource
+import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.all_cancel
 import yagubogu.composeapp.generated.resources.permission_dialog_location_description
 import yagubogu.composeapp.generated.resources.permission_dialog_location_emoji

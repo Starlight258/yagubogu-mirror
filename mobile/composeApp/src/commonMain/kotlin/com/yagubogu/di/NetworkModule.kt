@@ -2,6 +2,7 @@ package com.yagubogu.di
 
 import com.yagubogu.BuildKonfig
 import com.yagubogu.data.dto.request.token.TokenRequest
+import com.yagubogu.data.network.PrettyHttpLogger
 import com.yagubogu.data.network.SseClient
 import com.yagubogu.data.network.TokenManager
 import com.yagubogu.data.service.AuthApiService
@@ -16,7 +17,6 @@ import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
-import com.yagubogu.data.network.PrettyHttpLogger
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.sse.SSE
@@ -203,8 +203,8 @@ private fun HttpClientConfig<*>.configureAuth(
                 // 우리 서버(yagubogu.com)로 보내는 요청이면서,
                 // 로그인이나 토큰 갱신 요청이 '아닌' 경우에만 토큰을 붙입니다.
                 requestUrl.startsWith(baseUrl) &&
-                        !requestUrl.endsWith(AUTH_LOGIN_ENDPOINT) &&
-                        !requestUrl.endsWith(AUTH_REFRESH_ENDPOINT)
+                    !requestUrl.endsWith(AUTH_LOGIN_ENDPOINT) &&
+                    !requestUrl.endsWith(AUTH_REFRESH_ENDPOINT)
             }
         }
     }

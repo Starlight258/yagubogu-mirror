@@ -26,10 +26,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import yagubogu.composeapp.generated.resources.Res
 import com.yagubogu.ui.badge.BadgeUiState
 import com.yagubogu.ui.badge.BadgeViewModel
 import com.yagubogu.ui.badge.model.BADGE_ID_0_ACQUIRED_FIXTURE
@@ -42,7 +40,9 @@ import com.yagubogu.ui.theme.Gray300
 import com.yagubogu.ui.theme.PretendardBold20
 import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.util.shimmerLoading
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.badge_list_title
 import yagubogu.composeapp.generated.resources.badge_main_badge_title
 import yagubogu.composeapp.generated.resources.badge_title

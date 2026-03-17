@@ -23,22 +23,23 @@ import org.koin.dsl.module
 
 expect fun Module.registerPlatformDataSources()
 
-val datasourceModule = module {
-    singleOf(::AuthRemoteDataSource) { bind<AuthDataSource>() }
+val datasourceModule =
+    module {
+        singleOf(::AuthRemoteDataSource) { bind<AuthDataSource>() }
 
-    singleOf(::MemberRemoteDataSource) { bind<MemberDataSource>() }
+        singleOf(::MemberRemoteDataSource) { bind<MemberDataSource>() }
 
-    singleOf(::CheckInRemoteDataSource) { bind<CheckInDataSource>() }
+        singleOf(::CheckInRemoteDataSource) { bind<CheckInDataSource>() }
 
-    singleOf(::StatsRemoteDataSource) { bind<StatsDataSource>() }
+        singleOf(::StatsRemoteDataSource) { bind<StatsDataSource>() }
 
-    singleOf(::StadiumRemoteDataSource) { bind<StadiumDataSource>() }
+        singleOf(::StadiumRemoteDataSource) { bind<StadiumDataSource>() }
 
-    singleOf(::StreamRemoteDataSource) { bind<StreamDataSource>() }
+        singleOf(::StreamRemoteDataSource) { bind<StreamDataSource>() }
 
-    singleOf(::GameRemoteDataSource) { bind<GameDataSource>() }
+        singleOf(::GameRemoteDataSource) { bind<GameDataSource>() }
 
-    singleOf(::TalkRemoteDataSource) { bind<TalkDataSource>() }
+        singleOf(::TalkRemoteDataSource) { bind<TalkDataSource>() }
 
-    registerPlatformDataSources()
-}
+        registerPlatformDataSources()
+    }

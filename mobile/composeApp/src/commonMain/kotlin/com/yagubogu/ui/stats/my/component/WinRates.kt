@@ -106,13 +106,14 @@ private fun WinRatePieChart(
         // 중앙 텍스트 처리 (확장 함수 활용)
         PieChartInnerText(
             winRate = statsMyUiModel.toStatItemValue { it.winningPercentage.roundToInt() },
-            totalCount = statsMyUiModel.toStatItemValue { it.totalCount }
+            totalCount = statsMyUiModel.toStatItemValue { it.totalCount },
         )
         when (statsMyUiModel) {
             null -> {
                 Box(
-                    modifier = Modifier
-                        .size(pieChartSize)
+                    modifier =
+                        Modifier
+                            .size(pieChartSize),
                 )
             }
             else -> {
@@ -143,7 +144,7 @@ private fun PieChartInnerText(
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier
+        modifier = modifier,
     ) {
         // 1. 승률 (큰 글씨)
         when (winRate) {
@@ -157,9 +158,10 @@ private fun PieChartInnerText(
             }
             StatItemValue.Loading -> {
                 Box(
-                    modifier = Modifier
-                        .size(width = 80.dp, height = 48.dp)
-                        .shimmerLoading(roundCorner = 12.dp)
+                    modifier =
+                        Modifier
+                            .size(width = 80.dp, height = 48.dp)
+                            .shimmerLoading(roundCorner = 12.dp),
                 )
             }
             StatItemValue.NoData -> {
@@ -183,10 +185,11 @@ private fun PieChartInnerText(
             }
             StatItemValue.Loading -> {
                 Box(
-                    modifier = Modifier
-                        .padding(top = 4.dp)
-                        .size(width = 60.dp, height = 20.dp)
-                        .shimmerLoading(roundCorner = 12.dp)
+                    modifier =
+                        Modifier
+                            .padding(top = 4.dp)
+                            .size(width = 60.dp, height = 20.dp)
+                            .shimmerLoading(roundCorner = 12.dp),
                 )
             }
             StatItemValue.NoData -> {
@@ -211,7 +214,7 @@ private fun WinDrawLoseCounts(
             title = stringResource(Res.string.stats_my_pie_chart_win),
             value = statsMyUiModel.toStatItemValue { it.winCount },
             color = Primary500,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
         )
 
         // 무승부
@@ -219,7 +222,7 @@ private fun WinDrawLoseCounts(
             title = stringResource(Res.string.stats_my_pie_chart_draw),
             value = statsMyUiModel.toStatItemValue { it.drawCount },
             color = Gray400,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
         )
 
         // 패배
@@ -227,7 +230,7 @@ private fun WinDrawLoseCounts(
             title = stringResource(Res.string.stats_my_pie_chart_lose),
             value = statsMyUiModel.toStatItemValue { it.loseCount },
             color = Red,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
         )
     }
 }

@@ -8,7 +8,6 @@ import kotlin.coroutines.resume
 class IosAppleCredentialManager(
     private val delegate: AppleSignInDelegate,
 ) : OAuthCredentialManager {
-
     override suspend fun getCredentialResult(): OAuthCredentialResult =
         suspendCancellableCoroutine { continuation ->
             delegate.signIn(

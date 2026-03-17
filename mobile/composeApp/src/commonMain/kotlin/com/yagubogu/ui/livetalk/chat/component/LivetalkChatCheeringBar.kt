@@ -19,12 +19,10 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
-import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import yagubogu.composeapp.generated.resources.Res
 import com.yagubogu.domain.model.Team
 import com.yagubogu.ui.theme.Gray050
 import com.yagubogu.ui.theme.PretendardMedium16
@@ -32,6 +30,8 @@ import com.yagubogu.ui.util.emoji
 import com.yagubogu.ui.util.formatWithComma
 import com.yagubogu.ui.util.noRippleClickable
 import com.yagubogu.ui.util.shimmerIf
+import org.jetbrains.compose.resources.stringResource
+import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.livetalk_like_count_message
 
 @OptIn(ExperimentalMaterial3Api::class)

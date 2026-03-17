@@ -14,7 +14,6 @@ import yagubogu.composeapp.generated.resources.pretendard_medium
 import yagubogu.composeapp.generated.resources.pretendard_regular
 import yagubogu.composeapp.generated.resources.pretendard_semibold
 
-
 val PretendardFontFamily
     @Composable get() =
         FontFamily(

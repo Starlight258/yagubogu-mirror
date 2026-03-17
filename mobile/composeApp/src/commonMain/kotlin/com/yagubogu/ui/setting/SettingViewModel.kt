@@ -3,8 +3,6 @@ package com.yagubogu.ui.setting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
-import coil3.Uri
-import yagubogu.composeapp.generated.resources.Res
 import com.yagubogu.data.repository.auth.AuthRepository
 import com.yagubogu.data.repository.member.MemberRepository
 import com.yagubogu.data.repository.member.NicknameUpdateError
@@ -25,6 +23,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
+import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.setting_edit_nickname_duplicate
 import yagubogu.composeapp.generated.resources.setting_edit_nickname_invalid_format
 import yagubogu.composeapp.generated.resources.setting_edit_nickname_member_not_found

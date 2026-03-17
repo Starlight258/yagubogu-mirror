@@ -1,5 +1,6 @@
 package com.yagubogu.ui.login.model
 
+@ConsistentCopyVisibility
 data class VersionInfo private constructor(
     val major: Int,
     val minor: Int,

@@ -7,7 +7,10 @@ object AnalyticsLogger {
         delegate = analytics
     }
 
-    fun logEvent(event: String, params: Map<String, Any> = emptyMap()) {
+    fun logEvent(
+        event: String,
+        params: Map<String, Any> = emptyMap(),
+    ) {
         delegate?.logEvent(event, params)
     }
 }

@@ -149,7 +149,8 @@ fun SettingMainScreen(
         ProfileImagePicker(
             scope,
             viewModel::uploadProfileImage,
-            onClosePicker = { showGallery = false })
+            onClosePicker = { showGallery = false },
+        )
     }
 
     if (showNicknameEditDialog) {
@@ -298,7 +299,7 @@ private fun SettingMainScreen(
             if (currentPlatform == PlatformType.ANDROID) {
                 SettingButton(
                     text = stringResource(Res.string.setting_open_source_license),
-                    onClick = onOssLicenseClick
+                    onClick = onOssLicenseClick,
                 )
             }
         }

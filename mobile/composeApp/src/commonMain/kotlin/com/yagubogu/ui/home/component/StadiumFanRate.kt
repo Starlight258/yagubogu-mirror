@@ -55,11 +55,11 @@ import com.yagubogu.ui.theme.PretendardMedium
 import com.yagubogu.ui.theme.PretendardRegular
 import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.theme.dpToSp
+import com.yagubogu.ui.util.BalloonTooltip
 import com.yagubogu.ui.util.color
 import com.yagubogu.ui.util.formatOneDecimal
-import com.yagubogu.ui.util.zeroPad
-import com.yagubogu.ui.util.BalloonTooltip
 import com.yagubogu.ui.util.noRippleClickable
+import com.yagubogu.ui.util.zeroPad
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import yagubogu.composeapp.generated.resources.Res

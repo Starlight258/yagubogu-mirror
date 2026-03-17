@@ -18,9 +18,7 @@ data class StatsMyUiModel(
     }
 }
 
-fun <T> StatsMyUiModel?.toStatItemValue(
-    propertySelector: (StatsMyUiModel) -> T?
-): StatItemValue {
+fun <T> StatsMyUiModel?.toStatItemValue(propertySelector: (StatsMyUiModel) -> T?): StatItemValue {
     // 1. 전체 모델이 null이면 로딩
     val model = this ?: return StatItemValue.Loading
 

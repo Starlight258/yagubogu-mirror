@@ -26,32 +26,36 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.koin.dsl.koinConfiguration
 import org.koin.dsl.module
 
+@Suppress("FunctionName")
 fun MainViewController(
     googleSignInDelegate: GoogleSignInDelegate,
     appleSignInDelegate: AppleSignInDelegate,
 ) = ComposeUIViewController {
     KoinApplication(
-        configuration = koinConfiguration(
-            declaration = {
-                modules(
-                    module {
-                        single<GoogleSignInDelegate> { googleSignInDelegate }
-                        single<AppleSignInDelegate> { appleSignInDelegate }
-                    },
-                    authModule,
-                    commonModule,
-                    datasourceModule,
-                    localModule,
-                    networkModule,
-                    repositoryModule,
-                    serviceModule,
-                    timeModule,
-                    viewModelModule,
-                )
-            }),
+        configuration =
+            koinConfiguration(
+                declaration = {
+                    modules(
+                        module {
+                            single<GoogleSignInDelegate> { googleSignInDelegate }
+                            single<AppleSignInDelegate> { appleSignInDelegate }
+                        },
+                        authModule,
+                        commonModule,
+                        datasourceModule,
+                        localModule,
+                        networkModule,
+                        repositoryModule,
+                        serviceModule,
+                        timeModule,
+                        viewModelModule,
+                    )
+                },
+            ),
         content = {
             YaguBoguIosApp()
-        })
+        },
+    )
 }
 
 @Composable
@@ -66,13 +70,14 @@ private fun YaguBoguIosApp() {
     YaguBoguTheme {
         if (autoLoginState !is AutoLoginState.Loading) {
             YaguBoguRoute(
-                startRoute = when (autoLoginState) {
-                    AutoLoginState.SignIn -> Route.Main
-                    AutoLoginState.SignUp,
-                    AutoLoginState.Failure,
-                    AutoLoginState.Loading,
+                startRoute =
+                    when (autoLoginState) {
+                        AutoLoginState.SignIn -> Route.Main
+                        AutoLoginState.SignUp,
+                        AutoLoginState.Failure,
+                        AutoLoginState.Loading,
                         -> Route.Login
-                },
+                    },
             )
         }
     }

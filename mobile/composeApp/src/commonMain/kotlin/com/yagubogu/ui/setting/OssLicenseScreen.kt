@@ -1,6 +1,5 @@
 package com.yagubogu.ui.setting
 
-
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -16,6 +15,6 @@ fun OssLicenseScreen(modifier: Modifier = Modifier) {
     }
     LibrariesContainer(
         libraries = libraries,
-        modifier = modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize(),
     )
 }

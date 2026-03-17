@@ -21,12 +21,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import yagubogu.composeapp.generated.resources.Res
 import com.yagubogu.ui.badge.model.BADGE_ID_0_NOT_ACQUIRED_FIXTURE
 import com.yagubogu.ui.badge.model.BadgeInfoUiModel
 import com.yagubogu.ui.theme.Gray300
@@ -42,6 +40,8 @@ import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.util.formatOneDecimal
 import com.yagubogu.ui.util.yyyyMMddFormatter
 import kotlinx.datetime.format
+import org.jetbrains.compose.resources.stringResource
+import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.badge_achieved_date
 import yagubogu.composeapp.generated.resources.badge_achieved_rate_message
 import yagubogu.composeapp.generated.resources.badge_already_used_badge
