@@ -65,6 +65,8 @@ class StatsViewModel(
 
     private var attendanceJob: Job? = null
     private var averageStatsJob: Job? = null
+    private var vsTeamStatsJob: Job? = null
+    private var stadiumVisitCountsJob: Job? = null
 
     fun fetchMyStats() {
         fetchMyAttendanceStats()
@@ -80,6 +82,8 @@ class StatsViewModel(
         if(_year.value == year) return
         _statsMyUiModel.value = null
         _averageStats.value = null
+        _vsTeamStatItems.value = emptyList()
+        _stadiumVisitCounts.value = emptyList()
         _year.value = year
     }
 
@@ -148,7 +152,8 @@ class StatsViewModel(
     }
 
     private fun fetchVsTeamStats() {
-        viewModelScope.launch {
+        vsTeamStatsJob?.cancel()
+        vsTeamStatsJob = viewModelScope.launch {
             val year: Int = year.value
             val vsTeamStatsResult: Result<List<VsTeamStatItem>> =
                 statsRepository
@@ -166,7 +171,8 @@ class StatsViewModel(
     }
 
     private fun fetchStadiumVisitCounts() {
-        viewModelScope.launch {
+        stadiumVisitCountsJob?.cancel()
+        stadiumVisitCountsJob = viewModelScope.launch {
             val year: Int = year.value
             val stadiumVisitCountsResult: Result<List<StadiumVisitCount>> =
                 checkInRepository.getStadiumCheckInCounts(year).mapList { it.toUiModel() }

@@ -87,6 +87,7 @@ fun StatsScreen(
         HorizontalPager(
             state = pagerState,
             modifier = Modifier.fillMaxSize(),
+            beyondViewportPageCount = 1,
         ) { page: Int ->
             when (StatsTab.entries[page]) {
                 StatsTab.MY_STATS -> StatsMyScreen(year, scrollToTopEvent)

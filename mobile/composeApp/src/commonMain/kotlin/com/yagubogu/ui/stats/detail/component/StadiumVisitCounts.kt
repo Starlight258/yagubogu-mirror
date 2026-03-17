@@ -2,16 +2,17 @@ package com.yagubogu.ui.stats.detail.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import yagubogu.composeapp.generated.resources.Res
 import com.yagubogu.ui.common.component.chart.AnimatedBarChart
 import com.yagubogu.ui.common.model.BarChartItemValue
 import com.yagubogu.ui.common.model.BarChartLabel.Companion.DefaultBarChartDataLabel
@@ -20,6 +21,9 @@ import com.yagubogu.ui.stats.detail.model.StadiumVisitCount
 import com.yagubogu.ui.theme.PretendardBold20
 import com.yagubogu.ui.theme.Primary500
 import com.yagubogu.ui.theme.White
+import com.yagubogu.ui.util.shimmerLoading
+import org.jetbrains.compose.resources.stringResource
+import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.all_count
 import yagubogu.composeapp.generated.resources.stats_stadium_visit_count
 
@@ -31,6 +35,7 @@ fun StadiumVisitCounts(
     Column(
         modifier =
             modifier
+                .fillMaxWidth()
                 .background(White, RoundedCornerShape(12.dp))
                 .padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp),
@@ -40,11 +45,28 @@ fun StadiumVisitCounts(
             style = PretendardBold20,
         )
 
-        AnimatedBarChart(
-            strokeVerticalGap = 16.dp,
-            durationMillis = 700,
-            strokeWidth = 20.dp,
-            items = stadiumVisitCounts.toBarChartItems(),
+        if (stadiumVisitCounts.isEmpty()) {
+            StadiumVisitCountsShimmer()
+        } else {
+            AnimatedBarChart(
+                strokeVerticalGap = 16.dp,
+                durationMillis = 700,
+                strokeWidth = 20.dp,
+                items = stadiumVisitCounts.toBarChartItems(),
+            )
+        }
+    }
+}
+
+@Composable
+private fun StadiumVisitCountsShimmer(modifier: Modifier = Modifier) {
+    repeat(9) {
+        Box(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(vertical = 2.dp)
+                .height(24.dp)
+                .shimmerLoading(4.dp)
         )
     }
 }
