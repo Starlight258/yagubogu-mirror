@@ -39,6 +39,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yagubogu.analytics.AnalyticsLogger
 import com.yagubogu.ui.stats.detail.StatsDetailScreen
 import com.yagubogu.ui.stats.my.StatsMyScreen
+import com.yagubogu.ui.theme.Gray050
 import com.yagubogu.ui.theme.Gray200
 import com.yagubogu.ui.theme.Gray300
 import com.yagubogu.ui.theme.Gray500
@@ -75,7 +76,7 @@ fun StatsScreen(
     BackPressHandler()
 
     Column(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize().background(Gray050),
     ) {
         StatsHeader(
             year = year,
