@@ -5,8 +5,11 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -14,12 +17,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import yagubogu.composeapp.generated.resources.Res
 import com.yagubogu.domain.model.Team
 import com.yagubogu.ui.common.component.ShowMoreButton
 import com.yagubogu.ui.stats.detail.model.VsTeamStatItem
@@ -32,6 +33,9 @@ import com.yagubogu.ui.theme.PretendardSemiBold
 import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.util.formatOneDecimal
 import com.yagubogu.ui.util.noRippleClickable
+import com.yagubogu.ui.util.shimmerLoading
+import org.jetbrains.compose.resources.stringResource
+import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.all_win_rate
 import yagubogu.composeapp.generated.resources.stats_vs_team_stats
 import yagubogu.composeapp.generated.resources.stats_vs_team_winning_percentage
@@ -47,6 +51,7 @@ fun VsTeamWinRates(
         verticalArrangement = Arrangement.spacedBy(20.dp),
         modifier =
             modifier
+                .fillMaxWidth()
                 .animateContentSize(
                     animationSpec =
                         spring(
@@ -64,8 +69,12 @@ fun VsTeamWinRates(
             verticalArrangement = Arrangement.spacedBy(4.dp),
             modifier = Modifier.noRippleClickable(onClick = onShowMoreClick),
         ) {
-            vsTeamStatItems.forEach { vsTeamStatItem: VsTeamStatItem ->
-                VsTeamStatItem(vsTeamStatItem = vsTeamStatItem)
+            if (vsTeamStatItems.isEmpty()) {
+                VsTeamStatItemShimmer()
+            } else {
+                vsTeamStatItems.forEach { vsTeamStatItem: VsTeamStatItem ->
+                    VsTeamStatItem(vsTeamStatItem = vsTeamStatItem)
+                }
             }
         }
         ShowMoreButton(
@@ -114,7 +123,25 @@ private fun VsTeamStatItem(
                 color = Gray400,
             )
         }
-        Text(text = stringResource(Res.string.all_win_rate, vsTeamStatItem.winningPercentage.formatOneDecimal()))
+        Text(
+            text = stringResource(
+                Res.string.all_win_rate,
+                vsTeamStatItem.winningPercentage.formatOneDecimal()
+            )
+        )
+    }
+}
+
+@Composable
+private fun VsTeamStatItemShimmer(modifier: Modifier = Modifier) {
+    repeat(5) {
+        Box(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp)
+                .height(40.dp)
+                .shimmerLoading(12.dp)
+        )
     }
 }
 
@@ -135,6 +162,16 @@ private fun VsTeamWinRatesPreview() {
                     winningPercentage = 77.7,
                 )
             },
+        isVsTeamStatsExpanded = false,
+    )
+}
+
+@Preview
+@Composable
+private fun VsTeamWinRatesEmptyPreview() {
+    VsTeamWinRates(
+        onShowMoreClick = { },
+        vsTeamStatItems = emptyList(),
         isVsTeamStatsExpanded = false,
     )
 }
