@@ -55,13 +55,18 @@ class NavigationState(
     val backStacks: Map<NavKey, NavBackStack<NavKey>>,
 ) {
     var topLevelRoute: NavKey by topLevelRoute
+
+    val topLevelRoutes: Set<NavKey>
+        get() = backStacks.keys
+
     val stacksInUse: List<NavKey>
-        get() =
-            if (topLevelRoute == startRoute) {
-                listOf(startRoute)
-            } else {
-                listOf(startRoute, topLevelRoute)
-            }
+        get() = listOf(topLevelRoute)
+
+    val currentStack: NavBackStack<NavKey>
+        get() = backStacks[topLevelRoute] ?: error("Stack for $topLevelRoute not found")
+
+    val currentRoute: NavKey
+        get() = currentStack.last()
 }
 
 /**

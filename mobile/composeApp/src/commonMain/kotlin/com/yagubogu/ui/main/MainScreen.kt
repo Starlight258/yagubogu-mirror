@@ -28,11 +28,12 @@ import com.yagubogu.ui.main.component.LoadingOverlay
 import com.yagubogu.ui.main.component.MainNavigationBar
 import com.yagubogu.ui.main.component.MainToolbar
 import com.yagubogu.ui.navigation.model.BottomNavKey
-import com.yagubogu.ui.navigation.model.Navigator
+import com.yagubogu.ui.navigation.model.NavigationState
 import com.yagubogu.ui.navigation.model.toEntries
 import com.yagubogu.ui.stats.StatsScreen
 import com.yagubogu.ui.theme.Gray050
 import com.yagubogu.ui.theme.White
+import com.yagubogu.ui.util.fadeTransition
 import kotlinx.coroutines.flow.MutableSharedFlow
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -41,7 +42,9 @@ import yagubogu.composeapp.generated.resources.app_name
 
 @Composable
 fun MainScreen(
-    navigator: Navigator,
+    navigationState: NavigationState,
+    onBackClick: () -> Unit,
+    onBottomItemClick: (BottomNavKey) -> Unit,
     onSettingsClick: () -> Unit,
     onBadgeClick: () -> Unit,
     onLivetalkItemClick: (Long, Boolean) -> Unit,
@@ -55,7 +58,9 @@ fun MainScreen(
     val scrollToTopEvent = remember { MutableSharedFlow<Unit>(extraBufferCapacity = 1) }
 
     LaunchedEffect(Unit) {
-        viewModel.selectBottomNavKey(navigator.currentRoute as? BottomNavKey ?: BottomNavKey.Home)
+        viewModel.selectBottomNavKey(
+            navigationState.currentRoute as? BottomNavKey ?: BottomNavKey.Home
+        )
     }
 
     val selectedItemLabel: String = stringResource(selectedItem.label)
@@ -86,7 +91,7 @@ fun MainScreen(
                     selectedItem = selectedItem,
                     onItemClick = { item: BottomNavKey ->
                         viewModel.selectBottomNavKey(item)
-                        navigator.navigate(item)
+                        onBottomItemClick(item)
                     },
                     onItemReselect = { item: BottomNavKey ->
                         scrollToTopEvent.tryEmit(Unit)
@@ -137,8 +142,10 @@ fun MainScreen(
                     Modifier
                         .padding(innerPadding)
                         .fillMaxSize(),
-                entries = navigator.state.toEntries(entryProvider),
-                onBack = { navigator.goBack() },
+                entries = navigationState.toEntries(entryProvider),
+                onBack = onBackClick,
+                transitionSpec = { fadeTransition() },
+                popTransitionSpec = { fadeTransition() },
             )
         }
         LoadingOverlay(isLoading = isLoading)

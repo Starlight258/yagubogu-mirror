@@ -73,6 +73,7 @@ class MemberDefaultRepository(
     override suspend fun deleteMember(): Result<Unit> =
         memberDataSource.deleteMember().map {
             tokenManager.clearTokens()
+            invalidateCache()
         }
 
     override suspend fun getBadges(): Result<BadgeResponse> = memberDataSource.getBadges()

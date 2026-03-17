@@ -24,10 +24,14 @@ import com.yagubogu.ui.main.MainScreen
 import com.yagubogu.ui.navigation.model.BottomNavKey
 import com.yagubogu.ui.navigation.model.Navigator
 import com.yagubogu.ui.navigation.model.Route
+import com.yagubogu.ui.navigation.model.SettingNavKey
 import com.yagubogu.ui.navigation.model.toEntries
 import com.yagubogu.ui.setting.SettingScreen
 import com.yagubogu.ui.util.LocalSnackbarHostState
 import com.yagubogu.ui.util.LocalSnackbarScope
+import com.yagubogu.ui.util.slidePopTransition
+import com.yagubogu.ui.util.slidePredictivePopTransition
+import com.yagubogu.ui.util.slidePushTransition
 import com.yagubogu.ui.util.snackbarPadding
 
 /**
@@ -64,7 +68,11 @@ fun NavigationRoot(
                 }
                 entry<Route.Main> {
                     MainScreen(
-                        navigator = mainNavigator,
+                        navigationState = mainNavigator.state,
+                        onBackClick = { mainNavigator.goBack() },
+                        onBottomItemClick = { item: BottomNavKey ->
+                            mainNavigator.navigate(item)
+                        },
                         onSettingsClick = { rootNavigator.navigate(Route.Setting) },
                         onBadgeClick = { rootNavigator.navigate(Route.Badge) },
                         onLivetalkItemClick = { gameId: Long, isVerified: Boolean ->
@@ -74,8 +82,16 @@ fun NavigationRoot(
                 }
                 entry<Route.Setting> {
                     SettingScreen(
-                        navigator = settingNavigator,
-                        onBackClick = { rootNavigator.goBack() },
+                        navigationState = settingNavigator.state,
+                        onBackClick = {
+                            when (settingNavigator.canGoBack()) {
+                                true -> settingNavigator.goBack()
+                                false -> rootNavigator.goBack()
+                            }
+                        },
+                        onSettingItemClick = { item: SettingNavKey ->
+                            settingNavigator.navigate(item)
+                        },
                         onFavoriteTeamEditClick = { rootNavigator.navigate(Route.FavoriteTeam) },
                         onLogout = {
                             mainNavigator.navigate(BottomNavKey.Home)
@@ -101,8 +117,8 @@ fun NavigationRoot(
                     FavoriteTeamScreen(
                         onFavoriteTeamUpdate = {
                             mainNavigator.navigate(BottomNavKey.Home)
-                            rootNavigator.navigate(Route.Main)
                             rootNavigator.clearStack()
+                            rootNavigator.navigate(Route.Main)
                         },
                     )
                 }
@@ -123,9 +139,11 @@ fun NavigationRoot(
             NavDisplay(
                 modifier = modifier.fillMaxSize(),
                 entries = rootNavigator.state.toEntries(entryProvider),
-                onBack = {
-                    if (rootNavigator.currentRoute is Route.FavoriteTeam) return@NavDisplay
-                    rootNavigator.goBack()
+                onBack = { rootNavigator.goBack() },
+                transitionSpec = { slidePushTransition() },
+                popTransitionSpec = { slidePopTransition() },
+                predictivePopTransitionSpec = { edge ->
+                    slidePredictivePopTransition(edge)
                 },
             )
 
@@ -134,7 +152,7 @@ fun NavigationRoot(
                 modifier =
                     Modifier
                         .align(Alignment.BottomCenter)
-                        .padding(bottom = snackbarPadding(isMainScreen = rootNavigator.currentRoute is Route.Main)),
+                        .padding(bottom = snackbarPadding(isMainScreen = rootNavigator.state.currentRoute is Route.Main)),
             ) {
                 Snackbar(snackbarData = it)
             }

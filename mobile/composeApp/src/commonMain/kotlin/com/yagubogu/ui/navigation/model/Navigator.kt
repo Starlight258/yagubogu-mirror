@@ -1,6 +1,5 @@
 package com.yagubogu.ui.navigation.model
 
-import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import co.touchlab.kermit.Logger
 
@@ -14,31 +13,21 @@ class Navigator(
 ) {
     private val logger = Logger.withTag("Navigator")
 
-    private val currentStack: NavBackStack<NavKey>
-        get() =
-            state.backStacks[state.topLevelRoute]
-                ?: error("Stack for ${state.topLevelRoute} not found")
-    val currentRoute: NavKey
-        get() = currentStack.last()
-
     fun navigate(route: NavKey) {
-        if (route in state.backStacks.keys) {
+        if (route in state.topLevelRoutes) {
             // This is a top level route, just switch to it.
             state.topLevelRoute = route
         } else {
-            currentStack.add(route)
+            state.currentStack.add(route)
         }
         showBackStack()
     }
 
-    fun canGoBack(): Boolean = currentRoute != state.topLevelRoute
+    fun canGoBack(): Boolean = state.currentRoute != state.topLevelRoute
 
     fun goBack() {
-        // If we're at the base of the current route, go back to the start route stack.
-        if (!canGoBack()) {
-            state.topLevelRoute = state.startRoute
-        } else {
-            currentStack.removeLastOrNull()
+        if (canGoBack()) {
+            state.currentStack.removeLastOrNull()
         }
         showBackStack()
     }
@@ -50,7 +39,7 @@ class Navigator(
     }
 
     private fun showBackStack() {
-        logger.d { "backStacks: ${state.backStacks.keys}" }
-        logger.d { "currentStack: ${currentStack.joinToString()}" }
+        logger.d { "topLevelRoutes: ${state.topLevelRoutes}" }
+        logger.d { "currentStack: ${state.currentStack.joinToString()}" }
     }
 }
