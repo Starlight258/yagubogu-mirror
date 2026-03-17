@@ -18,7 +18,15 @@ private class LocationDelegate(
     private val onPermissionResult: (Map<String, Boolean>) -> Unit,
 ) : NSObject(),
     CLLocationManagerDelegateProtocol {
+    private var initialized = false
+
     override fun locationManagerDidChangeAuthorization(manager: CLLocationManager) {
+        // CLLocationManager에 delegate 할당 시 즉시 발생하는 초기 콜백 무시
+        if (!initialized) {
+            initialized = true
+            return
+        }
+
         val isGranted =
             manager.authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse ||
                 manager.authorizationStatus == kCLAuthorizationStatusAuthorizedAlways
@@ -83,7 +91,11 @@ actual fun rememberAppSettingsOpener(): () -> Unit =
         {
             val url = NSURL(string = UIApplicationOpenSettingsURLString)
             if (UIApplication.sharedApplication.canOpenURL(url)) {
-                UIApplication.sharedApplication.openURL(url)
+                UIApplication.sharedApplication.openURL(
+                    url = url,
+                    options = emptyMap<Any?, Any>(),
+                    completionHandler = null,
+                )
             }
         }
     }

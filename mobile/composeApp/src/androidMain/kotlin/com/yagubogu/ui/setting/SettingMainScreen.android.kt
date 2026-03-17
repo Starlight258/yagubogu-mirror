@@ -2,6 +2,7 @@ package com.yagubogu.ui.setting
 
 import android.app.Application
 import android.graphics.Bitmap
+import android.net.Uri
 import androidx.core.net.toUri
 import co.touchlab.kermit.Logger
 import id.zelory.compressor.Compressor
@@ -23,7 +24,7 @@ actual suspend fun handleImagePickerKMPCroppedImage(
     runCatching {
         val uri = sourceImageUri.toUri()
         val originalFile = File(uri.path ?: error("경로를 찾을 수 없음"))
-        val convertedFile =
+        val convertedFile: File =
             Compressor.compress(context, originalFile) {
                 resolution(500, 500)
                 quality(90)
@@ -31,8 +32,7 @@ actual suspend fun handleImagePickerKMPCroppedImage(
                 size(5L * 1024L * 1024L)
             }
 
-        // File 객체의 경로를 String으로 뽑아서 Coil의 Uri로 변환
-        val convertedImageUri = convertedFile.absolutePath
+        val convertedImageUri = Uri.fromFile(convertedFile).toString()
         val fileSize = convertedFile.length()
         val mimeType = "image/jpeg"
 
