@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 env:
-  GOOGLE_SERVICES_JSON_RELEASE: ${{ secrets.GOOGLE_SERVICES_JSON_FULL }}
+  GOOGLE_SERVICES_JSON_FULL: ${{ secrets.GOOGLE_SERVICES_JSON_FULL }}
   IOS_CONFIG_XCCONFIG: ${{ secrets.IOS_CONFIG_XCCONFIG }}
 
 jobs:
