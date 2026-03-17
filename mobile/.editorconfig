@@ -2,5 +2,5 @@
 ktlint_standard_annotation = disabled
 ktlint_function_naming_ignore_when_annotated_with = Composable
 
-[**/build/generated/**]
+[**/build/**]
 ktlint = disabled
