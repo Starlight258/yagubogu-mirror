@@ -140,7 +140,7 @@ private fun VsTeamStatItemShimmer(modifier: Modifier = Modifier) {
                 .fillMaxWidth()
                 .padding(vertical = 8.dp)
                 .height(40.dp)
-                .shimmerLoading(8.dp)
+                .shimmerLoading(12.dp)
         )
     }
 }
@@ -162,6 +162,16 @@ private fun VsTeamWinRatesPreview() {
                     winningPercentage = 77.7,
                 )
             },
+        isVsTeamStatsExpanded = false,
+    )
+}
+
+@Preview
+@Composable
+private fun VsTeamWinRatesEmptyPreview() {
+    VsTeamWinRates(
+        onShowMoreClick = { },
+        vsTeamStatItems = emptyList(),
         isVsTeamStatsExpanded = false,
     )
 }

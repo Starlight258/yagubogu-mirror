@@ -66,7 +66,7 @@ private fun StadiumVisitCountsShimmer(modifier: Modifier = Modifier) {
                 .fillMaxWidth()
                 .padding(vertical = 2.dp)
                 .height(24.dp)
-                .shimmerLoading(4.dp)
+                .shimmerLoading(8.dp)
         )
     }
 }
@@ -106,4 +106,10 @@ private fun List<StadiumVisitCount>.toBarChartItems(): List<BarChartItemValue> =
 @Composable
 private fun StadiumVisitCountsPreview() {
     StadiumVisitCounts(List(9) { i -> StadiumVisitCount(location = "잠실", visitCounts = 7 - i) })
+}
+
+@Preview
+@Composable
+private fun StadiumVisitCountsEmptyPreview() {
+    StadiumVisitCounts(emptyList())
 }
