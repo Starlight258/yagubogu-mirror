@@ -1,6 +1,7 @@
 package com.yagubogu.ui.attendance.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,7 +21,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -30,19 +30,24 @@ import com.kizitonwose.calendar.compose.rememberCalendarState
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.DayPosition
 import com.kizitonwose.calendar.core.daysOfWeek
-import com.kizitonwose.calendar.core.now
+import com.kizitonwose.calendar.core.minusDays
 import com.yagubogu.ui.theme.Black
 import com.yagubogu.ui.theme.Gray400
 import com.yagubogu.ui.theme.PretendardRegular
+import com.yagubogu.ui.theme.PretendardRegular16
+import com.yagubogu.ui.theme.Primary050
 import com.yagubogu.ui.theme.Primary500
+import com.yagubogu.ui.theme.Primary700
 import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.theme.dpToSp
 import com.yagubogu.ui.util.getDisplayNameResId
 import com.yagubogu.ui.util.minusMonths
 import com.yagubogu.ui.util.noRippleClickable
+import com.yagubogu.ui.util.now
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.YearMonth
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun AttendanceCalendar(
@@ -125,11 +130,29 @@ private fun Day(
     modifier: Modifier = Modifier,
 ) {
     val today: LocalDate = LocalDate.now()
+    val isToday: Boolean = day.date == today
 
     Column(
         modifier =
             modifier
                 .aspectRatio(0.8f)
+                .padding(horizontal = 4.dp)
+                .padding(bottom = 4.dp)
+                .background(
+                    color = when {
+                        isSelected -> Primary050
+                        else -> Color.Transparent
+                    },
+                    shape = RoundedCornerShape(4.dp)
+                )
+                .border(
+                    width = 1.dp,
+                    color = when {
+                        isSelected -> Primary500
+                        else -> Color.Transparent
+                    },
+                    shape = RoundedCornerShape(4.dp)
+                )
                 .noRippleClickable(
                     enabled = day.position == DayPosition.MonthDate && day.date <= today,
                     onClick = { onClick(day) },
@@ -138,10 +161,11 @@ private fun Day(
     ) {
         Text(
             text = day.date.day.toString(),
-            style = PretendardRegular.copy(fontSize = 16.dpToSp),
+            style = PretendardRegular16,
             color =
                 when {
-                    isSelected -> White
+                    isToday -> White
+                    isSelected -> Primary700
                     day.position != DayPosition.MonthDate -> Gray400
                     day.date > today -> Gray400
                     else -> Black
@@ -149,11 +173,16 @@ private fun Day(
             textAlign = TextAlign.Center,
             modifier =
                 Modifier
+                    .padding(top = 2.dp)
                     .size(30.dp)
                     .background(
-                        color = if (isSelected) Primary500 else Color.Transparent,
+                        color = when {
+                            isToday -> Primary500
+                            else -> Color.Transparent
+                        },
                         shape = CircleShape,
-                    ).padding(2.dp)
+                    )
+                    .padding(2.dp)
                     .wrapContentHeight(align = Alignment.CenterVertically),
         )
 
@@ -177,7 +206,7 @@ private fun AttendanceCalendarPreview() {
         endMonth = YearMonth.now(),
         selectedMonth = YearMonth.now(),
         onMonthChange = {},
-        selectedDate = LocalDate.now(),
+        selectedDate = LocalDate.now().minusDays(1),
         onDateChange = {},
         attendanceDates = ATTENDANCE_HISTORY_ITEMS.map { it.summary.attendanceDate }.toSet(),
     )

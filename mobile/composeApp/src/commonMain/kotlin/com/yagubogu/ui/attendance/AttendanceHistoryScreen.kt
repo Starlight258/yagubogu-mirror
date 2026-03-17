@@ -63,6 +63,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.YearMonth
 import kotlinx.datetime.number
 import kotlinx.datetime.onDay
+import kotlinx.datetime.yearMonth
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -89,6 +90,7 @@ fun AttendanceHistoryScreen(
 
     val startMonth: YearMonth = AttendanceHistoryViewModel.START_MONTH
     val endMonth: YearMonth = AttendanceHistoryViewModel.END_MONTH
+    val today: LocalDate = LocalDate.now()
 
     var viewType: AttendanceHistoryViewType by rememberSaveable {
         mutableStateOf(AttendanceHistoryViewType.CALENDAR)
@@ -100,7 +102,11 @@ fun AttendanceHistoryScreen(
     }
 
     LaunchedEffect(selectedMonth) {
-        viewModel.updateSelectedDate(selectedMonth.onDay(1))
+        if (selectedMonth == today.yearMonth) {
+            viewModel.updateSelectedDate(today)
+        } else {
+            viewModel.updateSelectedDate(selectedMonth.onDay(1))
+        }
     }
 
     val checkInSuccessMessage: String =

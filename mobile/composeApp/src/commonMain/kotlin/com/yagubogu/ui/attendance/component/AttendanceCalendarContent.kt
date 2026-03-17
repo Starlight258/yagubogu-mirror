@@ -35,6 +35,7 @@ import com.yagubogu.ui.attendance.model.PastGameUiState
 import com.yagubogu.ui.theme.PretendardBold16
 import com.yagubogu.ui.theme.Primary500
 import com.yagubogu.ui.theme.White
+import com.yagubogu.ui.util.minusDays
 import com.yagubogu.ui.util.minusMonths
 import com.yagubogu.ui.util.now
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -69,6 +70,7 @@ fun AttendanceCalendarContent(
     val currentItems: List<AttendanceHistoryItem>? = itemsByDate[selectedDate]
     val scrollState: ScrollState = rememberScrollState()
     var showBottomSheet: Boolean by rememberSaveable { mutableStateOf(false) }
+    val isToday: Boolean = selectedDate == LocalDate.now()
 
     LaunchedEffect(Unit) {
         scrollToTopEvent.collect {
@@ -112,7 +114,7 @@ fun AttendanceCalendarContent(
                 currentItems.forEach { item: AttendanceHistoryItem ->
                     AttendanceItem(item = item, isExpanded = true)
                 }
-            } else {
+            } else if (!isToday) {
                 AttendanceAdditionButton(
                     onClick = {
                         onPastGamesRequest(selectedDate)
@@ -123,7 +125,7 @@ fun AttendanceCalendarContent(
             }
         }
 
-        if (currentItems != null) {
+        if (currentItems != null && !isToday) {
             SmallFloatingActionButton(
                 onClick = {
                     onPastGamesRequest(selectedDate)
@@ -185,7 +187,7 @@ private fun AttendanceCalendarContentPreview() {
         endMonth = YearMonth.now(),
         selectedMonth = YearMonth.now(),
         onMonthChange = {},
-        selectedDate = LocalDate.now(),
+        selectedDate = LocalDate.now().minusDays(3),
         onDateChange = {},
         pastGameUiState = PastGameUiState.Loading,
         onPastGamesRequest = {},
@@ -193,11 +195,18 @@ private fun AttendanceCalendarContentPreview() {
     )
 }
 
-@Preview("빈 캘린더 화면", showBackground = true)
+@Preview("오늘 경기가 있는 캘린더 화면", showBackground = true)
 @Composable
-private fun AttendanceCalendarContentNoItemPreview() {
+private fun AttendanceCalendarContentTodayItemPreview() {
     AttendanceCalendarContent(
-        items = emptyList(),
+        items = listOf(
+            ATTENDANCE_HISTORY_ITEM_PLAYED.copy(
+                summary =
+                    ATTENDANCE_HISTORY_ITEM_PLAYED.summary.copy(
+                        id = 2L,
+                        attendanceDate = LocalDate.now(),
+                    ),
+            )),
         startMonth = YearMonth.now().minusMonths(1),
         endMonth = YearMonth.now(),
         selectedMonth = YearMonth.now(),
