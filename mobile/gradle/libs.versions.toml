@@ -66,7 +66,7 @@ appUpdate = "2.1.0"
 
 # Image Loading
 coilCompose = "3.3.0"
-imagepickerkmp = "1.0.32"
+imagepickerkmp = "1.0.34"
 compressor = "3.0.1"
 
 # UI Components
