@@ -295,13 +295,10 @@ private fun SettingMainScreen(
                 text = stringResource(Res.string.setting_contact_us),
                 onClick = { uriHandler.openUri(CONTACT_URL) },
             )
-
-            if (currentPlatform == PlatformType.ANDROID) {
-                SettingButton(
-                    text = stringResource(Res.string.setting_open_source_license),
-                    onClick = onOssLicenseClick,
-                )
-            }
+            SettingButton(
+                text = stringResource(Res.string.setting_open_source_license),
+                onClick = onOssLicenseClick,
+            )
         }
 
         Text(
