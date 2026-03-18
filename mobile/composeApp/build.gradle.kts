@@ -7,6 +7,9 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.io.FileInputStream
 import java.util.Properties
 
+val appVersionCode = 20204
+val appVersionName = "2.2.4"
+
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.android.application)
@@ -50,7 +53,7 @@ buildkonfig {
             buildConfigField(STRING, "DEBUG_FIXED_DATE", "null")
         }
         buildConfigField(BOOLEAN, "IS_DEBUG", "true")
-        buildConfigField(INT, "VERSION_CODE", "20201")
+        buildConfigField(INT, "VERSION_CODE", "$appVersionCode")
     }
 
     defaultConfigs("release") {
@@ -242,8 +245,8 @@ android {
             libs.versions.android.targetSdk
                 .get()
                 .toInt()
-        versionCode = 2_02_03
-        versionName = "2.2.3"
+        versionCode = appVersionCode
+        versionName = appVersionName
 
         manifestPlaceholders["appName"] = "@string/app_name"
     }
