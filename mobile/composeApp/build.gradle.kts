@@ -242,8 +242,8 @@ android {
             libs.versions.android.targetSdk
                 .get()
                 .toInt()
-        versionCode = 2_02_01
-        versionName = "2.2.1"
+        versionCode = 2_02_03
+        versionName = "2.2.3"
 
         manifestPlaceholders["appName"] = "@string/app_name"
     }
@@ -289,6 +289,9 @@ android {
             manifestPlaceholders["appName"] = "@string/app_name"
             if (releaseSigningConfig != null) {
                 signingConfig = releaseSigningConfig
+            }
+            ndk {
+                debugSymbolLevel = "FULL"
             }
         }
     }
