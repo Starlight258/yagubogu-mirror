@@ -29,7 +29,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import co.touchlab.kermit.Logger
 import com.yagubogu.BuildKonfig
 import com.yagubogu.ui.common.component.profile.ProfileImage
 import com.yagubogu.ui.common.platform.PlatformType
@@ -48,15 +47,8 @@ import com.yagubogu.ui.theme.PretendardRegular12
 import com.yagubogu.ui.theme.PretendardSemiBold
 import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.util.LocalSnackbarHostState
-import com.yagubogu.ui.util.UiText
 import com.yagubogu.ui.util.showSingleSnackbar
 import com.yagubogu.ui.util.yyyyMMddFormatter
-import io.github.ismoy.imagepickerkmp.domain.config.CameraCaptureConfig
-import io.github.ismoy.imagepickerkmp.domain.config.CropConfig
-import io.github.ismoy.imagepickerkmp.domain.models.CompressionLevel
-import io.github.ismoy.imagepickerkmp.domain.models.GalleryPhotoResult
-import io.github.ismoy.imagepickerkmp.domain.models.MimeType.Companion.ALL_SUPPORTED_TYPES
-import io.github.ismoy.imagepickerkmp.presentation.ui.components.GalleryPickerLauncher
 import kotlinx.datetime.format
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
@@ -66,7 +58,6 @@ import yagubogu.composeapp.generated.resources.setting_contact_us
 import yagubogu.composeapp.generated.resources.setting_edit_my_team
 import yagubogu.composeapp.generated.resources.setting_edit_nickname
 import yagubogu.composeapp.generated.resources.setting_edit_profile_image
-import yagubogu.composeapp.generated.resources.setting_edit_profile_image_selection_failed
 import yagubogu.composeapp.generated.resources.setting_edited_nickname_alert
 import yagubogu.composeapp.generated.resources.setting_main_sign_up_date
 import yagubogu.composeapp.generated.resources.setting_manage_account
@@ -145,54 +136,6 @@ fun SettingMainScreen(
             onCancel = { showNicknameEditDialog = false },
         )
     }
-}
-
-@Composable
-fun ProfileImagePicker(
-    onPhotosSelected: (String) -> Unit,
-    onError: (UiText) -> Unit,
-    onClosePicker: () -> Unit,
-) {
-    val logger: Logger = Logger.withTag("ProfileImagePicker")
-    logger.d { "ProfileImagePicker 열림" }
-    GalleryPickerLauncher(
-        allowMultiple = false,
-        mimeTypes = ALL_SUPPORTED_TYPES,
-        onPhotosSelected = { photos: List<GalleryPhotoResult> ->
-            logger.d { "onPhotosSelected, 사진 개수: ${photos.size}" }
-            onClosePicker()
-
-            val photo: GalleryPhotoResult? = photos.firstOrNull()
-            if (photo == null) {
-                logger.w { "선택된 사진이 없습니다" }
-                return@GalleryPickerLauncher
-            }
-            onPhotosSelected(photo.uri)
-            onClosePicker()
-        },
-        onError = { exception: Exception ->
-            logger.e(exception) { "GalleryPicker 에러 발생" }
-            onError(UiText.StringRes(Res.string.setting_edit_profile_image_selection_failed))
-            onClosePicker()
-        },
-        onDismiss = {
-            logger.d { "GalleryPicker 닫힘" }
-            onClosePicker()
-        },
-        enableCrop = true,
-        cameraCaptureConfig =
-            CameraCaptureConfig(
-                compressionLevel = CompressionLevel.HIGH,
-                cropConfig =
-                    CropConfig(
-                        enabled = true,
-                        aspectRatioLocked = true,
-                        circularCrop = true,
-                        squareCrop = false,
-                        freeformCrop = false,
-                    ),
-            ),
-    )
 }
 
 @Composable
