@@ -33,8 +33,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.touchlab.kermit.Logger
 import com.yagubogu.BuildKonfig
 import com.yagubogu.ui.common.component.profile.ProfileImage
-import com.yagubogu.ui.common.platform.PlatformType
-import com.yagubogu.ui.common.platform.currentPlatform
 import com.yagubogu.ui.login.model.VersionInfo
 import com.yagubogu.ui.setting.component.SettingButton
 import com.yagubogu.ui.setting.component.SettingButtonGroup
