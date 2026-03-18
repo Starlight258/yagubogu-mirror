@@ -11,6 +11,12 @@ sealed interface SettingEvent {
         val uiText: UiText,
     ) : SettingEvent
 
+    data object ProfileImageEditSuccess : SettingEvent
+
+    data class ProfileImageEditFailure(
+        val uiText: UiText,
+    ) : SettingEvent
+
     data object Logout : SettingEvent
 
     data object DeleteAccount : SettingEvent

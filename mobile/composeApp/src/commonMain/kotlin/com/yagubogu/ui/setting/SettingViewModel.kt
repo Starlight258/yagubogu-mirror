@@ -32,6 +32,8 @@ import yagubogu.composeapp.generated.resources.setting_edit_nickname_no_permissi
 import yagubogu.composeapp.generated.resources.setting_edit_nickname_server_error
 import yagubogu.composeapp.generated.resources.setting_edit_nickname_too_long
 import yagubogu.composeapp.generated.resources.setting_edit_nickname_unknown_error
+import yagubogu.composeapp.generated.resources.setting_edit_profile_image_processing_failed
+import yagubogu.composeapp.generated.resources.setting_edit_profile_image_upload_failed
 import kotlin.time.Clock
 
 class SettingViewModel(
@@ -97,6 +99,36 @@ class SettingViewModel(
     fun cancelDeleteAccount() {
         viewModelScope.launch {
             _settingEvent.emit(SettingEvent.DeleteAccountCancel)
+        }
+    }
+
+    fun handleProfileImage(uri: String) {
+        viewModelScope.launch {
+            runCatching {
+                handleImagePickerKMPCroppedImage(
+                    sourceImageUri = uri,
+                    onUploadFailure = {
+                        emitProfileError(UiText.StringRes(Res.string.setting_edit_profile_image_upload_failed))
+                    },
+                    onProcessingFailure = {
+                        emitProfileError(UiText.StringRes(Res.string.setting_edit_profile_image_processing_failed))
+                    },
+                    onProfileImageUpload = ::uploadProfileImage,
+                )
+            }.onFailure { exception ->
+                logger.e(exception) { "이미지 처리 과정 중 예외 발생" }
+                emitProfileError(UiText.StringRes(Res.string.setting_edit_profile_image_processing_failed))
+            }
+        }
+    }
+
+    /**
+     * 프로필 관련 에러 이벤트를 SharedFlow로 방출합니다.
+     * 외부 라이브러리의 콜백에서도 안전하게 호출할 수 있도록 launch를 포함합니다.
+     */
+    fun emitProfileError(uiText: UiText) {
+        viewModelScope.launch {
+            _settingEvent.emit(SettingEvent.ProfileImageEditFailure(uiText))
         }
     }
 
