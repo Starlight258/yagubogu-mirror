@@ -323,3 +323,13 @@ ktorfit {
 tasks.matching { it.name.contains("ktlint", ignoreCase = true) }.configureEach {
     mustRunAfter(tasks.matching { it.name.contains("ksp", ignoreCase = true) })
 }
+
+// 리소스를 복사하는 모든 태스크(Android, iOS) 전에 의존성 목록 생성 실행
+tasks.matching { it.name.startsWith("copy") && it.name.contains("Resources") }.configureEach {
+    dependsOn("exportLibraryDefinitions")
+}
+
+// Compose 리소스 클래스(Res) 생성 전에 의존성 목록 생성 실행 (IDE 인식용)
+tasks.matching { it.name.contains("generateComposeResClass", ignoreCase = true) }.configureEach {
+    dependsOn("exportLibraryDefinitions")
+}

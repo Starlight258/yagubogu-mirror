@@ -31,8 +31,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yagubogu.BuildKonfig
 import com.yagubogu.ui.common.component.profile.ProfileImage
-import com.yagubogu.ui.common.platform.PlatformType
-import com.yagubogu.ui.common.platform.currentPlatform
 import com.yagubogu.ui.login.model.VersionInfo
 import com.yagubogu.ui.setting.component.SettingButton
 import com.yagubogu.ui.setting.component.SettingButtonGroup
@@ -190,13 +188,10 @@ private fun SettingMainScreen(
                 text = stringResource(Res.string.setting_contact_us),
                 onClick = { uriHandler.openUri(CONTACT_URL) },
             )
-
-            if (currentPlatform == PlatformType.ANDROID) {
-                SettingButton(
-                    text = stringResource(Res.string.setting_open_source_license),
-                    onClick = onOssLicenseClick,
-                )
-            }
+            SettingButton(
+                text = stringResource(Res.string.setting_open_source_license),
+                onClick = onOssLicenseClick,
+            )
         }
 
         Text(
