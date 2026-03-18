@@ -1,13 +1,12 @@
 package com.yagubogu.ui.setting
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -15,6 +14,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
@@ -24,6 +24,7 @@ import com.yagubogu.ui.navigation.model.NavigationState
 import com.yagubogu.ui.navigation.model.SettingNavKey
 import com.yagubogu.ui.navigation.model.toEntries
 import com.yagubogu.ui.theme.Gray050
+import com.yagubogu.ui.theme.Gray900
 import com.yagubogu.ui.util.slidePopTransition
 import com.yagubogu.ui.util.slidePredictivePopTransition
 import com.yagubogu.ui.util.slidePushTransition
@@ -44,16 +45,12 @@ fun SettingScreen(
     modifier: Modifier = Modifier,
     viewModel: SettingViewModel = koinViewModel(),
 ) {
-    var isTopBarVisible: Boolean by remember { mutableStateOf(true) }
+    var isGalleryOpen by remember { mutableStateOf(false) }
 
-    Scaffold(
-        containerColor = Gray050,
-        topBar = {
-            AnimatedVisibility(
-                visible = isTopBarVisible,
-                enter = expandVertically() + fadeIn(),
-                exit = shrinkVertically() + fadeOut(),
-            ) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        Scaffold(
+            containerColor = Gray050,
+            topBar = {
                 DefaultToolbar(
                     onBackClick = onBackClick,
                     title =
@@ -62,52 +59,70 @@ fun SettingScreen(
                                 ?: Res.string.setting_main_title,
                         ),
                 )
-            }
-        },
-        modifier = modifier,
-    ) { innerPadding: PaddingValues ->
-        val entryProvider: (NavKey) -> NavEntry<NavKey> =
-            entryProvider {
-                entry<SettingNavKey.SettingMain> {
-                    SettingMainScreen(
-                        viewModel = viewModel,
-                        onSettingAccountClick = { onSettingItemClick(SettingNavKey.SettingAccount) },
-                        onFavoriteTeamEditClick = { onFavoriteTeamEditClick() },
-                        onFullScreenMode = { isFull: Boolean -> isTopBarVisible = !isFull },
-                        onOssLicenseClick = { onSettingItemClick(SettingNavKey.OssLicense) },
-                    )
-                }
-                entry<SettingNavKey.SettingAccount> {
-                    SettingAccountScreen(
-                        viewModel = viewModel,
-                        onDeleteAccountClick = { onSettingItemClick(SettingNavKey.SettingDeleteAccount) },
-                        onLogout = onLogout,
-                    )
-                }
-                entry<SettingNavKey.SettingDeleteAccount> {
-                    SettingDeleteAccountScreen(
-                        viewModel = viewModel,
-                        onDeleteAccountCancel = onDeleteAccountCancel,
-                        onLogout = onDeleteAccount,
-                    )
-                }
-                entry<SettingNavKey.OssLicense> {
-                    OssLicenseScreen()
-                }
-            }
-
-        NavDisplay(
-            modifier =
-                Modifier
-                    .padding(innerPadding)
-                    .fillMaxSize(),
-            entries = navigationState.toEntries(entryProvider),
-            onBack = onBackClick,
-            transitionSpec = { slidePushTransition() },
-            popTransitionSpec = { slidePopTransition() },
-            predictivePopTransitionSpec = { edge ->
-                slidePredictivePopTransition(edge)
             },
-        )
+            modifier = modifier,
+        ) { innerPadding: PaddingValues ->
+            val entryProvider: (NavKey) -> NavEntry<NavKey> =
+                entryProvider {
+                    entry<SettingNavKey.SettingMain> {
+                        SettingMainScreen(
+                            viewModel = viewModel,
+                            onSettingAccountClick = { onSettingItemClick(SettingNavKey.SettingAccount) },
+                            onFavoriteTeamEditClick = { onFavoriteTeamEditClick() },
+                            onProfileImagePickerOpen = { isGalleryOpen = true },
+                            onOssLicenseClick = { onSettingItemClick(SettingNavKey.OssLicense) },
+                        )
+                    }
+                    entry<SettingNavKey.SettingAccount> {
+                        SettingAccountScreen(
+                            viewModel = viewModel,
+                            onDeleteAccountClick = { onSettingItemClick(SettingNavKey.SettingDeleteAccount) },
+                            onLogout = onLogout,
+                        )
+                    }
+                    entry<SettingNavKey.SettingDeleteAccount> {
+                        SettingDeleteAccountScreen(
+                            viewModel = viewModel,
+                            onDeleteAccountCancel = onDeleteAccountCancel,
+                            onLogout = onDeleteAccount,
+                        )
+                    }
+                    entry<SettingNavKey.OssLicense> {
+                        OssLicenseScreen()
+                    }
+                }
+
+            NavDisplay(
+                modifier =
+                    Modifier
+                        .padding(innerPadding)
+                        .fillMaxSize(),
+                entries = navigationState.toEntries(entryProvider),
+                onBack = onBackClick,
+                transitionSpec = { slidePushTransition() },
+                popTransitionSpec = { slidePopTransition() },
+                predictivePopTransitionSpec = { edge ->
+                    slidePredictivePopTransition(edge)
+                },
+            )
+        }
+        if (isGalleryOpen) {
+            Box(
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .background(Gray900.copy(alpha = 0.3f))
+                        .systemBarsPadding()
+                        .pointerInput(Unit) { detectTapGestures { } }, // 배경 터치 차단
+            ) {
+                ProfileImagePicker(
+                    onPhotosSelected = { uri: String ->
+                        viewModel.handleProfileImage(uri)
+                    },
+                    onError = { uiText -> viewModel.emitProfileError(uiText) },
+                    onClosePicker = { isGalleryOpen = false },
+                )
+            }
+        }
     }
 }

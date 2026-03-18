@@ -19,7 +19,6 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -49,6 +48,7 @@ import com.yagubogu.ui.theme.PretendardRegular12
 import com.yagubogu.ui.theme.PretendardSemiBold
 import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.util.LocalSnackbarHostState
+import com.yagubogu.ui.util.UiText
 import com.yagubogu.ui.util.showSingleSnackbar
 import com.yagubogu.ui.util.yyyyMMddFormatter
 import io.github.ismoy.imagepickerkmp.domain.config.CameraCaptureConfig
@@ -57,8 +57,6 @@ import io.github.ismoy.imagepickerkmp.domain.models.CompressionLevel
 import io.github.ismoy.imagepickerkmp.domain.models.GalleryPhotoResult
 import io.github.ismoy.imagepickerkmp.domain.models.MimeType.Companion.ALL_SUPPORTED_TYPES
 import io.github.ismoy.imagepickerkmp.presentation.ui.components.GalleryPickerLauncher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import kotlinx.datetime.format
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
@@ -68,9 +66,7 @@ import yagubogu.composeapp.generated.resources.setting_contact_us
 import yagubogu.composeapp.generated.resources.setting_edit_my_team
 import yagubogu.composeapp.generated.resources.setting_edit_nickname
 import yagubogu.composeapp.generated.resources.setting_edit_profile_image
-import yagubogu.composeapp.generated.resources.setting_edit_profile_image_processing_failed
 import yagubogu.composeapp.generated.resources.setting_edit_profile_image_selection_failed
-import yagubogu.composeapp.generated.resources.setting_edit_profile_image_upload_failed
 import yagubogu.composeapp.generated.resources.setting_edited_nickname_alert
 import yagubogu.composeapp.generated.resources.setting_main_sign_up_date
 import yagubogu.composeapp.generated.resources.setting_manage_account
@@ -82,23 +78,16 @@ fun SettingMainScreen(
     viewModel: SettingViewModel,
     onSettingAccountClick: () -> Unit,
     onFavoriteTeamEditClick: () -> Unit,
-    onFullScreenMode: (Boolean) -> Unit,
+    onProfileImagePickerOpen: () -> Unit,
     onOssLicenseClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val snackbarHostState = LocalSnackbarHostState.current
 
-    val scope: CoroutineScope = rememberCoroutineScope()
     val memberInfoItem: State<MemberInfoItem> =
         viewModel.myMemberInfoItem.collectAsStateWithLifecycle(MemberInfoItem())
 
     var showNicknameEditDialog: Boolean by rememberSaveable { mutableStateOf(false) }
-
-    var showGallery by rememberSaveable { mutableStateOf(false) }
-
-    LaunchedEffect(showGallery) {
-        onFullScreenMode(showGallery)
-    }
 
     LaunchedEffect(Unit) {
         viewModel.fetchMemberInfo()
@@ -136,22 +125,12 @@ fun SettingMainScreen(
         onClickSettingAccount = onSettingAccountClick,
         onFavoriteTeamEditClick = onFavoriteTeamEditClick,
         onNicknameEdit = { showNicknameEditDialog = true },
-        onProfileImageUpload = {
-            showGallery = true
-        },
+        onProfileImageUpload = onProfileImagePickerOpen,
         onOssLicenseClick = onOssLicenseClick,
         memberInfoItem = memberInfoItem.value,
         appVersion = getAppVersion(),
         modifier = modifier,
     )
-
-    if (showGallery) {
-        ProfileImagePicker(
-            scope,
-            viewModel::uploadProfileImage,
-            onClosePicker = { showGallery = false },
-        )
-    }
 
     if (showNicknameEditDialog) {
         NicknameEditDialog(
@@ -169,13 +148,13 @@ fun SettingMainScreen(
 }
 
 @Composable
-private fun ProfileImagePicker(
-    scope: CoroutineScope,
-    onUpload: suspend (String, String, Long) -> Result<Unit>,
+fun ProfileImagePicker(
+    onPhotosSelected: (String) -> Unit,
+    onError: (UiText) -> Unit,
     onClosePicker: () -> Unit,
 ) {
     val logger: Logger = Logger.withTag("ProfileImagePicker")
-    val snackbarHostState = LocalSnackbarHostState.current
+    logger.d { "ProfileImagePicker 열림" }
     GalleryPickerLauncher(
         allowMultiple = false,
         mimeTypes = ALL_SUPPORTED_TYPES,
@@ -188,39 +167,12 @@ private fun ProfileImagePicker(
                 logger.w { "선택된 사진이 없습니다" }
                 return@GalleryPickerLauncher
             }
-            scope.launch {
-                runCatching {
-                    handleImagePickerKMPCroppedImage(
-                        onUploadFailure = {
-                            snackbarHostState.showSingleSnackbar(
-                                scope = scope,
-                                stringResource = Res.string.setting_edit_profile_image_upload_failed,
-                            )
-                        },
-                        onProcessingFailure = {
-                            snackbarHostState.showSingleSnackbar(
-                                scope = scope,
-                                stringResource = Res.string.setting_edit_profile_image_processing_failed,
-                            )
-                        },
-                        sourceImageUri = photo.uri,
-                        onProfileImageUpload = onUpload,
-                    )
-                }.getOrElse { exception: Throwable ->
-                    logger.e(exception) { "이미지 처리 중 예외 발생" }
-                    snackbarHostState.showSingleSnackbar(
-                        scope = scope,
-                        stringResource = Res.string.setting_edit_profile_image_processing_failed,
-                    )
-                }
-            }
+            onPhotosSelected(photo.uri)
+            onClosePicker()
         },
         onError = { exception: Exception ->
             logger.e(exception) { "GalleryPicker 에러 발생" }
-            snackbarHostState.showSingleSnackbar(
-                scope = scope,
-                stringResource = Res.string.setting_edit_profile_image_selection_failed,
-            )
+            onError(UiText.StringRes(Res.string.setting_edit_profile_image_selection_failed))
             onClosePicker()
         },
         onDismiss = {
