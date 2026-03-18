@@ -42,6 +42,8 @@ import yagubogu.composeapp.generated.resources.all_confirm
 import yagubogu.composeapp.generated.resources.setting_edit_nickname
 import yagubogu.composeapp.generated.resources.setting_edit_nickname_dialog_hint
 
+private const val NICKNAME_LENGTH_LIMIT = 15
+
 @Composable
 fun NicknameEditDialog(
     nickname: String,
@@ -74,8 +76,10 @@ fun NicknameEditDialog(
                 TextField(
                     value = nickname.value,
                     onValueChange = {
-                        if (it.length <= 12) {
+                        if (it.length <= NICKNAME_LENGTH_LIMIT) {
                             nickname.value = it
+                        } else {
+                            nickname.value = it.substring(0, NICKNAME_LENGTH_LIMIT)
                         }
                     },
                     placeholder = { Text(text = stringResource(Res.string.setting_edit_nickname_dialog_hint)) },
