@@ -261,27 +261,36 @@ fun LivetalkChatScreenContent(
                         .fillMaxWidth(),
             ) {
                 // 채팅 버블
-                when (state.chatList.uiState) {
-                    is LivetalkChatUiState.Success -> {
-                        LivetalkChatBubbleList(
-                            chatItems = state.chatList.items,
-                            modifier = Modifier.weight(1f),
-                            onDeleteClick = actions.chatBubbleItems.onRequestDelete,
-                            onReportClick = actions.chatBubbleItems.onRequestReport,
-                            onProfileClick = { actions.chatBubbleItems.onFetchMemberProfile(it.memberId) },
-                            fetchBeforeTalks = { actions.chatBubbleItems.onFetchBeforeTalks() },
-                        )
-                    }
+                Box(
+                    modifier =
+                        Modifier
+                            .weight(1f)
+                            .fillMaxWidth(),
+                ) {
+                    when (state.chatList.uiState) {
+                        is LivetalkChatUiState.Success -> {
+                            LivetalkChatBubbleList(
+                                chatItems = state.chatList.items,
+                                modifier = Modifier.fillMaxSize(),
+                                onDeleteClick = actions.chatBubbleItems.onRequestDelete,
+                                onReportClick = actions.chatBubbleItems.onRequestReport,
+                                onProfileClick = { actions.chatBubbleItems.onFetchMemberProfile(it.memberId) },
+                                fetchBeforeTalks = { actions.chatBubbleItems.onFetchBeforeTalks() },
+                            )
+                        }
 
-                    is LivetalkChatUiState.Loading -> {
-                        LivetalkChatBubbleListShimmer()
-                    }
+                        is LivetalkChatUiState.Loading -> {
+                            LivetalkChatBubbleListShimmer()
+                        }
 
-                    is LivetalkChatUiState.Empty -> {
-                        EmptyLivetalkChat(isCheckIn = state.isVerified)
+                        is LivetalkChatUiState.Empty -> {
+                            EmptyLivetalkChat(
+                                isCheckIn = state.isVerified,
+                                modifier = Modifier.fillMaxSize(),
+                            )
+                        }
                     }
                 }
-
                 // 구분선
                 HorizontalDivider(thickness = max(0.4.dp, Dp.Hairline), color = Gray300)
 
@@ -463,6 +472,49 @@ fun LivetalkChatPreviewLoading() {
     }
 }
 
+// 내 팀이 홈팀에 속하고 인증한 경우
+@Preview(showBackground = true, name = "채팅 없음 (비인증/제3자)")
+@Composable
+fun LivetalkChatPreviewVerifiedEmpty() {
+    val neutralTeams =
+        LivetalkTeams(
+            stadiumName = "고척 스카이돔",
+            homeTeamCode = "KT", // 홈: KT
+            awayTeamCode = "NC", // 원정: NC
+            myTeamCode = "KT", // 내 팀: 삼성
+        )
+
+    val mockState =
+        LivetalkChatScreenStates(
+            toolbar =
+                LivetalkChatScreenStates.Toolbar(
+                    teams = neutralTeams,
+                ),
+            chatList =
+                LivetalkChatScreenStates.ChatList(
+                    uiState = LivetalkChatUiState.Empty,
+                ),
+            inputBar =
+                LivetalkChatScreenStates.InputBar(
+                    text = "",
+                    stadiumName = neutralTeams.stadiumName,
+                ),
+            cheering =
+                LivetalkChatScreenStates.Cheering(
+                    myTeam = neutralTeams.myTeam,
+                    showingCount = 0L,
+                ),
+            isVerified = true,
+        )
+
+    YaguBoguTheme {
+        LivetalkChatScreenContent(
+            state = mockState,
+            actions = LivetalkChatScreenActions(),
+        )
+    }
+}
+
 // 내 팀이 홈/원정 어디에도 속하지 않고 인증하지 않은 경우
 @Preview(showBackground = true, name = "채팅 없음 (비인증/제3자)")
 @Composable
@@ -489,6 +541,11 @@ fun LivetalkChatPreviewEmpty() {
                 LivetalkChatScreenStates.InputBar(
                     text = "",
                     stadiumName = neutralTeams.stadiumName,
+                ),
+            cheering =
+                LivetalkChatScreenStates.Cheering(
+                    myTeam = neutralTeams.myTeam,
+                    showingCount = 0L,
                 ),
             isVerified = false,
         )
