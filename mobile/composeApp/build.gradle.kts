@@ -7,8 +7,8 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.io.FileInputStream
 import java.util.Properties
 
-val appVersionCode = 20204
-val appVersionName = "2.2.4"
+val appVersionCode = 20205
+val appVersionName = "2.2.5"
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
