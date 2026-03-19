@@ -48,9 +48,9 @@ fun YearMonth.Companion.now(
     timeZone: TimeZone = KST,
 ): YearMonth = clock.todayIn(timeZone).yearMonth
 
-fun LocalDateTime.toInstantKST() = this.toInstant(KST)
+fun LocalDateTime.toInstantKST(): Instant = this.toInstant(KST)
 
-fun LocalDate.toInstant(): Instant = this.atStartOfDayIn(KST)
+fun LocalDate.toInstantKST(): Instant = this.atStartOfDayIn(KST)
 
 fun LocalDate.minusDays(value: Int): LocalDate = minus(value, DateTimeUnit.DAY)
 
