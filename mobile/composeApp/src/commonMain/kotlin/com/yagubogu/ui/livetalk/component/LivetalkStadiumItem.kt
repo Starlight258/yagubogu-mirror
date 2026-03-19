@@ -3,6 +3,7 @@ package com.yagubogu.ui.livetalk.component
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -34,6 +35,7 @@ import com.yagubogu.ui.theme.dpToSp
 import com.yagubogu.ui.util.color
 import com.yagubogu.ui.util.emoji
 import com.yagubogu.ui.util.noRippleClickable
+import com.yagubogu.ui.util.shimmerLoading
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import yagubogu.composeapp.generated.resources.Res
@@ -119,6 +121,17 @@ fun LivetalkStadiumItem(
 }
 
 @Composable
+fun ShimmerStadiumItem(modifier: Modifier = Modifier) {
+    Box(
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .height(142.dp)
+                .shimmerLoading(12.dp),
+    )
+}
+
+@Composable
 private fun TeamItem(
     name: String,
     emoji: String,
@@ -157,4 +170,10 @@ private fun LivetalkStadiumItemUnVerifiedPreview() {
         item = LIVETALK_STADIUM_ITEM_UNVERIFIED,
         onClick = {},
     )
+}
+
+@Preview
+@Composable
+private fun LivetalkStadiumItemShimmerPreview() {
+    ShimmerStadiumItem()
 }

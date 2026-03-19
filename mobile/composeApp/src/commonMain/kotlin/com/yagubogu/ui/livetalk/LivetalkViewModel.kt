@@ -21,8 +21,8 @@ class LivetalkViewModel(
 ) : ViewModel() {
     private val logger = Logger.withTag("LivetalkViewModel")
 
-    private val _stadiumItems = MutableStateFlow<List<LivetalkStadiumItem>>(emptyList())
-    val stadiumItems: StateFlow<List<LivetalkStadiumItem>> = _stadiumItems.asStateFlow()
+    private val _stadiumItems = MutableStateFlow<List<LivetalkStadiumItem>?>(null)
+    val stadiumItems: StateFlow<List<LivetalkStadiumItem>?> = _stadiumItems.asStateFlow()
 
     fun fetchGames(date: LocalDate = LocalDate.now(clock)) {
         viewModelScope.launch {

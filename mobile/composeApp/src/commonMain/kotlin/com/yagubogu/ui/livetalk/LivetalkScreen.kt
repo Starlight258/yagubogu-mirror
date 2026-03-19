@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -24,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yagubogu.ui.livetalk.component.LIVETALK_STADIUM_ITEMS
 import com.yagubogu.ui.livetalk.component.LivetalkStadiumItem
+import com.yagubogu.ui.livetalk.component.ShimmerStadiumItem
 import com.yagubogu.ui.livetalk.model.LivetalkStadiumItem
 import com.yagubogu.ui.theme.Gray050
 import com.yagubogu.ui.theme.Gray400
@@ -46,7 +48,9 @@ fun LivetalkScreen(
     modifier: Modifier = Modifier,
     viewModel: LivetalkViewModel = koinViewModel(),
 ) {
-    val livetalkStadiumItems: List<LivetalkStadiumItem> by viewModel.stadiumItems.collectAsStateWithLifecycle()
+    val livetalkStadiumDelegatedItems: List<LivetalkStadiumItem>? by viewModel.stadiumItems.collectAsStateWithLifecycle()
+
+    val livetalkStadiumItems = livetalkStadiumDelegatedItems
 
     LaunchedEffect(Unit) {
         viewModel.fetchGames()
@@ -54,8 +58,19 @@ fun LivetalkScreen(
 
     BackPressHandler()
 
-    when (livetalkStadiumItems.isNotEmpty()) {
-        true ->
+    when {
+        // 로딩 중 (데이터가 아직 null인 경우 shimmer)
+        livetalkStadiumItems == null -> {
+            ShimmerLivetalkScreen(modifier = modifier)
+        }
+
+        // 데이터가 비어있는 경우
+        livetalkStadiumItems.isEmpty() -> {
+            EmptyLivetalkScreen(modifier = modifier)
+        }
+
+        // 데이터가 존재할 경우
+        else -> {
             LivetalkScreen(
                 items = livetalkStadiumItems,
                 onItemClick = { item: LivetalkStadiumItem ->
@@ -64,8 +79,23 @@ fun LivetalkScreen(
                 modifier = modifier,
                 scrollToTopEvent = scrollToTopEvent,
             )
+        }
+    }
+}
 
-        false -> EmptyLivetalkScreen(modifier = modifier)
+@Composable
+fun ShimmerLivetalkScreen(modifier: Modifier = Modifier) {
+    Column(
+        modifier =
+            modifier
+                .fillMaxSize()
+                .background(Gray050)
+                .padding(top = 8.dp, start = 20.dp, end = 20.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+        repeat(5) {
+            ShimmerStadiumItem()
+        }
     }
 }
 
@@ -151,4 +181,10 @@ private fun LivetalkScreenPreview() {
 @Composable
 private fun EmptyLivetalkScreenPreview() {
     EmptyLivetalkScreen()
+}
+
+@Preview("로딩중 현장톡 화면")
+@Composable
+private fun ShimmerLivetalkScreenPreview() {
+    ShimmerLivetalkScreen()
 }
