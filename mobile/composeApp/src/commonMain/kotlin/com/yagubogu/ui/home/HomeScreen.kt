@@ -78,6 +78,7 @@ fun HomeScreen(
     val isStadiumStatsExpanded: Boolean by viewModel.isStadiumStatsExpanded.collectAsStateWithLifecycle()
     val victoryFairyRanking: VictoryFairyRanking by viewModel.victoryFairyRanking.collectAsStateWithLifecycle()
     val leftSecondsUntilOpening: StateFlow<Long> = viewModel.leftSecondsUntilOpening
+    val openingHour: Int = viewModel.openingHour
 
     var permissionState: PermissionState by remember { mutableStateOf(PermissionState.IDLE) }
 
@@ -172,6 +173,7 @@ fun HomeScreen(
         victoryFairyRanking = victoryFairyRanking,
         onVictoryFairyRankingClick = viewModel::fetchMemberProfile,
         leftSecondsUntilOpening = leftSecondsUntilOpening,
+        openingHour = openingHour,
         modifier = modifier,
         scrollToTopEvent = scrollToTopEvent,
     )
@@ -202,6 +204,7 @@ private fun HomeScreen(
     victoryFairyRanking: VictoryFairyRanking,
     onVictoryFairyRankingClick: (Long) -> Unit,
     leftSecondsUntilOpening: StateFlow<Long>,
+    openingHour: Int,
     modifier: Modifier = Modifier,
     scrollToTopEvent: SharedFlow<Unit> = MutableSharedFlow(),
 ) {
@@ -239,7 +242,10 @@ private fun HomeScreen(
         MemberStats(uiModel = memberStatsUiModel)
 
         if (isCountdownVisible) {
-            OpeningCountdown(leftSecondsFlow = leftSecondsUntilOpening)
+            OpeningCountdown(
+                leftSecondsFlow = leftSecondsUntilOpening,
+                openingHour = openingHour,
+            )
         }
 
         if (stadiumStatsUiModel.stadiumFanRates.isNotEmpty()) {
@@ -296,5 +302,6 @@ private fun HomeScreenPreview() {
         victoryFairyRanking = VICTORY_FAIRY_RANKING,
         onVictoryFairyRankingClick = {},
         leftSecondsUntilOpening = MutableStateFlow(1_000_000L),
+        openingHour = 14,
     )
 }

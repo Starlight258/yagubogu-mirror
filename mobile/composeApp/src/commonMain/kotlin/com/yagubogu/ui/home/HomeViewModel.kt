@@ -131,6 +131,8 @@ class HomeViewModel(
     private val _leftSecondsUntilOpening = MutableStateFlow(getLeftSecondsUntilOpening())
     val leftSecondsUntilOpening: StateFlow<Long> = _leftSecondsUntilOpening.asStateFlow()
 
+    val openingHour: Int = getOpeningDateHour()
+
     init {
         startOpeningCountdown()
     }
@@ -360,6 +362,8 @@ class HomeViewModel(
             }
         }
     }
+
+    private fun getOpeningDateHour(): Int = OpeningDate.fromYear(LocalDate.now(clock).year)?.dateTime?.hour ?: 0
 
     private fun getLeftSecondsUntilOpening(): Long {
         val currentYear: Int = LocalDate.now(clock).year

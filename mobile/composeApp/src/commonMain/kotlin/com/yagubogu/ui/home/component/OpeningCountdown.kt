@@ -46,14 +46,15 @@ import yagubogu.composeapp.generated.resources.home_opening_countdown_left_time
 private const val SECONDS_PER_MINUTE = 60L
 private const val SECONDS_PER_HOUR = 60L * 60L
 private const val SECONDS_PER_DAY = 24L * 60L * 60L
-private const val OPENING_HOUR_SECONDS = 14L * SECONDS_PER_HOUR
 
 @Composable
 fun OpeningCountdown(
     leftSecondsFlow: StateFlow<Long>,
+    openingHour: Int,
     modifier: Modifier = Modifier,
 ) {
     val leftSecondsUntilOpening: State<Long> = leftSecondsFlow.collectAsStateWithLifecycle()
+    val openingHourSeconds: Long = openingHour * SECONDS_PER_HOUR
 
     Column(
         modifier =
@@ -77,17 +78,26 @@ fun OpeningCountdown(
             )
         }
         Spacer(modifier = Modifier.height(24.dp))
-        DaysText(leftTimeState = leftSecondsUntilOpening)
+        DaysText(leftTimeState = leftSecondsUntilOpening, openingHourSeconds = openingHourSeconds)
         Spacer(modifier = Modifier.height(16.dp))
-        TimeCountdowns(leftTimeState = leftSecondsUntilOpening)
+        TimeCountdowns(
+            leftTimeState = leftSecondsUntilOpening,
+            openingHourSeconds = openingHourSeconds,
+        )
     }
 }
 
 @Composable
-private fun DaysText(leftTimeState: State<Long>) {
+private fun DaysText(
+    leftTimeState: State<Long>,
+    openingHourSeconds: Long,
+) {
     val days: Long by remember {
         derivedStateOf {
-            maxOf(0L, (leftTimeState.value - OPENING_HOUR_SECONDS + SECONDS_PER_DAY - 1) / SECONDS_PER_DAY)
+            maxOf(
+                0L,
+                (leftTimeState.value - openingHourSeconds + SECONDS_PER_DAY - 1) / SECONDS_PER_DAY,
+            )
         }
     }
 
@@ -105,15 +115,16 @@ private fun DaysText(leftTimeState: State<Long>) {
 @Composable
 private fun TimeCountdowns(
     leftTimeState: State<Long>,
+    openingHourSeconds: Long,
     modifier: Modifier = Modifier,
 ) {
     val leftTime: Long by leftTimeState
 
     val timeForDisplay: Long =
-        if (leftTime <= OPENING_HOUR_SECONDS) {
+        if (leftTime <= openingHourSeconds) {
             leftTime
         } else {
-            (leftTime - OPENING_HOUR_SECONDS) % SECONDS_PER_DAY
+            (leftTime - openingHourSeconds) % SECONDS_PER_DAY
         }
 
     val hours: Long = timeForDisplay / SECONDS_PER_HOUR
@@ -209,7 +220,7 @@ private fun ColonDivider(modifier: Modifier = Modifier) {
 @Preview
 @Composable
 private fun OpeningCountdownPreview() {
-    OpeningCountdown(leftSecondsFlow = MutableStateFlow(1_000_000L))
+    OpeningCountdown(leftSecondsFlow = MutableStateFlow(1_000_000L), openingHour = 14)
 }
 
 @Preview(showBackground = true)
