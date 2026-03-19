@@ -28,7 +28,7 @@ import com.yagubogu.ui.mapper.toDomain
 import com.yagubogu.ui.mapper.toUiModel
 import com.yagubogu.ui.util.mapList
 import com.yagubogu.ui.util.now
-import com.yagubogu.ui.util.toInstant
+import com.yagubogu.ui.util.toInstantKST
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
@@ -131,6 +131,8 @@ class HomeViewModel(
     private val _leftSecondsUntilOpening = MutableStateFlow(getLeftSecondsUntilOpening())
     val leftSecondsUntilOpening: StateFlow<Long> = _leftSecondsUntilOpening.asStateFlow()
 
+    val openingHour: Int = getOpeningDateHour()
+
     init {
         startOpeningCountdown()
     }
@@ -212,7 +214,8 @@ class HomeViewModel(
     }
 
     fun refreshStadiumStats() {
-        _stadiumStatsUiModel.value = stadiumStatsUiModel.value.copy(refreshTime = LocalTime.now(clock))
+        _stadiumStatsUiModel.value =
+            stadiumStatsUiModel.value.copy(refreshTime = LocalTime.now(clock))
     }
 
     fun fetchMemberProfile(memberId: Long) {
@@ -360,11 +363,15 @@ class HomeViewModel(
         }
     }
 
+    private fun getOpeningDateHour(): Int = OpeningDate.fromYear(LocalDate.now(clock).year)?.dateTime?.hour ?: 0
+
     private fun getLeftSecondsUntilOpening(): Long {
         val currentYear: Int = LocalDate.now(clock).year
-        val openingDate: OpeningDate = OpeningDate.fromYear(currentYear) ?: return 0L
+        val openingDateTime: OpeningDate = OpeningDate.fromYear(currentYear) ?: return 0L
         val time =
-            clock.now().until(other = openingDate.date.toInstant(), unit = DateTimeUnit.SECOND)
+            clock
+                .now()
+                .until(other = openingDateTime.dateTime.toInstantKST(), unit = DateTimeUnit.SECOND)
         return if (time < 0L) 0L else time
     }
 
