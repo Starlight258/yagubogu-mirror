@@ -46,6 +46,7 @@ import yagubogu.composeapp.generated.resources.home_opening_countdown_left_time
 private const val SECONDS_PER_MINUTE = 60L
 private const val SECONDS_PER_HOUR = 60L * 60L
 private const val SECONDS_PER_DAY = 24L * 60L * 60L
+private const val OPENING_HOUR_SECONDS = 14L * SECONDS_PER_HOUR
 
 @Composable
 fun OpeningCountdown(
@@ -84,7 +85,11 @@ fun OpeningCountdown(
 
 @Composable
 private fun DaysText(leftTimeState: State<Long>) {
-    val days: Long by remember { derivedStateOf { leftTimeState.value / SECONDS_PER_DAY } }
+    val days: Long by remember {
+        derivedStateOf {
+            maxOf(0L, (leftTimeState.value - OPENING_HOUR_SECONDS + SECONDS_PER_DAY - 1) / SECONDS_PER_DAY)
+        }
+    }
 
     Text(
         text = stringResource(Res.string.d_day_with_days, days),
@@ -104,9 +109,16 @@ private fun TimeCountdowns(
 ) {
     val leftTime: Long by leftTimeState
 
-    val hours: Long = (leftTime % SECONDS_PER_DAY) / SECONDS_PER_HOUR
-    val minutes: Long = (leftTime % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE
-    val seconds: Long = leftTime % SECONDS_PER_MINUTE
+    val timeForDisplay: Long =
+        if (leftTime <= OPENING_HOUR_SECONDS) {
+            leftTime
+        } else {
+            (leftTime - OPENING_HOUR_SECONDS) % SECONDS_PER_DAY
+        }
+
+    val hours: Long = timeForDisplay / SECONDS_PER_HOUR
+    val minutes: Long = (timeForDisplay % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE
+    val seconds: Long = timeForDisplay % SECONDS_PER_MINUTE
 
     Row(modifier = modifier) {
         TimeCountdown(
