@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -236,6 +238,10 @@ fun LivetalkChatScreenContent(
                 isVerified = state.isVerified,
                 onTextChange = actions.chatInputBar.onMessageTextChange,
                 onSendMessage = actions.chatInputBar.onSendMessage,
+                modifier =
+                    Modifier
+                        .navigationBarsPadding() // 시스템 네비게이션 바 영역 확보
+                        .imePadding(),
             )
         },
         containerColor = Gray050,
