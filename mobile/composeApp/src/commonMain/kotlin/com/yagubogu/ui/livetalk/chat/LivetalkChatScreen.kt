@@ -473,7 +473,7 @@ fun LivetalkChatPreviewLoading() {
 }
 
 // 내 팀이 홈팀에 속하고 인증한 경우
-@Preview(showBackground = true, name = "채팅 없음 (비인증/제3자)")
+@Preview(showBackground = true, name = "채팅 없음 (비인증)")
 @Composable
 fun LivetalkChatPreviewVerifiedEmpty() {
     val neutralTeams =

@@ -138,7 +138,7 @@ fun NavigationRoot(
         Box(modifier = modifier.fillMaxSize()) {
             // 외부에서 온 modifier 설정을 소비
             NavDisplay(
-                modifier = Modifier.fillMaxSize(), // 단순치 전체 채우기만
+                modifier = Modifier.fillMaxSize(),
                 entries = rootNavigator.state.toEntries(entryProvider),
                 onBack = { rootNavigator.goBack() },
                 transitionSpec = { slidePushTransition() },

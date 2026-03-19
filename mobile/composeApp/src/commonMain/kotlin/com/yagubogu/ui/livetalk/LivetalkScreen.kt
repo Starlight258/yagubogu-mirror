@@ -84,7 +84,7 @@ fun LivetalkScreen(
 }
 
 @Composable
-fun ShimmerLivetalkScreen(modifier: Modifier = Modifier) {
+private fun ShimmerLivetalkScreen(modifier: Modifier = Modifier) {
     Column(
         modifier =
             modifier
