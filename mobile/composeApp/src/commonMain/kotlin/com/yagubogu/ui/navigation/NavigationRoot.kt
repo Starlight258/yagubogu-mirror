@@ -17,7 +17,6 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import com.yagubogu.ui.badge.component.BadgeScreen
-import com.yagubogu.ui.onboarding.favorite.FavoriteTeamScreen
 import com.yagubogu.ui.livetalk.chat.LivetalkChatScreen
 import com.yagubogu.ui.login.LoginScreen
 import com.yagubogu.ui.main.MainScreen
@@ -26,6 +25,7 @@ import com.yagubogu.ui.navigation.model.Navigator
 import com.yagubogu.ui.navigation.model.Route
 import com.yagubogu.ui.navigation.model.SettingNavKey
 import com.yagubogu.ui.navigation.model.toEntries
+import com.yagubogu.ui.onboarding.favorite.FavoriteTeamScreen
 import com.yagubogu.ui.setting.SettingScreen
 import com.yagubogu.ui.util.LocalSnackbarHostState
 import com.yagubogu.ui.util.LocalSnackbarScope

@@ -2,13 +2,14 @@ package com.yagubogu.di
 
 import com.yagubogu.ui.attendance.AttendanceHistoryViewModel
 import com.yagubogu.ui.badge.BadgeViewModel
-import com.yagubogu.ui.onboarding.favorite.FavoriteTeamViewModel
 import com.yagubogu.ui.home.HomeViewModel
 import com.yagubogu.ui.livetalk.LivetalkViewModel
 import com.yagubogu.ui.livetalk.chat.LivetalkChatViewModel
 import com.yagubogu.ui.login.LoginViewModel
 import com.yagubogu.ui.main.MainViewModel
 import com.yagubogu.ui.main.YaguBoguViewModel
+import com.yagubogu.ui.onboarding.favorite.FavoriteTeamViewModel
+import com.yagubogu.ui.onboarding.nickname.NicknameViewModel
 import com.yagubogu.ui.setting.SettingViewModel
 import com.yagubogu.ui.stats.StatsViewModel
 import org.koin.core.module.dsl.viewModel
@@ -24,6 +25,8 @@ val viewModelModule =
         viewModelOf(::BadgeViewModel)
 
         viewModelOf(::FavoriteTeamViewModel)
+
+        viewModelOf(::NicknameViewModel)
 
         viewModelOf(::HomeViewModel)
 
