@@ -10,4 +10,6 @@ sealed interface NicknameEvent {
     data class NicknameEditFailure(
         val uiText: UiText,
     ) : NicknameEvent
+
+    data object NavigateToMain : NicknameEvent
 }

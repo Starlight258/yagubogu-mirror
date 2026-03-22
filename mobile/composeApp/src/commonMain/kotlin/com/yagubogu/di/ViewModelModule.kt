@@ -24,9 +24,19 @@ val viewModelModule =
 
         viewModelOf(::BadgeViewModel)
 
-        viewModelOf(::FavoriteTeamViewModel)
+        viewModel { params ->
+            FavoriteTeamViewModel(
+                memberRepository = get(),
+                isOnboarding = params.get(),
+            )
+        }
 
-        viewModelOf(::NicknameViewModel)
+        viewModel { params ->
+            NicknameViewModel(
+                memberRepository = get(),
+                teamName = params.get(),
+            )
+        }
 
         viewModelOf(::HomeViewModel)
 
