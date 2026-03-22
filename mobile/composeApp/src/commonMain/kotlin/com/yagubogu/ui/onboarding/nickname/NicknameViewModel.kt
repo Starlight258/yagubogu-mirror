@@ -8,8 +8,11 @@ import com.yagubogu.data.repository.member.NicknameUpdateError
 import com.yagubogu.data.repository.member.toNicknameUpdateError
 import com.yagubogu.data.repository.member.toUiText
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class NicknameViewModel(
@@ -17,33 +20,56 @@ class NicknameViewModel(
     private val teamName: String,
 ) : ViewModel() {
     private val logger = Logger.withTag("NicknameViewModel")
+    private val _nickname = MutableStateFlow("")
+    val nickname: StateFlow<String> = _nickname.asStateFlow()
 
-    private val _favoriteTeamUpdateEvent = MutableSharedFlow<Unit>()
-    val favoriteTeamUpdateEvent: SharedFlow<Unit> = _favoriteTeamUpdateEvent.asSharedFlow()
+    private val _isDuplicateChecked = MutableStateFlow(false)
+    val isDuplicateChecked: StateFlow<Boolean> = _isDuplicateChecked.asStateFlow()
 
-    private val _event = MutableSharedFlow<NicknameEvent>()
-    val event: SharedFlow<NicknameEvent> = _event.asSharedFlow()
+    private val _nicknameError = MutableStateFlow<String?>(null)
+    val nicknameError: StateFlow<String?> = _nicknameError.asStateFlow()
 
-    fun updateNickname(newNickname: String) {
+    private val _navigateToMainEvent = MutableSharedFlow<Unit>()
+    val navigateToMainEvent: SharedFlow<Unit> = _navigateToMainEvent.asSharedFlow()
+
+    private var currentCheckedNickname: String? = null
+
+    fun onNicknameChanged(newNickname: String) {
+        _nickname.value = newNickname
+        _nicknameError.value = null
+        when {
+            newNickname == currentCheckedNickname -> {
+                _isDuplicateChecked.value = true
+            }
+            else -> {
+                _isDuplicateChecked.value = false
+            }
+        }
+    }
+
+    fun updateNickname() {
         viewModelScope.launch {
             memberRepository
-                .updateNickname(newNickname)
+                .updateNickname(nickname.value)
                 .onSuccess {
+                    _isDuplicateChecked.value = true
+                    currentCheckedNickname = nickname.value
+                    _nicknameError.value = null
                 }.onFailure { exception: Throwable ->
                     val nicknameUpdateError: NicknameUpdateError = exception.toNicknameUpdateError()
-                    val errorText = nicknameUpdateError.toUiText()
+                    _nicknameError.value = nicknameUpdateError.toUiText().asString()
                     logger.w(exception) { "닉네임 변경 API 호출 실패" }
                 }
         }
     }
 
-    fun updateDefaultNickname() {
+    fun useDefaultNickname() {
         viewModelScope.launch {
             repeat(3) {
                 val result = memberRepository.updateNickname(generateNickname(teamName))
                 result
                     .onSuccess {
-                        _event.emit(NicknameEvent.NavigateToMain)
+                        _navigateToMainEvent.emit(Unit)
                         return@launch
                     }.onFailure { exception ->
                         val error = exception.toNicknameUpdateError()
@@ -58,7 +84,7 @@ class NicknameViewModel(
                 val result = memberRepository.updateNickname(generateFallbackNickname(teamName))
                 result
                     .onSuccess {
-                        _event.emit(NicknameEvent.NavigateToMain)
+                        _navigateToMainEvent.emit(Unit)
                         return@launch
                     }.onFailure { exception ->
                         logger.w(exception) { "fallback 닉네임 변경 API 호출 실패" }
@@ -66,7 +92,13 @@ class NicknameViewModel(
             }
 
             logger.w { "닉네임 자동 생성 5회 모두 실패, 서버 기본 닉네임으로 진행" }
-            _event.emit(NicknameEvent.NavigateToMain)
+            _navigateToMainEvent.emit(Unit)
+        }
+    }
+
+    fun onNextClick() {
+        viewModelScope.launch {
+            _navigateToMainEvent.emit(Unit)
         }
     }
 
