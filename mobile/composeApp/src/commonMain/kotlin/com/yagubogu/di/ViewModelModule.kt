@@ -2,7 +2,7 @@ package com.yagubogu.di
 
 import com.yagubogu.ui.attendance.AttendanceHistoryViewModel
 import com.yagubogu.ui.badge.BadgeViewModel
-import com.yagubogu.ui.favorite.FavoriteTeamViewModel
+import com.yagubogu.ui.onboarding.favorite.FavoriteTeamViewModel
 import com.yagubogu.ui.home.HomeViewModel
 import com.yagubogu.ui.livetalk.LivetalkViewModel
 import com.yagubogu.ui.livetalk.chat.LivetalkChatViewModel

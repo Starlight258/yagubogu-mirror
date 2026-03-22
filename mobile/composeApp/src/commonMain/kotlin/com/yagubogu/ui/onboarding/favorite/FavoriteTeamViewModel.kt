@@ -1,4 +1,4 @@
-package com.yagubogu.ui.favorite
+package com.yagubogu.ui.onboarding.favorite
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

@@ -1,4 +1,4 @@
-package com.yagubogu.ui.favorite
+package com.yagubogu.ui.onboarding.favorite
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

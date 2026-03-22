@@ -1,4 +1,4 @@
-package com.yagubogu.ui.favorite
+package com.yagubogu.ui.onboarding.favorite
 
 import com.yagubogu.domain.model.Team
 import com.yagubogu.ui.util.emoji
