@@ -1,13 +1,13 @@
 package com.yagubogu.game;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import com.yagubogu.auth.config.AuthTestConfig;
 import com.yagubogu.checkin.domain.CheckIn;
 import com.yagubogu.game.domain.Game;
+import com.yagubogu.game.domain.GameState;
 import com.yagubogu.game.dto.GameWithCheckInParam;
 import com.yagubogu.game.dto.StadiumByGameParam;
 import com.yagubogu.game.dto.TeamByGameParam;
+import com.yagubogu.game.dto.v1.GameDatesResponse;
 import com.yagubogu.game.dto.v1.GameResponse;
 import com.yagubogu.global.config.JpaAuditingConfig;
 import com.yagubogu.member.domain.Member;
@@ -24,9 +24,6 @@ import com.yagubogu.team.domain.Team;
 import com.yagubogu.team.repository.TeamRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,6 +31,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.IntStream;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Import({AuthTestConfig.class, JpaAuditingConfig.class})
 public class GameE2eTest extends E2eTestBase {
@@ -128,6 +131,61 @@ public class GameE2eTest extends E2eTestBase {
                 .statusCode(422);
     }
 
+    @DisplayName("월별 경기 있는 날짜 목록을 반환한다")
+    @Test
+    void findGameDatesByYearMonth() {
+        // given
+        LocalDate date1 = LocalDate.of(2025, 5, 3);
+        LocalDate date2 = LocalDate.of(2025, 5, 10);
+        makeGame(date1, "HT", "LT", "잠실구장");
+        makeGame(date2, "WO", "HH", "고척돔");
+
+        Member member = makeMember(getTeamByCode("SS"));
+        String accessToken = authFactory.getAccessTokenByMemberId(member.getId(), Role.USER);
+
+        // when
+        GameDatesResponse actual = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .queryParam("yearMonth", "2025-05")
+                .when().get("/api/v1/games/dates")
+                .then().log().all()
+                .statusCode(200)
+                .extract()
+                .as(GameDatesResponse.class);
+
+        // then
+        assertThat(actual.dates()).containsExactlyInAnyOrder(date1, date2);
+    }
+
+    @DisplayName("취소된 경기만 있는 날짜는 결과에서 제외된다")
+    @Test
+    void findGameDatesByYearMonth_excludesCanceled() {
+        // given
+        LocalDate canceledDate = LocalDate.of(2025, 5, 3);
+        LocalDate scheduledDate = LocalDate.of(2025, 5, 10);
+        makeGameWithState(canceledDate, "HT", "LT", "잠실구장", GameState.CANCELED);
+        makeGame(scheduledDate, "WO", "HH", "고척돔");
+
+        Member member = makeMember(getTeamByCode("SS"));
+        String accessToken = authFactory.getAccessTokenByMemberId(member.getId(), Role.USER);
+
+        // when
+        GameDatesResponse actual = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .queryParam("yearMonth", "2025-05")
+                .when().get("/api/v1/games/dates")
+                .then().log().all()
+                .statusCode(200)
+                .extract()
+                .as(GameDatesResponse.class);
+
+        // then
+        assertThat(actual.dates()).containsExactly(scheduledDate);
+        assertThat(actual.dates()).doesNotContain(canceledDate);
+    }
+
     private Game makeGame(LocalDate date, String homeCode, String awayCode, String stadiumShortName) {
         Team homeTeam = getTeamByCode(homeCode);
         Team awayTeam = getTeamByCode(awayCode);
@@ -138,6 +196,26 @@ public class GameE2eTest extends E2eTestBase {
                 .awayTeam(awayTeam)
                 .stadium(stadium)
                 .date(date)
+        );
+    }
+
+    private Game makeGameWithState(
+            LocalDate date,
+            String homeCode,
+            String awayCode,
+            String stadiumShortName,
+            GameState gameState
+    ) {
+        Team homeTeam = getTeamByCode(homeCode);
+        Team awayTeam = getTeamByCode(awayCode);
+        Stadium stadium = stadiumRepository.findByShortName(stadiumShortName).orElseThrow();
+
+        return gameFactory.save(builder -> builder
+                .homeTeam(homeTeam)
+                .awayTeam(awayTeam)
+                .stadium(stadium)
+                .date(date)
+                .gameState(gameState)
         );
     }
 
