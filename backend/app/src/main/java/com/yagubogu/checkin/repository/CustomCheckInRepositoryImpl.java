@@ -69,9 +69,9 @@ public class CustomCheckInRepositoryImpl implements CustomCheckInRepository {
         return jpaQueryFactory.select(
                         Projections.constructor(
                                 StatCountsParam.class,
-                                winExpr.sum(),
-                                drawExpr.sum(),
-                                loseExpr.sum()
+                                winExpr.sum().coalesce(0),
+                                drawExpr.sum().coalesce(0),
+                                loseExpr.sum().coalesce(0)
                         )).from(CHECK_IN)
                 .join(CHECK_IN.game, CustomCheckInRepositoryImpl.GAME).on(isComplete())
                 .where(
