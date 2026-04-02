@@ -100,6 +100,7 @@ fun AttendanceHistoryScreen(
     val snackbarScope = LocalSnackbarHostState.current
 
     LaunchedEffect(selectedMonth, viewType, filter, sort) {
+        viewModel.fetchGameDates()
         viewModel.fetchAttendanceHistoryItems()
     }
 
