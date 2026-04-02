@@ -26,6 +26,7 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.YearMonth
 import kotlinx.datetime.number
+import kotlinx.datetime.yearMonth
 
 class AttendanceHistoryViewModel(
     private val checkInRepository: CheckInRepository,
@@ -35,6 +36,15 @@ class AttendanceHistoryViewModel(
 
     private val _items = MutableStateFlow<List<AttendanceHistoryItem>>(emptyList())
     val items: StateFlow<List<AttendanceHistoryItem>> = _items.asStateFlow()
+
+    private val _gameDates =
+        MutableStateFlow<Set<LocalDate>>(
+            LocalDate
+                .now()
+                .yearMonth.days
+                .toSet(),
+        )
+    val gameDates: StateFlow<Set<LocalDate>> = _gameDates.asStateFlow()
 
     private val _selectedMonth = MutableStateFlow<YearMonth>(YearMonth.now())
     val selectedMonth: StateFlow<YearMonth> = _selectedMonth.asStateFlow()

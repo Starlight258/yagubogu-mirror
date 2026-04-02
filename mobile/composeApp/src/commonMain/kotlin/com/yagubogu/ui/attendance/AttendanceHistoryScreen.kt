@@ -38,6 +38,7 @@ import com.yagubogu.analytics.AnalyticsLogger
 import com.yagubogu.ui.attendance.component.ATTENDANCE_HISTORY_ITEMS
 import com.yagubogu.ui.attendance.component.AttendanceCalendarContent
 import com.yagubogu.ui.attendance.component.AttendanceListContent
+import com.yagubogu.ui.attendance.component.GAME_DATES
 import com.yagubogu.ui.attendance.component.YearMonthPickerDialog
 import com.yagubogu.ui.attendance.model.AttendanceHistoryFilter
 import com.yagubogu.ui.attendance.model.AttendanceHistoryItem
@@ -82,6 +83,7 @@ fun AttendanceHistoryScreen(
     viewModel: AttendanceHistoryViewModel = koinViewModel(),
 ) {
     val attendanceItems: List<AttendanceHistoryItem> by viewModel.items.collectAsStateWithLifecycle()
+    val gameDates: Set<LocalDate> by viewModel.gameDates.collectAsStateWithLifecycle()
     val selectedMonth: YearMonth by viewModel.selectedMonth.collectAsStateWithLifecycle()
     val selectedDate: LocalDate by viewModel.selectedDate.collectAsStateWithLifecycle()
     val filter: AttendanceHistoryFilter by viewModel.filter.collectAsStateWithLifecycle()
@@ -129,6 +131,7 @@ fun AttendanceHistoryScreen(
         selectedDate = selectedDate,
         onDateChange = viewModel::updateSelectedDate,
         items = attendanceItems,
+        gameDates = gameDates,
         filter = filter,
         updateFilter = viewModel::updateFilter,
         sort = sort,
@@ -152,6 +155,7 @@ private fun AttendanceHistoryScreen(
     selectedDate: LocalDate,
     onDateChange: (LocalDate) -> Unit,
     items: List<AttendanceHistoryItem>,
+    gameDates: Set<LocalDate>,
     filter: AttendanceHistoryFilter,
     updateFilter: (AttendanceHistoryFilter) -> Unit,
     sort: AttendanceHistorySort,
@@ -183,6 +187,7 @@ private fun AttendanceHistoryScreen(
             AttendanceHistoryViewType.CALENDAR ->
                 AttendanceCalendarContent(
                     items = items,
+                    gameDates = gameDates,
                     startMonth = startMonth,
                     endMonth = endMonth,
                     selectedMonth = selectedMonth,
@@ -367,6 +372,7 @@ private fun AttendanceCalenderScreenPreview() {
         selectedDate = LocalDate.now(),
         onDateChange = {},
         items = ATTENDANCE_HISTORY_ITEMS,
+        gameDates = GAME_DATES,
         filter = AttendanceHistoryFilter.ALL,
         updateFilter = {},
         sort = AttendanceHistorySort.LATEST,
@@ -390,6 +396,7 @@ private fun AttendanceListScreenPreview() {
         selectedDate = LocalDate.now(),
         onDateChange = {},
         items = ATTENDANCE_HISTORY_ITEMS,
+        gameDates = GAME_DATES,
         filter = AttendanceHistoryFilter.ALL,
         updateFilter = {},
         sort = AttendanceHistorySort.LATEST,
