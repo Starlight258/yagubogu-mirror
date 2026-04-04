@@ -86,6 +86,7 @@ kotlin {
 
     compilerOptions {
         optIn.add("kotlin.time.ExperimentalTime")
+        freeCompilerArgs.add("-Xexpect-actual-classes")
     }
 
     iosArm64 {
@@ -134,6 +135,9 @@ kotlin {
 
             // Google Services
             implementation(libs.play.services.location)
+
+            // AdMob
+            implementation(libs.play.services.ads)
 
             // Ktor
             implementation(libs.ktor.client.okhttp)
@@ -249,6 +253,8 @@ android {
         versionName = appVersionName
 
         manifestPlaceholders["appName"] = "@string/app_name"
+        manifestPlaceholders["admobAppId"] =
+            gradleLocalProperties(rootDir, providers).getProperty("ADMOB_APP_ID") ?: ""
     }
     val signingFile = rootProject.file("keystore.properties")
     val releaseSigningConfig: SigningConfig? =
@@ -280,6 +286,8 @@ android {
             applicationIdSuffix = ".debug"
             versionNameSuffix = ".debug"
             manifestPlaceholders["appName"] = "야구보구.debug"
+            // 개발 중에는 AdMob 테스트 App ID 사용
+            manifestPlaceholders["admobAppId"] = "ca-app-pub-3940256099942544~3347511713"
         }
 
         release {

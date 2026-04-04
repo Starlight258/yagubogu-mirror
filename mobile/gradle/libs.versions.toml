@@ -64,6 +64,9 @@ aboutLibraries = "13.2.1"
 # Play In-App Update
 appUpdate = "2.1.0"
 
+# AdMob
+playServicesAds = "25.1.0"
+
 # Image Loading
 coilCompose = "3.3.0"
 imagepickerkmp = "1.0.34"
@@ -159,6 +162,9 @@ aboutlibraries-compose-m3 = { module = "com.mikepenz:aboutlibraries-compose-m3",
 # Play In-App Update
 app-update = { module = "com.google.android.play:app-update", version.ref = "appUpdate" }
 app-update-ktx = { module = "com.google.android.play:app-update-ktx", version.ref = "appUpdate" }
+
+# AdMob
+play-services-ads = { group = "com.google.android.gms", name = "play-services-ads", version.ref = "playServicesAds" }
 
 # Image Loading
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }

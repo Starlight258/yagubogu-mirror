@@ -6,6 +6,7 @@ import co.touchlab.kermit.Logger
 import co.touchlab.kermit.Severity
 import co.touchlab.kermit.crashlytics.CrashlyticsLogWriter
 import co.touchlab.kermit.platformLogWriter
+import com.google.android.gms.ads.MobileAds
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.yagubogu.analytics.AnalyticsLogger
@@ -28,7 +29,12 @@ class YaguBoguApplication : Application() {
         super.onCreate()
         setupLogging()
         setupAnalytics()
+        setupAds()
         setupKoin()
+    }
+
+    private fun setupAds() {
+        MobileAds.initialize(this)
     }
 
     private fun setupAnalytics() {
