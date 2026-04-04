@@ -110,6 +110,7 @@ private fun LivetalkScreen(
     scrollToTopEvent: SharedFlow<Unit> = MutableSharedFlow(),
 ) {
     val lazyListState: LazyListState = rememberLazyListState()
+    val showBannerAd = items.size >= BANNER_AD_INDEX
 
     LaunchedEffect(Unit) {
         scrollToTopEvent.collect {
@@ -133,22 +134,22 @@ private fun LivetalkScreen(
                 .background(Gray050),
     ) {
         items(
-            count = items.size + 1,
+            count = items.size + if (showBannerAd) 1 else 0,
             key = { index: Int ->
-                if (index == BANNER_AD_INDEX) {
+                if (showBannerAd && index == BANNER_AD_INDEX) {
                     "livetalk_banner_ad"
                 } else {
-                    items[if (index < BANNER_AD_INDEX) index else index - 1].gameId
+                    val itemIndex =
+                        if (showBannerAd && index > BANNER_AD_INDEX) index - 1 else index
+                    items[itemIndex].gameId
                 }
             },
         ) { index: Int ->
-            if (index == BANNER_AD_INDEX) {
+            if (showBannerAd && index == BANNER_AD_INDEX) {
                 LivetalkBannerAd()
             } else {
-                LivetalkStadiumItem(
-                    item = items[if (index < BANNER_AD_INDEX) index else index - 1],
-                    onClick = onItemClick,
-                )
+                val itemIndex = if (showBannerAd && index > BANNER_AD_INDEX) index - 1 else index
+                LivetalkStadiumItem(item = items[itemIndex], onClick = onItemClick)
             }
         }
     }
