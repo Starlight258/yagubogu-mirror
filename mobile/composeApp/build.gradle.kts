@@ -294,7 +294,7 @@ android {
             applicationIdSuffix = ".debug"
             versionNameSuffix = ".debug"
             manifestPlaceholders["appName"] = "야구보구.debug"
-            // 개발 중에는 AdMob 테스트 App ID 사용
+            // AdMob Test App ID
             manifestPlaceholders["admobAppId"] = "ca-app-pub-3940256099942544~3347511713"
         }
 
