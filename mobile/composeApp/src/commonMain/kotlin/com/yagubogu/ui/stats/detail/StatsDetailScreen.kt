@@ -16,7 +16,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yagubogu.domain.model.Team
+import com.yagubogu.ui.common.AdUnitIds
 import com.yagubogu.ui.stats.StatsViewModel
+import com.yagubogu.ui.stats.component.StatsBannerAd
 import com.yagubogu.ui.stats.detail.component.StadiumVisitCounts
 import com.yagubogu.ui.stats.detail.component.VsTeamWinRates
 import com.yagubogu.ui.stats.detail.model.StadiumVisitCount
@@ -78,6 +80,7 @@ private fun StatsDetailScreen(
                     .padding(horizontal = 20.dp)
                     .padding(top = 12.dp, bottom = 20.dp),
         ) {
+            StatsBannerAd(adUnitId = AdUnitIds.statsBanner)
             VsTeamWinRates(
                 onShowMoreClick = onShowMoreClick,
                 vsTeamStatItems = vsTeamStatItems,

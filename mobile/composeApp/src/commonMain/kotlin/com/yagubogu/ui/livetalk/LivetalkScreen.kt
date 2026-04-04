@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yagubogu.ui.livetalk.component.LIVETALK_STADIUM_ITEMS
+import com.yagubogu.ui.livetalk.component.LivetalkBannerAd
 import com.yagubogu.ui.livetalk.component.LivetalkStadiumItem
 import com.yagubogu.ui.livetalk.component.ShimmerStadiumItem
 import com.yagubogu.ui.livetalk.model.LivetalkStadiumItem
@@ -40,6 +41,9 @@ import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.img_baseball_fly_error
 import yagubogu.composeapp.generated.resources.livetalk_empty_game_description
 import yagubogu.composeapp.generated.resources.livetalk_empty_game_illustration_description
+
+private const val BANNER_AD_INDEX = 2
+
 
 @Composable
 fun LivetalkScreen(
@@ -130,14 +134,18 @@ private fun LivetalkScreen(
                 .background(Gray050),
     ) {
         items(
-            count = items.size,
-            key = { index: Int -> items[index].gameId },
+            count = items.size + 1,
+            key = { index: Int ->
+                if (index == BANNER_AD_INDEX) "livetalk_banner_ad"
+                else items[if (index < BANNER_AD_INDEX) index else index - 1].gameId
+            },
         ) { index: Int ->
-            val item: LivetalkStadiumItem = items[index]
-            LivetalkStadiumItem(
-                item = item,
-                onClick = onItemClick,
-            )
+            if (index == BANNER_AD_INDEX) LivetalkBannerAd()
+            else
+                LivetalkStadiumItem(
+                    item = items[if (index < BANNER_AD_INDEX) index else index - 1],
+                    onClick = onItemClick
+                )
         }
     }
 }

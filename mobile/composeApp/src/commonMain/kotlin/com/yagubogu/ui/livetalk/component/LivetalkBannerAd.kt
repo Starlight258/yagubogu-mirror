@@ -1,0 +1,39 @@
+package com.yagubogu.ui.livetalk.component
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.unit.dp
+import com.yagubogu.ui.common.AdUnitIds
+import com.yagubogu.ui.common.component.AdSize
+import com.yagubogu.ui.common.component.BannerAdView
+import com.yagubogu.ui.theme.Gray100
+import com.yagubogu.ui.theme.White
+
+private val adShape = RoundedCornerShape(12.dp)
+
+@Composable
+fun LivetalkBannerAd(modifier: Modifier = Modifier) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .height(142.dp)
+                .background(White, adShape)
+                .border(1.dp, Gray100, adShape)
+                .clip(adShape),
+    ) {
+        BannerAdView(
+            adUnitId = AdUnitIds.livetalkBanner,
+            adSize = AdSize.LARGE_BANNER,
+        )
+    }
+}

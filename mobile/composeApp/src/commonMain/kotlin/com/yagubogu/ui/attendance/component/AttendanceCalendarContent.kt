@@ -114,14 +114,17 @@ fun AttendanceCalendarContent(
                 currentItems.forEach { item: AttendanceHistoryItem ->
                     AttendanceItem(item = item, isExpanded = true)
                 }
-            } else if (!isToday) {
-                AttendanceAdditionButton(
-                    onClick = {
-                        onPastGamesRequest(selectedDate)
-                        showBottomSheet = true
-                    },
-                    modifier = Modifier.padding(vertical = 30.dp),
-                )
+            } else {
+                if (!isToday) {
+                    AttendanceAdditionButton(
+                        onClick = {
+                            onPastGamesRequest(selectedDate)
+                            showBottomSheet = true
+                        },
+                        modifier = Modifier.padding(top = 10.dp),
+                    )
+                }
+                AttendanceBannerAd()
             }
         }
 
