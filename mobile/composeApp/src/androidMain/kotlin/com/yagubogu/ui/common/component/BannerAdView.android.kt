@@ -36,11 +36,7 @@ actual fun BannerAdView(
                 loadAd(AdRequest.Builder().build())
             }
         },
-        update = { adView ->
-            if (adView.adUnitId != adUnitId) {
-                adView.adUnitId = adUnitId
-                adView.loadAd(AdRequest.Builder().build())
-            }
-        },
+        update = {},
+        onRelease = { it.destroy() },
     )
 }
