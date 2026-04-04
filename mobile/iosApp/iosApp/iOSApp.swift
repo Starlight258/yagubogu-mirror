@@ -25,7 +25,13 @@ struct iOSApp: App {
     // Kotlin BannerAdProvider에 GADBannerView 생성 팩토리 주입
     private func setupBannerAdProvider() {
         BannerAdProvider.shared.create = { adUnitId, heightPx in
-            let bannerView = BannerView(adSize: adSizeFor(cgSize: CGSize(width: 0, height: CGFloat(heightPx))))
+            let gadAdSize: AdSize
+            switch heightPx {
+            case 100: gadAdSize = AdSizeLargeBanner
+            case 250: gadAdSize = AdSizeMediumRectangle
+            default: gadAdSize = AdSizeBanner
+            }
+            let bannerView = BannerView(adSize: gadAdSize)
             bannerView.adUnitID = adUnitId
             if let rootVC = UIApplication.shared.connectedScenes
                 .compactMap({ $0 as? UIWindowScene })
