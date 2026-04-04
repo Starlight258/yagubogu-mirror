@@ -24,7 +24,7 @@ fun StatsBannerAd(
         modifier =
             modifier
                 .fillMaxWidth()
-                .height(40.dp)
+                .height(50.dp)
                 .background(White, adShape)
                 .clip(adShape),
     ) {
