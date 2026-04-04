@@ -31,7 +31,7 @@ fun AttendanceBannerAd(modifier: Modifier = Modifier) {
                 .padding(horizontal = 20.dp, vertical = 24.dp),
     ) {
         BannerAdView(
-            adUnitId = AdUnitIds.attendanceBanner,
+            adUnitId = AdUnitIds.attendanceCalendarBanner,
             adSize = AdSize.BANNER,
         )
     }

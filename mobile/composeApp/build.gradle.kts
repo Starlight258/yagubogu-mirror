@@ -7,8 +7,20 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.io.FileInputStream
 import java.util.Properties
 
-val appVersionCode = 20205
-val appVersionName = "2.2.5"
+val appVersionCode = 20206
+val appVersionName = "2.2.6"
+
+fun com.codingfeline.buildkonfig.gradle.TargetConfigDsl.stringField(
+    name: String,
+    key: String = name,
+    default: String = "",
+) {
+    buildConfigField(
+        STRING,
+        name,
+        gradleLocalProperties(rootDir, providers).getProperty(key) ?: default,
+    )
+}
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -30,50 +42,46 @@ buildkonfig {
     packageName = "com.yagubogu"
 
     defaultConfigs {
-        buildConfigField(
-            STRING,
-            "BASE_URL",
-            "${gradleLocalProperties(rootDir, providers).getProperty("BASE_URL_DEBUG")}",
-        )
-        buildConfigField(
-            type = STRING,
-            "WEB_CLIENT_ID",
-            "${gradleLocalProperties(rootDir, providers).getProperty("WEB_CLIENT_ID")}",
-        )
-        buildConfigField(
-            type = STRING,
-            "IOS_CLIENT_ID",
-            "${gradleLocalProperties(rootDir, providers).getProperty("IOS_CLIENT_ID")}",
-        )
-
-        val fixedDate = gradleLocalProperties(rootDir, providers).getProperty("DEBUG_FIXED_DATE")
-        if (fixedDate != null) {
-            buildConfigField(STRING, "DEBUG_FIXED_DATE", fixedDate)
-        } else {
-            buildConfigField(STRING, "DEBUG_FIXED_DATE", "null")
-        }
         buildConfigField(BOOLEAN, "IS_DEBUG", "true")
+
+        stringField("BASE_URL", key = "BASE_URL_DEBUG")
+        stringField("WEB_CLIENT_ID")
+        stringField("IOS_CLIENT_ID")
+        stringField("DEBUG_FIXED_DATE", default = "null")
         buildConfigField(INT, "VERSION_CODE", "$appVersionCode")
+
+        // AdMob Ids
+        val testAndroidBannerId = "ca-app-pub-3940256099942544/6300978111"
+        buildConfigField(STRING, "ADMOB_ANDROID_HOME_BANNER", testAndroidBannerId)
+        buildConfigField(STRING, "ADMOB_ANDROID_LIVETALK_BANNER", testAndroidBannerId)
+        buildConfigField(STRING, "ADMOB_ANDROID_STATS_BANNER", testAndroidBannerId)
+        buildConfigField(STRING, "ADMOB_ANDROID_ATTENDANCE_CALENDAR_BANNER", testAndroidBannerId)
+        buildConfigField(STRING, "ADMOB_ANDROID_EXIT_DIALOG_BANNER", testAndroidBannerId)
+        val testIosBannerId = "ca-app-pub-3940256099942544/2934735716"
+        buildConfigField(STRING, "ADMOB_IOS_HOME_BANNER", testIosBannerId)
+        buildConfigField(STRING, "ADMOB_IOS_LIVETALK_BANNER", testIosBannerId)
+        buildConfigField(STRING, "ADMOB_IOS_STATS_BANNER", testIosBannerId)
+        buildConfigField(STRING, "ADMOB_IOS_ATTENDANCE_CALENDAR_BANNER", testIosBannerId)
+        buildConfigField(STRING, "ADMOB_IOS_EXIT_DIALOG_BANNER", testIosBannerId)
     }
 
     defaultConfigs("release") {
-        buildConfigField(
-            STRING,
-            "BASE_URL",
-            "${gradleLocalProperties(rootDir, providers).getProperty("BASE_URL_RELEASE")}",
-        )
-        buildConfigField(
-            type = STRING,
-            "WEB_CLIENT_ID",
-            "${gradleLocalProperties(rootDir, providers).getProperty("WEB_CLIENT_ID")}",
-        )
-        buildConfigField(
-            type = STRING,
-            "IOS_CLIENT_ID",
-            "${gradleLocalProperties(rootDir, providers).getProperty("IOS_CLIENT_ID")}",
-        )
-
         buildConfigField(BOOLEAN, "IS_DEBUG", "false")
+
+        stringField("BASE_URL", key = "BASE_URL_RELEASE")
+        stringField("WEB_CLIENT_ID")
+        stringField("IOS_CLIENT_ID")
+        // AdMob Ids
+        stringField("ADMOB_ANDROID_HOME_BANNER")
+        stringField("ADMOB_ANDROID_LIVETALK_BANNER")
+        stringField("ADMOB_ANDROID_STATS_BANNER")
+        stringField("ADMOB_ANDROID_ATTENDANCE_CALENDAR_BANNER")
+        stringField("ADMOB_ANDROID_EXIT_DIALOG_BANNER")
+        stringField("ADMOB_IOS_HOME_BANNER")
+        stringField("ADMOB_IOS_LIVETALK_BANNER")
+        stringField("ADMOB_IOS_STATS_BANNER")
+        stringField("ADMOB_IOS_ATTENDANCE_CALENDAR_BANNER")
+        stringField("ADMOB_IOS_EXIT_DIALOG_BANNER")
     }
 }
 

@@ -42,8 +42,7 @@ import yagubogu.composeapp.generated.resources.img_baseball_fly_error
 import yagubogu.composeapp.generated.resources.livetalk_empty_game_description
 import yagubogu.composeapp.generated.resources.livetalk_empty_game_illustration_description
 
-private const val BANNER_AD_INDEX = 2
-
+private const val BANNER_AD_INDEX = 3
 
 @Composable
 fun LivetalkScreen(
@@ -136,16 +135,21 @@ private fun LivetalkScreen(
         items(
             count = items.size + 1,
             key = { index: Int ->
-                if (index == BANNER_AD_INDEX) "livetalk_banner_ad"
-                else items[if (index < BANNER_AD_INDEX) index else index - 1].gameId
+                if (index == BANNER_AD_INDEX) {
+                    "livetalk_banner_ad"
+                } else {
+                    items[if (index < BANNER_AD_INDEX) index else index - 1].gameId
+                }
             },
         ) { index: Int ->
-            if (index == BANNER_AD_INDEX) LivetalkBannerAd()
-            else
+            if (index == BANNER_AD_INDEX) {
+                LivetalkBannerAd()
+            } else {
                 LivetalkStadiumItem(
                     item = items[if (index < BANNER_AD_INDEX) index else index - 1],
-                    onClick = onItemClick
+                    onClick = onItemClick,
                 )
+            }
         }
     }
 }

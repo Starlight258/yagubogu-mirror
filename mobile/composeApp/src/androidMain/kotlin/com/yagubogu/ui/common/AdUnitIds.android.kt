@@ -1,9 +1,11 @@
 package com.yagubogu.ui.common
 
+import com.yagubogu.BuildKonfig
+
 actual object AdUnitIds {
-    actual val homeBanner: String = "ca-app-pub-3940256099942544/6300978111"
-    actual val livetalkBanner: String = "ca-app-pub-3940256099942544/6300978111"
-    actual val statsBanner: String = "ca-app-pub-3940256099942544/6300978111"
-    actual val attendanceBanner: String = "ca-app-pub-3940256099942544/6300978111"
-    actual val exitDialogBanner: String = "ca-app-pub-3940256099942544/6300978111"
+    actual val homeBanner: String = BuildKonfig.ADMOB_ANDROID_HOME_BANNER
+    actual val livetalkBanner: String = BuildKonfig.ADMOB_ANDROID_LIVETALK_BANNER
+    actual val statsBanner: String = BuildKonfig.ADMOB_ANDROID_STATS_BANNER
+    actual val attendanceCalendarBanner: String = BuildKonfig.ADMOB_ANDROID_ATTENDANCE_CALENDAR_BANNER
+    actual val exitDialogBanner: String = BuildKonfig.ADMOB_ANDROID_EXIT_DIALOG_BANNER
 }
