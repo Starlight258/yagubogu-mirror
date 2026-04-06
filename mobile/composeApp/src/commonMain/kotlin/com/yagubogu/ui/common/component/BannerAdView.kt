@@ -16,7 +16,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.yagubogu.ui.theme.White
 
-enum class AdSize(val widthDp: Int, val heightDp: Int) {
+enum class AdSize(
+    val widthDp: Int,
+    val heightDp: Int,
+) {
     BANNER(320, 50),
     LARGE_BANNER(320, 100),
     MEDIUM_RECTANGLE(300, 250),

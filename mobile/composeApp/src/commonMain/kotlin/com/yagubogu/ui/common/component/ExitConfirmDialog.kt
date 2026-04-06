@@ -71,7 +71,7 @@ fun ExitConfirmDialog(
                     adUnitId = AdUnitIds.exitDialogBanner,
                     adSize = AdSize.MEDIUM_RECTANGLE,
                     backgroundColor = Transparent,
-                    modifier = Modifier.requiredWidth(300.dp)
+                    modifier = Modifier.requiredWidth(300.dp),
                 )
                 Row(
                     modifier = Modifier.fillMaxWidth(),
