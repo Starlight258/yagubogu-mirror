@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -35,6 +36,8 @@ import com.yagubogu.ui.theme.EsamanruMedium
 import com.yagubogu.ui.theme.EsamanruMedium20
 import com.yagubogu.ui.theme.Gray050
 import com.yagubogu.ui.theme.Gray100
+import com.yagubogu.ui.theme.Gray400
+import com.yagubogu.ui.theme.PretendardMedium16
 import com.yagubogu.ui.theme.PretendardSemiBold16
 import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.util.mascot
@@ -46,6 +49,7 @@ import org.koin.compose.viewmodel.koinViewModel
 import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.all_cancel
 import yagubogu.composeapp.generated.resources.all_confirm
+import yagubogu.composeapp.generated.resources.favorite_team_random
 import yagubogu.composeapp.generated.resources.favorite_team_selection
 import yagubogu.composeapp.generated.resources.favorite_team_selection_confirm
 import yagubogu.composeapp.generated.resources.img_mascot_ht
@@ -56,6 +60,7 @@ fun FavoriteTeamScreen(
     modifier: Modifier = Modifier,
     viewModel: FavoriteTeamViewModel = koinViewModel(),
 ) {
+    val teams: List<Team> = remember { Team.entries.shuffled() }
     var selectedTeam: Team? by rememberSaveable { mutableStateOf(null) }
 
     LaunchedEffect(Unit) {
@@ -66,7 +71,7 @@ fun FavoriteTeamScreen(
 
     Scaffold(containerColor = Gray050) { innerPadding ->
         FavoriteTeamScreen(
-            teams = Team.entries,
+            teams = teams,
             onTeamClick = { item -> selectedTeam = item },
             modifier = modifier.padding(innerPadding),
         )
@@ -106,6 +111,14 @@ private fun FavoriteTeamScreen(
                 Modifier
                     .padding(horizontal = 30.dp)
                     .padding(top = 20.dp),
+        )
+        Text(
+            text = stringResource(Res.string.favorite_team_random),
+            style = PretendardMedium16.copy(color = Gray400),
+            modifier =
+                Modifier
+                    .padding(horizontal = 30.dp)
+                    .padding(top = 4.dp),
         )
 
         LazyVerticalGrid(
