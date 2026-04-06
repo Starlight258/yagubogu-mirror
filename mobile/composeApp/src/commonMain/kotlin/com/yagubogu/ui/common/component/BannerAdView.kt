@@ -46,7 +46,7 @@ fun BannerAd(
         modifier = modifier.fillMaxWidth(),
         contentAlignment = Alignment.Center,
     ) {
-        val currentWidth = maxWidth
+        val currentWidth = adSize.widthDp.dp
 
         val finalShape =
             if (currentWidth >= adSize.widthDp.dp + cornerRadius * 2) {
