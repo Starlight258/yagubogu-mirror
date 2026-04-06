@@ -44,6 +44,8 @@ import com.yagubogu.ui.attendance.model.AttendanceHistoryItem
 import com.yagubogu.ui.attendance.model.AttendanceHistorySort
 import com.yagubogu.ui.attendance.model.AttendanceHistoryViewType
 import com.yagubogu.ui.attendance.model.PastGameUiState
+import com.yagubogu.ui.common.AdUnitIds
+import com.yagubogu.ui.common.component.InterstitialAdEffect
 import com.yagubogu.ui.theme.Black
 import com.yagubogu.ui.theme.Gray050
 import com.yagubogu.ui.theme.Gray200
@@ -116,6 +118,11 @@ fun AttendanceHistoryScreen(
             snackbarScope.showSnackbar(checkInSuccessMessage)
         }
     }
+
+    InterstitialAdEffect(
+        triggerFlow = viewModel.showInterstitialAdEvent,
+        adUnitId = AdUnitIds.pastCheckInInterstitial,
+    )
 
     BackPressHandler()
 

@@ -59,6 +59,16 @@ class AttendanceHistoryViewModel(
         )
     val pastCheckInUiEvent: SharedFlow<Unit> = _pastCheckInUiEvent.asSharedFlow()
 
+    private val _showInterstitialAdEvent =
+        MutableSharedFlow<Unit>(
+            replay = 0,
+            extraBufferCapacity = 1,
+            onBufferOverflow = BufferOverflow.DROP_OLDEST,
+        )
+    val showInterstitialAdEvent: SharedFlow<Unit> = _showInterstitialAdEvent.asSharedFlow()
+
+    private var pastCheckInCount = 0
+
     fun fetchAttendanceHistoryItems() {
         viewModelScope.launch {
             val yearMonth: YearMonth = selectedMonth.value
@@ -100,6 +110,10 @@ class AttendanceHistoryViewModel(
             checkInRepository
                 .addPastCheckIn(gameId)
                 .onSuccess {
+                    pastCheckInCount++
+                    if (pastCheckInCount % 3 == 1) {
+                        _showInterstitialAdEvent.emit(Unit)
+                    }
                     _pastCheckInUiEvent.emit(Unit)
                     fetchAttendanceHistoryItems()
                 }.onFailure { exception: Throwable ->
