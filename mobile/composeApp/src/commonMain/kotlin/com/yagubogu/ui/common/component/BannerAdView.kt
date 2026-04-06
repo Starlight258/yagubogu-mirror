@@ -46,10 +46,8 @@ fun BannerAd(
         modifier = modifier.fillMaxWidth(),
         contentAlignment = Alignment.Center,
     ) {
-        val currentWidth = adSize.widthDp.dp
-
         val finalShape =
-            if (currentWidth >= adSize.widthDp.dp + cornerRadius * 2) {
+            if (maxWidth >= adSize.widthDp.dp + cornerRadius * 2) {
                 RoundedCornerShape(cornerRadius)
             } else {
                 RectangleShape
@@ -67,6 +65,7 @@ fun BannerAd(
             BannerAdView(
                 adUnitId = adUnitId,
                 adSize = adSize,
+                modifier = Modifier.fillMaxWidth(),
             )
         }
     }
