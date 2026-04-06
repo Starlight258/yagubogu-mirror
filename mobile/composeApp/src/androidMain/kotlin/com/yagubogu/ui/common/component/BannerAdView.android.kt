@@ -7,19 +7,12 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.AdSize as GmsAdSize
 
-actual enum class AdSize {
-    BANNER,
-    LARGE_BANNER,
-    MEDIUM_RECTANGLE,
-    ;
-
-    fun toGmsAdSize(): GmsAdSize =
-        when (this) {
-            BANNER -> GmsAdSize.BANNER
-            LARGE_BANNER -> GmsAdSize.LARGE_BANNER
-            MEDIUM_RECTANGLE -> GmsAdSize.MEDIUM_RECTANGLE
-        }
-}
+private fun AdSize.toGmsAdSize(): GmsAdSize =
+    when (this) {
+        AdSize.BANNER -> GmsAdSize.BANNER
+        AdSize.LARGE_BANNER -> GmsAdSize.LARGE_BANNER
+        AdSize.MEDIUM_RECTANGLE -> GmsAdSize.MEDIUM_RECTANGLE
+    }
 
 @Composable
 actual fun BannerAdView(

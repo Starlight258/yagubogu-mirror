@@ -21,8 +21,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yagubogu.analytics.AnalyticsLogger
+import com.yagubogu.ui.common.AdUnitIds
+import com.yagubogu.ui.common.component.AdSize
+import com.yagubogu.ui.common.component.BannerAd
 import com.yagubogu.ui.home.component.CheckInButton
-import com.yagubogu.ui.home.component.HomeBannerAd
 import com.yagubogu.ui.home.component.MemberStats
 import com.yagubogu.ui.home.component.OpeningCountdown
 import com.yagubogu.ui.home.component.STADIUM_STATS_UI_MODEL
@@ -257,7 +259,10 @@ private fun HomeScreen(
                 onRefresh = onStadiumStatsRefresh,
             )
         }
-        HomeBannerAd()
+        BannerAd(
+            adUnitId = AdUnitIds.homeBanner,
+            adSize = AdSize.LARGE_BANNER,
+        )
         VictoryFairyRanking(
             ranking = victoryFairyRanking,
             onRankingItemClick = onVictoryFairyRankingClick,

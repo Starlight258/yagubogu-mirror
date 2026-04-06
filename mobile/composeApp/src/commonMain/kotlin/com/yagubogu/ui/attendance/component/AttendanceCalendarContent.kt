@@ -32,6 +32,9 @@ import androidx.compose.ui.unit.dp
 import com.yagubogu.analytics.AnalyticsLogger
 import com.yagubogu.ui.attendance.model.AttendanceHistoryItem
 import com.yagubogu.ui.attendance.model.PastGameUiState
+import com.yagubogu.ui.common.AdUnitIds
+import com.yagubogu.ui.common.component.AdSize
+import com.yagubogu.ui.common.component.BannerAd
 import com.yagubogu.ui.theme.PretendardBold16
 import com.yagubogu.ui.theme.Primary500
 import com.yagubogu.ui.theme.White
@@ -124,7 +127,10 @@ fun AttendanceCalendarContent(
                         modifier = Modifier.padding(top = 10.dp),
                     )
                 }
-                AttendanceBannerAd()
+                BannerAd(
+                    adUnitId = AdUnitIds.attendanceCalendarBanner,
+                    adSize = AdSize.BANNER,
+                )
             }
         }
 

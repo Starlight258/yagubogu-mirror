@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -69,8 +70,8 @@ fun ExitConfirmDialog(
                 BannerAd(
                     adUnitId = AdUnitIds.exitDialogBanner,
                     adSize = AdSize.MEDIUM_RECTANGLE,
-                    height = 250.dp,
                     backgroundColor = Transparent,
+                    modifier = Modifier.requiredWidth(300.dp)
                 )
                 Row(
                     modifier = Modifier.fillMaxWidth(),

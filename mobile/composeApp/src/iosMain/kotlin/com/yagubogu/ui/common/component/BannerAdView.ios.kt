@@ -9,21 +9,6 @@ import androidx.compose.ui.viewinterop.UIKitInteropProperties
 import androidx.compose.ui.viewinterop.UIKitView
 import kotlinx.cinterop.ExperimentalForeignApi
 
-actual enum class AdSize {
-    BANNER,
-    LARGE_BANNER,
-    MEDIUM_RECTANGLE,
-    ;
-
-    val heightDp: Int
-        get() =
-            when (this) {
-                BANNER -> 50
-                LARGE_BANNER -> 100
-                MEDIUM_RECTANGLE -> 250
-            }
-}
-
 @OptIn(ExperimentalForeignApi::class)
 @Composable
 actual fun BannerAdView(
