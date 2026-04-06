@@ -3,9 +3,7 @@ package com.yagubogu.ui.common.component
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -61,22 +59,19 @@ fun ExitConfirmDialog(
             Column(
                 modifier = Modifier.padding(horizontal = 20.dp, vertical = 24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(20.dp),
             ) {
                 Text(
                     text = stringResource(Res.string.exit_dialog_title),
                     style = EsamanruMedium20,
                     textAlign = TextAlign.Center,
                 )
-                Spacer(modifier = Modifier.height(20.dp))
-
                 BannerAd(
                     adUnitId = AdUnitIds.exitDialogBanner,
                     adSize = AdSize.MEDIUM_RECTANGLE,
                     height = 250.dp,
                     backgroundColor = Transparent,
                 )
-                Spacer(modifier = Modifier.height(20.dp))
-
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -96,7 +91,6 @@ fun ExitConfirmDialog(
                             style = PretendardSemiBold.copy(fontSize = 14.sp),
                         )
                     }
-
                     Button(
                         onClick = onExit,
                         modifier = Modifier.weight(1f),
