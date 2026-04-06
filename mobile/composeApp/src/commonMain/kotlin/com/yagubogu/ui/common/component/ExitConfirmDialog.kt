@@ -1,7 +1,6 @@
 package com.yagubogu.ui.common.component
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,9 +16,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -71,19 +69,12 @@ fun ExitConfirmDialog(
                 )
                 Spacer(modifier = Modifier.height(20.dp))
 
-                Box(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .height(250.dp)
-                            .clip(RectangleShape),
-                ) {
-                    BannerAdView(
-                        adUnitId = AdUnitIds.exitDialogBanner,
-                        adSize = AdSize.MEDIUM_RECTANGLE,
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                }
+                BannerAd(
+                    adUnitId = AdUnitIds.exitDialogBanner,
+                    adSize = AdSize.MEDIUM_RECTANGLE,
+                    height = 250.dp,
+                    backgroundColor = Transparent,
+                )
                 Spacer(modifier = Modifier.height(20.dp))
 
                 Row(
