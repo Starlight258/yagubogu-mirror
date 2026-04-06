@@ -256,8 +256,8 @@ private fun HomeScreen(
                 onClick = onStadiumStatsClick,
                 onRefresh = onStadiumStatsRefresh,
             )
-            HomeBannerAd()
         }
+        HomeBannerAd()
         VictoryFairyRanking(
             ranking = victoryFairyRanking,
             onRankingItemClick = onVictoryFairyRankingClick,
