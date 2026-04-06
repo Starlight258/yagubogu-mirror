@@ -20,6 +20,7 @@ struct iOSApp: App {
     init() {
         MobileAds.shared.start(completionHandler: nil)
         setupBannerAdProvider()
+        setupInterstitialAdProvider()
     }
 
     // Kotlin BannerAdProvider에 GADBannerView 생성 팩토리 주입
@@ -42,6 +43,25 @@ struct iOSApp: App {
             }
             bannerView.load(Request())
             return bannerView
+        }
+    }
+
+    // Kotlin InterstitialAdProvider에 preload/show 클로저 주입
+    private func setupInterstitialAdProvider() {
+        let coordinator = InterstitialAdCoordinator()
+
+        InterstitialAdProvider.shared.preload = { adUnitId in
+            coordinator.load(adUnitId: adUnitId)
+        }
+
+        InterstitialAdProvider.shared.show = { adUnitId in
+            guard
+                let rootVC = UIApplication.shared.connectedScenes
+                    .compactMap({ $0 as? UIWindowScene })
+                    .flatMap({ $0.windows })
+                    .first(where: { $0.isKeyWindow })?.rootViewController
+            else { return }
+            coordinator.show(from: rootVC, adUnitId: adUnitId)
         }
     }
 }
