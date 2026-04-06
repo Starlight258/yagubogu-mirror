@@ -58,12 +58,16 @@ buildkonfig {
         buildConfigField(STRING, "ADMOB_ANDROID_STATS_BANNER", testAndroidBannerId)
         buildConfigField(STRING, "ADMOB_ANDROID_ATTENDANCE_CALENDAR_BANNER", testAndroidBannerId)
         buildConfigField(STRING, "ADMOB_ANDROID_EXIT_DIALOG_BANNER", testAndroidBannerId)
+        val testAndroidInterstitialId = "ca-app-pub-3940256099942544/1033173712"
+        buildConfigField(STRING, "ADMOB_ANDROID_PAST_CHECK_IN_INTERSTITIAL", testAndroidInterstitialId)
         val testIosBannerId = "ca-app-pub-3940256099942544/2934735716"
         buildConfigField(STRING, "ADMOB_IOS_HOME_BANNER", testIosBannerId)
         buildConfigField(STRING, "ADMOB_IOS_LIVETALK_BANNER", testIosBannerId)
         buildConfigField(STRING, "ADMOB_IOS_STATS_BANNER", testIosBannerId)
         buildConfigField(STRING, "ADMOB_IOS_ATTENDANCE_CALENDAR_BANNER", testIosBannerId)
         buildConfigField(STRING, "ADMOB_IOS_EXIT_DIALOG_BANNER", testIosBannerId)
+        val testIosInterstitialId = "ca-app-pub-3940256099942544/4411468910"
+        buildConfigField(STRING, "ADMOB_IOS_PAST_CHECK_IN_INTERSTITIAL", testIosInterstitialId)
     }
 
     defaultConfigs("release") {
@@ -78,11 +82,13 @@ buildkonfig {
         stringField("ADMOB_ANDROID_STATS_BANNER")
         stringField("ADMOB_ANDROID_ATTENDANCE_CALENDAR_BANNER")
         stringField("ADMOB_ANDROID_EXIT_DIALOG_BANNER")
+        stringField("ADMOB_ANDROID_PAST_CHECK_IN_INTERSTITIAL")
         stringField("ADMOB_IOS_HOME_BANNER")
         stringField("ADMOB_IOS_LIVETALK_BANNER")
         stringField("ADMOB_IOS_STATS_BANNER")
         stringField("ADMOB_IOS_ATTENDANCE_CALENDAR_BANNER")
         stringField("ADMOB_IOS_EXIT_DIALOG_BANNER")
+        stringField("ADMOB_IOS_PAST_CHECK_IN_INTERSTITIAL")
     }
 }
 
