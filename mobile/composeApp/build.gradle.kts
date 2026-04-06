@@ -3,6 +3,7 @@ import com.android.build.gradle.internal.dsl.SigningConfig
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.BOOLEAN
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.INT
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
+import com.codingfeline.buildkonfig.gradle.TargetConfigDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.io.FileInputStream
 import java.util.Properties
@@ -10,7 +11,7 @@ import java.util.Properties
 val appVersionCode = 20206
 val appVersionName = "2.2.6"
 
-fun com.codingfeline.buildkonfig.gradle.TargetConfigDsl.stringField(
+fun TargetConfigDsl.stringField(
     name: String,
     key: String = name,
     default: String = "",
