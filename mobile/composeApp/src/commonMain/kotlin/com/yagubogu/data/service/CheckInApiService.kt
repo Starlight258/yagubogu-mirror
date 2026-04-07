@@ -43,7 +43,7 @@ interface CheckInApiService {
 
     @GET("/api/v1/check-ins/stadiums/counts")
     suspend fun getStadiumCheckInCounts(
-        @Query("year") year: Int,
+        @Query("year") year: Int?,
     ): StadiumCheckInCountsResponse
 
     @POST("/api/v1/past-check-ins")
