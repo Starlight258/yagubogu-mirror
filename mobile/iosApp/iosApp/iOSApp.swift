@@ -54,14 +54,17 @@ struct iOSApp: App {
             coordinator.load(adUnitId: adUnitId)
         }
 
-        InterstitialAdProvider.shared.show = { adUnitId in
+        InterstitialAdProvider.shared.show = { adUnitId, onComplete in
             guard
                 let rootVC = UIApplication.shared.connectedScenes
                     .compactMap({ $0 as? UIWindowScene })
                     .flatMap({ $0.windows })
                     .first(where: { $0.isKeyWindow })?.rootViewController
-            else { return }
-            coordinator.show(from: rootVC, adUnitId: adUnitId)
+            else {
+                onComplete()
+                return
+            }
+            coordinator.show(from: rootVC, adUnitId: adUnitId, onComplete: onComplete)
         }
     }
 }

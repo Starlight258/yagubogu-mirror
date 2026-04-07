@@ -8,9 +8,11 @@ import kotlinx.coroutines.flow.Flow
  *
  * @param triggerFlow 광고 표시를 트리거하는 Flow. emit될 때마다 광고 1회 노출을 시도한다.
  * @param adUnitId AdMob 광고 단위 ID.
+ * @param onAdComplete 광고가 닫혔을 때 호출되는 콜백. 광고가 미로드 상태로 스킵된 경우에도 호출된다.
  */
 @Composable
 expect fun InterstitialAdEffect(
     triggerFlow: Flow<Unit>,
     adUnitId: String,
+    onAdComplete: () -> Unit,
 )

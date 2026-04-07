@@ -110,15 +110,20 @@ class AttendanceHistoryViewModel(
             checkInRepository
                 .addPastCheckIn(gameId)
                 .onSuccess {
-                    pastCheckInCount++
-                    if (pastCheckInCount % 3 == 1) {
-                        _showInterstitialAdEvent.emit(Unit)
-                    }
-                    _pastCheckInUiEvent.emit(Unit)
+                    emitPastCheckInEvent()
                     fetchAttendanceHistoryItems()
                 }.onFailure { exception: Throwable ->
                     logger.w(exception) { "API 호출 실패" }
                 }
+        }
+    }
+
+    private suspend fun emitPastCheckInEvent() {
+        pastCheckInCount++
+        if (pastCheckInCount % 3 == 1) {
+            _showInterstitialAdEvent.emit(Unit)
+        } else {
+            _pastCheckInUiEvent.emit(Unit)
         }
     }
 

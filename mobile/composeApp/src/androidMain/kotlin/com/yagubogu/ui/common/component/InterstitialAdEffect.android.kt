@@ -6,6 +6,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import com.google.android.gms.ads.AdError
@@ -20,12 +21,15 @@ import kotlinx.coroutines.flow.Flow
 actual fun InterstitialAdEffect(
     triggerFlow: Flow<Unit>,
     adUnitId: String,
+    onAdComplete: () -> Unit,
 ) {
     val context = LocalContext.current
     val activity = context as? Activity ?: return
 
     // 로드된 광고 인스턴스 보관 — null이면 아직 로드 전 또는 표시 직후
     var loadedAd by remember { mutableStateOf<InterstitialAd?>(null) }
+    // 리컴포지션 시 최신 콜백을 참조하도록 보관
+    val currentOnAdComplete by rememberUpdatedState(onAdComplete)
 
     fun loadAd() {
         InterstitialAd.load(
@@ -44,25 +48,29 @@ actual fun InterstitialAdEffect(
         )
     }
 
-    // 컴포저블 진입 시 미리 로드해 표시 딜레이 방지
     LaunchedEffect(adUnitId) {
         loadAd()
     }
 
     LaunchedEffect(triggerFlow) {
         triggerFlow.collect {
-            // 아직 로드되지 않았으면 이번 트리거는 스킵
-            val ad = loadedAd ?: return@collect
+            val ad = loadedAd
+            if (ad == null) {
+                currentOnAdComplete()
+                return@collect
+            }
             ad.fullScreenContentCallback =
                 object : FullScreenContentCallback() {
                     override fun onAdDismissedFullScreenContent() {
                         loadedAd = null
-                        loadAd() // 다음 트리거를 위해 즉시 재로드
+                        loadAd()
+                        currentOnAdComplete()
                     }
 
                     override fun onAdFailedToShowFullScreenContent(error: AdError) {
                         loadedAd = null
                         loadAd()
+                        currentOnAdComplete()
                     }
                 }
             loadedAd = null
