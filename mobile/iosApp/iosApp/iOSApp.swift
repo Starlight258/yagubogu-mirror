@@ -64,7 +64,7 @@ struct iOSApp: App {
                 onComplete()
                 return
             }
-            coordinator.show(from: rootVC, adUnitId: adUnitId, onComplete: onComplete)
+            coordinator.show(from: rootVC, adUnitId: adUnitId, onComplete: { _ = onComplete() })
         }
     }
 }
