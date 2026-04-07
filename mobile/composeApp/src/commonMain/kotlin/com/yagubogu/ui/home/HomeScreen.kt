@@ -261,7 +261,7 @@ private fun HomeScreen(
         }
         BannerAd(
             adUnitId = AdUnitIds.homeBanner,
-            adSize = AdSize.LARGE_BANNER,
+            adSize = AdSize.BANNER,
         )
         VictoryFairyRanking(
             ranking = victoryFairyRanking,
