@@ -4,22 +4,14 @@ import com.yagubogu.checkin.domain.CheckIn;
 import com.yagubogu.checkin.domain.CheckInOrderFilter;
 import com.yagubogu.checkin.domain.CheckInResultFilter;
 import com.yagubogu.checkin.domain.CheckInType;
-import com.yagubogu.checkin.dto.CheckInGameParam;
-import com.yagubogu.checkin.dto.FanRateByGameParam;
-import com.yagubogu.checkin.dto.FanRateGameParam;
-import com.yagubogu.checkin.dto.GameWithFanCountsParam;
-import com.yagubogu.checkin.dto.StadiumCheckInCountParam;
+import com.yagubogu.checkin.dto.*;
 import com.yagubogu.checkin.dto.event.CheckInEvent;
 import com.yagubogu.checkin.dto.event.StadiumVisitEvent;
-import com.yagubogu.checkin.dto.v1.CheckInCountsResponse;
-import com.yagubogu.checkin.dto.v1.CheckInHistoryResponse;
-import com.yagubogu.checkin.dto.v1.CheckInStatusResponse;
-import com.yagubogu.checkin.dto.v1.CreateCheckInRequest;
-import com.yagubogu.checkin.dto.v1.FanRateResponse;
-import com.yagubogu.checkin.dto.v1.StadiumCheckInCountsResponse;
+import com.yagubogu.checkin.dto.v1.*;
 import com.yagubogu.checkin.repository.CheckInRepository;
 import com.yagubogu.game.domain.Game;
 import com.yagubogu.game.repository.GameRepository;
+import com.yagubogu.global.config.S3Properties;
 import com.yagubogu.global.exception.ConflictException;
 import com.yagubogu.global.exception.ForbiddenException;
 import com.yagubogu.global.exception.NotFoundException;
@@ -28,14 +20,17 @@ import com.yagubogu.member.repository.MemberRepository;
 import com.yagubogu.sse.dto.GameWithFanRateParam;
 import com.yagubogu.sse.dto.event.CheckInCreatedEvent;
 import com.yagubogu.team.domain.Team;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -48,6 +43,8 @@ public class CheckInService {
     private final MemberRepository memberRepository;
     private final GameRepository gameRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final S3Client s3Client;
+    private final S3Properties s3Properties;
 
     @Transactional
     public void createCheckIn(final Long memberId, final CreateCheckInRequest request) {
@@ -56,7 +53,8 @@ public class CheckInService {
         Team team = member.getTeam();
 
         validateNotExistGameAndMember(game, member);
-        saveCheckInSafely(game, member, team);
+        String imageUrl = resolveImageUrl(request.imageKey());
+        saveCheckInSafely(game, member, team, request.memo(), imageUrl);
 
         applicationEventPublisher.publishEvent(new CheckInEvent(member));
         applicationEventPublisher.publishEvent(new StadiumVisitEvent(member, game.getStadium().getId()));
@@ -167,8 +165,8 @@ public class CheckInService {
         return result;
     }
 
-    private void saveCheckInSafely(final Game game, final Member member, final Team team) {
-        CheckIn checkIn = new CheckIn(game, member, team, CheckInType.LOCATION_CHECK_IN);
+    private void saveCheckInSafely(final Game game, final Member member, final Team team, final String memo, final String imageUrl) {
+        CheckIn checkIn = new CheckIn(game, member, team, CheckInType.LOCATION_CHECK_IN, memo, imageUrl);
         try {
             checkInRepository.save(checkIn);
         } catch (DataIntegrityViolationException e) {
@@ -206,5 +204,21 @@ public class CheckInService {
         }
 
         return Math.round(((double) checkInCounts / total) * 1000) / ROUND_FACTOR;
+    }
+
+    private String resolveImageUrl(final String imageKey) {
+        if (imageKey == null) {
+            return null;
+        }
+        assertObjectExists(imageKey);
+        return s3Properties.endpoint() + "/" + s3Properties.bucket() + "/" + imageKey;
+    }
+
+    private void assertObjectExists(final String key) {
+        try {
+            s3Client.headObject(r -> r.bucket(s3Properties.bucket()).key(key));
+        } catch (NoSuchKeyException e) {
+            throw new NotFoundException("File does not exist in S3: " + key);
+        }
     }
 }

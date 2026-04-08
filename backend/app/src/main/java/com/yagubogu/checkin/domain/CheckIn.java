@@ -4,18 +4,7 @@ import com.yagubogu.game.domain.Game;
 import com.yagubogu.global.domain.BaseEntity;
 import com.yagubogu.member.domain.Member;
 import com.yagubogu.team.domain.Team;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -51,10 +40,18 @@ public class CheckIn extends BaseEntity {
     @Column(name = "check_in_type", nullable = false)
     private CheckInType checkInType;
 
-    public CheckIn(final Game game, final Member member, final Team team, final CheckInType checkInType) {
+    @Column(name = "memo", columnDefinition = "TEXT")
+    private String memo;
+
+    @Column(name = "image_url", length = 500)
+    private String imageUrl;
+
+    public CheckIn(final Game game, final Member member, final Team team, final CheckInType checkInType, final String memo, final String imageUrl) {
         this.game = game;
         this.member = member;
         this.team = team;
         this.checkInType = checkInType;
+        this.memo = memo;
+        this.imageUrl = imageUrl;
     }
 }
