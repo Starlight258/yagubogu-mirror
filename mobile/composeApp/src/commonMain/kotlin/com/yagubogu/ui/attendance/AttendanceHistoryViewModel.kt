@@ -6,6 +6,7 @@ import co.touchlab.kermit.Logger
 import com.yagubogu.data.dto.response.game.GameWithCheckInDto
 import com.yagubogu.data.repository.checkin.CheckInRepository
 import com.yagubogu.data.repository.game.GameRepository
+import com.yagubogu.ui.attendance.model.AttendanceFilterState
 import com.yagubogu.ui.attendance.model.AttendanceHistoryFilter
 import com.yagubogu.ui.attendance.model.AttendanceHistoryItem
 import com.yagubogu.ui.attendance.model.AttendanceHistorySort
@@ -41,6 +42,10 @@ class AttendanceHistoryViewModel(
 
     private val _selectedDate = MutableStateFlow<LocalDate>(LocalDate.now())
     val selectedDate: StateFlow<LocalDate> = _selectedDate.asStateFlow()
+
+    private val _filterState =
+        MutableStateFlow(AttendanceFilterState(year = selectedMonth.value.year))
+    val filterState: StateFlow<AttendanceFilterState> = _filterState.asStateFlow()
 
     private val _filter = MutableStateFlow(AttendanceHistoryFilter.ALL)
     val filter: StateFlow<AttendanceHistoryFilter> = _filter.asStateFlow()
@@ -119,6 +124,10 @@ class AttendanceHistoryViewModel(
     fun updateFilter(filter: AttendanceHistoryFilter) {
         _filter.value = filter
     }
+
+    fun toggleWinOnlyFilter() {}
+
+    fun toggleYearlyFilter() {}
 
     fun updateSort(sort: AttendanceHistorySort) {
         _sort.value = sort
