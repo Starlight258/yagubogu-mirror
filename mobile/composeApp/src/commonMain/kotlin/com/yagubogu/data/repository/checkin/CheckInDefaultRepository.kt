@@ -32,12 +32,12 @@ class CheckInDefaultRepository(
 
     override suspend fun getCheckInHistories(
         year: Int,
-        month: Int,
-        filter: String,
+        month: Int?,
         sort: String,
+        isWinOnly: Boolean,
     ): Result<List<CheckInGameDto>> =
         checkInDataSource
-            .getCheckInHistories(year, month, filter, sort)
+            .getCheckInHistories(year, month, sort, isWinOnly)
             .map { checkInHistoryResponse: CheckInHistoryResponse ->
                 checkInHistoryResponse.checkInHistory
             }

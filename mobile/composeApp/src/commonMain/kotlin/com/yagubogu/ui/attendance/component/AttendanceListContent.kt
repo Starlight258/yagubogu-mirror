@@ -30,7 +30,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yagubogu.analytics.AnalyticsLogger
 import com.yagubogu.ui.attendance.model.AttendanceFilterState
-import com.yagubogu.ui.attendance.model.AttendanceHistoryFilter
 import com.yagubogu.ui.attendance.model.AttendanceHistoryItem
 import com.yagubogu.ui.attendance.model.AttendanceHistorySort
 import com.yagubogu.ui.theme.Gray400
@@ -38,8 +37,10 @@ import com.yagubogu.ui.theme.Gray500
 import com.yagubogu.ui.theme.PretendardMedium
 import com.yagubogu.ui.theme.PretendardRegular
 import com.yagubogu.ui.util.noRippleClickable
+import com.yagubogu.ui.util.now
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.datetime.YearMonth
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import yagubogu.composeapp.generated.resources.Res
@@ -57,8 +58,9 @@ private const val FIRST_INDEX = 0
 @Composable
 fun AttendanceListContent(
     items: List<AttendanceHistoryItem>,
-    filter: AttendanceHistoryFilter,
-    updateFilter: (AttendanceHistoryFilter) -> Unit,
+    filterState: AttendanceFilterState,
+    onWinOnlyFilterToggle: () -> Unit,
+    onYearlyFilterToggle: () -> Unit,
     sort: AttendanceHistorySort,
     updateSort: (AttendanceHistorySort) -> Unit,
     modifier: Modifier = Modifier,
@@ -70,13 +72,13 @@ fun AttendanceListContent(
         modifier = modifier.fillMaxSize(),
     ) {
         AttendanceListHeader(
-            filterState = AttendanceFilterState(year = 2026, isYearly = true),
-            onWinOnlyClick = {
-                // TODO
+            filterState = filterState,
+            onWinOnlyFilterToggle = {
+                onWinOnlyFilterToggle()
                 detailItemPosition = if (items.isNotEmpty()) FIRST_INDEX else null
             },
-            onYearlyClick = {
-                // TODO
+            onYearlyFilterToggle = {
+                onYearlyFilterToggle()
                 detailItemPosition = if (items.isNotEmpty()) FIRST_INDEX else null
             },
             sort = sort,
@@ -189,8 +191,8 @@ private fun EmptyAttendanceList(modifier: Modifier = Modifier) {
 @Composable
 private fun AttendanceListHeader(
     filterState: AttendanceFilterState,
-    onWinOnlyClick: () -> Unit,
-    onYearlyClick: () -> Unit,
+    onWinOnlyFilterToggle: () -> Unit,
+    onYearlyFilterToggle: () -> Unit,
     sort: AttendanceHistorySort,
     updateSort: (AttendanceHistorySort) -> Unit,
     modifier: Modifier = Modifier,
@@ -205,8 +207,8 @@ private fun AttendanceListHeader(
     ) {
         AttendanceFilterRow(
             filterState = filterState,
-            onWinOnlyClick = onWinOnlyClick,
-            onYearlyClick = onYearlyClick,
+            onWinOnlyClick = onWinOnlyFilterToggle,
+            onYearlyClick = onYearlyFilterToggle,
         )
 
         AttendanceHistorySortSwitch(
@@ -238,7 +240,7 @@ private fun AttendanceFilterRow(
         )
 
         FilterCheckbox(
-            text = stringResource(Res.string.attendance_history_yearly, filterState.year),
+            text = stringResource(Res.string.attendance_history_yearly, filterState.yearMonth.year),
             isSelected = filterState.isYearly,
             onClick = onYearlyClick,
         )
@@ -282,16 +284,26 @@ private fun AttendanceHistorySortSwitch(
 
 @Preview("리스트 화면", showBackground = true)
 @Composable
-private fun AttendanceListPreview() {
-    AttendanceList(
+private fun AttendanceListContentPreview() {
+    AttendanceListContent(
         items = ATTENDANCE_HISTORY_ITEMS,
-        detailItemPosition = 0,
-        onItemClick = {},
+        filterState = AttendanceFilterState(yearMonth = YearMonth.now()),
+        onWinOnlyFilterToggle = {},
+        onYearlyFilterToggle = {},
+        sort = AttendanceHistorySort.LATEST,
+        updateSort = {},
     )
 }
 
 @Preview("빈 리스트 화면", showBackground = true)
 @Composable
-private fun EmptyAttendancePreview() {
-    EmptyAttendanceList()
+private fun EmptyAttendanceListContentPreview() {
+    AttendanceListContent(
+        items = emptyList(),
+        filterState = AttendanceFilterState(yearMonth = YearMonth.now()),
+        onWinOnlyFilterToggle = {},
+        onYearlyFilterToggle = {},
+        sort = AttendanceHistorySort.LATEST,
+        updateSort = {},
+    )
 }

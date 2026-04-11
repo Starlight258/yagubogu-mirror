@@ -7,7 +7,6 @@ import com.yagubogu.data.dto.response.game.GameWithCheckInDto
 import com.yagubogu.data.repository.checkin.CheckInRepository
 import com.yagubogu.data.repository.game.GameRepository
 import com.yagubogu.ui.attendance.model.AttendanceFilterState
-import com.yagubogu.ui.attendance.model.AttendanceHistoryFilter
 import com.yagubogu.ui.attendance.model.AttendanceHistoryItem
 import com.yagubogu.ui.attendance.model.AttendanceHistorySort
 import com.yagubogu.ui.attendance.model.PastGameUiModel
@@ -23,6 +22,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.YearMonth
@@ -44,11 +44,8 @@ class AttendanceHistoryViewModel(
     val selectedDate: StateFlow<LocalDate> = _selectedDate.asStateFlow()
 
     private val _filterState =
-        MutableStateFlow(AttendanceFilterState(year = selectedMonth.value.year))
+        MutableStateFlow(AttendanceFilterState(yearMonth = selectedMonth.value))
     val filterState: StateFlow<AttendanceFilterState> = _filterState.asStateFlow()
-
-    private val _filter = MutableStateFlow(AttendanceHistoryFilter.ALL)
-    val filter: StateFlow<AttendanceHistoryFilter> = _filter.asStateFlow()
 
     private val _sort = MutableStateFlow(AttendanceHistorySort.LATEST)
     val sort: StateFlow<AttendanceHistorySort> = _sort.asStateFlow()
@@ -64,15 +61,19 @@ class AttendanceHistoryViewModel(
         )
     val pastCheckInUiEvent: SharedFlow<Unit> = _pastCheckInUiEvent.asSharedFlow()
 
-    fun fetchAttendanceHistoryItems() {
+    fun fetchAttendanceHistoryItems(
+        yearMonth: YearMonth,
+        isYearly: Boolean = false,
+        isWinOnly: Boolean = false,
+        sort: AttendanceHistorySort = AttendanceHistorySort.LATEST,
+    ) {
         viewModelScope.launch {
-            val yearMonth: YearMonth = selectedMonth.value
             checkInRepository
                 .getCheckInHistories(
-                    yearMonth.year,
-                    yearMonth.month.number,
-                    filter.value.name,
-                    sort.value.name,
+                    year = yearMonth.year,
+                    month = if (isYearly) null else yearMonth.month.number,
+                    sort = sort.name,
+                    isWinOnly = isWinOnly,
                 ).mapList { it.toUiModel() }
                 .onSuccess { attendanceItems: List<AttendanceHistoryItem> ->
                     _items.value = attendanceItems
@@ -106,7 +107,7 @@ class AttendanceHistoryViewModel(
                 .addPastCheckIn(gameId)
                 .onSuccess {
                     _pastCheckInUiEvent.emit(Unit)
-                    fetchAttendanceHistoryItems()
+                    fetchAttendanceHistoryItems(yearMonth = selectedMonth.value)
                 }.onFailure { exception: Throwable ->
                     logger.w(exception) { "API 호출 실패" }
                 }
@@ -115,19 +116,20 @@ class AttendanceHistoryViewModel(
 
     fun updateSelectedMonth(yearMonth: YearMonth) {
         _selectedMonth.value = yearMonth
+        _filterState.update { it.copy(yearMonth = yearMonth) }
     }
 
     fun updateSelectedDate(date: LocalDate) {
         _selectedDate.value = date
     }
 
-    fun updateFilter(filter: AttendanceHistoryFilter) {
-        _filter.value = filter
+    fun toggleWinOnlyFilter() {
+        _filterState.update { it.copy(isWinOnly = !it.isWinOnly) }
     }
 
-    fun toggleWinOnlyFilter() {}
-
-    fun toggleYearlyFilter() {}
+    fun toggleYearlyFilter() {
+        _filterState.update { it.copy(isYearly = !it.isYearly) }
+    }
 
     fun updateSort(sort: AttendanceHistorySort) {
         _sort.value = sort
