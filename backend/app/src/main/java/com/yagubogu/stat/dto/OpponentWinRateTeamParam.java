@@ -1,6 +1,7 @@
 package com.yagubogu.stat.dto;
 
 public record OpponentWinRateTeamParam(
+        int rank,
         Long teamId,
         String name,
         String shortName,
