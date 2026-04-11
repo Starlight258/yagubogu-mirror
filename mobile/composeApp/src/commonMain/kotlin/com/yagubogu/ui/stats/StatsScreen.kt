@@ -63,7 +63,7 @@ import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.all_all
 import yagubogu.composeapp.generated.resources.all_year
 import yagubogu.composeapp.generated.resources.ic_arrow_down
-import yagubogu.composeapp.generated.resources.stats_all_year
+import yagubogu.composeapp.generated.resources.stats_all_season
 
 @Composable
 fun StatsScreen(
@@ -192,7 +192,7 @@ private fun StatsYearDropdown(
             Text(
                 text =
                     if (year == null) {
-                        stringResource(Res.string.stats_all_year)
+                        stringResource(Res.string.stats_all_season)
                     } else {
                         stringResource(Res.string.all_year, year)
                     },
