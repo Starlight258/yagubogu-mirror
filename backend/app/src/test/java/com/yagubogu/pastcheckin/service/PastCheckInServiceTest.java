@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.yagubogu.auth.config.AuthTestConfig;
+import com.yagubogu.checkin.domain.CheckIn;
+import com.yagubogu.checkin.domain.CheckInType;
 import com.yagubogu.checkin.dto.CreatePastCheckInRequest;
 import com.yagubogu.checkin.repository.CheckInRepository;
 import com.yagubogu.checkin.service.PastCheckInService;
@@ -11,7 +13,9 @@ import com.yagubogu.game.domain.Game;
 import com.yagubogu.game.domain.GameState;
 import com.yagubogu.game.repository.GameRepository;
 import com.yagubogu.global.config.JpaAuditingConfig;
+import com.yagubogu.global.exception.BadRequestException;
 import com.yagubogu.global.exception.ConflictException;
+import com.yagubogu.global.exception.ForbiddenException;
 import com.yagubogu.global.exception.NotFoundException;
 import com.yagubogu.member.domain.Member;
 import com.yagubogu.member.repository.MemberRepository;
@@ -158,7 +162,6 @@ class PastCheckInServiceTest {
     void createPastCheckIn_fail_whenStadiumNotFound() {
         // given
         Member member = memberFactory.save(b -> b.team(lotte));
-        LocalDate date = LocalDate.of(2025, 4, 4);
 
         long nonExistingGameId = 9999L;
         CreatePastCheckInRequest request = new CreatePastCheckInRequest(nonExistingGameId);
@@ -174,7 +177,6 @@ class PastCheckInServiceTest {
     void createPastCheckIn_fail_whenGameNotFound() {
         // given
         Member member = memberFactory.save(b -> b.team(lotte));
-        LocalDate date = LocalDate.of(2025, 5, 5);
 
         // 같은 구장 but 해당 날짜에 게임이 없음
         CreatePastCheckInRequest request = new CreatePastCheckInRequest(999L);
@@ -208,4 +210,99 @@ class PastCheckInServiceTest {
                 .isInstanceOf(NotFoundException.class)
                 .hasMessageContaining("Member is not found");
     }
+
+    @DisplayName("PastCheckIn(NON_LOCATION_CHECK_IN)을 삭제한다")
+    @Test
+    void deletePastCheckIn_success() {
+        // given
+        Member member = memberFactory.save(b -> b.team(lotte));
+        LocalDate date = LocalDate.of(2025, 7, 7);
+
+        Game game = gameFactory.save(b -> b
+                .stadium(stadiumGocheok)
+                .date(date)
+                .homeTeam(lotte).homeScore(3).homeScoreBoard(TestFixture.getHomeScoreBoard())
+                .awayTeam(kia).awayScore(1).awayScoreBoard(TestFixture.getAwayScoreBoard())
+                .gameState(GameState.COMPLETED)
+        );
+
+        CheckIn checkIn = checkInFactory.save(b -> b
+                .game(game).member(member).team(lotte)
+                .checkInType(CheckInType.NON_LOCATION_CHECK_IN)
+        );
+
+        // when
+        pastCheckInService.deletePastCheckIn(member.getId(), checkIn.getId());
+
+        // then
+        boolean exists = checkInRepository.existsById(checkIn.getId());
+        assertThat(exists).isFalse();
+    }
+
+    @DisplayName("예외: 존재하지 않는 CheckIn을 삭제하면 NotFoundException이 발생한다")
+    @Test
+    void deletePastCheckIn_fail_whenCheckInNotFound() {
+        // given
+        Member member = memberFactory.save(b -> b.team(lotte));
+        long nonExistingCheckInId = 9999L;
+
+        // when & then
+        assertThatThrownBy(() -> pastCheckInService.deletePastCheckIn(member.getId(), nonExistingCheckInId))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessageContaining("CheckIn is not found");
+    }
+
+    @DisplayName("예외: LOCATION_CHECK_IN은 삭제할 수 없다")
+    @Test
+    void deletePastCheckIn_fail_whenLocationCheckIn() {
+        // given
+        Member member = memberFactory.save(b -> b.team(lotte));
+        LocalDate date = LocalDate.of(2025, 8, 8);
+
+        Game game = gameFactory.save(b -> b
+                .stadium(stadiumGocheok)
+                .date(date)
+                .homeTeam(lotte).homeScore(5).homeScoreBoard(TestFixture.getHomeScoreBoard())
+                .awayTeam(kia).awayScore(4).awayScoreBoard(TestFixture.getAwayScoreBoard())
+                .gameState(GameState.COMPLETED)
+        );
+
+        CheckIn checkIn = checkInFactory.save(b -> b
+                .game(game).member(member).team(lotte)
+                .checkInType(CheckInType.LOCATION_CHECK_IN)
+        );
+
+        // when & then
+        assertThatThrownBy(() -> pastCheckInService.deletePastCheckIn(member.getId(), checkIn.getId()))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessageContaining("Location-based check-in cannot be deleted");
+    }
+
+    @DisplayName("예외: 다른 회원의 CheckIn은 삭제할 수 없다")
+    @Test
+    void deletePastCheckIn_fail_whenNotOwner() {
+        // given
+        Member owner = memberFactory.save(b -> b.team(lotte));
+        Member otherMember = memberFactory.save(b -> b.team(lotte));
+        LocalDate date = LocalDate.of(2025, 9, 9);
+
+        Game game = gameFactory.save(b -> b
+                .stadium(stadiumGocheok)
+                .date(date)
+                .homeTeam(lotte).homeScore(7).homeScoreBoard(TestFixture.getHomeScoreBoard())
+                .awayTeam(kia).awayScore(2).awayScoreBoard(TestFixture.getAwayScoreBoard())
+                .gameState(GameState.COMPLETED)
+        );
+
+        CheckIn checkIn = checkInFactory.save(b -> b
+                .game(game).member(owner).team(lotte)
+                .checkInType(CheckInType.NON_LOCATION_CHECK_IN)
+        );
+
+        // when & then
+        assertThatThrownBy(() -> pastCheckInService.deletePastCheckIn(otherMember.getId(), checkIn.getId()))
+                .isInstanceOf(ForbiddenException.class)
+                .hasMessageContaining("Only your own check-in can be deleted");
+    }
 }
+
