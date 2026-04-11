@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,7 +37,7 @@ public interface CheckInControllerInterface {
     @PostMapping
     ResponseEntity<Void> createCheckIn(
             @Parameter(hidden = true) MemberClaims memberClaims,
-            @RequestBody CreateCheckInRequest request
+            @Valid @RequestBody CreateCheckInRequest request
     );
 
     @Operation(summary = "경기 인증 삭제", description = "지정한 경기 인증을 삭제합니다. 본인의 인증만 삭제할 수 있습니다.")

@@ -45,10 +45,13 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Import;
+import com.yagubogu.global.config.S3Properties;
+import software.amazon.awssdk.services.s3.S3Client;
 
 @Import({AuthTestConfig.class, JpaAuditingConfig.class})
 @DataJpaTest
@@ -92,7 +95,9 @@ class CheckInServiceTest {
                 checkInRepository,
                 memberRepository,
                 gameRepository,
-                applicationEventPublisher
+                applicationEventPublisher,
+                Mockito.mock(S3Client.class),
+                Mockito.mock(S3Properties.class)
         );
 
         kia = teamRepository.findByTeamCode("HT").orElseThrow();
@@ -116,7 +121,7 @@ class CheckInServiceTest {
                 builder.stadium(stadiumJamsil)
                         .homeTeam(lotte).homeScore(10).homeScoreBoard(TestFixture.getHomeScoreBoardAbout(10))
                         .awayTeam(kia).awayScore(1).awayScoreBoard(TestFixture.getAwayScoreBoardAbout(1)));
-        CreateCheckInRequest request = new CreateCheckInRequest(game.getId());
+        CreateCheckInRequest request = new CreateCheckInRequest(game.getId(), null, null);
 
         // when & then
         assertThatCode(() -> checkInService.createCheckIn(member.getId(), request))
@@ -129,7 +134,7 @@ class CheckInServiceTest {
         // given
         long invalidGameId = 999999L;
         long memberId = 1L;
-        CreateCheckInRequest request = new CreateCheckInRequest(invalidGameId);
+        CreateCheckInRequest request = new CreateCheckInRequest(invalidGameId, null, null);
 
         // when & then
         assertThatThrownBy(() -> checkInService.createCheckIn(memberId, request))
@@ -144,7 +149,7 @@ class CheckInServiceTest {
         long invalidMemberId = 999L;
         Game game = gameFactory.save(builder -> builder.stadium(stadiumJamsil)
                 .homeTeam(kia).awayTeam(kt).date(LocalDate.now()));
-        CreateCheckInRequest request = new CreateCheckInRequest(game.getId());
+        CreateCheckInRequest request = new CreateCheckInRequest(game.getId(), null, null);
 
         // when & then
         assertThatThrownBy(() -> checkInService.createCheckIn(invalidMemberId, request))
@@ -162,7 +167,7 @@ class CheckInServiceTest {
                 builder.stadium(stadiumJamsil)
                         .homeTeam(lotte).homeScore(10).homeScoreBoard(TestFixture.getHomeScoreBoardAbout(10))
                         .awayTeam(kia).awayScore(1).awayScoreBoard(TestFixture.getAwayScoreBoardAbout(1)));
-        CreateCheckInRequest request = new CreateCheckInRequest(game.getId());
+        CreateCheckInRequest request = new CreateCheckInRequest(game.getId(), null, null);
         checkInService.createCheckIn(memberId, request);
 
         // when & then

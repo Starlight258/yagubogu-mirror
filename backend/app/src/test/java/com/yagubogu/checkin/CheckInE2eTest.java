@@ -102,7 +102,7 @@ public class CheckInE2eTest extends E2eTestBase {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .header(HttpHeaders.AUTHORIZATION, accessToken)
-                .body(new CreateCheckInRequest(game.getId()))
+                .body(new CreateCheckInRequest(game.getId(), null, null))
                 .when().post("/api/v1/check-ins")
                 .then().log().all()
                 .statusCode(201);
@@ -121,7 +121,7 @@ public class CheckInE2eTest extends E2eTestBase {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .header(HttpHeaders.AUTHORIZATION, accessToken)
-                .body(new CreateCheckInRequest(invalidGameId))
+                .body(new CreateCheckInRequest(invalidGameId, null, null))
                 .when().post("/api/v1/check-ins")
                 .then().log().all()
                 .statusCode(404);
@@ -144,7 +144,7 @@ public class CheckInE2eTest extends E2eTestBase {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .header(HttpHeaders.AUTHORIZATION, accessToken)
-                .body(new CreateCheckInRequest(game.getId()))
+                .body(new CreateCheckInRequest(game.getId(), null, null))
                 .when().post("/api/v1/check-ins")
                 .then().log().all()
                 .statusCode(201);
@@ -153,10 +153,84 @@ public class CheckInE2eTest extends E2eTestBase {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .header(HttpHeaders.AUTHORIZATION, accessToken)
-                .body(new CreateCheckInRequest(game.getId()))
+                .body(new CreateCheckInRequest(game.getId(), null, null))
                 .when().post("/api/v1/check-ins")
                 .then().log().all()
                 .statusCode(409);
+    }
+
+    @DisplayName("메모와 함께 인증을 저장한다")
+    @Test
+    void createCheckIn_withMemo() {
+        // given
+        Member fora = memberFactory.save(b -> b.team(kia));
+        String accessToken = authFactory.getAccessTokenByMemberId(fora.getId(), Role.USER);
+
+        LocalDate date = LocalDate.of(2025, 7, 28);
+        Game game = gameFactory.save(builder ->
+                builder.stadium(stadiumJamsil)
+                        .date(date)
+                        .homeTeam(kt).homeScore(10).homeScoreBoard(TestFixture.getHomeScoreBoard())
+                        .awayTeam(kia).awayScore(1).awayScoreBoard(TestFixture.getAwayScoreBoard()));
+
+        // when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .body(new CreateCheckInRequest(game.getId(), "오늘 직관 너무 좋았다!", null))
+                .when().post("/api/v1/check-ins")
+                .then().log().all()
+                .statusCode(201);
+    }
+
+    @DisplayName("메모 없이 인증을 저장한다")
+    @Test
+    void createCheckIn_withoutMemo() {
+        // given
+        Member fora = memberFactory.save(b -> b.team(kia));
+        String accessToken = authFactory.getAccessTokenByMemberId(fora.getId(), Role.USER);
+
+        LocalDate date = LocalDate.of(2025, 7, 29);
+        Game game = gameFactory.save(builder ->
+                builder.stadium(stadiumJamsil)
+                        .date(date)
+                        .homeTeam(kt).homeScore(10).homeScoreBoard(TestFixture.getHomeScoreBoard())
+                        .awayTeam(kia).awayScore(1).awayScoreBoard(TestFixture.getAwayScoreBoard()));
+
+        // when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .body(new CreateCheckInRequest(game.getId(), null, null))
+                .when().post("/api/v1/check-ins")
+                .then().log().all()
+                .statusCode(201);
+    }
+
+    @DisplayName("예외: 메모가 500자를 초과하면 예외가 발생한다")
+    @Test
+    void createCheckIn_memoTooLong() {
+        // given
+        Member fora = memberFactory.save(b -> b.team(kia));
+        String accessToken = authFactory.getAccessTokenByMemberId(fora.getId(), Role.USER);
+
+        LocalDate date = LocalDate.of(2025, 7, 30);
+        Game game = gameFactory.save(builder ->
+                builder.stadium(stadiumJamsil)
+                        .date(date)
+                        .homeTeam(kt).homeScore(10).homeScoreBoard(TestFixture.getHomeScoreBoard())
+                        .awayTeam(kia).awayScore(1).awayScoreBoard(TestFixture.getAwayScoreBoard()));
+
+        String longMemo = "a".repeat(501);
+
+        // when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .body(new CreateCheckInRequest(game.getId(), longMemo, null))
+                .when().post("/api/v1/check-ins")
+                .then().log().all()
+                .statusCode(400);
     }
 
     @DisplayName("회원의 총 인증 횟수를 조회한다")
