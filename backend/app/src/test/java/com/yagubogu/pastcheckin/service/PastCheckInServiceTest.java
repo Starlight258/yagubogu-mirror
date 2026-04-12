@@ -158,7 +158,6 @@ class PastCheckInServiceTest {
     void createPastCheckIn_fail_whenStadiumNotFound() {
         // given
         Member member = memberFactory.save(b -> b.team(lotte));
-        LocalDate date = LocalDate.of(2025, 4, 4);
 
         long nonExistingGameId = 9999L;
         CreatePastCheckInRequest request = new CreatePastCheckInRequest(nonExistingGameId);
@@ -174,7 +173,6 @@ class PastCheckInServiceTest {
     void createPastCheckIn_fail_whenGameNotFound() {
         // given
         Member member = memberFactory.save(b -> b.team(lotte));
-        LocalDate date = LocalDate.of(2025, 5, 5);
 
         // 같은 구장 but 해당 날짜에 게임이 없음
         CreatePastCheckInRequest request = new CreatePastCheckInRequest(999L);

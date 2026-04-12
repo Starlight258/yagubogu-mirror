@@ -21,6 +21,7 @@ import com.yagubogu.checkin.repository.CheckInRepository;
 import com.yagubogu.game.domain.Game;
 import com.yagubogu.game.repository.GameRepository;
 import com.yagubogu.global.exception.ConflictException;
+import com.yagubogu.global.exception.ForbiddenException;
 import com.yagubogu.global.exception.NotFoundException;
 import com.yagubogu.member.domain.Member;
 import com.yagubogu.member.repository.MemberRepository;
@@ -60,6 +61,22 @@ public class CheckInService {
         applicationEventPublisher.publishEvent(new CheckInEvent(member));
         applicationEventPublisher.publishEvent(new StadiumVisitEvent(member, game.getStadium().getId()));
         applicationEventPublisher.publishEvent(new CheckInCreatedEvent());
+    }
+
+    @Transactional
+    public void deleteCheckIn(final Long memberId, final Long checkInId) {
+        CheckIn checkIn = checkInRepository.findById(checkInId)
+                .orElseThrow(() -> new NotFoundException("CheckIn is not found"));
+
+        validateCheckInOwner(checkIn, memberId);
+
+        checkInRepository.delete(checkIn);
+    }
+
+    private void validateCheckInOwner(final CheckIn checkIn, final Long memberId) {
+        if (!checkIn.getMember().getId().equals(memberId)) {
+            throw new ForbiddenException("Only your own check-in can be deleted");
+        }
     }
 
     public FanRateResponse findFanRatesByGames(final long memberId, final LocalDate date) {
