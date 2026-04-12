@@ -26,6 +26,7 @@ import com.yagubogu.stat.dto.v1.WinRateResponse;
 import com.yagubogu.stat.repository.VictoryFairyRankingRepository;
 import com.yagubogu.team.domain.Team;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -240,12 +241,13 @@ public class StatService {
     private List<OpponentWinRateTeamParam> getOpponentWinRateTeamResponse(
             List<OpponentWinRateRowParam> winRates
     ) {
-        return winRates.stream()
+        List<OpponentWinRateTeamParam> sorted = winRates.stream()
                 .map(row -> {
                     long totalGames = row.wins() + row.losses();
                     double winRate = calculateWinRate(row.wins(), totalGames);
 
                     return new OpponentWinRateTeamParam(
+                            0,
                             row.teamId(),
                             row.name(),
                             row.shortName(),
@@ -258,5 +260,27 @@ public class StatService {
                 })
                 .sorted(OPPONENT_WIN_RATE_TEAM_COMPARATOR)
                 .toList();
+
+        List<OpponentWinRateTeamParam> result = new ArrayList<>();
+        int rank = 1;
+        for (int i = 0; i < sorted.size(); i++) {
+            OpponentWinRateTeamParam current = sorted.get(i);
+            if (i > 0 && Double.compare(current.winRate(), sorted.get(i - 1).winRate()) != 0) {
+                rank = i + 1;
+            }
+            result.add(new OpponentWinRateTeamParam(
+                    rank,
+                    current.teamId(),
+                    current.name(),
+                    current.shortName(),
+                    current.teamCode(),
+                    current.wins(),
+                    current.losses(),
+                    current.draws(),
+                    current.winRate()
+            ));
+        }
+
+        return result;
     }
 }
