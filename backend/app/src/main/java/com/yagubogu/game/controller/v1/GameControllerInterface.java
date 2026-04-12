@@ -1,6 +1,7 @@
 package com.yagubogu.game.controller.v1;
 
 import com.yagubogu.auth.dto.MemberClaims;
+import com.yagubogu.game.dto.v1.GameDatesResponse;
 import com.yagubogu.game.dto.v1.GameResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -8,6 +9,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDate;
+import java.time.YearMonth;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,5 +30,16 @@ public interface GameControllerInterface {
     ResponseEntity<GameResponse> findGamesByDate(
             @Parameter(hidden = true) MemberClaims memberClaims,
             @RequestParam LocalDate date
+    );
+
+    @Operation(summary = "월별 경기 있는 날짜 목록 조회", description = "해당 월에 경기가 있는 날짜만 반환합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "날짜 목록 조회 성공"),
+            @ApiResponse(responseCode = "404", description = "회원을 찾을 수 없음")
+    })
+    @GetMapping("/dates")
+    ResponseEntity<GameDatesResponse> findGameDatesByYearMonth(
+            @Parameter(hidden = true) MemberClaims memberClaims,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM") YearMonth yearMonth
     );
 }

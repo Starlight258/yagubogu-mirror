@@ -3,6 +3,7 @@ package com.yagubogu.game.service;
 import com.yagubogu.game.domain.Game;
 import com.yagubogu.game.dto.GameResultParam;
 import com.yagubogu.game.dto.GameWithCheckInParam;
+import com.yagubogu.game.dto.v1.GameDatesResponse;
 import com.yagubogu.game.dto.v1.GameResponse;
 import com.yagubogu.game.repository.GameRepository;
 import com.yagubogu.global.exception.NotFoundException;
@@ -10,6 +11,7 @@ import com.yagubogu.global.exception.UnprocessableEntityException;
 import com.yagubogu.member.domain.Member;
 import com.yagubogu.member.repository.MemberRepository;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -57,6 +59,13 @@ public class GameService {
     private Game getGame(final Long gameId) {
         return gameRepository.findById(gameId)
                 .orElseThrow(() -> new NotFoundException("Game not found"));
+    }
+
+    public GameDatesResponse findGameDatesByYearMonth(final YearMonth yearMonth) {
+        LocalDate start = yearMonth.atDay(1);
+        LocalDate end = yearMonth.atEndOfMonth().plusDays(1);
+        List<LocalDate> dates = gameRepository.findDistinctGameDatesByMonth(start, end);
+        return new GameDatesResponse(dates);
     }
 
     private void validateIsNotFuture(final LocalDate date) {
