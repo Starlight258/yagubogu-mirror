@@ -6,9 +6,7 @@ import com.yagubogu.checkin.dto.CreatePastCheckInRequest;
 import com.yagubogu.checkin.repository.CheckInRepository;
 import com.yagubogu.game.domain.Game;
 import com.yagubogu.game.repository.GameRepository;
-import com.yagubogu.global.exception.BadRequestException;
 import com.yagubogu.global.exception.ConflictException;
-import com.yagubogu.global.exception.ForbiddenException;
 import com.yagubogu.global.exception.NotFoundException;
 import com.yagubogu.member.domain.Member;
 import com.yagubogu.member.repository.MemberRepository;
@@ -36,33 +34,6 @@ public class PastCheckInService {
 
         CheckIn pastCheckIn = new CheckIn(game, member, team, CheckInType.NON_LOCATION_CHECK_IN);
         checkInRepository.save(pastCheckIn);
-    }
-
-    @Transactional
-    public void deletePastCheckIn(final Long memberId, final Long checkInId) {
-        CheckIn checkIn = getCheckInById(checkInId);
-
-        validateNonLocationCheckIn(checkIn);
-        validateCheckInOwner(checkIn, memberId);
-
-        checkInRepository.delete(checkIn);
-    }
-
-    private void validateNonLocationCheckIn(final CheckIn checkIn) {
-        if (checkIn.getCheckInType() != CheckInType.NON_LOCATION_CHECK_IN) {
-            throw new BadRequestException("Location-based check-in cannot be deleted");
-        }
-    }
-
-    private void validateCheckInOwner(final CheckIn checkIn, final Long memberId) {
-        if (!checkIn.getMember().getId().equals(memberId)) {
-            throw new ForbiddenException("Only your own check-in can be deleted");
-        }
-    }
-
-    private CheckIn getCheckInById(final Long checkInId) {
-        return checkInRepository.findById(checkInId)
-                .orElseThrow(() -> new NotFoundException("CheckIn is not found"));
     }
 
     private void validateCheckInNotExists(final Member member, final Game game) {

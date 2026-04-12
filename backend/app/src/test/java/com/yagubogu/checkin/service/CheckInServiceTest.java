@@ -26,6 +26,7 @@ import com.yagubogu.game.domain.GameState;
 import com.yagubogu.game.repository.GameRepository;
 import com.yagubogu.global.config.JpaAuditingConfig;
 import com.yagubogu.global.exception.ConflictException;
+import com.yagubogu.global.exception.ForbiddenException;
 import com.yagubogu.global.exception.NotFoundException;
 import com.yagubogu.member.domain.Member;
 import com.yagubogu.member.repository.MemberRepository;
@@ -990,5 +991,94 @@ class CheckInServiceTest {
                 .gameState(GameState.COMPLETED)
                 .date(startDate.plusDays(5)));
         savedCheckIns.add(checkInFactory.save(b -> b.member(member).team(member.getTeam()).game(game3)));
+    }
+
+    @DisplayName("CheckIn을 삭제한다")
+    @Test
+    void deleteCheckIn_success() {
+        // given
+        Member member = memberFactory.save(b -> b.team(lotte));
+        Game game = gameFactory.save(b -> b
+                .stadium(stadiumJamsil)
+                .date(LocalDate.of(2025, 10, 10))
+                .homeTeam(lotte).homeScore(3).homeScoreBoard(TestFixture.getHomeScoreBoardAbout(3))
+                .awayTeam(kia).awayScore(1).awayScoreBoard(TestFixture.getAwayScoreBoardAbout(1))
+                .gameState(GameState.COMPLETED)
+        );
+
+        CheckIn checkIn = checkInFactory.save(b -> b
+                .game(game).member(member).team(lotte)
+                .checkInType(CheckInType.LOCATION_CHECK_IN)
+        );
+
+        // when
+        checkInService.deleteCheckIn(member.getId(), checkIn.getId());
+
+        // then
+        boolean exists = checkInRepository.existsById(checkIn.getId());
+        assertThat(exists).isFalse();
+    }
+
+    @DisplayName("NON_LOCATION_CHECK_IN도 삭제할 수 있다")
+    @Test
+    void deleteCheckIn_success_nonLocationCheckIn() {
+        // given
+        Member member = memberFactory.save(b -> b.team(lotte));
+        Game game = gameFactory.save(b -> b
+                .stadium(stadiumJamsil)
+                .date(LocalDate.of(2025, 11, 11))
+                .homeTeam(lotte).homeScore(5).homeScoreBoard(TestFixture.getHomeScoreBoardAbout(5))
+                .awayTeam(kia).awayScore(2).awayScoreBoard(TestFixture.getAwayScoreBoardAbout(2))
+                .gameState(GameState.COMPLETED)
+        );
+
+        CheckIn checkIn = checkInFactory.save(b -> b
+                .game(game).member(member).team(lotte)
+                .checkInType(CheckInType.NON_LOCATION_CHECK_IN)
+        );
+
+        // when
+        checkInService.deleteCheckIn(member.getId(), checkIn.getId());
+
+        // then
+        boolean exists = checkInRepository.existsById(checkIn.getId());
+        assertThat(exists).isFalse();
+    }
+
+    @DisplayName("예외: 존재하지 않는 CheckIn을 삭제하면 NotFoundException이 발생한다")
+    @Test
+    void deleteCheckIn_fail_whenCheckInNotFound() {
+        // given
+        Member member = memberFactory.save(b -> b.team(lotte));
+        long nonExistingCheckInId = 9999L;
+
+        // when & then
+        assertThatThrownBy(() -> checkInService.deleteCheckIn(member.getId(), nonExistingCheckInId))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessageContaining("CheckIn is not found");
+    }
+
+    @DisplayName("예외: 다른 회원의 CheckIn은 삭제할 수 없다")
+    @Test
+    void deleteCheckIn_fail_whenNotOwner() {
+        // given
+        Member owner = memberFactory.save(b -> b.team(lotte));
+        Member otherMember = memberFactory.save(b -> b.team(lotte));
+        Game game = gameFactory.save(b -> b
+                .stadium(stadiumJamsil)
+                .date(LocalDate.of(2025, 12, 12))
+                .homeTeam(lotte).homeScore(7).homeScoreBoard(TestFixture.getHomeScoreBoardAbout(7))
+                .awayTeam(kia).awayScore(2).awayScoreBoard(TestFixture.getAwayScoreBoardAbout(2))
+                .gameState(GameState.COMPLETED)
+        );
+
+        CheckIn checkIn = checkInFactory.save(b -> b
+                .game(game).member(owner).team(lotte)
+        );
+
+        // when & then
+        assertThatThrownBy(() -> checkInService.deleteCheckIn(otherMember.getId(), checkIn.getId()))
+                .isInstanceOf(ForbiddenException.class)
+                .hasMessageContaining("Only your own check-in can be deleted");
     }
 }

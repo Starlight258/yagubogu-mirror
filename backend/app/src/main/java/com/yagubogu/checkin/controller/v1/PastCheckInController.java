@@ -8,7 +8,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,15 +26,5 @@ public class PastCheckInController implements PastCheckInControllerInterface {
         pastCheckInService.createPastCheckIn(memberClaims.id(), request);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
-
-    @Override
-    public ResponseEntity<Void> deletePastCheckIn(
-            final MemberClaims memberClaims,
-            @PathVariable final Long checkInId
-    ) {
-        pastCheckInService.deletePastCheckIn(memberClaims.id(), checkInId);
-
-        return ResponseEntity.noContent().build();
     }
 }
