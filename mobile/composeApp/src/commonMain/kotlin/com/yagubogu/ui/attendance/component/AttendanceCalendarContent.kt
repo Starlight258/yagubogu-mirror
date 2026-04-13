@@ -32,13 +32,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.yagubogu.analytics.AnalyticsLogger
 import com.yagubogu.ui.attendance.model.AttendanceHistoryItem
 import com.yagubogu.ui.attendance.model.PastGameUiState
 import com.yagubogu.ui.theme.Gray400
 import com.yagubogu.ui.theme.PretendardBold16
-import com.yagubogu.ui.theme.PretendardMedium
+import com.yagubogu.ui.theme.PretendardMedium16
 import com.yagubogu.ui.theme.Primary500
 import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.util.minusDays
@@ -129,7 +128,7 @@ fun AttendanceCalendarContent(
 
                 isToday -> Unit
 
-                selectedDate !in gameDates -> NoGameEmptyView()
+                selectedDate !in gameDates -> NoGameDayView()
 
                 else -> {
                     AttendanceAdditionButton(
@@ -197,7 +196,7 @@ private fun AttendanceAdditionButton(
 }
 
 @Composable
-private fun NoGameEmptyView(modifier: Modifier = Modifier) {
+private fun NoGameDayView(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier.padding(vertical = 20.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -205,14 +204,14 @@ private fun NoGameEmptyView(modifier: Modifier = Modifier) {
     ) {
         Text(
             text = stringResource(Res.string.attendance_history_no_game_description),
-            style = PretendardMedium.copy(fontSize = 18.sp, color = Gray400),
+            style = PretendardMedium16.copy(color = Gray400),
         )
         Image(
             painter = painterResource(Res.drawable.img_baseball_fly_error),
             contentDescription = null,
             modifier =
                 Modifier
-                    .height(200.dp)
+                    .height(180.dp)
                     .fillMaxWidth(),
         )
     }
