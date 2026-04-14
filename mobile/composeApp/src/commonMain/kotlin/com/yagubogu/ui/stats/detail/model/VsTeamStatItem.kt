@@ -10,4 +10,7 @@ data class VsTeamStatItem(
     val drawCounts: Int,
     val loseCounts: Int,
     val winningPercentage: Double,
-)
+) {
+    val totalCounts: Int
+        get() = winCounts + drawCounts + loseCounts
+}

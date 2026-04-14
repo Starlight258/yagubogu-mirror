@@ -159,6 +159,11 @@ class StatsViewModel(
                         .getVsTeamStats(year)
                         .mapList { item: OpponentWinRateTeamDto ->
                             item.toUiModel()
+                        }.map { list: List<VsTeamStatItem> ->
+                            list.sortedWith(
+                                compareBy<VsTeamStatItem> { it.rank } // 1순위: rank 오름차순 (작은 숫자가 먼저)
+                                    .thenByDescending { it.totalCounts }, // 2순위: totalCounts 내림차순 (많은 순서로)
+                            )
                         }
                 vsTeamStatsResult
                     .onSuccess { updatedVsTeamStats: List<VsTeamStatItem> ->
