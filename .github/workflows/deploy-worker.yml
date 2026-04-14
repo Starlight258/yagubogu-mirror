@@ -1,6 +1,9 @@
 name: Deploy Yagubogu Worker
 
 on:
+  push:
+    branches:
+      - 'feat/987'
   workflow_dispatch:
 
 jobs:
