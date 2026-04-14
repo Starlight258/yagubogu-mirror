@@ -34,8 +34,8 @@ class StatsViewModel(
 ) : ViewModel() {
     private val logger = Logger.withTag("StatsViewModel")
 
-    private val _year = MutableStateFlow(LocalDate.now().year)
-    val year: StateFlow<Int> = _year.asStateFlow()
+    private val _year = MutableStateFlow<Int?>(LocalDate.now().year)
+    val year: StateFlow<Int?> = _year.asStateFlow()
 
     private val _statsMyUiModel: MutableStateFlow<StatsMyUiModel?> = MutableStateFlow(null)
     val statsMyUiModel: StateFlow<StatsMyUiModel?> = _statsMyUiModel.asStateFlow()
@@ -67,17 +67,17 @@ class StatsViewModel(
     private var vsTeamStatsJob: Job? = null
     private var stadiumVisitCountsJob: Job? = null
 
-    fun fetchMyStats() {
-        fetchMyAttendanceStats()
-        fetchMyAverageStats()
+    fun fetchMyStats(year: Int?) {
+        fetchMyAttendanceStats(year)
+        fetchMyAverageStats(year)
     }
 
-    fun fetchDetailStats() {
-        fetchVsTeamStats()
-        fetchStadiumVisitCounts()
+    fun fetchDetailStats(year: Int?) {
+        fetchVsTeamStats(year)
+        fetchStadiumVisitCounts(year)
     }
 
-    fun updateYear(year: Int) {
+    fun updateYear(year: Int?) {
         if (_year.value == year) return
         _statsMyUiModel.value = null
         _averageStats.value = null
@@ -90,11 +90,10 @@ class StatsViewModel(
         _isVsTeamStatsExpanded.value = !_isVsTeamStatsExpanded.value
     }
 
-    private fun fetchMyAttendanceStats() {
+    private fun fetchMyAttendanceStats(year: Int?) {
         attendanceJob?.cancel()
         attendanceJob =
             viewModelScope.launch {
-                val year: Int = year.value
                 val statsCountsDeferred: Deferred<Result<StatsCounts>> =
                     async { statsRepository.getStatsCounts(year).map { it.toUiModel() } }
                 val winRateDeferred: Deferred<Result<Double>> =
@@ -136,11 +135,10 @@ class StatsViewModel(
             }
     }
 
-    private fun fetchMyAverageStats() {
+    private fun fetchMyAverageStats(year: Int?) {
         averageStatsJob?.cancel()
         averageStatsJob =
             viewModelScope.launch {
-                val year: Int = year.value
                 statsRepository
                     .getAverageStats(year)
                     .map { it.toUiModel() }
@@ -152,11 +150,10 @@ class StatsViewModel(
             }
     }
 
-    private fun fetchVsTeamStats() {
+    private fun fetchVsTeamStats(year: Int?) {
         vsTeamStatsJob?.cancel()
         vsTeamStatsJob =
             viewModelScope.launch {
-                val year: Int = year.value
                 val vsTeamStatsResult: Result<List<VsTeamStatItem>> =
                     statsRepository
                         .getVsTeamStats(year)
@@ -172,11 +169,10 @@ class StatsViewModel(
             }
     }
 
-    private fun fetchStadiumVisitCounts() {
+    private fun fetchStadiumVisitCounts(year: Int?) {
         stadiumVisitCountsJob?.cancel()
         stadiumVisitCountsJob =
             viewModelScope.launch {
-                val year: Int = year.value
                 val stadiumVisitCountsResult: Result<List<StadiumVisitCount>> =
                     checkInRepository.getStadiumCheckInCounts(year).mapList { it.toUiModel() }
                 stadiumVisitCountsResult
