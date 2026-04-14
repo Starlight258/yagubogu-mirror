@@ -36,7 +36,7 @@ export async function authenticate(request: Request, env: Env) {
         };
     }
 
-    const jwt = authHeader.replace('Bearer ', '');
+    const jwt = authHeader.replace('Bearer ', '').trim();
     const payload = await verifyHMACJWT(jwt, env);
 
     if (!payload || !payload.sub) {
