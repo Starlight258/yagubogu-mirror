@@ -33,4 +33,4 @@ jobs:
           secrets: |
             JWT_ACCESS_TOKEN_SECRET_KEY
         env:
-          JWT_ACCESS_TOKEN_SECRET_KEY: ${{ secrets.JWT_ACCESS_TOKEN_SECRET_KEY }}
+          JWT_ACCESS_TOKEN_SECRET_KEY: ${{ secrets.ACCESS_TOKEN_SECRET_KEY }}
