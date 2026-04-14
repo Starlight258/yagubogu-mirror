@@ -171,14 +171,22 @@ export async function handleWeather(request: Request, env: Env): Promise<Respons
                 }
 
                 const items = json?.response?.body?.items?.item;
-                if (!items) throw new Error("Empty KMA body");
+                if (!items || !Array.isArray(items)) throw new Error("Empty KMA body");
+
+                // ✅ [수정] 모든 시간대 데이터가 섞여 있으므로, 가장 빠른 예보 시각(fcstTime) 데이터만 필터링
+                const minFcstTime = items.reduce((min, item) => 
+                    parseInt(item.fcstTime, 10) < min ? parseInt(item.fcstTime, 10) : min, 
+                    9999
+                ).toString().padStart(4, '0');
+
+                const nearestItems = items.filter(item => item.fcstTime === minFcstTime);
 
                 return {
                     id: stadium.id,
                     name: stadium.name,
                     lat: stadium.lat,
                     lng: stadium.lng,
-                    weather: parseKmaToEnum(items)
+                    weather: parseKmaToEnum(nearestItems)
                 };
             } catch (err: any) {
                 logger.warn(`⚠️ ${stadium.name} 조회 실패: ${err.message}`);
