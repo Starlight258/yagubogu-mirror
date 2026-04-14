@@ -14,7 +14,6 @@ import com.yagubogu.ui.stats.my.model.AverageStats
 import com.yagubogu.ui.stats.my.model.StatsCounts
 import com.yagubogu.ui.stats.my.model.StatsMyUiModel
 import com.yagubogu.ui.util.mapList
-import com.yagubogu.ui.util.mapListIndexed
 import com.yagubogu.ui.util.now
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Job
@@ -161,8 +160,8 @@ class StatsViewModel(
                 val vsTeamStatsResult: Result<List<VsTeamStatItem>> =
                     statsRepository
                         .getVsTeamStats(year)
-                        .mapListIndexed { index: Int, item: OpponentWinRateTeamDto ->
-                            item.toUiModel(rank = index + 1)
+                        .mapList { item: OpponentWinRateTeamDto ->
+                            item.toUiModel()
                         }
                 vsTeamStatsResult
                     .onSuccess { updatedVsTeamStats: List<VsTeamStatItem> ->
