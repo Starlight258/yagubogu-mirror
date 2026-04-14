@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">야구보구</string>
 
+    <string name="all_all">전체</string>
     <string name="all_settings">설정</string>
     <string name="all_cancel">취소</string>
     <string name="all_confirm">확인</string>
@@ -81,6 +82,7 @@
     <string name="stats_tab_my_stats">내 통계</string>
     <string name="stats_tab_stats_detail">상세 통계</string>
 
+    <string name="stats_all_season">전체 시즌</string>
     <string name="stats_my_pie_chart_title">직관 승률</string>
     <string name="stats_my_pie_chart_tooltip">응원팀 경기를 직관했을 때의 승률이에요.</string>
     <string name="stats_my_pie_chart_attendance_count">%1$d 경기</string>
