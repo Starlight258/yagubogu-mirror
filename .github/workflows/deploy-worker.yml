@@ -32,5 +32,7 @@ jobs:
           command: deploy
           secrets: |
             JWT_ACCESS_TOKEN_SECRET_KEY
+            KMA_API_KEY
         env:
           JWT_ACCESS_TOKEN_SECRET_KEY: ${{ secrets.ACCESS_TOKEN_SECRET_KEY }}
+          KMA_API_KEY: ${{ secrets.KMA_API_KEY }}
