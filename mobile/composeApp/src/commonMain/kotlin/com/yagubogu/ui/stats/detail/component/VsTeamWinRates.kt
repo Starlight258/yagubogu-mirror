@@ -3,6 +3,7 @@ package com.yagubogu.ui.stats.detail.component
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -32,8 +34,10 @@ import com.yagubogu.ui.theme.PretendardRegular16
 import com.yagubogu.ui.theme.PretendardSemiBold
 import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.util.formatOneDecimal
+import com.yagubogu.ui.util.mascot
 import com.yagubogu.ui.util.noRippleClickable
 import com.yagubogu.ui.util.shimmerLoading
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.all_win_rate
@@ -100,10 +104,13 @@ private fun VsTeamStatItem(
             color = Gray500,
             modifier = Modifier.width(20.dp),
         )
-        Text(
-            text = vsTeamStatItem.teamEmoji,
-            fontSize = 24.sp,
-            modifier = Modifier.padding(horizontal = 10.dp),
+        Image(
+            painter = painterResource(vsTeamStatItem.team.mascot),
+            contentDescription = null,
+            modifier =
+                Modifier
+                    .padding(horizontal = 10.dp)
+                    .size(28.dp),
         )
         Column(modifier = Modifier.weight(1f)) {
             Text(
