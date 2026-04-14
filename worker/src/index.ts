@@ -22,8 +22,8 @@ export default {
             return handleHealth(request);
         }
 
-        // GET /weather
-        if (url.pathname === '/weather' && request.method === 'GET') {
+        // GET /api/stadium/weather
+        if (url.pathname === '/api/stadium/weather' && request.method === 'GET') {
             return handleWeather(request, env);
         }
 
@@ -31,7 +31,7 @@ export default {
         return jsonResponse(
             {
                 error: '경로를 찾을 수 없습니다',
-                available_endpoints: ['/health', '/weather']
+                available_endpoints: ['/health', '/api/stadium/weather']
             },
             404,
             corsHeaders
