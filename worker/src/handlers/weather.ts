@@ -3,46 +3,68 @@ import { jsonResponse } from '../utils/response';
 import { authenticate } from '../middleware/auth';
 import { getCorsHeaders } from '../middleware/cors';
 import { Logger } from '../utils/logger';
-import { latLngToGrid } from '../utils/kmaCoords';
 
 // ─────────────────────────────────────────────────────────────
 // 전역 상수
 // ─────────────────────────────────────────────────────────────
-const CACHE_TTL_SECONDS = 1200; // 20분
-const KMA_TIMEOUT_MS    = 3500; // API 타임아웃 3.5초
-const KMA_NUM_OF_ROWS   = 60;   // 초단기예보: 9카테고리 × 6시간 = 54행
-const CONCURRENT_LIMIT  = 5;    // 동시 KMA API 요청 수 제한
+const CACHE_TTL_SECONDS = 3600;   // 초단기예보 1시간 발표 주기에 맞춤
+const KMA_TIMEOUT_MS = 3500;
+// 초단기예보 카테고리 10개(T1H RN1 SKY UUU VVV REH PTY LGT VEC WSD) × 1슬롯만 필요
+const KMA_NUM_OF_ROWS = 10;
+const CONCURRENT_LIMIT = 5;
+const STRONG_WIND_MS = 10;     // 강풍 기준 (m/s) — 10m/s 이상 시 타구/관람 영향
+
+const CACHE_KEY_BASE = 'https://kma-grid-cache.internal/ultra-srt-fcst';
 
 // ─────────────────────────────────────────────────────────────
-// 경기장 목록 (모듈 최상단에 고정, 요청마다 재생성 방지)
+// 날씨 조건 Enum (9종)
+// 우선순위: 안전·취소위험 > 불편 > 쾌적
+// ─────────────────────────────────────────────────────────────
+//  THUNDERSTORM  — LGT > 0
+//  HEAVY_RAIN    — PTY=1·5, RN1 ≥ 1mm  (비 + 강수량 있음)
+//  LIGHT_RAIN    — PTY=1·5, RN1 < 1mm  (빗방울 수준)
+//  RAIN_SNOW     — PTY=2·6
+//  SNOW          — PTY=3·7
+//  STRONG_WIND   — WSD ≥ 10m/s (강수 없을 때만)
+//  CLOUDY        — SKY=4 (전운량 9~10)
+//  PARTLY_CLOUDY — SKY=3 (전운량 6~8)
+//  CLEAR         — SKY=1 (전운량 0~5)
+
+// ─────────────────────────────────────────────────────────────
+// 경기장 목록
+// nx, ny: 기상청 Lambert 투영 공식으로 사전 계산 후 하드코딩
+// 동일 격자 공유: (59,75)→1·16 / (89,76)→8·17 / (68,100)→9·14
 // ─────────────────────────────────────────────────────────────
 const ALL_STADIUMS = [
-    { id: 1,  name: '광주 기아 챔피언스필드',  lat: 35.168139, lng: 126.889111 },
-    { id: 2,  name: '잠실 야구장',            lat: 37.512150, lng: 127.071976 },
-    { id: 3,  name: '고척 스카이돔',           lat: 37.498222, lng: 126.867250 },
-    { id: 4,  name: '수원 KT 위즈파크',        lat: 37.299759, lng: 127.009781 },
-    { id: 5,  name: '대구 삼성 라이온즈파크',   lat: 35.841111, lng: 128.681667 },
-    { id: 6,  name: '사직야구장',             lat: 35.194077, lng: 129.061584 },
-    { id: 7,  name: '인천 SSG 랜더스필드',     lat: 37.436778, lng: 126.693306 },
-    { id: 8,  name: '창원 NC 파크',           lat: 35.222754, lng: 128.582251 },
-    { id: 9,  name: '대전 한화생명 볼파크',     lat: 36.316589, lng: 127.431211 },
-    { id: 10, name: '울산 문수 야구장',         lat: 35.532334, lng: 129.265575 },
-    { id: 11, name: '월명종합경기장 야구장',     lat: 35.966360, lng: 126.748161 },
-    { id: 12, name: '청주 야구장',            lat: 36.638840, lng: 127.470149 },
-    { id: 13, name: '포항 야구장',            lat: 36.008273, lng: 129.359410 },
-    { id: 14, name: '한화생명 이글스파크',      lat: 36.317178, lng: 127.429167 },
-    { id: 15, name: '대구시민운동장 야구장',     lat: 35.881162, lng: 128.586371 },
-    { id: 16, name: '무등 야구장',            lat: 35.169165, lng: 126.887245 },
-    { id: 17, name: '마산 야구장',            lat: 35.220855, lng: 128.581050 },
-    { id: 18, name: '숭의 야구장',            lat: 37.466591, lng: 126.643239 },
-    { id: 19, name: '삼성 라이온즈 볼파크',    lat: 35.864844, lng: 128.805667 },
+    { id: 1, name: '광주 기아 챔피언스필드', lat: 35.168139, lng: 126.889111, nx: 59, ny: 75 },
+    { id: 2, name: '잠실 야구장', lat: 37.512150, lng: 127.071976, nx: 61, ny: 126 },
+    { id: 3, name: '고척 스카이돔', lat: 37.498222, lng: 126.867250, nx: 58, ny: 125 },
+    { id: 4, name: '수원 KT 위즈파크', lat: 37.299759, lng: 127.009781, nx: 60, ny: 121 },
+    { id: 5, name: '대구 삼성 라이온즈파크', lat: 35.841111, lng: 128.681667, nx: 90, ny: 90 },
+    { id: 6, name: '사직야구장', lat: 35.194077, lng: 129.061584, nx: 98, ny: 76 },
+    { id: 7, name: '인천 SSG 랜더스필드', lat: 37.436778, lng: 126.693306, nx: 55, ny: 124 },
+    { id: 8, name: '창원 NC 파크', lat: 35.222754, lng: 128.582251, nx: 89, ny: 76 },
+    { id: 9, name: '대전 한화생명 볼파크', lat: 36.316589, lng: 127.431211, nx: 68, ny: 100 },
+    { id: 10, name: '울산 문수 야구장', lat: 35.532334, lng: 129.265575, nx: 101, ny: 84 },
+    { id: 11, name: '월명종합경기장 야구장', lat: 35.966360, lng: 126.748161, nx: 56, ny: 92 },
+    { id: 12, name: '청주 야구장', lat: 36.638840, lng: 127.470149, nx: 69, ny: 107 },
+    { id: 13, name: '포항 야구장', lat: 36.008273, lng: 129.359410, nx: 102, ny: 94 },
+    { id: 14, name: '한화생명 이글스파크', lat: 36.317178, lng: 127.429167, nx: 68, ny: 100 },
+    { id: 15, name: '대구시민운동장 야구장', lat: 35.881162, lng: 128.586371, nx: 89, ny: 91 },
+    { id: 16, name: '무등 야구장', lat: 35.169165, lng: 126.887245, nx: 59, ny: 75 },
+    { id: 17, name: '마산 야구장', lat: 35.220855, lng: 128.581050, nx: 89, ny: 76 },
+    { id: 18, name: '숭의 야구장', lat: 37.466591, lng: 126.643239, nx: 54, ny: 124 },
+    { id: 19, name: '삼성 라이온즈 볼파크', lat: 35.864844, lng: 128.805667, nx: 93, ny: 90 },
 ] as const;
 
 type Stadium = typeof ALL_STADIUMS[number];
 
+const STADIUM_MAP = new Map<number, Stadium>(ALL_STADIUMS.map(s => [s.id, s]));
+
+
 // ─────────────────────────────────────────────────────────────
 // KST 기반 초단기예보 Base Date/Time 계산
-// - 매시 30분 생성, 45분 이후 API 제공
+// 매시 :30 생성, :45 이후 API 제공
 // ─────────────────────────────────────────────────────────────
 function getKmaBaseDateTime(): { baseDate: string; baseTime: string } {
     const now = new Date();
@@ -54,22 +76,21 @@ function getKmaBaseDateTime(): { baseDate: string; baseTime: string } {
     });
 
     const map = new Map(formatter.formatToParts(now).map(p => [p.type, p.value]));
-    let year  = map.get('year')!;
+    let year = map.get('year')!;
     let month = map.get('month')!;
-    let day   = map.get('day')!;
-    let hour  = parseInt(map.get('hour')   ?? '0', 10);
+    let day = map.get('day')!;
+    let hour = parseInt(map.get('hour') ?? '0', 10);
     const min = parseInt(map.get('minute') ?? '0', 10);
 
     if (min < 45) {
         hour -= 1;
         if (hour < 0) {
-            // 자정 이전 → 전날 23시로 이동
             hour = 23;
             const prevDay = new Date(now.getTime() - 24 * 60 * 60 * 1000);
             const prevMap = new Map(formatter.formatToParts(prevDay).map(p => [p.type, p.value]));
-            year  = prevMap.get('year')!;
+            year = prevMap.get('year')!;
             month = prevMap.get('month')!;
-            day   = prevMap.get('day')!;
+            day = prevMap.get('day')!;
         }
     }
 
@@ -79,50 +100,48 @@ function getKmaBaseDateTime(): { baseDate: string; baseTime: string } {
     };
 }
 
+
 // ─────────────────────────────────────────────────────────────
 // RN1 강수량 파싱
-// 기상청 응답 형태: "강수없음" | "1.0mm 미만" | "1.0~4.9mm" | "30.0mm 이상" | "2.5"
+// 기상청 응답 형태: "강수없음" | "1mm 미만" | "1.0~29.0mm" | "30.0~50.0mm" | "50.0mm 이상" | "2.5"
 // ─────────────────────────────────────────────────────────────
 function parseRainAmount(val: string): number {
     if (val === '강수없음' || val === '0') return 0;
-    if (val.includes('미만')) return 0.5; // "1.0mm 미만" → 0~1 사이 근사값
+    if (val.includes('미만')) return 0.5;   // "1mm 미만" → 0~1 사이 근사값
 
-    // "1.0~4.9mm" 범위값 → 중간값 사용
     const rangeMatch = val.match(/(\d+(?:\.\d+)?)\s*~\s*(\d+(?:\.\d+)?)/);
     if (rangeMatch) {
         return (parseFloat(rangeMatch[1]) + parseFloat(rangeMatch[2])) / 2;
     }
 
-    // "30.0mm 이상" 또는 단순 숫자
     const numMatch = val.match(/\d+(?:\.\d+)?/);
     return numMatch ? parseFloat(numMatch[0]) : 0;
 }
 
+
 // ─────────────────────────────────────────────────────────────
-// KMA items → 날씨 Enum 변환
-//
-// ⚠️ 주의: getUltraSrtFcst(초단기예보) 제공 카테고리
-//    T1H · RN1 · UUU · VVV · REH · PTY · LGT · VEC · WSD
-//    SKY(하늘상태)는 getVilageFcst(단기예보)에만 존재.
-//    따라서 CLOUDY / PARTLY_CLOUDY는 이 API로 판별 불가.
-//    구름 상태까지 필요하면 getVilageFcst 병행 호출 필요.
+// KMA items → 날씨 결과 변환
 // ─────────────────────────────────────────────────────────────
 interface WeatherResult {
     condition: string;
+    sky: string;
     temperature: string;
     precipitation: string;
+    windSpeed: string;
 }
 
-function parseKmaToEnum(items: any[]): WeatherResult {
-    let pty = 0, t1h = 0, lgt = 0, rn1 = 0;
+function parseKmaToWeather(items: any[]): WeatherResult {
+    let pty = 0, t1h = 0, lgt = 0, rn1 = 0, wsd = 0, sky = 1;
 
     for (const item of items) {
         const val: string = item.fcstValue;
         switch (item.category) {
-            case 'PTY': pty = parseInt(val, 10);   break;
-            case 'T1H': t1h = parseFloat(val);     break;
-            case 'LGT': lgt = parseFloat(val);     break;
+            case 'PTY': pty = parseInt(val, 10); break;
+            case 'T1H': t1h = parseFloat(val); break;
+            case 'LGT': lgt = parseFloat(val); break;
             case 'RN1': rn1 = parseRainAmount(val); break;
+            case 'WSD': wsd = parseFloat(val); break;
+            case 'SKY': sky = parseInt(val, 10); break;
         }
     }
 
@@ -130,27 +149,35 @@ function parseKmaToEnum(items: any[]): WeatherResult {
 
     if (lgt > 0) {
         condition = 'THUNDERSTORM';
-    } else if (pty === 1 || pty === 5) {        // 비 | 빗방울
-        condition = rn1 >= 5.0 ? 'HEAVY_RAIN'
-                  : rn1 >= 1.0 ? 'RAIN'
-                  : 'LIGHT_RAIN';
-    } else if (pty === 2 || pty === 6) {        // 비/눈 | 진눈깨비
+    } else if (pty === 1 || pty === 5) {
+        // 비 | 빗방울 — 1mm 기준으로 강한비/약한비 2단계 구분
+        condition = rn1 >= 1.0 ? 'HEAVY_RAIN' : 'LIGHT_RAIN';
+    } else if (pty === 2 || pty === 6) {
         condition = 'RAIN_SNOW';
-    } else if (pty === 3 || pty === 7) {        // 눈 | 눈날림
+    } else if (pty === 3 || pty === 7) {
         condition = 'SNOW';
+    } else if (wsd >= STRONG_WIND_MS) {
+        // 강수 없을 때만 강풍 판정 (강수 중 강풍은 강수 조건 우선)
+        condition = 'STRONG_WIND';
     } else {
-        condition = 'CLEAR';                    // SKY 없으므로 맑음/구름 구분 불가
+        // SKY=1 맑음 / SKY=3 구름많음 / SKY=4 흐림
+        condition = sky === 1 ? 'CLEAR'
+            : sky === 3 ? 'PARTLY_CLOUDY'
+                : 'CLOUDY';
     }
 
     return {
         condition,
-        temperature:   `${t1h}°C`,
+        sky: sky === 1 ? '맑음' : sky === 3 ? '구름많음' : '흐림',
+        temperature: `${t1h}°C`,
         precipitation: `${rn1}mm`,
+        windSpeed: `${wsd}m/s`,
     };
 }
 
+
 // ─────────────────────────────────────────────────────────────
-// 동시 요청 수 제한 유틸 (p-limit 대신 직접 구현)
+// 동시 요청 수 제한 유틸
 // ─────────────────────────────────────────────────────────────
 async function batchedAll<T>(
     tasks: Array<() => Promise<T>>,
@@ -164,17 +191,33 @@ async function batchedAll<T>(
     return results;
 }
 
+
 // ─────────────────────────────────────────────────────────────
-// 단일 경기장 날씨 조회
+// 단일 격자 날씨 조회 (격자 단위 캐시 적용)
+//
+// 캐시 키: {CACHE_KEY_BASE}/{baseDate}/{baseTime}/{nx}/{ny}
+// baseDate·baseTime이 키에 포함 → 발표 회차 변경 시 자연 미스
 // ─────────────────────────────────────────────────────────────
-async function fetchStadiumWeather(
-    stadium: Stadium,
+async function fetchGridWeather(
+    nx: number,
+    ny: number,
     serviceKey: string,
     baseDate: string,
     baseTime: string,
+    cache: Cache,
     logger: Logger,
-) {
-    const { nx, ny } = latLngToGrid(stadium.lat, stadium.lng);
+): Promise<WeatherResult> {
+    const cacheKey = new Request(
+        `${CACHE_KEY_BASE}/${baseDate}/${baseTime}/${nx}/${ny}`,
+        { method: 'GET' },
+    );
+
+    const cached = await cache.match(cacheKey);
+    if (cached) {
+        logger.log(`🚀 [Grid Cache Hit] nx=${nx} ny=${ny}`);
+        return cached.json<WeatherResult>();
+    }
+
     const apiUrl =
         `https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtFcst` +
         `?serviceKey=${serviceKey}` +
@@ -182,9 +225,10 @@ async function fetchStadiumWeather(
         `&base_date=${baseDate}&base_time=${baseTime}` +
         `&nx=${nx}&ny=${ny}`;
 
+    const controller = new AbortController();
+    const tid = setTimeout(() => controller.abort(), KMA_TIMEOUT_MS);
+
     try {
-        const controller = new AbortController();
-        const tid = setTimeout(() => controller.abort(), KMA_TIMEOUT_MS);
         const res = await fetch(apiUrl, { signal: controller.signal });
         clearTimeout(tid);
 
@@ -201,45 +245,39 @@ async function fetchStadiumWeather(
             throw new Error('KMA 응답 데이터 없음');
         }
 
-        // 현재 시각에 가장 근접한 예보 시각의 데이터만 추출
-        // fcstDate + fcstTime 복합 문자열로 비교 (자정 경계 오류 방지)
-        const minKey = items.reduce((min, item) => {
-            const key = `${item.fcstDate}${item.fcstTime}`;
-            return key < min ? key : min;
-        }, `${items[0].fcstDate}${items[0].fcstTime}`);
+        // numOfRows=10 으로 최근접 시각 1슬롯만 수신 → 별도 필터 불필요
+        const weather = parseKmaToWeather(items);
 
-        const nearestItems = items.filter(
-            item => `${item.fcstDate}${item.fcstTime}` === minKey,
+        await cache.put(
+            cacheKey,
+            new Response(JSON.stringify(weather), {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Cache-Control': `s-maxage=${CACHE_TTL_SECONDS}`,
+                },
+            }),
         );
+        logger.log(`📡 [Grid Cache Miss] nx=${nx} ny=${ny} → KMA 호출 완료`);
 
-        return {
-            id:      stadium.id,
-            name:    stadium.name,
-            lat:     stadium.lat,
-            lng:     stadium.lng,
-            weather: parseKmaToEnum(nearestItems),
-        };
+        return weather;
+
     } catch (err: any) {
-        logger.warn(`⚠️ ${stadium.name} 조회 실패: ${err.message}`);
-        // 오류 시 'UNKNOWN' 반환 — CLEAR로 오해하지 않도록
-        return {
-            id:      stadium.id,
-            name:    stadium.name,
-            lat:     stadium.lat,
-            lng:     stadium.lng,
-            weather: { condition: 'UNKNOWN', temperature: 'N/A', precipitation: 'N/A' },
-        };
+        clearTimeout(tid);
+        logger.warn(`⚠️ 격자(${nx},${ny}) 조회 실패: ${err.message}`);
+        return { condition: 'UNKNOWN', sky: 'N/A', temperature: 'N/A', precipitation: 'N/A', windSpeed: 'N/A' };
     }
 }
 
+
 // ─────────────────────────────────────────────────────────────
 // 메인 핸들러
+// GET /api/stadium/weather?ids=1,2,5
+// ids 미지정 시 전체 경기장 반환
 // ─────────────────────────────────────────────────────────────
 export async function handleWeather(request: Request, env: Env): Promise<Response> {
-    const logger      = new Logger(env);
+    const logger = new Logger(env);
     const corsHeaders = getCorsHeaders(request);
 
-    // 인증
     const authResult = await authenticate(request, env);
     if ('error' in authResult) {
         return jsonResponse(
@@ -249,53 +287,71 @@ export async function handleWeather(request: Request, env: Env): Promise<Respons
         );
     }
 
-    const url        = new URL(request.url);
-    const namesParam = url.searchParams.get('names');
+    const url = new URL(request.url);
+    const idsParam = url.searchParams.get('ids');
 
-    // ── Cache API: URL 기반 공유 캐시 (Authorization 무관) ──────
-    const cacheKey = new Request(url.toString(), { method: 'GET' });
-    const cache    = caches.default;
-    const cached   = await cache.match(cacheKey);
-    if (cached) {
-        logger.log('🚀 [Cache Hit] 20분 캐시 사용');
-        return cached;
-    }
+    let targetStadiums: Stadium[];
 
-    // 조회 대상 경기장 필터링
-    const targetStadiums: Stadium[] = namesParam
-        ? (() => {
-            const names = namesParam.split(',').map(n => n.trim());
-            return ALL_STADIUMS.filter(s => names.includes(s.name));
-        })()
-        : [...ALL_STADIUMS];
+    if (idsParam) {
+        const ids = idsParam
+            .split(',')
+            .map(s => parseInt(s.trim(), 10))
+            .filter(n => !isNaN(n));
 
-    if (targetStadiums.length === 0) {
-        return jsonResponse({ error: '일치하는 경기장이 없습니다.' }, 400, corsHeaders);
+        if (ids.length === 0) {
+            return jsonResponse({ error: '유효한 경기장 ID가 없습니다.' }, 400, corsHeaders);
+        }
+
+        targetStadiums = ids.reduce<Stadium[]>((acc, id) => {
+            const s = STADIUM_MAP.get(id);
+            if (s) acc.push(s);
+            return acc;
+        }, []);
+
+        if (targetStadiums.length === 0) {
+            return jsonResponse({ error: '일치하는 경기장이 없습니다.' }, 400, corsHeaders);
+        }
+    } else {
+        targetStadiums = [...ALL_STADIUMS];
     }
 
     try {
         if (!env.KMA_API_KEY) throw new Error('KMA_API_KEY missing');
 
-        const serviceKey           = encodeURIComponent(env.KMA_API_KEY);
+        const serviceKey = encodeURIComponent(env.KMA_API_KEY);
         const { baseDate, baseTime } = getKmaBaseDateTime();
+        const cache = caches.default;
 
-        // 동시 요청 수 제한 (CONCURRENT_LIMIT = 5)
-        const tasks = targetStadiums.map(
-            stadium => () => fetchStadiumWeather(stadium, serviceKey, baseDate, baseTime, logger),
+        // 요청된 경기장에서 고유 격자만 추출 → 동일 격자 중복 호출 방지
+        const uniqueGrids = [...new Map(
+            targetStadiums.map(s => [`${s.nx}:${s.ny}`, { nx: s.nx, ny: s.ny }]),
+        ).values()];
+
+        const gridTasks = uniqueGrids.map(
+            ({ nx, ny }) => () =>
+                fetchGridWeather(nx, ny, serviceKey, baseDate, baseTime, cache, logger)
+                    .then(weather => ({ key: `${nx}:${ny}`, weather })),
         );
-        const results = await batchedAll(tasks, CONCURRENT_LIMIT);
+        const gridResults = await batchedAll(gridTasks, CONCURRENT_LIMIT);
 
-        const finalResponse = jsonResponse(
-            { success: true, count: results.length, data: results },
+        const gridWeatherMap = new Map(gridResults.map(r => [r.key, r.weather]));
+
+        const data = targetStadiums.map(s => ({
+            id: s.id,
+            name: s.name,
+            lat: s.lat,
+            lng: s.lng,
+            nx: s.nx,
+            ny: s.ny,
+            weather: gridWeatherMap.get(`${s.nx}:${s.ny}`)
+                ?? { condition: 'UNKNOWN', sky: 'N/A', temperature: 'N/A', precipitation: 'N/A', windSpeed: 'N/A' },
+        }));
+
+        return jsonResponse(
+            { success: true, count: data.length, baseDate, baseTime, data },
             200,
-            { ...corsHeaders, 'Cache-Control': `s-maxage=${CACHE_TTL_SECONDS}` },
+            corsHeaders,
         );
-
-        // await로 캐시 저장 완료를 보장 (미완료 시 Worker 종료로 소실 방지)
-        await cache.put(cacheKey, finalResponse.clone());
-        logger.log(`📡 [Cache Miss] 기상청 API 호출 완료 (${results.length}곳). ${CACHE_TTL_SECONDS / 60}분 캐시 생성.`);
-
-        return finalResponse;
 
     } catch (error: any) {
         logger.error('❌ 서버 내부 오류:', error.message);
