@@ -12,7 +12,7 @@
   },
   // 일반 환경 변수
   "vars": {
-    "ENV": "development"
+    "ENV": "prod" // 개발중에는 "development", 변경후 npx wrangler types 필요
     // JWT_ACCESS_TOKEN_SECRET_KEY 는 시크릿 환경변수로 주입됨
   }
 }

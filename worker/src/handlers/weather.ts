@@ -322,9 +322,6 @@ async function fetchGridWeather(
         `?serviceKey=${serviceKey}&pageNo=1&numOfRows=${KMA_FCST_NUM_OF_ROWS}&dataType=JSON` +
         `&base_date=${fcstBase.baseDate}&base_time=${fcstBase.baseTime}&nx=${nx}&ny=${ny}`;
 
-    logger.log(`🔗 [NCST URL] ${ncstUrl}`);
-    logger.log(`🔗 [FCST URL] ${fcstUrl}`);
-
     try {
         const [ncstItems, fcstItems] = await Promise.all([
             fetchKmaItems(ncstUrl),
