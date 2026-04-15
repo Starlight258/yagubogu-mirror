@@ -15,7 +15,7 @@ const KMA_NUM_OF_ROWS = 60;
 const CONCURRENT_LIMIT = 5;
 const STRONG_WIND_MS = 10;
 
-const CACHE_KEY_BASE = 'https://kma-grid-cache.internal/ultra-srt-fcst';
+const CACHE_KEY_BASE = 'https://kma-grid-cache2.internal/ultra-srt-fcst';
 
 // ─────────────────────────────────────────────────────────────
 // 경기장 목록
@@ -223,17 +223,34 @@ async function fetchGridWeather(
             throw new Error('KMA 응답 데이터 없음');
         }
 
-        // ✅ 버그 수정: 60행 전부 수신 후 fcstDate+fcstTime이 가장 이른 슬롯만 필터링
-        // KMA는 카테고리 알파벳순으로 정렬하므로 numOfRows=10으로는 T1H·WSD 등이 잘림
-        const minKey = items.reduce((min, item) => {
-            const key = `${item.fcstDate}${item.fcstTime}`;
-            return key < min ? key : min;
-        }, `${items[0].fcstDate}${items[0].fcstTime}`);
+        // 현재 KST 시각과 가장 가까운 예보 슬롯 선택
+        const nowMs = Date.now();
 
+        // "YYYYMMDD" + "HHMM" 조합 키를 UTC milliseconds로 변환 (KST = UTC+9)
+        const toUtcMs = (fcstDate: string, fcstTime: string): number => {
+            const Y = +fcstDate.slice(0, 4);
+            const M = +fcstDate.slice(4, 6) - 1;   // Date.UTC는 0-indexed month
+            const D = +fcstDate.slice(6, 8);
+            const H = +fcstTime.slice(0, 2);
+            const m = +fcstTime.slice(2, 4);
+            return Date.UTC(Y, M, D, H - 9, m);    // KST → UTC
+        };
+
+        const uniqueKeys = [...new Set(
+            items.map(item => `${item.fcstDate}|${item.fcstTime}`)
+        )];
+
+        const nearestKey = uniqueKeys.reduce((best, key) => {
+            const [d, t] = key.split('|');
+            const [bd, bt] = best.split('|');
+            return Math.abs(toUtcMs(d, t) - nowMs) < Math.abs(toUtcMs(bd, bt) - nowMs)
+                ? key : best;
+        }, uniqueKeys[0]);
+
+        const [nearestDate, nearestTime] = nearestKey.split('|');
         const nearestItems = items.filter(
-            item => `${item.fcstDate}${item.fcstTime}` === minKey,
+            item => item.fcstDate === nearestDate && item.fcstTime === nearestTime,
         );
-
         const weather = parseKmaToWeather(nearestItems);
 
         await cache.put(
