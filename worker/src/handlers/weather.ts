@@ -7,33 +7,18 @@ import { Logger } from '../utils/logger';
 // ─────────────────────────────────────────────────────────────
 // 전역 상수
 // ─────────────────────────────────────────────────────────────
-const CACHE_TTL_SECONDS = 3600;   // 초단기예보 1시간 발표 주기에 맞춤
+const CACHE_TTL_SECONDS = 3600;
 const KMA_TIMEOUT_MS = 3500;
-// 초단기예보 카테고리 10개(T1H RN1 SKY UUU VVV REH PTY LGT VEC WSD) × 1슬롯만 필요
-const KMA_NUM_OF_ROWS = 10;
+// 카테고리 10개 × 6시간 = 60행 전부 수신 후 최근접 슬롯 필터링
+// (numOfRows=10으로 줄이면 카테고리 알파벳 순 정렬로 인해 T1H·WSD 등 누락됨)
+const KMA_NUM_OF_ROWS = 60;
 const CONCURRENT_LIMIT = 5;
-const STRONG_WIND_MS = 10;     // 강풍 기준 (m/s) — 10m/s 이상 시 타구/관람 영향
+const STRONG_WIND_MS = 10;
 
 const CACHE_KEY_BASE = 'https://kma-grid-cache.internal/ultra-srt-fcst';
 
 // ─────────────────────────────────────────────────────────────
-// 날씨 조건 Enum (9종)
-// 우선순위: 안전·취소위험 > 불편 > 쾌적
-// ─────────────────────────────────────────────────────────────
-//  THUNDERSTORM  — LGT > 0
-//  HEAVY_RAIN    — PTY=1·5, RN1 ≥ 1mm  (비 + 강수량 있음)
-//  LIGHT_RAIN    — PTY=1·5, RN1 < 1mm  (빗방울 수준)
-//  RAIN_SNOW     — PTY=2·6
-//  SNOW          — PTY=3·7
-//  STRONG_WIND   — WSD ≥ 10m/s (강수 없을 때만)
-//  CLOUDY        — SKY=4 (전운량 9~10)
-//  PARTLY_CLOUDY — SKY=3 (전운량 6~8)
-//  CLEAR         — SKY=1 (전운량 0~5)
-
-// ─────────────────────────────────────────────────────────────
 // 경기장 목록
-// nx, ny: 기상청 Lambert 투영 공식으로 사전 계산 후 하드코딩
-// 동일 격자 공유: (59,75)→1·16 / (89,76)→8·17 / (68,100)→9·14
 // ─────────────────────────────────────────────────────────────
 const ALL_STADIUMS = [
     { id: 1, name: '광주 기아 챔피언스필드', lat: 35.168139, lng: 126.889111, nx: 59, ny: 75 },
@@ -58,7 +43,6 @@ const ALL_STADIUMS = [
 ] as const;
 
 type Stadium = typeof ALL_STADIUMS[number];
-
 const STADIUM_MAP = new Map<number, Stadium>(ALL_STADIUMS.map(s => [s.id, s]));
 
 
@@ -102,13 +86,13 @@ function getKmaBaseDateTime(): { baseDate: string; baseTime: string } {
 
 
 // ─────────────────────────────────────────────────────────────
-// RN1 강수량 파싱
-// 기상청 응답 형태: "강수없음" | "1mm 미만" | "1.0~29.0mm" | "30.0~50.0mm" | "50.0mm 이상" | "2.5"
+// RN1 강수량 파싱 (버그 수정: 정규식 이중 이스케이프 제거)
 // ─────────────────────────────────────────────────────────────
 function parseRainAmount(val: string): number {
     if (val === '강수없음' || val === '0') return 0;
-    if (val.includes('미만')) return 0.5;   // "1mm 미만" → 0~1 사이 근사값
+    if (val.includes('미만')) return 0.5;
 
+    // ✅ 정규식 리터럴 안에서 \d, \s, \. 사용 (\\d 아님)
     const rangeMatch = val.match(/(\d+(?:\.\d+)?)\s*~\s*(\d+(?:\.\d+)?)/);
     if (rangeMatch) {
         return (parseFloat(rangeMatch[1]) + parseFloat(rangeMatch[2])) / 2;
@@ -150,17 +134,14 @@ function parseKmaToWeather(items: any[]): WeatherResult {
     if (lgt > 0) {
         condition = 'THUNDERSTORM';
     } else if (pty === 1 || pty === 5) {
-        // 비 | 빗방울 — 1mm 기준으로 강한비/약한비 2단계 구분
         condition = rn1 >= 1.0 ? 'HEAVY_RAIN' : 'LIGHT_RAIN';
     } else if (pty === 2 || pty === 6) {
         condition = 'RAIN_SNOW';
     } else if (pty === 3 || pty === 7) {
         condition = 'SNOW';
     } else if (wsd >= STRONG_WIND_MS) {
-        // 강수 없을 때만 강풍 판정 (강수 중 강풍은 강수 조건 우선)
         condition = 'STRONG_WIND';
     } else {
-        // SKY=1 맑음 / SKY=3 구름많음 / SKY=4 흐림
         condition = sky === 1 ? 'CLEAR'
             : sky === 3 ? 'PARTLY_CLOUDY'
                 : 'CLOUDY';
@@ -194,9 +175,6 @@ async function batchedAll<T>(
 
 // ─────────────────────────────────────────────────────────────
 // 단일 격자 날씨 조회 (격자 단위 캐시 적용)
-//
-// 캐시 키: {CACHE_KEY_BASE}/{baseDate}/{baseTime}/{nx}/{ny}
-// baseDate·baseTime이 키에 포함 → 발표 회차 변경 시 자연 미스
 // ─────────────────────────────────────────────────────────────
 async function fetchGridWeather(
     nx: number,
@@ -245,8 +223,18 @@ async function fetchGridWeather(
             throw new Error('KMA 응답 데이터 없음');
         }
 
-        // numOfRows=10 으로 최근접 시각 1슬롯만 수신 → 별도 필터 불필요
-        const weather = parseKmaToWeather(items);
+        // ✅ 버그 수정: 60행 전부 수신 후 fcstDate+fcstTime이 가장 이른 슬롯만 필터링
+        // KMA는 카테고리 알파벳순으로 정렬하므로 numOfRows=10으로는 T1H·WSD 등이 잘림
+        const minKey = items.reduce((min, item) => {
+            const key = `${item.fcstDate}${item.fcstTime}`;
+            return key < min ? key : min;
+        }, `${items[0].fcstDate}${items[0].fcstTime}`);
+
+        const nearestItems = items.filter(
+            item => `${item.fcstDate}${item.fcstTime}` === minKey,
+        );
+
+        const weather = parseKmaToWeather(nearestItems);
 
         await cache.put(
             cacheKey,
@@ -272,7 +260,6 @@ async function fetchGridWeather(
 // ─────────────────────────────────────────────────────────────
 // 메인 핸들러
 // GET /api/stadium/weather?ids=1,2,5
-// ids 미지정 시 전체 경기장 반환
 // ─────────────────────────────────────────────────────────────
 export async function handleWeather(request: Request, env: Env): Promise<Response> {
     const logger = new Logger(env);
@@ -322,7 +309,6 @@ export async function handleWeather(request: Request, env: Env): Promise<Respons
         const { baseDate, baseTime } = getKmaBaseDateTime();
         const cache = caches.default;
 
-        // 요청된 경기장에서 고유 격자만 추출 → 동일 격자 중복 호출 방지
         const uniqueGrids = [...new Map(
             targetStadiums.map(s => [`${s.nx}:${s.ny}`, { nx: s.nx, ny: s.ny }]),
         ).values()];
