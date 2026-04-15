@@ -9,13 +9,13 @@ import { Logger } from '../utils/logger';
 // ─────────────────────────────────────────────────────────────
 const CACHE_TTL_SECONDS = 3600;
 const KMA_TIMEOUT_MS = 3500;
-// 카테고리 10개 × 6시간 = 60행 전부 수신 후 최근접 슬롯 필터링
-// (numOfRows=10으로 줄이면 카테고리 알파벳 순 정렬로 인해 T1H·WSD 등 누락됨)
-const KMA_NUM_OF_ROWS = 60;
+const KMA_NCST_NUM_OF_ROWS = 10;   // 실황: 카테고리 ~8개 × 1시점
+const KMA_FCST_NUM_OF_ROWS = 60;   // 예보: 카테고리 10개 × 6시간
 const CONCURRENT_LIMIT = 5;
 const STRONG_WIND_MS = 10;
 
-const CACHE_KEY_BASE = 'https://kma-grid-cache2.internal/ultra-srt-fcst';
+const CACHE_KEY_BASE = 'https://kma-grid-cache3.internal';
+const KMA_BASE_URL = 'https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0';
 
 // ─────────────────────────────────────────────────────────────
 // 경기장 목록
@@ -45,36 +45,60 @@ const ALL_STADIUMS = [
 type Stadium = typeof ALL_STADIUMS[number];
 const STADIUM_MAP = new Map<number, Stadium>(ALL_STADIUMS.map(s => [s.id, s]));
 
-
 // ─────────────────────────────────────────────────────────────
-// KST 기반 초단기예보 Base Date/Time 계산
-// 매시 :30 생성, :45 이후 API 제공
+// KST 파트 추출 공통 유틸
 // ─────────────────────────────────────────────────────────────
-function getKmaBaseDateTime(): { baseDate: string; baseTime: string } {
-    const now = new Date();
-    const formatter = new Intl.DateTimeFormat('ko-KR', {
+function getKstParts(date: Date) {
+    const fmt = new Intl.DateTimeFormat('ko-KR', {
         timeZone: 'Asia/Seoul',
         year: 'numeric', month: '2-digit', day: '2-digit',
-        hour: '2-digit', minute: '2-digit',
-        hour12: false,
+        hour: '2-digit', minute: '2-digit', hour12: false,
     });
+    const m = new Map(fmt.formatToParts(date).map(p => [p.type, p.value]));
+    return {
+        year: m.get('year')!,
+        month: m.get('month')!,
+        day: m.get('day')!,
+        hour: parseInt(m.get('hour') ?? '0', 10),
+        min: parseInt(m.get('minute') ?? '0', 10),
+    };
+}
 
-    const map = new Map(formatter.formatToParts(now).map(p => [p.type, p.value]));
-    let year = map.get('year')!;
-    let month = map.get('month')!;
-    let day = map.get('day')!;
-    let hour = parseInt(map.get('hour') ?? '0', 10);
-    const min = parseInt(map.get('minute') ?? '0', 10);
+// 초단기실황 base_time: HH00 (정각), 매시 :40 이후 제공
+function getNcstBaseDateTime(): { baseDate: string; baseTime: string } {
+    const now = new Date();
+    let { year, month, day, hour, min } = getKstParts(now);
+
+    if (min < 40) {
+        hour -= 1;
+        if (hour < 0) {
+            const prev = getKstParts(new Date(now.getTime() - 86_400_000));
+            return {
+                baseDate: `${prev.year}${prev.month}${prev.day}`,
+                baseTime: '2300',
+            };
+        }
+    }
+
+    return {
+        baseDate: `${year}${month}${day}`,
+        baseTime: `${String(hour).padStart(2, '0')}00`,
+    };
+}
+
+// 초단기예보 base_time: HH30, 매시 :45 이후 제공
+function getFcstBaseDateTime(): { baseDate: string; baseTime: string } {
+    const now = new Date();
+    let { year, month, day, hour, min } = getKstParts(now);
 
     if (min < 45) {
         hour -= 1;
         if (hour < 0) {
-            hour = 23;
-            const prevDay = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-            const prevMap = new Map(formatter.formatToParts(prevDay).map(p => [p.type, p.value]));
-            year = prevMap.get('year')!;
-            month = prevMap.get('month')!;
-            day = prevMap.get('day')!;
+            const prev = getKstParts(new Date(now.getTime() - 86_400_000));
+            return {
+                baseDate: `${prev.year}${prev.month}${prev.day}`,
+                baseTime: '2330',
+            };
         }
     }
 
@@ -84,65 +108,102 @@ function getKmaBaseDateTime(): { baseDate: string; baseTime: string } {
     };
 }
 
-
 // ─────────────────────────────────────────────────────────────
-// RN1 강수량 파싱 (버그 수정: 정규식 이중 이스케이프 제거)
+// RN1 강수량 파싱
 // ─────────────────────────────────────────────────────────────
 function parseRainAmount(val: string): number {
     if (val === '강수없음' || val === '0') return 0;
     if (val.includes('미만')) return 0.5;
-
-    // ✅ 정규식 리터럴 안에서 \d, \s, \. 사용 (\\d 아님)
     const rangeMatch = val.match(/(\d+(?:\.\d+)?)\s*~\s*(\d+(?:\.\d+)?)/);
-    if (rangeMatch) {
-        return (parseFloat(rangeMatch[1]) + parseFloat(rangeMatch[2])) / 2;
-    }
-
+    if (rangeMatch) return (parseFloat(rangeMatch[1]) + parseFloat(rangeMatch[2])) / 2;
     const numMatch = val.match(/\d+(?:\.\d+)?/);
     return numMatch ? parseFloat(numMatch[0]) : 0;
 }
 
-
 // ─────────────────────────────────────────────────────────────
-// KMA items → 날씨 결과 변환
+// 중간 데이터 타입
 // ─────────────────────────────────────────────────────────────
+interface NcstData { t1h: number; pty: number; rn1: number; wsd: number; }
+interface FcstData { sky: number; lgt: number; }
 interface WeatherResult {
-    condition: string;
-    sky: string;
-    temperature: string;
-    precipitation: string;
-    windSpeed: string;
+    condition: string; sky: string;
+    temperature: string; precipitation: string; windSpeed: string;
 }
 
-function parseKmaToWeather(items: any[]): WeatherResult {
-    let pty = 0, t1h = 0, lgt = 0, rn1 = 0, wsd = 0, sky = 1;
-
+// ─────────────────────────────────────────────────────────────
+// 실황 items 파싱 (obsrValue 사용)
+// ─────────────────────────────────────────────────────────────
+function parseNcst(items: any[]): NcstData {
+    let t1h = 0, pty = 0, rn1 = 0, wsd = 0;
     for (const item of items) {
-        const val: string = item.fcstValue;
+        const val: string = item.obsrValue;   // 실황은 obsrValue
         switch (item.category) {
-            case 'PTY': pty = parseInt(val, 10); break;
             case 'T1H': t1h = parseFloat(val); break;
-            case 'LGT': lgt = parseFloat(val); break;
+            case 'PTY': pty = parseInt(val, 10); break;
             case 'RN1': rn1 = parseRainAmount(val); break;
             case 'WSD': wsd = parseFloat(val); break;
-            case 'SKY': sky = parseInt(val, 10); break;
         }
     }
+    return { t1h, pty, rn1, wsd };
+}
+
+// ─────────────────────────────────────────────────────────────
+// 예보 items → 현재와 가장 가까운 슬롯의 SKY·LGT 추출
+// ─────────────────────────────────────────────────────────────
+function parseFcst(items: any[]): FcstData {
+    const nowMs = Date.now();
+
+    const toUtcMs = (fcstDate: string, fcstTime: string): number => {
+        const Y = +fcstDate.slice(0, 4);
+        const M = +fcstDate.slice(4, 6) - 1;
+        const D = +fcstDate.slice(6, 8);
+        const H = +fcstTime.slice(0, 2);
+        const m = +fcstTime.slice(2, 4);
+        return Date.UTC(Y, M, D, H - 9, m);   // KST → UTC
+    };
+
+    const uniqueKeys = [...new Set(items.map(i => `${i.fcstDate}|${i.fcstTime}`))];
+    const nearestKey = uniqueKeys.reduce((best, key) => {
+        const [d, t] = key.split('|');
+        const [bd, bt] = best.split('|');
+        return Math.abs(toUtcMs(d, t) - nowMs) < Math.abs(toUtcMs(bd, bt) - nowMs)
+            ? key : best;
+    }, uniqueKeys[0]);
+
+    const [nearestDate, nearestTime] = nearestKey.split('|');
+    const slot = items.filter(i => i.fcstDate === nearestDate && i.fcstTime === nearestTime);
+
+    let sky = 1, lgt = 0;
+    for (const item of slot) {
+        switch (item.category) {
+            case 'SKY': sky = parseInt(item.fcstValue, 10); break;
+            case 'LGT': lgt = parseFloat(item.fcstValue); break;
+        }
+    }
+    return { sky, lgt };
+}
+
+// ─────────────────────────────────────────────────────────────
+// 실황(실측) + 예보(SKY·LGT) 병합 → WeatherResult
+// ─────────────────────────────────────────────────────────────
+function mergeToWeather(ncst: NcstData, fcst: FcstData): WeatherResult {
+    const { t1h, pty, rn1, wsd } = ncst;
+    const { sky, lgt } = fcst;
 
     let condition: string;
 
     if (lgt > 0) {
-        condition = 'THUNDERSTORM';
+        condition = 'THUNDERSTORM';                               // 낙뢰 최우선
     } else if (pty === 1 || pty === 5) {
-        condition = rn1 >= 1.0 ? 'HEAVY_RAIN' : 'LIGHT_RAIN';
+        condition = rn1 >= 1.0 ? 'HEAVY_RAIN' : 'LIGHT_RAIN';   // 비·빗방울
     } else if (pty === 2 || pty === 6) {
-        condition = 'RAIN_SNOW';
+        condition = 'RAIN_SNOW';                                  // 비/눈
     } else if (pty === 3 || pty === 7) {
-        condition = 'SNOW';
+        condition = 'SNOW';                                       // 눈
     } else if (wsd >= STRONG_WIND_MS) {
-        condition = 'STRONG_WIND';
+        condition = 'STRONG_WIND';                                // 강풍 (강수 없을 때)
     } else {
-        condition = sky === 1 ? 'CLEAR'
+        condition = sky === 1 ? 'CLEAR'                           // 하늘 상태
             : sky === 3 ? 'PARTLY_CLOUDY'
                 : 'CLOUDY';
     }
@@ -156,6 +217,88 @@ function parseKmaToWeather(items: any[]): WeatherResult {
     };
 }
 
+// ─────────────────────────────────────────────────────────────
+// KMA API 공통 호출 유틸 (타임아웃 + 에러 처리 포함)
+// ─────────────────────────────────────────────────────────────
+async function fetchKmaItems(url: string): Promise<any[]> {
+    const controller = new AbortController();
+    const tid = setTimeout(() => controller.abort(), KMA_TIMEOUT_MS);
+    try {
+        const res = await fetch(url, { signal: controller.signal });
+        clearTimeout(tid);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const json: any = await res.json();
+        const header = json?.response?.header;
+        if (header?.resultCode !== '00') {
+            throw new Error(`KMA: ${header?.resultMsg} (${header?.resultCode})`);
+        }
+        const items = json?.response?.body?.items?.item;
+        if (!Array.isArray(items) || items.length === 0) throw new Error('KMA 응답 데이터 없음');
+        return items;
+    } catch (err) {
+        clearTimeout(tid);
+        throw err;
+    }
+}
+
+// ─────────────────────────────────────────────────────────────
+// 단일 격자 날씨 조회 (실황 + 예보 병렬 호출 후 병합, 격자 단위 캐시)
+// 캐시 키: ncstBaseTime + fcstBaseTime 둘 다 포함 → 한쪽만 갱신돼도 캐시 미스
+// ─────────────────────────────────────────────────────────────
+async function fetchGridWeather(
+    nx: number,
+    ny: number,
+    serviceKey: string,
+    ncstBase: { baseDate: string; baseTime: string },
+    fcstBase: { baseDate: string; baseTime: string },
+    cache: Cache,
+    logger: Logger,
+): Promise<WeatherResult> {
+    const cacheKey = new Request(
+        `${CACHE_KEY_BASE}/ncst-${ncstBase.baseDate}-${ncstBase.baseTime}/fcst-${fcstBase.baseTime}/${nx}/${ny}`,
+        { method: 'GET' },
+    );
+
+    const cached = await cache.match(cacheKey);
+    if (cached) {
+        logger.log(`🚀 [Cache Hit] nx=${nx} ny=${ny}`);
+        return cached.json<WeatherResult>();
+    }
+
+    const ncstUrl =
+        `${KMA_BASE_URL}/getUltraSrtNcst` +
+        `?serviceKey=${serviceKey}&pageNo=1&numOfRows=${KMA_NCST_NUM_OF_ROWS}&dataType=JSON` +
+        `&base_date=${ncstBase.baseDate}&base_time=${ncstBase.baseTime}&nx=${nx}&ny=${ny}`;
+
+    const fcstUrl =
+        `${KMA_BASE_URL}/getUltraSrtFcst` +
+        `?serviceKey=${serviceKey}&pageNo=1&numOfRows=${KMA_FCST_NUM_OF_ROWS}&dataType=JSON` +
+        `&base_date=${fcstBase.baseDate}&base_time=${fcstBase.baseTime}&nx=${nx}&ny=${ny}`;
+
+    try {
+        // 실황·예보 병렬 호출
+        const [ncstItems, fcstItems] = await Promise.all([
+            fetchKmaItems(ncstUrl),
+            fetchKmaItems(fcstUrl),
+        ]);
+
+        const weather = mergeToWeather(parseNcst(ncstItems), parseFcst(fcstItems));
+
+        await cache.put(cacheKey, new Response(JSON.stringify(weather), {
+            headers: {
+                'Content-Type': 'application/json',
+                'Cache-Control': `s-maxage=${CACHE_TTL_SECONDS}`,
+            },
+        }));
+        logger.log(`📡 [Cache Miss] nx=${nx} ny=${ny} → 실황+예보 병합 완료`);
+
+        return weather;
+
+    } catch (err: any) {
+        logger.warn(`⚠️ 격자(${nx},${ny}) 조회 실패: ${err.message}`);
+        return { condition: 'UNKNOWN', sky: 'N/A', temperature: 'N/A', precipitation: 'N/A', windSpeed: 'N/A' };
+    }
+}
 
 // ─────────────────────────────────────────────────────────────
 // 동시 요청 수 제한 유틸
@@ -171,108 +314,6 @@ async function batchedAll<T>(
     }
     return results;
 }
-
-
-// ─────────────────────────────────────────────────────────────
-// 단일 격자 날씨 조회 (격자 단위 캐시 적용)
-// ─────────────────────────────────────────────────────────────
-async function fetchGridWeather(
-    nx: number,
-    ny: number,
-    serviceKey: string,
-    baseDate: string,
-    baseTime: string,
-    cache: Cache,
-    logger: Logger,
-): Promise<WeatherResult> {
-    const cacheKey = new Request(
-        `${CACHE_KEY_BASE}/${baseDate}/${baseTime}/${nx}/${ny}`,
-        { method: 'GET' },
-    );
-
-    const cached = await cache.match(cacheKey);
-    if (cached) {
-        logger.log(`🚀 [Grid Cache Hit] nx=${nx} ny=${ny}`);
-        return cached.json<WeatherResult>();
-    }
-
-    const apiUrl =
-        `https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtFcst` +
-        `?serviceKey=${serviceKey}` +
-        `&pageNo=1&numOfRows=${KMA_NUM_OF_ROWS}&dataType=JSON` +
-        `&base_date=${baseDate}&base_time=${baseTime}` +
-        `&nx=${nx}&ny=${ny}`;
-
-    const controller = new AbortController();
-    const tid = setTimeout(() => controller.abort(), KMA_TIMEOUT_MS);
-
-    try {
-        const res = await fetch(apiUrl, { signal: controller.signal });
-        clearTimeout(tid);
-
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-        const json: any = await res.json();
-        const header = json?.response?.header;
-        if (header?.resultCode !== '00') {
-            throw new Error(`KMA Error: ${header?.resultMsg} (${header?.resultCode})`);
-        }
-
-        const items: any[] = json?.response?.body?.items?.item;
-        if (!Array.isArray(items) || items.length === 0) {
-            throw new Error('KMA 응답 데이터 없음');
-        }
-
-        // 현재 KST 시각과 가장 가까운 예보 슬롯 선택
-        const nowMs = Date.now();
-
-        // "YYYYMMDD" + "HHMM" 조합 키를 UTC milliseconds로 변환 (KST = UTC+9)
-        const toUtcMs = (fcstDate: string, fcstTime: string): number => {
-            const Y = +fcstDate.slice(0, 4);
-            const M = +fcstDate.slice(4, 6) - 1;   // Date.UTC는 0-indexed month
-            const D = +fcstDate.slice(6, 8);
-            const H = +fcstTime.slice(0, 2);
-            const m = +fcstTime.slice(2, 4);
-            return Date.UTC(Y, M, D, H - 9, m);    // KST → UTC
-        };
-
-        const uniqueKeys = [...new Set(
-            items.map(item => `${item.fcstDate}|${item.fcstTime}`)
-        )];
-
-        const nearestKey = uniqueKeys.reduce((best, key) => {
-            const [d, t] = key.split('|');
-            const [bd, bt] = best.split('|');
-            return Math.abs(toUtcMs(d, t) - nowMs) < Math.abs(toUtcMs(bd, bt) - nowMs)
-                ? key : best;
-        }, uniqueKeys[0]);
-
-        const [nearestDate, nearestTime] = nearestKey.split('|');
-        const nearestItems = items.filter(
-            item => item.fcstDate === nearestDate && item.fcstTime === nearestTime,
-        );
-        const weather = parseKmaToWeather(nearestItems);
-
-        await cache.put(
-            cacheKey,
-            new Response(JSON.stringify(weather), {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Cache-Control': `s-maxage=${CACHE_TTL_SECONDS}`,
-                },
-            }),
-        );
-        logger.log(`📡 [Grid Cache Miss] nx=${nx} ny=${ny} → KMA 호출 완료`);
-
-        return weather;
-
-    } catch (err: any) {
-        clearTimeout(tid);
-        logger.warn(`⚠️ 격자(${nx},${ny}) 조회 실패: ${err.message}`);
-        return { condition: 'UNKNOWN', sky: 'N/A', temperature: 'N/A', precipitation: 'N/A', windSpeed: 'N/A' };
-    }
-}
-
 
 // ─────────────────────────────────────────────────────────────
 // 메인 핸들러
@@ -293,7 +334,6 @@ export async function handleWeather(request: Request, env: Env): Promise<Respons
 
     const url = new URL(request.url);
     const idsParam = url.searchParams.get('ids');
-
     let targetStadiums: Stadium[];
 
     if (idsParam) {
@@ -323,7 +363,8 @@ export async function handleWeather(request: Request, env: Env): Promise<Respons
         if (!env.KMA_API_KEY) throw new Error('KMA_API_KEY missing');
 
         const serviceKey = encodeURIComponent(env.KMA_API_KEY);
-        const { baseDate, baseTime } = getKmaBaseDateTime();
+        const ncstBase = getNcstBaseDateTime();   // 실황 base time
+        const fcstBase = getFcstBaseDateTime();   // 예보 base time
         const cache = caches.default;
 
         const uniqueGrids = [...new Map(
@@ -332,7 +373,7 @@ export async function handleWeather(request: Request, env: Env): Promise<Respons
 
         const gridTasks = uniqueGrids.map(
             ({ nx, ny }) => () =>
-                fetchGridWeather(nx, ny, serviceKey, baseDate, baseTime, cache, logger)
+                fetchGridWeather(nx, ny, serviceKey, ncstBase, fcstBase, cache, logger)
                     .then(weather => ({ key: `${nx}:${ny}`, weather })),
         );
         const gridResults = await batchedAll(gridTasks, CONCURRENT_LIMIT);
@@ -351,7 +392,15 @@ export async function handleWeather(request: Request, env: Env): Promise<Respons
         }));
 
         return jsonResponse(
-            { success: true, count: data.length, baseDate, baseTime, data },
+            {
+                success: true,
+                count: data.length,
+                ncstBaseDate: ncstBase.baseDate,
+                ncstBaseTime: ncstBase.baseTime,
+                fcstBaseDate: fcstBase.baseDate,
+                fcstBaseTime: fcstBase.baseTime,
+                data,
+            },
             200,
             corsHeaders,
         );
