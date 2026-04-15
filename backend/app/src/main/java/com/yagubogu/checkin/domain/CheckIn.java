@@ -43,15 +43,15 @@ public class CheckIn extends BaseEntity {
     @Column(name = "memo", columnDefinition = "TEXT")
     private String memo;
 
-    @Column(name = "image_url", length = 500)
-    private String imageUrl;
-
     public CheckIn(final Game game, final Member member, final Team team, final CheckInType checkInType, final String memo, final String imageUrl) {
         this.game = game;
         this.member = member;
         this.team = team;
         this.checkInType = checkInType;
         this.memo = memo;
-        this.imageUrl = imageUrl;
+    }
+
+    public void updateMemo(final String memo) {
+        this.memo = memo;
     }
 }

@@ -4,13 +4,21 @@ import com.yagubogu.auth.annotation.RequireRole;
 import com.yagubogu.auth.dto.MemberClaims;
 import com.yagubogu.checkin.domain.CheckInOrderFilter;
 import com.yagubogu.checkin.domain.CheckInResultFilter;
+import com.yagubogu.checkin.dto.v1.AddCheckInImageRequest;
 import com.yagubogu.checkin.dto.v1.CheckInCountsResponse;
 import com.yagubogu.checkin.dto.v1.CheckInHistoryResponse;
+import com.yagubogu.checkin.dto.v1.CheckInImageParam;
+import com.yagubogu.checkin.dto.v1.CheckInImagesResponse;
+import com.yagubogu.checkin.dto.v1.CheckInMemoResponse;
 import com.yagubogu.checkin.dto.v1.CheckInStatusResponse;
 import com.yagubogu.checkin.dto.v1.CreateCheckInRequest;
 import com.yagubogu.checkin.dto.v1.FanRateResponse;
 import com.yagubogu.checkin.dto.v1.StadiumCheckInCountsResponse;
+import com.yagubogu.checkin.dto.v1.UpdateCheckInMemoRequest;
+import com.yagubogu.checkin.service.CheckInImageService;
 import com.yagubogu.checkin.service.CheckInService;
+import com.yagubogu.member.dto.v1.PreSignedUrlStartRequest;
+import com.yagubogu.member.dto.v1.PresignedUrlStartResponse;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,6 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CheckInController implements CheckInControllerInterface {
 
     private final CheckInService checkInService;
+    private final CheckInImageService checkInImageService;
 
     public ResponseEntity<Void> createCheckIn(
             final MemberClaims memberClaims,
@@ -64,11 +73,7 @@ public class CheckInController implements CheckInControllerInterface {
             @RequestParam(name = "order", defaultValue = "LATEST") final CheckInOrderFilter orderFilter
     ) {
         CheckInHistoryResponse response = checkInService.findCheckInHistory(
-                memberClaims.id(),
-                year,
-                month,
-                resultFilter,
-                orderFilter
+                memberClaims.id(), year, month, resultFilter, orderFilter
         );
 
         return ResponseEntity.ok(response);
@@ -99,5 +104,75 @@ public class CheckInController implements CheckInControllerInterface {
         StadiumCheckInCountsResponse response = checkInService.findStadiumCheckInCounts(memberClaims.id(), year);
 
         return ResponseEntity.ok(response);
+    }
+
+    // ── 메모 CRUD ──────────────────────────────────────────────────────────────
+
+    public ResponseEntity<CheckInMemoResponse> getMemo(
+            final MemberClaims memberClaims,
+            @PathVariable final Long checkInId
+    ) {
+        CheckInMemoResponse response = checkInService.getMemo(memberClaims.id(), checkInId);
+
+        return ResponseEntity.ok(response);
+    }
+
+    public ResponseEntity<Void> updateMemo(
+            final MemberClaims memberClaims,
+            @PathVariable final Long checkInId,
+            @RequestBody final UpdateCheckInMemoRequest request
+    ) {
+        checkInService.updateMemo(memberClaims.id(), checkInId, request.memo());
+
+        return ResponseEntity.ok().build();
+    }
+
+    public ResponseEntity<Void> deleteMemo(
+            final MemberClaims memberClaims,
+            @PathVariable final Long checkInId
+    ) {
+        checkInService.deleteMemo(memberClaims.id(), checkInId);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    // ── 이미지 CRUD ────────────────────────────────────────────────────────────
+
+    public ResponseEntity<PresignedUrlStartResponse> issueImagePresignedUrl(
+            final MemberClaims memberClaims,
+            @RequestBody final PreSignedUrlStartRequest request
+    ) {
+        PresignedUrlStartResponse response = checkInImageService.issuePresignedUrl(request);
+
+        return ResponseEntity.ok(response);
+    }
+
+    public ResponseEntity<CheckInImagesResponse> getImages(
+            final MemberClaims memberClaims,
+            @PathVariable final Long checkInId
+    ) {
+        CheckInImagesResponse response = checkInService.getImages(memberClaims.id(), checkInId);
+
+        return ResponseEntity.ok(response);
+    }
+
+    public ResponseEntity<CheckInImageParam> addImage(
+            final MemberClaims memberClaims,
+            @PathVariable final Long checkInId,
+            @RequestBody final AddCheckInImageRequest request
+    ) {
+        CheckInImageParam response = checkInService.addImage(memberClaims.id(), checkInId, request.imageKey());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    public ResponseEntity<Void> deleteImage(
+            final MemberClaims memberClaims,
+            @PathVariable final Long checkInId,
+            @PathVariable final Long imageId
+    ) {
+        checkInService.deleteImage(memberClaims.id(), checkInId, imageId);
+
+        return ResponseEntity.noContent().build();
     }
 }

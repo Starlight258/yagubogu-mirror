@@ -1,6 +1,7 @@
 package com.yagubogu.checkin.service;
 
 import com.yagubogu.checkin.domain.CheckIn;
+import com.yagubogu.checkin.domain.CheckInImage;
 import com.yagubogu.checkin.domain.CheckInOrderFilter;
 import com.yagubogu.checkin.domain.CheckInResultFilter;
 import com.yagubogu.checkin.domain.CheckInType;
@@ -8,6 +9,7 @@ import com.yagubogu.checkin.dto.*;
 import com.yagubogu.checkin.dto.event.CheckInEvent;
 import com.yagubogu.checkin.dto.event.StadiumVisitEvent;
 import com.yagubogu.checkin.dto.v1.*;
+import com.yagubogu.checkin.repository.CheckInImageRepository;
 import com.yagubogu.checkin.repository.CheckInRepository;
 import com.yagubogu.game.domain.Game;
 import com.yagubogu.game.repository.GameRepository;
@@ -31,6 +33,8 @@ import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -40,6 +44,7 @@ public class CheckInService {
     private static final double ROUND_FACTOR = 10.0;
 
     private final CheckInRepository checkInRepository;
+    private final CheckInImageRepository checkInImageRepository;
     private final MemberRepository memberRepository;
     private final GameRepository gameRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
@@ -53,8 +58,7 @@ public class CheckInService {
         Team team = member.getTeam();
 
         validateNotExistGameAndMember(game, member);
-        String imageUrl = resolveImageUrl(request.imageKey());
-        saveCheckInSafely(game, member, team, request.memo(), imageUrl);
+        saveCheckInSafely(game, member, team);
 
         applicationEventPublisher.publishEvent(new CheckInEvent(member));
         applicationEventPublisher.publishEvent(new StadiumVisitEvent(member, game.getStadium().getId()));
@@ -75,6 +79,54 @@ public class CheckInService {
         if (!checkIn.getMember().getId().equals(memberId)) {
             throw new ForbiddenException("Only your own check-in can be deleted");
         }
+    }
+
+    @Transactional
+    public void updateMemo(final Long memberId, final Long checkInId, final String memo) {
+        Member member = getMember(memberId);
+        CheckIn checkIn = getCheckInByIdAndMember(checkInId, member);
+        checkIn.updateMemo(memo);
+    }
+
+    @Transactional
+    public void deleteMemo(final Long memberId, final Long checkInId) {
+        Member member = getMember(memberId);
+        CheckIn checkIn = getCheckInByIdAndMember(checkInId, member);
+        checkIn.updateMemo(null);
+    }
+
+    public CheckInMemoResponse getMemo(final Long memberId, final Long checkInId) {
+        Member member = getMember(memberId);
+        CheckIn checkIn = getCheckInByIdAndMember(checkInId, member);
+        return new CheckInMemoResponse(checkIn.getMemo());
+    }
+
+    @Transactional
+    public CheckInImageParam addImage(final Long memberId, final Long checkInId, final String imageKey) {
+        Member member = getMember(memberId);
+        CheckIn checkIn = getCheckInByIdAndMember(checkInId, member);
+        String imageUrl = resolveImageUrl(imageKey);
+        CheckInImage image = checkInImageRepository.save(new CheckInImage(checkIn, imageUrl));
+        return new CheckInImageParam(image.getId(), image.getImageUrl());
+    }
+
+    @Transactional
+    public void deleteImage(final Long memberId, final Long checkInId, final Long imageId) {
+        Member member = getMember(memberId);
+        getCheckInByIdAndMember(checkInId, member);
+        CheckInImage image = checkInImageRepository.findById(imageId)
+                .filter(img -> img.getCheckIn().getId().equals(checkInId))
+                .orElseThrow(() -> new NotFoundException("CheckInImage is not found"));
+        checkInImageRepository.delete(image);
+    }
+
+    public CheckInImagesResponse getImages(final Long memberId, final Long checkInId) {
+        Member member = getMember(memberId);
+        getCheckInByIdAndMember(checkInId, member);
+        List<CheckInImageParam> images = checkInImageRepository.findByCheckInId(checkInId).stream()
+                .map(img -> new CheckInImageParam(img.getId(), img.getImageUrl()))
+                .toList();
+        return new CheckInImagesResponse(images);
     }
 
     public FanRateResponse findFanRatesByGames(final long memberId, final LocalDate date) {
@@ -116,22 +168,31 @@ public class CheckInService {
         Member member = getMember(memberId);
         Team team = member.getTeam();
         List<CheckInGameParam> checkIns = checkInRepository.findCheckInHistory(
-                member,
-                team,
-                year,
-                month,
-                resultFilter,
-                orderFilter
+                member, team, year, month, resultFilter, orderFilter
         );
 
-        return new CheckInHistoryResponse(checkIns);
-    }
+        List<Long> checkInIds = checkIns.stream().map(CheckInGameParam::checkInId).toList();
+        Map<Long, List<String>> imageUrlsByCheckInId = checkInImageRepository.findByCheckInIdIn(checkInIds)
+                .stream()
+                .collect(Collectors.groupingBy(
+                        img -> img.getCheckIn().getId(),
+                        Collectors.mapping(CheckInImage::getImageUrl, Collectors.toList())
+                ));
 
+        List<CheckInGameParam> enriched = checkIns.stream()
+                .map(p -> new CheckInGameParam(
+                        p.checkInId(), p.stadiumFullName(), p.homeTeam(), p.awayTeam(),
+                        p.attendanceDate(), p.homeScoreBoard(), p.awayScoreBoard(),
+                        p.memo(), imageUrlsByCheckInId.getOrDefault(p.checkInId(), List.of())
+                ))
+                .toList();
+
+        return new CheckInHistoryResponse(enriched);
+    }
 
     public StadiumCheckInCountsResponse findStadiumCheckInCounts(final long memberId, final Integer year) {
         Member member = getMember(memberId);
-        List<StadiumCheckInCountParam> stadiumCheckInCounts = checkInRepository.findStadiumCheckInCounts(member,
-                year);
+        List<StadiumCheckInCountParam> stadiumCheckInCounts = checkInRepository.findStadiumCheckInCounts(member, year);
 
         return new StadiumCheckInCountsResponse(stadiumCheckInCounts);
     }
@@ -139,9 +200,7 @@ public class CheckInService {
     public CheckInStatusResponse findLocationCheckInStatus(final long memberId, final LocalDate date) {
         Member member = getMember(memberId);
         boolean isCheckIn = checkInRepository.existsByMemberAndGameDateAndCheckInType(
-                member,
-                date,
-                CheckInType.LOCATION_CHECK_IN
+                member, date, CheckInType.LOCATION_CHECK_IN
         );
 
         return new CheckInStatusResponse(isCheckIn);
@@ -165,8 +224,8 @@ public class CheckInService {
         return result;
     }
 
-    private void saveCheckInSafely(final Game game, final Member member, final Team team, final String memo, final String imageUrl) {
-        CheckIn checkIn = new CheckIn(game, member, team, CheckInType.LOCATION_CHECK_IN, memo, imageUrl);
+    private void saveCheckInSafely(final Game game, final Member member, final Team team) {
+        CheckIn checkIn = new CheckIn(game, member, team, CheckInType.LOCATION_CHECK_IN, null, null);
         try {
             checkInRepository.save(checkIn);
         } catch (DataIntegrityViolationException e) {
@@ -178,6 +237,15 @@ public class CheckInService {
         if (checkInRepository.existsByGameAndMember(game, member)) {
             throw new ConflictException("CheckIn is already exists");
         }
+    }
+
+    private CheckIn getCheckInByIdAndMember(final Long checkInId, final Member member) {
+        CheckIn checkIn = checkInRepository.findById(checkInId)
+                .orElseThrow(() -> new NotFoundException("CheckIn is not found"));
+        if (!checkIn.getMember().equals(member)) {
+            throw new NotFoundException("CheckIn is not found");
+        }
+        return checkIn;
     }
 
     private Game getGameById(final long gameId) {
@@ -207,9 +275,6 @@ public class CheckInService {
     }
 
     private String resolveImageUrl(final String imageKey) {
-        if (imageKey == null) {
-            return null;
-        }
         assertObjectExists(imageKey);
         return s3Properties.endpoint() + "/" + s3Properties.bucket() + "/" + imageKey;
     }
