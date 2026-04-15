@@ -5,20 +5,20 @@ import { getCorsHeaders } from '../middleware/cors';
 import { Logger } from '../utils/logger';
 
 // ─────────────────────────────────────────────────────────────
-// 전역 상수
+// 전역 상수 (변경 없음)
 // ─────────────────────────────────────────────────────────────
 const CACHE_TTL_SECONDS = 3600;
 const KMA_TIMEOUT_MS = 3500;
-const KMA_NCST_NUM_OF_ROWS = 10;   // 실황: 카테고리 ~8개 × 1시점
-const KMA_FCST_NUM_OF_ROWS = 60;   // 예보: 카테고리 10개 × 6시간
+const KMA_NCST_NUM_OF_ROWS = 10;
+const KMA_FCST_NUM_OF_ROWS = 60;
 const CONCURRENT_LIMIT = 5;
 const STRONG_WIND_MS = 10;
 
-const CACHE_KEY_BASE = 'https://kma-grid-cache3.internal';
+const CACHE_KEY_BASE = 'https://kma-grid-cache4.internal';
 const KMA_BASE_URL = 'https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0';
 
 // ─────────────────────────────────────────────────────────────
-// 경기장 목록
+// 경기장 목록 (변경 없음)
 // ─────────────────────────────────────────────────────────────
 const ALL_STADIUMS = [
     { id: 1, name: '광주 기아 챔피언스필드', lat: 35.168139, lng: 126.889111, nx: 59, ny: 75 },
@@ -46,7 +46,7 @@ type Stadium = typeof ALL_STADIUMS[number];
 const STADIUM_MAP = new Map<number, Stadium>(ALL_STADIUMS.map(s => [s.id, s]));
 
 // ─────────────────────────────────────────────────────────────
-// KST 파트 추출 공통 유틸
+// KST 파트 추출 공통 유틸 (변경 없음)
 // ─────────────────────────────────────────────────────────────
 function getKstParts(date: Date) {
     const fmt = new Intl.DateTimeFormat('ko-KR', {
@@ -64,60 +64,57 @@ function getKstParts(date: Date) {
     };
 }
 
-// 초단기실황 base_time: HH00 (정각), 매시 :40 이후 제공
 function getNcstBaseDateTime(): { baseDate: string; baseTime: string } {
     const now = new Date();
     let { year, month, day, hour, min } = getKstParts(now);
-
     if (min < 40) {
         hour -= 1;
         if (hour < 0) {
             const prev = getKstParts(new Date(now.getTime() - 86_400_000));
-            return {
-                baseDate: `${prev.year}${prev.month}${prev.day}`,
-                baseTime: '2300',
-            };
+            return { baseDate: `${prev.year}${prev.month}${prev.day}`, baseTime: '2300' };
         }
     }
-
-    return {
-        baseDate: `${year}${month}${day}`,
-        baseTime: `${String(hour).padStart(2, '0')}00`,
-    };
+    return { baseDate: `${year}${month}${day}`, baseTime: `${String(hour).padStart(2, '0')}00` };
 }
 
-// 초단기예보 base_time: HH30, 매시 :45 이후 제공
 function getFcstBaseDateTime(): { baseDate: string; baseTime: string } {
     const now = new Date();
     let { year, month, day, hour, min } = getKstParts(now);
-
     if (min < 45) {
         hour -= 1;
         if (hour < 0) {
             const prev = getKstParts(new Date(now.getTime() - 86_400_000));
-            return {
-                baseDate: `${prev.year}${prev.month}${prev.day}`,
-                baseTime: '2330',
-            };
+            return { baseDate: `${prev.year}${prev.month}${prev.day}`, baseTime: '2330' };
         }
     }
-
-    return {
-        baseDate: `${year}${month}${day}`,
-        baseTime: `${String(hour).padStart(2, '0')}30`,
-    };
+    return { baseDate: `${year}${month}${day}`, baseTime: `${String(hour).padStart(2, '0')}30` };
 }
 
 // ─────────────────────────────────────────────────────────────
-// RN1 강수량 파싱
+// RN1 강수량 파싱 — ✅ 로그 추가
 // ─────────────────────────────────────────────────────────────
-function parseRainAmount(val: string): number {
-    if (val === '강수없음' || val === '0') return 0;
-    if (val.includes('미만')) return 0.5;
-    const rangeMatch = val.match(/(\d+(?:\.\d+)?)\s*~\s*(\d+(?:\.\d+)?)/);
-    if (rangeMatch) return (parseFloat(rangeMatch[1]) + parseFloat(rangeMatch[2])) / 2;
-    const numMatch = val.match(/\d+(?:\.\d+)?/);
-    return numMatch ? parseFloat(numMatch[0]) : 0;
+function parseRainAmount(val: string, logger?: Logger): number {
+    let result: number;
+    let matchType: string;
+
+    if (val === '강수없음' || val === '0') {
+        result = 0; matchType = 'exact-zero';
+    } else if (val.includes('미만')) {
+        result = 0.5; matchType = 'less-than-1mm';
+    } else {
+        const rangeMatch = val.match(/(\d+(?:\.\d+)?)\s*~\s*(\d+(?:\.\d+)?)/);
+        if (rangeMatch) {
+            result = (parseFloat(rangeMatch[1]) + parseFloat(rangeMatch[2])) / 2;
+            matchType = `range(${rangeMatch[1]}~${rangeMatch[2]})`;
+        } else {
+            const numMatch = val.match(/\d+(?:\.\d+)?/);
+            result = numMatch ? parseFloat(numMatch[0]) : 0;
+            matchType = numMatch ? `numeric(${numMatch[0]})` : 'fallback-zero';
+        }
+    }
+
+    logger?.log(`🌧 [RN1 Parse] raw="${val}" → type=${matchType} → ${result}mm`);
+    return result;
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -131,26 +128,30 @@ interface WeatherResult {
 }
 
 // ─────────────────────────────────────────────────────────────
-// 실황 items 파싱 (obsrValue 사용)
+// 실황 items 파싱 — ✅ 로그 추가
 // ─────────────────────────────────────────────────────────────
-function parseNcst(items: any[]): NcstData {
+function parseNcst(items: any[], nx: number, ny: number, logger: Logger): NcstData {
     let t1h = 0, pty = 0, rn1 = 0, wsd = 0;
     for (const item of items) {
-        const val: string = item.obsrValue;   // 실황은 obsrValue
+        const val: string = item.obsrValue;
         switch (item.category) {
             case 'T1H': t1h = parseFloat(val); break;
             case 'PTY': pty = parseInt(val, 10); break;
-            case 'RN1': rn1 = parseRainAmount(val); break;
+            case 'RN1': rn1 = parseRainAmount(val, logger); break;
             case 'WSD': wsd = parseFloat(val); break;
         }
     }
+    logger.log(
+        `🌡 [NCST Parsed] (${nx},${ny}) ` +
+        `T1H=${t1h}°C PTY=${pty} RN1=${rn1}mm WSD=${wsd}m/s`
+    );
     return { t1h, pty, rn1, wsd };
 }
 
 // ─────────────────────────────────────────────────────────────
-// 예보 items → 현재와 가장 가까운 슬롯의 SKY·LGT 추출
+// 예보 items → 최근접 슬롯 SKY·LGT 추출 — ✅ 로그 대폭 추가
 // ─────────────────────────────────────────────────────────────
-function parseFcst(items: any[]): FcstData {
+function parseFcst(items: any[], nx: number, ny: number, logger: Logger): FcstData {
     const nowMs = Date.now();
 
     const toUtcMs = (fcstDate: string, fcstTime: string): number => {
@@ -162,7 +163,29 @@ function parseFcst(items: any[]): FcstData {
         return Date.UTC(Y, M, D, H - 9, m);   // KST → UTC
     };
 
+    // ── ① 전체 수신된 예보 슬롯 목록 로그 ──────────────────────
     const uniqueKeys = [...new Set(items.map(i => `${i.fcstDate}|${i.fcstTime}`))];
+    const nowKstStr = new Date(nowMs + 9 * 3600_000).toISOString().replace('T', ' ').slice(0, 16);
+
+    logger.log(
+        `📋 [FCST Slots] (${nx},${ny}) ` +
+        `nowKST=${nowKstStr} | ` +
+        `slots=[${uniqueKeys.map(k => k.replace('|', ' ')).join(', ')}]`
+    );
+
+    // ── ② 각 슬롯별 시간 거리(분) 계산 후 선택 로그 ─────────────
+    const slotWithDiff = uniqueKeys.map(key => {
+        const [d, t] = key.split('|');
+        const diffMin = Math.round((toUtcMs(d, t) - nowMs) / 60_000);
+        return { key, diffMin };
+    });
+
+    slotWithDiff.forEach(({ key, diffMin }) => {
+        const marker = Math.abs(diffMin) === Math.min(...slotWithDiff.map(s => Math.abs(s.diffMin)))
+            ? ' ← 선택' : '';
+        logger.log(`   slot ${key.replace('|', ' ')} | diff=${diffMin >= 0 ? '+' : ''}${diffMin}분${marker}`);
+    });
+
     const nearestKey = uniqueKeys.reduce((best, key) => {
         const [d, t] = key.split('|');
         const [bd, bt] = best.split('|');
@@ -173,6 +196,10 @@ function parseFcst(items: any[]): FcstData {
     const [nearestDate, nearestTime] = nearestKey.split('|');
     const slot = items.filter(i => i.fcstDate === nearestDate && i.fcstTime === nearestTime);
 
+    // ── ③ 선택된 슬롯의 raw 카테고리 값 전체 로그 ───────────────
+    const slotRaw = slot.map(i => `${i.category}=${i.fcstValue}`).join(' ');
+    logger.log(`🔍 [FCST Slot Raw] (${nx},${ny}) ${nearestDate} ${nearestTime} → ${slotRaw}`);
+
     let sky = 1, lgt = 0;
     for (const item of slot) {
         switch (item.category) {
@@ -180,33 +207,54 @@ function parseFcst(items: any[]): FcstData {
             case 'LGT': lgt = parseFloat(item.fcstValue); break;
         }
     }
+
+    // ── ④ SKY 해석 로그 ──────────────────────────────────────
+    const skyLabel = sky === 1 ? '맑음(1)' : sky === 3 ? '구름많음(3)' : `흐림(${sky})`;
+    logger.log(
+        `☁️ [FCST Parsed] (${nx},${ny}) ` +
+        `SKY=${skyLabel} LGT=${lgt}`
+    );
+
     return { sky, lgt };
 }
 
 // ─────────────────────────────────────────────────────────────
-// 실황(실측) + 예보(SKY·LGT) 병합 → WeatherResult
+// 실황 + 예보 병합 → WeatherResult — ✅ 로그 추가
 // ─────────────────────────────────────────────────────────────
-function mergeToWeather(ncst: NcstData, fcst: FcstData): WeatherResult {
+function mergeToWeather(
+    ncst: NcstData,
+    fcst: FcstData,
+    nx: number,
+    ny: number,
+    logger: Logger,
+): WeatherResult {
     const { t1h, pty, rn1, wsd } = ncst;
     const { sky, lgt } = fcst;
 
     let condition: string;
+    let conditionReason: string;
 
     if (lgt > 0) {
-        condition = 'THUNDERSTORM';                               // 낙뢰 최우선
+        condition = 'THUNDERSTORM'; conditionReason = `LGT=${lgt}>0`;
     } else if (pty === 1 || pty === 5) {
-        condition = rn1 >= 1.0 ? 'HEAVY_RAIN' : 'LIGHT_RAIN';   // 비·빗방울
+        condition = rn1 >= 1.0 ? 'HEAVY_RAIN' : 'LIGHT_RAIN';
+        conditionReason = `PTY=${pty} RN1=${rn1}(${rn1 >= 1.0 ? '≥1mm' : '<1mm'})`;
     } else if (pty === 2 || pty === 6) {
-        condition = 'RAIN_SNOW';                                  // 비/눈
+        condition = 'RAIN_SNOW'; conditionReason = `PTY=${pty}`;
     } else if (pty === 3 || pty === 7) {
-        condition = 'SNOW';                                       // 눈
+        condition = 'SNOW'; conditionReason = `PTY=${pty}`;
     } else if (wsd >= STRONG_WIND_MS) {
-        condition = 'STRONG_WIND';                                // 강풍 (강수 없을 때)
+        condition = 'STRONG_WIND'; conditionReason = `WSD=${wsd}≥${STRONG_WIND_MS}`;
     } else {
-        condition = sky === 1 ? 'CLEAR'                           // 하늘 상태
-            : sky === 3 ? 'PARTLY_CLOUDY'
-                : 'CLOUDY';
+        condition = sky === 1 ? 'CLEAR' : sky === 3 ? 'PARTLY_CLOUDY' : 'CLOUDY';
+        conditionReason = `SKY=${sky}`;
     }
+
+    logger.log(
+        `✅ [Merge Result] (${nx},${ny}) ` +
+        `condition=${condition} (reason: ${conditionReason}) ` +
+        `temp=${t1h}°C precip=${rn1}mm wind=${wsd}m/s sky=${sky}`
+    );
 
     return {
         condition,
@@ -218,7 +266,7 @@ function mergeToWeather(ncst: NcstData, fcst: FcstData): WeatherResult {
 }
 
 // ─────────────────────────────────────────────────────────────
-// KMA API 공통 호출 유틸 (타임아웃 + 에러 처리 포함)
+// KMA API 공통 호출 유틸 (변경 없음)
 // ─────────────────────────────────────────────────────────────
 async function fetchKmaItems(url: string): Promise<any[]> {
     const controller = new AbortController();
@@ -242,8 +290,7 @@ async function fetchKmaItems(url: string): Promise<any[]> {
 }
 
 // ─────────────────────────────────────────────────────────────
-// 단일 격자 날씨 조회 (실황 + 예보 병렬 호출 후 병합, 격자 단위 캐시)
-// 캐시 키: ncstBaseTime + fcstBaseTime 둘 다 포함 → 한쪽만 갱신돼도 캐시 미스
+// 단일 격자 날씨 조회 — ✅ logger를 파서로 전달
 // ─────────────────────────────────────────────────────────────
 async function fetchGridWeather(
     nx: number,
@@ -275,14 +322,20 @@ async function fetchGridWeather(
         `?serviceKey=${serviceKey}&pageNo=1&numOfRows=${KMA_FCST_NUM_OF_ROWS}&dataType=JSON` +
         `&base_date=${fcstBase.baseDate}&base_time=${fcstBase.baseTime}&nx=${nx}&ny=${ny}`;
 
+    logger.log(`🔗 [NCST URL] ${ncstUrl}`);
+    logger.log(`🔗 [FCST URL] ${fcstUrl}`);
+
     try {
-        // 실황·예보 병렬 호출
         const [ncstItems, fcstItems] = await Promise.all([
             fetchKmaItems(ncstUrl),
             fetchKmaItems(fcstUrl),
         ]);
 
-        const weather = mergeToWeather(parseNcst(ncstItems), parseFcst(fcstItems));
+        logger.log(`📦 [Raw Count] (${nx},${ny}) ncst=${ncstItems.length}행 fcst=${fcstItems.length}행`);
+
+        const ncst = parseNcst(ncstItems, nx, ny, logger);
+        const fcst = parseFcst(fcstItems, nx, ny, logger);
+        const weather = mergeToWeather(ncst, fcst, nx, ny, logger);
 
         await cache.put(cacheKey, new Response(JSON.stringify(weather), {
             headers: {
@@ -290,7 +343,7 @@ async function fetchGridWeather(
                 'Cache-Control': `s-maxage=${CACHE_TTL_SECONDS}`,
             },
         }));
-        logger.log(`📡 [Cache Miss] nx=${nx} ny=${ny} → 실황+예보 병합 완료`);
+        logger.log(`💾 [Cache Stored] nx=${nx} ny=${ny}`);
 
         return weather;
 
@@ -300,6 +353,7 @@ async function fetchGridWeather(
     }
 }
 
+// batchedAll, handleWeather 이하 변경 없음 (생략)
 // ─────────────────────────────────────────────────────────────
 // 동시 요청 수 제한 유틸
 // ─────────────────────────────────────────────────────────────
