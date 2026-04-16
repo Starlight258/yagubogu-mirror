@@ -30,6 +30,7 @@ class LivetalkViewModel(
                 gameRepository.getGames(date).mapList { it.toLivetalkUiModel() }
             gamesResult
                 .onSuccess { livetalkStadiumItems: List<LivetalkStadiumItem> ->
+                    logger.d { livetalkStadiumItems.toString() }
                     _stadiumItems.value = sortStadiumsByVerification(livetalkStadiumItems)
                 }.onFailure { exception: Throwable ->
                     logger.w(exception) { "API 호출 실패" }
