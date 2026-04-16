@@ -141,6 +141,7 @@
     <string name="livetalk_stadium_select_arrow_description">현장톡 구장 선택 진입 아이콘</string>
     <string name="livetalk_empty_game_description">오늘은 경기가 없어요</string>
     <string name="livetalk_empty_game_illustration_description">야구공을 놓치는 일러스트</string>
+    <string name="livetalk_weather_source_info_text">날씨 정보 제공: 기상청</string>
 
     <string name="livetalk_send_btn_description">메시지 전송</string>
     <string name="livetalk_send_btn_locked_description">잠긴 메시지 전송</string>

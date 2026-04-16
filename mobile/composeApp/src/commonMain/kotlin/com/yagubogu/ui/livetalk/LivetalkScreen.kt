@@ -19,6 +19,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -40,6 +41,7 @@ import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.img_baseball_fly_error
 import yagubogu.composeapp.generated.resources.livetalk_empty_game_description
 import yagubogu.composeapp.generated.resources.livetalk_empty_game_illustration_description
+import yagubogu.composeapp.generated.resources.livetalk_weather_source_info_text
 
 @Composable
 fun LivetalkScreen(
@@ -49,6 +51,7 @@ fun LivetalkScreen(
     viewModel: LivetalkViewModel = koinViewModel(),
 ) {
     val livetalkStadiumDelegatedItems: List<LivetalkStadiumItem>? by viewModel.stadiumItems.collectAsStateWithLifecycle()
+    val isWeatherLoaded: Boolean by viewModel.isWeatherLoaded.collectAsStateWithLifecycle()
 
     val livetalkStadiumItems = livetalkStadiumDelegatedItems
 
@@ -77,6 +80,7 @@ fun LivetalkScreen(
                     onLivetalkItemClick(item.gameId, item.isVerified)
                 },
                 modifier = modifier,
+                isWeatherLoaded = isWeatherLoaded,
                 scrollToTopEvent = scrollToTopEvent,
             )
         }
@@ -104,6 +108,7 @@ private fun LivetalkScreen(
     items: List<LivetalkStadiumItem>,
     onItemClick: (LivetalkStadiumItem) -> Unit,
     modifier: Modifier = Modifier,
+    isWeatherLoaded: Boolean = false,
     scrollToTopEvent: SharedFlow<Unit> = MutableSharedFlow(),
 ) {
     val lazyListState: LazyListState = rememberLazyListState()
@@ -125,19 +130,31 @@ private fun LivetalkScreen(
                 end = 20.dp,
             ),
         modifier =
-            modifier
+            Modifier
                 .fillMaxSize()
                 .background(Gray050),
     ) {
         items(
             count = items.size,
-            key = { index: Int -> items[index].gameId },
-        ) { index: Int ->
-            val item: LivetalkStadiumItem = items[index]
+            key = { index -> items[index].gameId },
+        ) { index ->
             LivetalkStadiumItem(
-                item = item,
+                item = items[index],
                 onClick = onItemClick,
             )
+        }
+        if (isWeatherLoaded) {
+            item {
+                Text(
+                    text = stringResource(Res.string.livetalk_weather_source_info_text),
+                    style = PretendardMedium.copy(fontSize = 12.sp, color = Gray400),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(top = 4.dp),
+                    textAlign = TextAlign.Start,
+                )
+            }
         }
     }
 }

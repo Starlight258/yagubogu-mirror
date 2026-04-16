@@ -29,6 +29,9 @@ class LivetalkViewModel(
     private val _stadiumItems = MutableStateFlow<List<LivetalkStadiumItem>?>(null)
     val stadiumItems: StateFlow<List<LivetalkStadiumItem>?> = _stadiumItems.asStateFlow()
 
+    private val _isWeatherLoaded = MutableStateFlow(false)
+    val isWeatherLoaded: StateFlow<Boolean> = _isWeatherLoaded.asStateFlow()
+
     fun fetchGames(date: LocalDate = LocalDate.now(clock)) {
         viewModelScope.launch {
             val previousWeather: Map<Long, WeatherUiModel?> =
@@ -57,10 +60,13 @@ class LivetalkViewModel(
             .getStadiumWeather(ids)
             .onSuccess { stadiumWeatherResponse: StadiumWeatherResponse ->
                 val weatherUiModels: Map<Long, WeatherUiModel> = stadiumWeatherResponse.toUiModel()
-                _stadiumItems.value =
-                    _stadiumItems.value?.map { livetalkStadiumItem ->
-                        livetalkStadiumItem.copy(weatherUiModel = weatherUiModels[livetalkStadiumItem.stadiumId])
-                    }
+                if (weatherUiModels.isNotEmpty()) {
+                    _isWeatherLoaded.value = true
+                    _stadiumItems.value =
+                        _stadiumItems.value?.map { livetalkStadiumItem ->
+                            livetalkStadiumItem.copy(weatherUiModel = weatherUiModels[livetalkStadiumItem.stadiumId])
+                        }
+                }
             }.onFailure {
                 logger.w(it) { "날씨 API 호출 실패" }
             }
