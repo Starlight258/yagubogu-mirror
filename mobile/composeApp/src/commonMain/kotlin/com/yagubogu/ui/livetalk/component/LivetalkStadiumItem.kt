@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yagubogu.ui.livetalk.model.Condition
 import com.yagubogu.ui.livetalk.model.LivetalkStadiumItem
-import com.yagubogu.ui.livetalk.model.Weather
+import com.yagubogu.ui.livetalk.model.WeatherUiModel
 import com.yagubogu.ui.livetalk.model.toResource
 import com.yagubogu.ui.theme.EsamanruMedium
 import com.yagubogu.ui.theme.Gray100
@@ -85,10 +85,10 @@ fun LivetalkStadiumItem(
                     icon = Res.drawable.ic_users,
                     text = item.userCount.toString(),
                 )
-                if (item.weather != null) {
+                if (item.weatherUiModel != null) {
                     IconWithText(
-                        icon = item.weather.condition.toResource(),
-                        text = item.weather.temperatureText,
+                        icon = item.weatherUiModel.condition.toResource(),
+                        text = item.weatherUiModel.temperatureText,
                     )
                 }
             }
@@ -193,7 +193,7 @@ private fun LivetalkStadiumItemVerifiedPreview() {
 @Composable
 private fun LivetalkStadiumItemUnVerifiedPreview() {
     LivetalkStadiumItem(
-        item = LIVETALK_STADIUM_ITEM_UNVERIFIED.copy(weather = Weather(Condition.Clear, "12.3°C")),
+        item = LIVETALK_STADIUM_ITEM_UNVERIFIED.copy(weatherUiModel = WeatherUiModel(1, Condition.Clear, "12.3°C")),
         onClick = {},
     )
 }

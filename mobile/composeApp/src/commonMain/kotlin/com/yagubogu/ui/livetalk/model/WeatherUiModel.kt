@@ -12,7 +12,8 @@ import yagubogu.composeapp.generated.resources.ic_weather_snow
 import yagubogu.composeapp.generated.resources.ic_weather_strong_wind
 import yagubogu.composeapp.generated.resources.ic_weather_thunderstorm
 
-data class Weather(
+data class WeatherUiModel(
+    val stadiumId: Long,
     val condition: Condition,
     val temperatureText: String,
 )
@@ -35,6 +36,22 @@ sealed class Condition {
     data object PartlyCloudy : Condition()
 
     data object Cloudy : Condition()
+
+    companion object {
+        fun from(value: String): Condition =
+            when (value) {
+                "THUNDERSTORM" -> Thunderstorm
+                "HEAVY_RAIN" -> HeavyRain
+                "LIGHT_RAIN" -> LightRain
+                "RAIN_SNOW" -> RainSnow
+                "SNOW" -> Snow
+                "STRONG_WIND" -> StrongWind
+                "CLEAR" -> Clear
+                "PARTLY_CLOUDY" -> PartlyCloudy
+                "CLOUDY" -> Cloudy
+                else -> Clear // fallback
+            }
+    }
 }
 
 fun Condition.toResource(): DrawableResource =
