@@ -23,7 +23,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.yagubogu.ui.livetalk.model.Condition
 import com.yagubogu.ui.livetalk.model.LivetalkStadiumItem
+import com.yagubogu.ui.livetalk.model.Weather
+import com.yagubogu.ui.livetalk.model.toResource
 import com.yagubogu.ui.theme.EsamanruMedium
 import com.yagubogu.ui.theme.Gray100
 import com.yagubogu.ui.theme.Gray500
@@ -75,19 +78,19 @@ fun LivetalkStadiumItem(
 
             Row(
                 modifier = Modifier.weight(1.0f),
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Icon(
-                    painter = painterResource(Res.drawable.ic_users),
-                    contentDescription = stringResource(Res.string.livetalk_user_icon_description),
-                    tint = Gray500,
-                    modifier = Modifier.size(14.dp),
-                )
-                Text(
+                IconWithText(
+                    icon = Res.drawable.ic_users,
                     text = item.userCount.toString(),
-                    style = PretendardMedium12.copy(color = Gray500),
                 )
+                if (item.weather != null) {
+                    IconWithText(
+                        icon = item.weather.condition.toResource(),
+                        text = item.weather.temperatureText,
+                    )
+                }
             }
 
             Icon(
@@ -134,6 +137,26 @@ fun ShimmerStadiumItem(modifier: Modifier = Modifier) {
 }
 
 @Composable
+fun IconWithText(
+    icon: DrawableResource,
+    text: String,
+    modifier: Modifier = Modifier,
+) {
+    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+        Icon(
+            painter = painterResource(icon),
+            contentDescription = stringResource(Res.string.livetalk_user_icon_description),
+            tint = Gray500,
+            modifier = Modifier.size(14.dp),
+        )
+        Text(
+            text = text,
+            style = PretendardMedium12.copy(color = Gray500),
+        )
+    }
+}
+
+@Composable
 private fun TeamItem(
     name: String,
     mascot: DrawableResource,
@@ -170,7 +193,7 @@ private fun LivetalkStadiumItemVerifiedPreview() {
 @Composable
 private fun LivetalkStadiumItemUnVerifiedPreview() {
     LivetalkStadiumItem(
-        item = LIVETALK_STADIUM_ITEM_UNVERIFIED,
+        item = LIVETALK_STADIUM_ITEM_UNVERIFIED.copy(weather = Weather(Condition.Clear, "12.3°C")),
         onClick = {},
     )
 }

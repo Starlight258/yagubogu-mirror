@@ -10,4 +10,5 @@ data class LivetalkStadiumItem(
     val awayTeam: Team,
     val homeTeam: Team,
     val isVerified: Boolean,
+    val weather: Weather? = null,
 )
