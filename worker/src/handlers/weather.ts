@@ -258,7 +258,7 @@ function mergeToWeather(
 
     return {
         condition,
-        sky: sky === 1 ? '맑음' : sky === 3 ? '구름많음' : '흐림',
+        sky: sky === 1 ? 'CLEAR' : sky === 3 ? 'PARTLY_CLOUDY' : 'CLOUDY',
         temperature: `${t1h}°C`,
         precipitation: `${rn1}mm`,
         windSpeed: `${wsd}m/s`,
