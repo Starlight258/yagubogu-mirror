@@ -6,5 +6,6 @@ expect object AdUnitIds {
     val statsBanner: String
     val attendanceCalendarBanner: String
     val exitDialogBanner: String
+    val profileDialogBanner: String
     val pastCheckInInterstitial: String
 }

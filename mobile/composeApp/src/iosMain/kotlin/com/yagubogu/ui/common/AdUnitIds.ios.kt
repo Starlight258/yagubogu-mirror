@@ -8,5 +8,6 @@ actual object AdUnitIds {
     actual val statsBanner: String = BuildKonfig.ADMOB_IOS_STATS_BANNER
     actual val attendanceCalendarBanner: String = BuildKonfig.ADMOB_IOS_ATTENDANCE_CALENDAR_BANNER
     actual val exitDialogBanner: String = BuildKonfig.ADMOB_IOS_EXIT_DIALOG_BANNER
+    actual val profileDialogBanner: String = BuildKonfig.ADMOB_IOS_PROFILE_DIALOG_BANNER
     actual val pastCheckInInterstitial: String = BuildKonfig.ADMOB_IOS_PAST_CHECK_IN_INTERSTITIAL
 }
