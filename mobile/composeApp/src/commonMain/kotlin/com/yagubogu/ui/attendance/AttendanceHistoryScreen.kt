@@ -38,6 +38,7 @@ import com.yagubogu.analytics.AnalyticsLogger
 import com.yagubogu.ui.attendance.component.ATTENDANCE_HISTORY_ITEMS
 import com.yagubogu.ui.attendance.component.AttendanceCalendarContent
 import com.yagubogu.ui.attendance.component.AttendanceListContent
+import com.yagubogu.ui.attendance.component.GAME_DATES
 import com.yagubogu.ui.attendance.component.YearMonthPickerDialog
 import com.yagubogu.ui.attendance.model.AttendanceFilterState
 import com.yagubogu.ui.attendance.model.AttendanceHistoryItem
@@ -82,6 +83,7 @@ fun AttendanceHistoryScreen(
     viewModel: AttendanceHistoryViewModel = koinViewModel(),
 ) {
     val attendanceItems: List<AttendanceHistoryItem> by viewModel.items.collectAsStateWithLifecycle()
+    val gameDates: Set<LocalDate> by viewModel.gameDates.collectAsStateWithLifecycle()
     val selectedMonth: YearMonth by viewModel.selectedMonth.collectAsStateWithLifecycle()
     val selectedDate: LocalDate by viewModel.selectedDate.collectAsStateWithLifecycle()
     val filterState: AttendanceFilterState by viewModel.filterState.collectAsStateWithLifecycle()
@@ -113,6 +115,10 @@ fun AttendanceHistoryScreen(
     }
 
     LaunchedEffect(selectedMonth) {
+        if (viewType == AttendanceHistoryViewType.CALENDAR) {
+            viewModel.fetchGameDates()
+        }
+
         if (selectedMonth == today.yearMonth) {
             viewModel.updateSelectedDate(today)
         } else {
@@ -140,6 +146,7 @@ fun AttendanceHistoryScreen(
         selectedDate = selectedDate,
         onDateChange = viewModel::updateSelectedDate,
         items = attendanceItems,
+        gameDates = gameDates,
         filterState = filterState,
         onWinOnlyFilterToggle = viewModel::toggleWinOnlyFilter,
         onYearlyFilterToggle = viewModel::toggleYearlyFilter,
@@ -164,6 +171,7 @@ private fun AttendanceHistoryScreen(
     selectedDate: LocalDate,
     onDateChange: (LocalDate) -> Unit,
     items: List<AttendanceHistoryItem>,
+    gameDates: Set<LocalDate>,
     filterState: AttendanceFilterState,
     onWinOnlyFilterToggle: () -> Unit,
     onYearlyFilterToggle: () -> Unit,
@@ -196,6 +204,7 @@ private fun AttendanceHistoryScreen(
             AttendanceHistoryViewType.CALENDAR ->
                 AttendanceCalendarContent(
                     items = items,
+                    gameDates = gameDates,
                     startMonth = startMonth,
                     endMonth = endMonth,
                     selectedMonth = selectedMonth,
@@ -381,6 +390,7 @@ private fun AttendanceCalenderScreenPreview() {
         selectedDate = LocalDate.now(),
         onDateChange = {},
         items = ATTENDANCE_HISTORY_ITEMS,
+        gameDates = GAME_DATES,
         filterState = AttendanceFilterState(yearMonth = YearMonth.now()),
         onWinOnlyFilterToggle = {},
         onYearlyFilterToggle = {},
@@ -405,6 +415,7 @@ private fun AttendanceListScreenPreview() {
         selectedDate = LocalDate.now(),
         onDateChange = {},
         items = ATTENDANCE_HISTORY_ITEMS,
+        gameDates = GAME_DATES,
         filterState = AttendanceFilterState(yearMonth = YearMonth.now()),
         onWinOnlyFilterToggle = {},
         onYearlyFilterToggle = {},

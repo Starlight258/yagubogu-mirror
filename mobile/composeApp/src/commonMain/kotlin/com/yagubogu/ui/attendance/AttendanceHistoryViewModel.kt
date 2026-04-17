@@ -37,6 +37,9 @@ class AttendanceHistoryViewModel(
     private val _items = MutableStateFlow<List<AttendanceHistoryItem>>(emptyList())
     val items: StateFlow<List<AttendanceHistoryItem>> = _items.asStateFlow()
 
+    private val _gameDates = MutableStateFlow<Set<LocalDate>>(emptySet())
+    val gameDates: StateFlow<Set<LocalDate>> = _gameDates.asStateFlow()
+
     private val _selectedMonth = MutableStateFlow<YearMonth>(YearMonth.now())
     val selectedMonth: StateFlow<YearMonth> = _selectedMonth.asStateFlow()
 
@@ -77,6 +80,19 @@ class AttendanceHistoryViewModel(
                 ).mapList { it.toUiModel() }
                 .onSuccess { attendanceItems: List<AttendanceHistoryItem> ->
                     _items.value = attendanceItems
+                }.onFailure { exception: Throwable ->
+                    logger.w(exception) { "API 호출 실패" }
+                }
+        }
+    }
+
+    fun fetchGameDates() {
+        viewModelScope.launch {
+            val yearMonth: YearMonth = selectedMonth.value
+            gameRepository
+                .getGameDates(yearMonth)
+                .onSuccess { dates: List<LocalDate> ->
+                    _gameDates.value = dates.toSet()
                 }.onFailure { exception: Throwable ->
                     logger.w(exception) { "API 호출 실패" }
                 }
