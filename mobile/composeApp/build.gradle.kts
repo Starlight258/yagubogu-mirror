@@ -52,7 +52,8 @@ buildkonfig {
         buildConfigField(INT, "VERSION_CODE", "$appVersionCode")
 
         // AdMob Ids
-        val testAndroidBannerId = "ca-app-pub-3940256099942544/6300978111"
+        buildConfigField(STRING, "ADMOB_ANDROID_APP_ID", "ca-app-pub-3940256099942544~3347511713")
+        val testAndroidBannerId = "ca-app-pub-3940256099942544/9214589741"
         buildConfigField(STRING, "ADMOB_ANDROID_HOME_BANNER", testAndroidBannerId)
         buildConfigField(STRING, "ADMOB_ANDROID_LIVETALK_BANNER", testAndroidBannerId)
         buildConfigField(STRING, "ADMOB_ANDROID_STATS_BANNER", testAndroidBannerId)
@@ -77,6 +78,7 @@ buildkonfig {
         stringField("WEB_CLIENT_ID")
         stringField("IOS_CLIENT_ID")
         // AdMob Ids
+        stringField("ADMOB_ANDROID_APP_ID", key = "ADMOB_ANDROID_APP_ID")
         stringField("ADMOB_ANDROID_HOME_BANNER")
         stringField("ADMOB_ANDROID_LIVETALK_BANNER")
         stringField("ADMOB_ANDROID_STATS_BANNER")
@@ -152,7 +154,7 @@ kotlin {
             implementation(libs.play.services.location)
 
             // AdMob
-            implementation(libs.play.services.ads)
+            implementation(libs.ads.mobile.sdk)
 
             // Ktor
             implementation(libs.ktor.client.okhttp)

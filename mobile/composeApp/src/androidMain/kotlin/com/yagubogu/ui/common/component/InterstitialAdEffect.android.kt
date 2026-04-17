@@ -9,12 +9,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import com.google.android.gms.ads.AdError
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.FullScreenContentCallback
-import com.google.android.gms.ads.LoadAdError
-import com.google.android.gms.ads.interstitial.InterstitialAd
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
+import com.google.android.libraries.ads.mobile.sdk.common.AdLoadCallback
+import com.google.android.libraries.ads.mobile.sdk.common.AdRequest
+import com.google.android.libraries.ads.mobile.sdk.common.FullScreenContentError
+import com.google.android.libraries.ads.mobile.sdk.common.LoadAdError
+import com.google.android.libraries.ads.mobile.sdk.interstitial.InterstitialAd
+import com.google.android.libraries.ads.mobile.sdk.interstitial.InterstitialAdEventCallback
 import kotlinx.coroutines.flow.Flow
 
 @Composable
@@ -26,22 +26,18 @@ actual fun InterstitialAdEffect(
     val context = LocalContext.current
     val activity = context as? Activity ?: return
 
-    // 로드된 광고 인스턴스 보관 — null이면 아직 로드 전 또는 표시 직후
     var loadedAd by remember { mutableStateOf<InterstitialAd?>(null) }
-    // 리컴포지션 시 최신 콜백을 참조하도록 보관
     val currentOnAdComplete by rememberUpdatedState(onAdComplete)
 
     fun loadAd() {
         InterstitialAd.load(
-            context,
-            adUnitId,
-            AdRequest.Builder().build(),
-            object : InterstitialAdLoadCallback() {
+            AdRequest.Builder(adUnitId).build(),
+            object : AdLoadCallback<InterstitialAd> {
                 override fun onAdLoaded(ad: InterstitialAd) {
                     loadedAd = ad
                 }
 
-                override fun onAdFailedToLoad(error: LoadAdError) {
+                override fun onAdFailedToLoad(adError: LoadAdError) {
                     loadedAd = null
                 }
             },
@@ -59,19 +55,23 @@ actual fun InterstitialAdEffect(
                 currentOnAdComplete()
                 return@collect
             }
-            ad.fullScreenContentCallback =
-                object : FullScreenContentCallback() {
+            ad.adEventCallback =
+                object : InterstitialAdEventCallback {
                     override fun onAdDismissedFullScreenContent() {
                         loadedAd = null
                         loadAd()
                         currentOnAdComplete()
                     }
 
-                    override fun onAdFailedToShowFullScreenContent(error: AdError) {
+                    override fun onAdFailedToShowFullScreenContent(fullScreenContentError: FullScreenContentError) {
                         loadedAd = null
                         loadAd()
                         currentOnAdComplete()
                     }
+
+                    override fun onAdShowedFullScreenContent() = Unit
+                    override fun onAdImpression() = Unit
+                    override fun onAdClicked() = Unit
                 }
             loadedAd = null
             ad.show(activity)

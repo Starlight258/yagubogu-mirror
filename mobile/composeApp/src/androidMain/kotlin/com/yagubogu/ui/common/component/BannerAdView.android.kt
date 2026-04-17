@@ -3,15 +3,18 @@ package com.yagubogu.ui.common.component
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.AdView
-import com.google.android.gms.ads.AdSize as GmsAdSize
+import com.google.android.libraries.ads.mobile.sdk.banner.AdSize as SdkAdSize
+import com.google.android.libraries.ads.mobile.sdk.banner.AdView
+import com.google.android.libraries.ads.mobile.sdk.banner.BannerAd
+import com.google.android.libraries.ads.mobile.sdk.banner.BannerAdRequest
+import com.google.android.libraries.ads.mobile.sdk.common.AdLoadCallback
+import com.google.android.libraries.ads.mobile.sdk.common.LoadAdError
 
-private fun AdSize.toGmsAdSize(): GmsAdSize =
+private fun AdSize.toSdkAdSize(): SdkAdSize =
     when (this) {
-        AdSize.BANNER -> GmsAdSize.BANNER
-        AdSize.LARGE_BANNER -> GmsAdSize.LARGE_BANNER
-        AdSize.MEDIUM_RECTANGLE -> GmsAdSize.MEDIUM_RECTANGLE
+        AdSize.BANNER -> SdkAdSize.BANNER
+        AdSize.LARGE_BANNER -> SdkAdSize.LARGE_BANNER
+        AdSize.MEDIUM_RECTANGLE -> SdkAdSize.MEDIUM_RECTANGLE
     }
 
 @Composable
@@ -23,10 +26,15 @@ actual fun BannerAdView(
     AndroidView(
         modifier = modifier,
         factory = { context ->
-            AdView(context).apply {
-                setAdSize(adSize.toGmsAdSize())
-                this.adUnitId = adUnitId
-                loadAd(AdRequest.Builder().build())
+            AdView(context).also { adView ->
+                val adRequest = BannerAdRequest.Builder(adUnitId, adSize.toSdkAdSize()).build()
+                adView.loadAd(
+                    adRequest,
+                    object : AdLoadCallback<BannerAd> {
+                        override fun onAdLoaded(ad: BannerAd) = Unit
+                        override fun onAdFailedToLoad(adError: LoadAdError) = Unit
+                    },
+                )
             }
         },
         update = {},

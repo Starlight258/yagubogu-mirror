@@ -6,7 +6,11 @@ import co.touchlab.kermit.Logger
 import co.touchlab.kermit.Severity
 import co.touchlab.kermit.crashlytics.CrashlyticsLogWriter
 import co.touchlab.kermit.platformLogWriter
-import com.google.android.gms.ads.MobileAds
+import com.google.android.libraries.ads.mobile.sdk.MobileAds
+import com.google.android.libraries.ads.mobile.sdk.initialization.InitializationConfig
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.yagubogu.analytics.AnalyticsLogger
@@ -34,7 +38,12 @@ class YaguBoguApplication : Application() {
     }
 
     private fun setupAds() {
-        MobileAds.initialize(this)
+        CoroutineScope(Dispatchers.IO).launch {
+            MobileAds.initialize(
+                this@YaguBoguApplication,
+                InitializationConfig.Builder(BuildKonfig.ADMOB_ANDROID_APP_ID).build(),
+            )
+        }
     }
 
     private fun setupAnalytics() {
