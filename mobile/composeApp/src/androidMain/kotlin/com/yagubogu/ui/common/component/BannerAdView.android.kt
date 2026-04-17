@@ -4,7 +4,6 @@ import androidx.activity.compose.LocalActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
-import com.google.android.libraries.ads.mobile.sdk.banner.AdSize as SdkAdSize
 import com.google.android.libraries.ads.mobile.sdk.banner.AdView
 import com.google.android.libraries.ads.mobile.sdk.banner.BannerAd
 import com.google.android.libraries.ads.mobile.sdk.banner.BannerAdEventCallback
@@ -12,6 +11,7 @@ import com.google.android.libraries.ads.mobile.sdk.banner.BannerAdRequest
 import com.google.android.libraries.ads.mobile.sdk.common.AdLoadCallback
 import com.google.android.libraries.ads.mobile.sdk.common.FullScreenContentError
 import com.google.android.libraries.ads.mobile.sdk.common.LoadAdError
+import com.google.android.libraries.ads.mobile.sdk.banner.AdSize as SdkAdSize
 
 private fun AdSize.toSdkAdSize(): SdkAdSize =
     when (this) {
@@ -37,15 +37,18 @@ actual fun BannerAdView(
                     adRequest,
                     object : AdLoadCallback<BannerAd> {
                         override fun onAdLoaded(ad: BannerAd) {
-                            ad.adEventCallback = object : BannerAdEventCallback {
-                                override fun onAdImpression() = Unit
-                                override fun onAdClicked() = Unit
-                                override fun onAdShowedFullScreenContent() = Unit
-                                override fun onAdDismissedFullScreenContent() = Unit
-                                override fun onAdFailedToShowFullScreenContent(
-                                    fullScreenContentError: FullScreenContentError
-                                ) = Unit
-                            }
+                            ad.adEventCallback =
+                                object : BannerAdEventCallback {
+                                    override fun onAdImpression() = Unit
+
+                                    override fun onAdClicked() = Unit
+
+                                    override fun onAdShowedFullScreenContent() = Unit
+
+                                    override fun onAdDismissedFullScreenContent() = Unit
+
+                                    override fun onAdFailedToShowFullScreenContent(fullScreenContentError: FullScreenContentError) = Unit
+                                }
                         }
 
                         override fun onAdFailedToLoad(adError: LoadAdError) = Unit

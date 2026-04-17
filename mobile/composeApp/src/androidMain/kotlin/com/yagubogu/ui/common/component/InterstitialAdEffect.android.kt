@@ -68,7 +68,9 @@ actual fun InterstitialAdEffect(
                     }
 
                     override fun onAdShowedFullScreenContent() = Unit
+
                     override fun onAdImpression() = Unit
+
                     override fun onAdClicked() = Unit
                 }
             loadedAd = null
