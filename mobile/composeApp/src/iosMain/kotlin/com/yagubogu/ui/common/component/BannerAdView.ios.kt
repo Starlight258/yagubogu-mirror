@@ -8,6 +8,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.UIKitInteropProperties
 import androidx.compose.ui.viewinterop.UIKitView
 import kotlinx.cinterop.ExperimentalForeignApi
+import platform.UIKit.UIColor
 
 @OptIn(ExperimentalForeignApi::class)
 @Composable
@@ -18,8 +19,11 @@ actual fun BannerAdView(
 ) {
     UIKitView(
         factory = {
-            BannerAdProvider.create?.invoke(adUnitId, adSize.heightDp)
-                ?: platform.UIKit.UIView()
+            val view =
+                BannerAdProvider.create?.invoke(adUnitId, adSize.heightDp)
+                    ?: platform.UIKit.UIView()
+            view.backgroundColor = UIColor.whiteColor
+            view
         },
         modifier =
             modifier
