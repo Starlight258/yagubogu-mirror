@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -28,13 +29,17 @@ import com.yagubogu.ui.home.model.VictoryFairyItem
 import com.yagubogu.ui.home.model.VictoryFairyRanking
 import com.yagubogu.ui.theme.Bronze
 import com.yagubogu.ui.theme.Gold
+import com.yagubogu.ui.theme.Gray100
 import com.yagubogu.ui.theme.Gray300
 import com.yagubogu.ui.theme.Gray400
 import com.yagubogu.ui.theme.Gray500
 import com.yagubogu.ui.theme.PretendardBold20
+import com.yagubogu.ui.theme.PretendardMedium
 import com.yagubogu.ui.theme.PretendardMedium12
 import com.yagubogu.ui.theme.PretendardRegular
+import com.yagubogu.ui.theme.PretendardRegular12
 import com.yagubogu.ui.theme.PretendardRegular16
+import com.yagubogu.ui.theme.PretendardSemiBold
 import com.yagubogu.ui.theme.PretendardSemiBold16
 import com.yagubogu.ui.theme.Silver
 import com.yagubogu.ui.theme.White
@@ -47,11 +52,14 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.all_fan
+import yagubogu.composeapp.generated.resources.all_show_more
+import yagubogu.composeapp.generated.resources.home_user_profile
 import yagubogu.composeapp.generated.resources.home_victory_fairy_my_nickname
 import yagubogu.composeapp.generated.resources.home_victory_fairy_ranking
 import yagubogu.composeapp.generated.resources.home_victory_fairy_score
 import yagubogu.composeapp.generated.resources.home_victory_fairy_score_format
 import yagubogu.composeapp.generated.resources.home_victory_fairy_tooltip
+import yagubogu.composeapp.generated.resources.ic_arrow_right
 import yagubogu.composeapp.generated.resources.ic_info
 import yagubogu.composeapp.generated.resources.ic_medal_first
 import yagubogu.composeapp.generated.resources.ic_medal_second
@@ -64,7 +72,7 @@ fun VictoryFairyRanking(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp),
         modifier =
             modifier
                 .fillMaxWidth()
@@ -100,15 +108,43 @@ fun VictoryFairyRanking(
                     )
                 }
             }
-            Text(
-                text = stringResource(Res.string.home_victory_fairy_score),
-                style = PretendardRegular.copy(fontSize = 14.sp, color = Gray400),
-            )
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = stringResource(Res.string.all_show_more),
+                    style = PretendardMedium.copy(fontSize = 14.sp, color = Gray400),
+                )
+                Icon(
+                    modifier = Modifier.size(16.dp),
+                    painter = painterResource(Res.drawable.ic_arrow_right),
+                    contentDescription = null,
+                    tint = Gray400,
+                )
+            }
         }
 
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .background(color = Gray100)
+                        .padding(horizontal = 8.dp, vertical = 10.dp),
+            ) {
+                Text(
+                    text = stringResource(Res.string.home_user_profile),
+                    style = PretendardRegular12,
+                )
+                Text(
+                    text = stringResource(Res.string.home_victory_fairy_score),
+                    style = PretendardRegular12,
+                )
+            }
+
             VictoryFairyRankingItem(
                 item = ranking.myRanking,
                 onClick = onRankingItemClick,
@@ -137,7 +173,7 @@ private fun VictoryFairyRankingItem(
         modifier =
             modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp)
+                .padding(8.dp)
                 .noRippleClickable {
                     onClick(item.memberId)
                     AnalyticsLogger.logEvent("member_profile")
@@ -146,17 +182,17 @@ private fun VictoryFairyRankingItem(
     ) {
         Text(
             text = item.rank.toString(),
-            style = PretendardRegular.copy(fontSize = 16.dpToSp, color = Gray500),
+            style = PretendardRegular.copy(fontSize = 14.dpToSp, color = Gray500),
             textAlign = TextAlign.Center,
-            modifier = Modifier.width(40.dp),
+            modifier = Modifier.width(20.dp),
         )
-        Spacer(modifier = Modifier.width(4.dp))
+        Spacer(modifier = Modifier.width(12.dp))
 
         ProfileImage(
             imageUrl = item.profileImageUrl,
-            modifier = Modifier.size(40.dp),
+            modifier = Modifier.size(36.dp),
         )
-        Spacer(modifier = Modifier.width(12.dp))
+        Spacer(modifier = Modifier.width(8.dp))
 
         Column(
             modifier = Modifier.weight(1.0f),
@@ -175,21 +211,31 @@ private fun VictoryFairyRankingItem(
                             item.nickname
                         },
                     style = PretendardSemiBold16,
+                    maxLines = 1,
+                    overflow = TextOverflow.MiddleEllipsis,
                 )
                 if (item.rank in 1..3) {
                     Spacer(modifier = Modifier.width(6.dp))
-                    VictoryFairyMedal(rank = item.rank)
+                    VictoryFairyMedal(
+                        rank = item.rank,
+                        modifier = Modifier.height(14.dp),
+                    )
                 }
             }
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = stringResource(Res.string.all_fan, item.teamName),
                 style = PretendardMedium12.copy(color = Gray400),
             )
         }
+        Spacer(modifier = Modifier.width(12.dp))
 
         Text(
-            text = stringResource(Res.string.home_victory_fairy_score_format, item.score.formatOneDecimal()),
+            text =
+                stringResource(
+                    Res.string.home_victory_fairy_score_format,
+                    item.score.formatOneDecimal(),
+                ),
             style = PretendardRegular16,
         )
     }
@@ -212,7 +258,7 @@ private fun VictoryFairyMedal(
         painter = painterResource(iconRes),
         contentDescription = null,
         tint = color,
-        modifier = modifier.height(14.dp),
+        modifier = modifier,
     )
 }
 
