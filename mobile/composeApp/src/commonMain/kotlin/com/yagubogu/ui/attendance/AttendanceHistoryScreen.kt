@@ -100,11 +100,14 @@ fun AttendanceHistoryScreen(
     val snackbarScope = LocalSnackbarHostState.current
 
     LaunchedEffect(selectedMonth, viewType, filter, sort) {
-        viewModel.fetchGameDates()
         viewModel.fetchAttendanceHistoryItems()
     }
 
     LaunchedEffect(selectedMonth) {
+        if (viewType == AttendanceHistoryViewType.CALENDAR) {
+            viewModel.fetchGameDates()
+        }
+
         if (selectedMonth == today.yearMonth) {
             viewModel.updateSelectedDate(today)
         } else {
