@@ -5,9 +5,7 @@ import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.WaitForSelectorState;
 import com.microsoft.playwright.options.WaitUntilState;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import yagubogu.crawling.game.config.KboCrawlerProperties;
 import yagubogu.crawling.game.dto.HitterRecordDto;
@@ -72,7 +70,6 @@ public class KboReviewPage extends BaseKboPage {
     /**
      * 타자 기록 추출
      *
-     * 중복 타순 처리: 같은 타순 번호가 여러 행이면 첫 번째 행만 선택
      * table1: 타순, 포지션, 선수명
      * table3: 타수, 안타, 타점, 득점 (타율 제외)
      *
@@ -86,7 +83,6 @@ public class KboReviewPage extends BaseKboPage {
         int rowCount = table1Rows.count();
         int table3RowCount = table3Rows.count();
         List<HitterRecordDto> records = new ArrayList<>();
-        Set<Integer> seenOrders = new HashSet<>();
 
         for (int i = 0; i < rowCount; i++) {
             Locator row1 = table1Rows.nth(i);
@@ -98,11 +94,6 @@ public class KboReviewPage extends BaseKboPage {
             }
 
             int battingOrder = parseIntSafe(thElements.nth(0).textContent().trim());
-
-            if (seenOrders.contains(battingOrder)) {
-                continue;
-            }
-            seenOrders.add(battingOrder);
 
             String position = thElements.nth(1).textContent().trim();
             String playerName = row1.locator("td").textContent().trim();
