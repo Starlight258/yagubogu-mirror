@@ -2,6 +2,7 @@ package com.yagubogu.ui.common.component
 
 import androidx.activity.compose.LocalActivity
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,6 +28,10 @@ actual fun InterstitialAdEffect(
     var loadedAd by remember { mutableStateOf<InterstitialAd?>(null) }
     val currentOnAdComplete by rememberUpdatedState(onAdComplete)
 
+    DisposableEffect(Unit) {
+        onDispose { loadedAd?.destroy() }
+    }
+
     fun loadAd() {
         InterstitialAd.load(
             AdRequest.Builder(adUnitId).build(),
@@ -43,6 +48,8 @@ actual fun InterstitialAdEffect(
     }
 
     LaunchedEffect(adUnitId) {
+        loadedAd?.destroy()
+        loadedAd = null
         loadAd()
     }
 

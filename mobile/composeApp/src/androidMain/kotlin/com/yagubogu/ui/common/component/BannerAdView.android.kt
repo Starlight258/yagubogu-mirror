@@ -2,6 +2,11 @@ package com.yagubogu.ui.common.component
 
 import androidx.activity.compose.LocalActivity
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import com.google.android.libraries.ads.mobile.sdk.banner.AdView
@@ -27,6 +32,11 @@ actual fun BannerAdView(
     modifier: Modifier,
 ) {
     val activity = LocalActivity.current ?: return
+    var bannerAd by remember { mutableStateOf<BannerAd?>(null) }
+
+    DisposableEffect(Unit) {
+        onDispose { bannerAd?.destroy() }
+    }
 
     AndroidView(
         modifier = modifier,
@@ -37,6 +47,7 @@ actual fun BannerAdView(
                     adRequest,
                     object : AdLoadCallback<BannerAd> {
                         override fun onAdLoaded(ad: BannerAd) {
+                            bannerAd = ad
                             ad.adEventCallback =
                                 object : BannerAdEventCallback {
                                     override fun onAdImpression() = Unit
@@ -56,7 +67,5 @@ actual fun BannerAdView(
                 )
             }
         },
-        update = {},
-        onRelease = { it.destroy() },
     )
 }
