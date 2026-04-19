@@ -59,9 +59,7 @@ actual fun BannerAdView(
 
                                     override fun onAdDismissedFullScreenContent() = Unit
 
-                                    override fun onAdFailedToShowFullScreenContent(
-                                        fullScreenContentError: FullScreenContentError
-                                    ) = Unit
+                                    override fun onAdFailedToShowFullScreenContent(fullScreenContentError: FullScreenContentError) = Unit
                                 }
                         }
 
