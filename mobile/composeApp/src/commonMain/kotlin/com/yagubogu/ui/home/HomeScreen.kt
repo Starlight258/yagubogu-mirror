@@ -22,8 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yagubogu.analytics.AnalyticsLogger
 import com.yagubogu.ui.common.AdUnitIds
-import com.yagubogu.ui.common.component.AdSize
 import com.yagubogu.ui.common.component.BannerAd
+import com.yagubogu.ui.common.component.BannerAdType
 import com.yagubogu.ui.home.component.CheckInButton
 import com.yagubogu.ui.home.component.MemberStats
 import com.yagubogu.ui.home.component.OpeningCountdown
@@ -261,7 +261,7 @@ private fun HomeScreen(
         }
         BannerAd(
             adUnitId = AdUnitIds.homeBanner,
-            adSize = AdSize.BANNER,
+            bannerAdType = BannerAdType.BANNER,
         )
         VictoryFairyRanking(
             ranking = victoryFairyRanking,

@@ -14,13 +14,13 @@ import platform.UIKit.UIColor
 @Composable
 actual fun BannerAdView(
     adUnitId: String,
-    adSize: AdSize,
+    bannerAdType: BannerAdType,
     modifier: Modifier,
 ) {
     UIKitView(
         factory = {
             val view =
-                BannerAdProvider.create?.invoke(adUnitId, adSize.heightDp)
+                BannerAdProvider.create?.invoke(adUnitId, bannerAdType.heightDp)
                     ?: platform.UIKit.UIView()
             view.backgroundColor = UIColor.whiteColor
             view
@@ -28,7 +28,7 @@ actual fun BannerAdView(
         modifier =
             modifier
                 .fillMaxWidth()
-                .height(adSize.heightDp.dp),
+                .height(bannerAdType.heightDp.dp),
         update = {},
         onRelease = {},
         properties =

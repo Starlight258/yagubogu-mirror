@@ -30,8 +30,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import coil3.compose.AsyncImage
 import com.yagubogu.ui.common.AdUnitIds
-import com.yagubogu.ui.common.component.AdSize
 import com.yagubogu.ui.common.component.BannerAd
+import com.yagubogu.ui.common.component.BannerAdType
 import com.yagubogu.ui.common.model.MEMBER_PROFILE_FIXTURE
 import com.yagubogu.ui.common.model.MemberProfile
 import com.yagubogu.ui.theme.Gray050
@@ -97,7 +97,7 @@ fun ProfileDialog(
                 Spacer(modifier = Modifier.height(20.dp))
                 BannerAd(
                     adUnitId = AdUnitIds.profileDialogBanner,
-                    adSize = AdSize.BANNER,
+                    bannerAdType = BannerAdType.BANNER,
                 )
             }
         },

@@ -18,17 +18,17 @@ import com.google.android.libraries.ads.mobile.sdk.common.FullScreenContentError
 import com.google.android.libraries.ads.mobile.sdk.common.LoadAdError
 import com.google.android.libraries.ads.mobile.sdk.banner.AdSize as SdkAdSize
 
-private fun AdSize.toSdkAdSize(): SdkAdSize =
+private fun BannerAdType.toSdkAdSize(): SdkAdSize =
     when (this) {
-        AdSize.BANNER -> SdkAdSize.BANNER
-        AdSize.LARGE_BANNER -> SdkAdSize.LARGE_BANNER
-        AdSize.MEDIUM_RECTANGLE -> SdkAdSize.MEDIUM_RECTANGLE
+        BannerAdType.BANNER -> SdkAdSize.BANNER
+        BannerAdType.LARGE_BANNER -> SdkAdSize.LARGE_BANNER
+        BannerAdType.MEDIUM_RECTANGLE -> SdkAdSize.MEDIUM_RECTANGLE
     }
 
 @Composable
 actual fun BannerAdView(
     adUnitId: String,
-    adSize: AdSize,
+    bannerAdType: BannerAdType,
     modifier: Modifier,
 ) {
     val activity = LocalActivity.current ?: return
@@ -42,7 +42,8 @@ actual fun BannerAdView(
         modifier = modifier,
         factory = {
             AdView(activity).also { adView ->
-                val adRequest = BannerAdRequest.Builder(adUnitId, adSize.toSdkAdSize()).build()
+                val adRequest =
+                    BannerAdRequest.Builder(adUnitId, bannerAdType.toSdkAdSize()).build()
                 adView.loadAd(
                     adRequest,
                     object : AdLoadCallback<BannerAd> {
@@ -58,7 +59,9 @@ actual fun BannerAdView(
 
                                     override fun onAdDismissedFullScreenContent() = Unit
 
-                                    override fun onAdFailedToShowFullScreenContent(fullScreenContentError: FullScreenContentError) = Unit
+                                    override fun onAdFailedToShowFullScreenContent(
+                                        fullScreenContentError: FullScreenContentError
+                                    ) = Unit
                                 }
                         }
 

@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.yagubogu.ui.theme.White
 
-enum class AdSize(
+enum class BannerAdType(
     val widthDp: Int,
     val heightDp: Int,
 ) {
@@ -28,7 +28,7 @@ enum class AdSize(
 @Composable
 expect fun BannerAdView(
     adUnitId: String,
-    adSize: AdSize = AdSize.BANNER,
+    bannerAdType: BannerAdType = BannerAdType.BANNER,
     modifier: Modifier = Modifier,
 )
 
@@ -36,9 +36,9 @@ expect fun BannerAdView(
 fun BannerAd(
     adUnitId: String,
     modifier: Modifier = Modifier,
-    height: Dp = adSize.heightDp.dp,
+    height: Dp = bannerAdType.heightDp.dp,
     backgroundColor: Color = White,
-    adSize: AdSize = AdSize.BANNER,
+    bannerAdType: BannerAdType = BannerAdType.BANNER,
 ) {
     val cornerRadius = 12.dp
 
@@ -47,7 +47,7 @@ fun BannerAd(
         contentAlignment = Alignment.Center,
     ) {
         val finalShape =
-            if (maxWidth >= adSize.widthDp.dp + cornerRadius * 2) {
+            if (maxWidth >= bannerAdType.widthDp.dp + cornerRadius * 2) {
                 RoundedCornerShape(cornerRadius)
             } else {
                 RectangleShape
@@ -64,7 +64,7 @@ fun BannerAd(
         ) {
             BannerAdView(
                 adUnitId = adUnitId,
-                adSize = adSize,
+                bannerAdType = bannerAdType,
                 modifier = Modifier.fillMaxWidth(),
             )
         }

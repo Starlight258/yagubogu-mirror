@@ -24,8 +24,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yagubogu.ui.common.AdUnitIds
-import com.yagubogu.ui.common.component.AdSize
 import com.yagubogu.ui.common.component.BannerAd
+import com.yagubogu.ui.common.component.BannerAdType
 import com.yagubogu.ui.livetalk.component.LIVETALK_STADIUM_ITEMS
 import com.yagubogu.ui.livetalk.component.LivetalkStadiumItem
 import com.yagubogu.ui.livetalk.component.ShimmerStadiumItem
@@ -150,7 +150,7 @@ private fun LivetalkScreen(
             if (showBannerAd && index == BANNER_AD_INDEX) {
                 BannerAd(
                     adUnitId = AdUnitIds.livetalkBanner,
-                    adSize = AdSize.LARGE_BANNER,
+                    bannerAdType = BannerAdType.LARGE_BANNER,
                 )
             } else {
                 val itemIndex = if (showBannerAd && index > BANNER_AD_INDEX) index - 1 else index
