@@ -122,8 +122,7 @@ public class CustomCheckInRepositoryImpl implements CustomCheckInRepository {
                 .where(
                         CHECK_IN.member.id.in(memberIds),
                         isBetweenYear(year),
-                        isComplete(),
-                        isLocationCheckIn()
+                        isComplete()
                 )
                 .groupBy(CHECK_IN.member.id)
                 .fetch();
