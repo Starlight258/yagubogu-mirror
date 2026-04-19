@@ -1,5 +1,6 @@
 package com.yagubogu.ui.attendance.component
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -7,6 +8,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -32,10 +35,12 @@ import androidx.compose.ui.unit.dp
 import com.yagubogu.analytics.AnalyticsLogger
 import com.yagubogu.ui.attendance.model.AttendanceHistoryItem
 import com.yagubogu.ui.attendance.model.PastGameUiState
+import com.yagubogu.ui.theme.Gray400
 import com.yagubogu.ui.common.AdUnitIds
 import com.yagubogu.ui.common.component.BannerAd
 import com.yagubogu.ui.common.component.BannerAdType
 import com.yagubogu.ui.theme.PretendardBold16
+import com.yagubogu.ui.theme.PretendardMedium16
 import com.yagubogu.ui.theme.Primary500
 import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.util.minusDays
@@ -49,13 +54,16 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.attendance_history_add_attendance
+import yagubogu.composeapp.generated.resources.attendance_history_no_game_description
 import yagubogu.composeapp.generated.resources.ic_add
 import yagubogu.composeapp.generated.resources.ic_calendar_plus
+import yagubogu.composeapp.generated.resources.img_baseball_fly_error
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AttendanceCalendarContent(
     items: List<AttendanceHistoryItem>,
+    gameDates: Set<LocalDate>,
     startMonth: YearMonth,
     endMonth: YearMonth,
     selectedMonth: YearMonth,
@@ -111,26 +119,35 @@ fun AttendanceCalendarContent(
                 selectedDate = selectedDate,
                 onDateChange = onDateChange,
                 attendanceDates = itemsByDate.keys,
+                gameDates = gameDates,
             )
 
-            if (currentItems != null) {
-                currentItems.forEach { item: AttendanceHistoryItem ->
-                    AttendanceItem(item = item, isExpanded = true)
+            when {
+                currentItems != null -> {
+                    currentItems.forEach { item: AttendanceHistoryItem ->
+                        AttendanceItem(item = item, isExpanded = true)
+                    }
                 }
-            } else {
-                if (!isToday) {
-                    AttendanceAdditionButton(
-                        onClick = {
-                            onPastGamesRequest(selectedDate)
-                            showBottomSheet = true
-                        },
-                        modifier = Modifier.padding(top = 10.dp),
+
+                isToday -> Unit
+
+                selectedDate !in gameDates -> NoGameDayView()
+
+                else -> {
+                    if (!isToday) {
+                        AttendanceAdditionButton(
+                            onClick = {
+                                onPastGamesRequest(selectedDate)
+                                showBottomSheet = true
+                            },
+                            modifier = Modifier.padding(top = 10.dp),
+                        )
+                    }
+                    BannerAd(
+                        adUnitId = AdUnitIds.attendanceCalendarBanner,
+                        bannerAdType = BannerAdType.BANNER,
                     )
                 }
-                BannerAd(
-                    adUnitId = AdUnitIds.attendanceCalendarBanner,
-                    bannerAdType = BannerAdType.BANNER,
-                )
             }
         }
 
@@ -187,11 +204,34 @@ private fun AttendanceAdditionButton(
     }
 }
 
+@Composable
+private fun NoGameDayView(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier.padding(vertical = 20.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(20.dp),
+    ) {
+        Text(
+            text = stringResource(Res.string.attendance_history_no_game_description),
+            style = PretendardMedium16.copy(color = Gray400),
+        )
+        Image(
+            painter = painterResource(Res.drawable.img_baseball_fly_error),
+            contentDescription = null,
+            modifier =
+                Modifier
+                    .height(180.dp)
+                    .fillMaxWidth(),
+        )
+    }
+}
+
 @Preview("캘린더 화면", showBackground = true)
 @Composable
 private fun AttendanceCalendarContentPreview() {
     AttendanceCalendarContent(
         items = ATTENDANCE_HISTORY_ITEMS,
+        gameDates = GAME_DATES,
         startMonth = YearMonth.now().minusMonths(1),
         endMonth = YearMonth.now(),
         selectedMonth = YearMonth.now(),
@@ -204,9 +244,9 @@ private fun AttendanceCalendarContentPreview() {
     )
 }
 
-@Preview("오늘 경기가 있는 캘린더 화면", showBackground = true)
+@Preview("직관내역이 있는 날 캘린더 화면", showBackground = true)
 @Composable
-private fun AttendanceCalendarContentTodayItemPreview() {
+private fun AttendanceCalendarContentHasAttendancePreview() {
     AttendanceCalendarContent(
         items =
             listOf(
@@ -218,11 +258,39 @@ private fun AttendanceCalendarContentTodayItemPreview() {
                         ),
                 ),
             ),
+        gameDates = GAME_DATES,
         startMonth = YearMonth.now().minusMonths(1),
         endMonth = YearMonth.now(),
         selectedMonth = YearMonth.now(),
         onMonthChange = {},
         selectedDate = LocalDate.now(),
+        onDateChange = {},
+        pastGameUiState = PastGameUiState.Loading,
+        onPastGamesRequest = {},
+        onPastCheckIn = {},
+    )
+}
+
+@Preview("경기가 없는 날 캘린더 화면", showBackground = true)
+@Composable
+private fun AttendanceCalendarContentNoGamePreview() {
+    AttendanceCalendarContent(
+        items =
+            listOf(
+                ATTENDANCE_HISTORY_ITEM_PLAYED.copy(
+                    summary =
+                        ATTENDANCE_HISTORY_ITEM_PLAYED.summary.copy(
+                            id = 2L,
+                            attendanceDate = LocalDate.now(),
+                        ),
+                ),
+            ),
+        gameDates = emptySet(),
+        startMonth = YearMonth.now().minusMonths(1),
+        endMonth = YearMonth.now(),
+        selectedMonth = YearMonth.now(),
+        onMonthChange = {},
+        selectedDate = LocalDate.now().minusDays(1),
         onDateChange = {},
         pastGameUiState = PastGameUiState.Loading,
         onPastGamesRequest = {},
