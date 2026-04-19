@@ -95,7 +95,6 @@ buildkonfig {
         stringField("ADMOB_IOS_LIVETALK_BANNER")
         stringField("ADMOB_IOS_STATS_BANNER")
         stringField("ADMOB_IOS_ATTENDANCE_CALENDAR_BANNER")
-        stringField("ADMOB_IOS_EXIT_DIALOG_BANNER")
         stringField("ADMOB_IOS_PAST_CHECK_IN_INTERSTITIAL")
     }
 }
