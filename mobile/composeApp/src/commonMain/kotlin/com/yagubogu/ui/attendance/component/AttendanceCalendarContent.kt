@@ -35,10 +35,10 @@ import androidx.compose.ui.unit.dp
 import com.yagubogu.analytics.AnalyticsLogger
 import com.yagubogu.ui.attendance.model.AttendanceHistoryItem
 import com.yagubogu.ui.attendance.model.PastGameUiState
-import com.yagubogu.ui.theme.Gray400
 import com.yagubogu.ui.common.AdUnitIds
 import com.yagubogu.ui.common.component.BannerAd
 import com.yagubogu.ui.common.component.BannerAdType
+import com.yagubogu.ui.theme.Gray400
 import com.yagubogu.ui.theme.PretendardBold16
 import com.yagubogu.ui.theme.PretendardMedium16
 import com.yagubogu.ui.theme.Primary500
