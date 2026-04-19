@@ -277,7 +277,7 @@ android {
 
         manifestPlaceholders["appName"] = "@string/app_name"
         manifestPlaceholders["admobAppId"] =
-            gradleLocalProperties(rootDir, providers).getProperty("ADMOB_APP_ID") ?: ""
+            gradleLocalProperties(rootDir, providers).getProperty("ADMOB_ANDROID_APP_ID") ?: ""
     }
     val signingFile = rootProject.file("keystore.properties")
     val releaseSigningConfig: SigningConfig? =
