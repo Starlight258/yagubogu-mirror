@@ -131,6 +131,15 @@
     <string name="attendance_history_errors">실책</string>
     <string name="attendance_history_balls">사사구</string>
 
+    <string name="attendance_detail_tab_game_record">경기 기록</string>
+    <string name="attendance_detail_tab_diary">직관 기록</string>
+    <string name="attendance_detail_diary_save">저장하기</string>
+    <string name="attendance_detail_delete">삭제</string>
+    <string name="attendance_detail_diary_edit">수정하기</string>
+    <string name="attendance_detail_diary_placeholder">뜨거웠던 직관의 순간을 기록해 보세요!</string>
+    <string name="attendance_detail_image_picker">사진</string>
+    <string name="attendance_detail_image_content_description">%1$d번 사진</string>
+
     <string name="login_failed_message">로그인에 실패했습니다.</string>
 
     <string name="favorite_team_selection">응원하는 팀을\n선택해 주세요!</string>
