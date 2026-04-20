@@ -321,6 +321,12 @@ ktorfit {
     compilerPluginVersion.set("2.3.3")
 }
 
+composeCompiler {
+    stabilityConfigurationFiles.add(
+        rootProject.layout.projectDirectory.file("stability_config.conf"),
+    )
+}
+
 // ktlint와 ksp 태스크 간의 순서를 명시적으로 지정하여 Gradle의 암시적 종속성 경고를 해결합니다.
 // 생성된 코드는 .editorconfig의 ktlint 필터에서 제외되지만, 태스크 구조상 순서 정의가 필요합니다.
 tasks.matching { it.name.contains("ktlint", ignoreCase = true) }.configureEach {
