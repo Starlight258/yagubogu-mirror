@@ -16,6 +16,9 @@ import com.yagubogu.ui.attendance.detail.component.AttendanceDetailTabRow
 import com.yagubogu.ui.attendance.detail.model.AttendanceDetailTab
 import com.yagubogu.ui.common.component.DefaultToolbar
 import com.yagubogu.ui.theme.Gray050
+import com.yagubogu.ui.util.yyyyMMddDayOfWeekFormatter
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.format
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import yagubogu.composeapp.generated.resources.Res
@@ -24,8 +27,11 @@ import yagubogu.composeapp.generated.resources.ic_trash
 
 @Composable
 fun AttendanceDetailScreen(
-    pagerState: PagerState = rememberPagerState { AttendanceDetailTab.entries.size },
+    gameId: Long,
+    date: LocalDate,
+    onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
+    pagerState: PagerState = rememberPagerState { AttendanceDetailTab.entries.size },
 ) {
     Column(
         modifier =
@@ -33,7 +39,11 @@ fun AttendanceDetailScreen(
                 .fillMaxSize()
                 .background(Gray050),
     ) {
-        AttendanceDetailToolbar(onDeleteClick = {})
+        AttendanceDetailToolbar(
+            date = date.format(yyyyMMddDayOfWeekFormatter),
+            onBackClick = onBackClick,
+            onDeleteClick = {},
+        )
         AttendanceDetailTabRow(pagerState)
         HorizontalPager(
             state = pagerState,
@@ -49,13 +59,15 @@ fun AttendanceDetailScreen(
 
 @Composable
 private fun AttendanceDetailToolbar(
+    date: String,
+    onBackClick: () -> Unit,
     onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     DefaultToolbar(
-        onBackClick = {},
+        onBackClick = onBackClick,
         modifier = modifier,
-        title = "2025.08.14 (화)",
+        title = date,
         actions = {
             IconButton(onClick = onDeleteClick) {
                 Icon(
@@ -74,5 +86,8 @@ private fun AttendanceDetailScreenDiaryTabPreview(modifier: Modifier = Modifier)
     AttendanceDetailScreen(
         pagerState = rememberPagerState(initialPage = AttendanceDetailTab.DIARY.ordinal) { AttendanceDetailTab.entries.size },
         modifier = modifier,
+        gameId = 0,
+        date = LocalDate(2025, 8, 14),
+        onBackClick = {},
     )
 }

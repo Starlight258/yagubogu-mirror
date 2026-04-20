@@ -16,6 +16,7 @@ import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
+import com.yagubogu.ui.attendance.detail.AttendanceDetailScreen
 import com.yagubogu.ui.badge.component.BadgeScreen
 import com.yagubogu.ui.favorite.FavoriteTeamScreen
 import com.yagubogu.ui.livetalk.chat.LivetalkChatScreen
@@ -33,6 +34,7 @@ import com.yagubogu.ui.util.slidePopTransition
 import com.yagubogu.ui.util.slidePredictivePopTransition
 import com.yagubogu.ui.util.slidePushTransition
 import com.yagubogu.ui.util.snackbarPadding
+import kotlinx.datetime.LocalDate
 
 /**
  * 앱의 최상위 네비게이션 구조를 정의하는 루트 컴포저블.
@@ -77,6 +79,9 @@ fun NavigationRoot(
                         onBadgeClick = { rootNavigator.navigate(Route.Badge) },
                         onLivetalkItemClick = { gameId: Long, isVerified: Boolean ->
                             rootNavigator.navigate(Route.LivetalkChat(gameId, isVerified))
+                        },
+                        onAttendanceHistoryItemClick = { id: Long, date: LocalDate ->
+                            rootNavigator.navigate(Route.AttendanceHistoryDetail(id, date))
                         },
                     )
                 }
@@ -131,6 +136,13 @@ fun NavigationRoot(
                     LivetalkChatScreen(
                         gameId = key.gameId,
                         isVerified = key.isVerified,
+                        onBackClick = { rootNavigator.goBack() },
+                    )
+                }
+                entry<Route.AttendanceHistoryDetail> { key: Route.AttendanceHistoryDetail ->
+                    AttendanceDetailScreen(
+                        gameId = key.id,
+                        date = key.date,
                         onBackClick = { rootNavigator.goBack() },
                     )
                 }

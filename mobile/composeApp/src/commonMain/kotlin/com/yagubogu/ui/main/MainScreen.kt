@@ -35,6 +35,7 @@ import com.yagubogu.ui.theme.Gray050
 import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.util.fadeTransition
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import yagubogu.composeapp.generated.resources.Res
@@ -48,6 +49,7 @@ fun MainScreen(
     onSettingsClick: () -> Unit,
     onBadgeClick: () -> Unit,
     onLivetalkItemClick: (Long, Boolean) -> Unit,
+    onAttendanceHistoryItemClick: (id: Long, date: LocalDate) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: MainViewModel = koinViewModel(),
 ) {
@@ -133,6 +135,7 @@ fun MainScreen(
                     entry<BottomNavKey.AttendanceHistory> {
                         AttendanceHistoryScreen(
                             scrollToTopEvent = scrollToTopEvent,
+                            onAttendanceHistoryItemClick = onAttendanceHistoryItemClick,
                         )
                     }
                 }

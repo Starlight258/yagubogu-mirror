@@ -1,6 +1,7 @@
 package com.yagubogu.ui.navigation.model
 
 import androidx.navigation3.runtime.NavKey
+import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -24,5 +25,11 @@ sealed interface Route : NavKey {
     data class LivetalkChat(
         val gameId: Long,
         val isVerified: Boolean,
+    ) : Route
+
+    @Serializable
+    data class AttendanceHistoryDetail(
+        val id: Long,
+        val date: LocalDate,
     ) : Route
 }
