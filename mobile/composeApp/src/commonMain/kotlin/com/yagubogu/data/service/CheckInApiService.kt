@@ -1,15 +1,25 @@
 package com.yagubogu.data.service
 
+import com.yagubogu.data.dto.request.checkin.CheckInImageRequest
 import com.yagubogu.data.dto.request.checkin.CheckInRequest
+import com.yagubogu.data.dto.request.checkin.MemoRequest
 import com.yagubogu.data.dto.request.checkin.PastCheckInRequest
+import com.yagubogu.data.dto.request.presigned.PresignedUrlStartRequest
 import com.yagubogu.data.dto.response.checkin.CheckInCountsResponse
 import com.yagubogu.data.dto.response.checkin.CheckInHistoryResponse
+import com.yagubogu.data.dto.response.checkin.CheckInImageDto
+import com.yagubogu.data.dto.response.checkin.CheckInImagesResponse
 import com.yagubogu.data.dto.response.checkin.CheckInStatusResponse
 import com.yagubogu.data.dto.response.checkin.FanRateResponse
+import com.yagubogu.data.dto.response.checkin.MemoResponse
 import com.yagubogu.data.dto.response.checkin.StadiumCheckInCountsResponse
+import com.yagubogu.data.dto.response.presigned.PresignedUrlStartResponse
 import de.jensklingenberg.ktorfit.http.Body
+import de.jensklingenberg.ktorfit.http.DELETE
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.POST
+import de.jensklingenberg.ktorfit.http.PUT
+import de.jensklingenberg.ktorfit.http.Path
 import de.jensklingenberg.ktorfit.http.Query
 
 interface CheckInApiService {
@@ -49,5 +59,43 @@ interface CheckInApiService {
     @POST("/api/v1/past-check-ins")
     suspend fun postPastCheckIn(
         @Body body: PastCheckInRequest,
+    )
+
+    @GET("/api/v1/check-ins/{checkInId}/memo")
+    suspend fun getMemo(
+        @Path("checkInId") checkInId: Long,
+    ): MemoResponse
+
+    @PUT("/api/v1/check-ins/{checkInId}/memo")
+    suspend fun putMemo(
+        @Path("checkInId") checkInId: Long,
+        @Body body: MemoRequest,
+    )
+
+    @DELETE("/api/v1/check-ins/{checkInId}/memo")
+    suspend fun deleteMemo(
+        @Path("checkInId") checkInId: Long,
+    )
+
+    @POST("/api/v1/check-ins/image/presigned-url")
+    suspend fun postImagePresignedUrl(
+        @Body body: PresignedUrlStartRequest,
+    ): PresignedUrlStartResponse
+
+    @GET("/api/v1/check-ins/{checkInId}/images")
+    suspend fun getImages(
+        @Path("checkInId") checkInId: Long,
+    ): CheckInImagesResponse
+
+    @POST("/api/v1/check-ins/{checkInId}/images")
+    suspend fun postImage(
+        @Path("checkInId") checkInId: Long,
+        @Body body: CheckInImageRequest,
+    ): CheckInImageDto
+
+    @DELETE("/api/v1/check-ins/{checkInId}/images/{imageId}")
+    suspend fun deleteImage(
+        @Path("checkInId") checkInId: Long,
+        @Path("imageId") imageId: Long,
     )
 }

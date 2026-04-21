@@ -4,11 +4,15 @@ import com.yagubogu.data.datasource.checkin.CheckInDataSource
 import com.yagubogu.data.dto.response.checkin.CheckInCountsResponse
 import com.yagubogu.data.dto.response.checkin.CheckInGameDto
 import com.yagubogu.data.dto.response.checkin.CheckInHistoryResponse
+import com.yagubogu.data.dto.response.checkin.CheckInImageDto
+import com.yagubogu.data.dto.response.checkin.CheckInImagesResponse
 import com.yagubogu.data.dto.response.checkin.CheckInStatusResponse
 import com.yagubogu.data.dto.response.checkin.FanRateByGameDto
 import com.yagubogu.data.dto.response.checkin.FanRateResponse
+import com.yagubogu.data.dto.response.checkin.MemoResponse
 import com.yagubogu.data.dto.response.checkin.StadiumCheckInCountDto
 import com.yagubogu.data.dto.response.checkin.StadiumCheckInCountsResponse
+import com.yagubogu.data.dto.response.presigned.PresignedUrlStartResponse
 import kotlinx.datetime.LocalDate
 
 class CheckInDefaultRepository(
@@ -57,4 +61,40 @@ class CheckInDefaultRepository(
             }
 
     override suspend fun addPastCheckIn(gameId: Long): Result<Unit> = checkInDataSource.addPastCheckIn(gameId)
+
+    override suspend fun getMemo(checkInId: Long): Result<String?> =
+        checkInDataSource
+            .getMemo(checkInId)
+            .map { memoResponse: MemoResponse ->
+                memoResponse.content
+            }
+
+    override suspend fun updateMemo(
+        checkInId: Long,
+        content: String,
+    ): Result<Unit> = checkInDataSource.updateMemo(checkInId, content)
+
+    override suspend fun deleteMemo(checkInId: Long): Result<Unit> = checkInDataSource.deleteMemo(checkInId)
+
+    override suspend fun getImagePresignedUrl(
+        contentType: String,
+        contentLength: Long,
+    ): Result<PresignedUrlStartResponse> = checkInDataSource.getImagePresignedUrl(contentType, contentLength)
+
+    override suspend fun getImages(checkInId: Long): Result<List<CheckInImageDto>> =
+        checkInDataSource
+            .getImages(checkInId)
+            .map { checkInImagesResponse: CheckInImagesResponse ->
+                checkInImagesResponse.images
+            }
+
+    override suspend fun addImage(
+        checkInId: Long,
+        imageKey: String,
+    ): Result<CheckInImageDto> = checkInDataSource.addImage(checkInId, imageKey)
+
+    override suspend fun deleteImage(
+        checkInId: Long,
+        imageId: Long,
+    ): Result<Unit> = checkInDataSource.deleteImage(checkInId, imageId)
 }
