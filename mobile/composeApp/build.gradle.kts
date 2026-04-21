@@ -210,6 +210,7 @@ kotlin {
             implementation(libs.coil.compose)
             implementation(libs.coil.network.ktor3)
             implementation(libs.imagepickerkmp)
+            implementation(libs.zoomable)
 
             // UI Components
             implementation(libs.calendar.compose.multiplatform)

@@ -1,6 +1,7 @@
 package com.yagubogu.ui.attendance.detail.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,6 +39,7 @@ import yagubogu.composeapp.generated.resources.attendance_detail_image_content_d
 fun ImageSlider(
     images: ImmutableList<String?>,
     modifier: Modifier = Modifier,
+    onImageClick: ((index: Int) -> Unit)? = null,
 ) {
     val imageSize = images.count { it != null }
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { imageSize })
@@ -72,7 +74,8 @@ fun ImageSlider(
                                     alpha = 0.25f,
                                 ),
                         ).clip(RoundedCornerShape(20.dp))
-                        .background(color = Color.White),
+                        .background(color = Color.White)
+                        .clickable(enabled = onImageClick != null) { onImageClick?.invoke(page) },
             )
         }
         SliderDots(size = imageSize, selectedIndex = pagerState.currentPage)
@@ -80,11 +83,13 @@ fun ImageSlider(
 }
 
 @Composable
-private fun SliderDots(
+fun SliderDots(
     size: Int,
     selectedIndex: Int,
+    modifier: Modifier = Modifier,
 ) {
     Row(
+        modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         repeat(size) { idx: Int ->

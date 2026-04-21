@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yagubogu.ui.attendance.detail.component.ImagePickerBoxRow
 import com.yagubogu.ui.attendance.detail.component.ImageSlider
+import com.yagubogu.ui.attendance.detail.component.ImageViewerDialog
 import com.yagubogu.ui.attendance.detail.model.AttendanceDetailDiaryUiState
 import com.yagubogu.ui.attendance.detail.model.DiaryImageItem
 import com.yagubogu.ui.attendance.detail.model.DiaryMode
@@ -190,6 +191,8 @@ private fun ReadingDiaryPage(
     uiState: AttendanceDetailDiaryUiState,
     modifier: Modifier = Modifier,
 ) {
+    var viewerInitialPage by remember { mutableStateOf<Int?>(null) }
+
     Column(
         modifier =
             modifier
@@ -199,12 +202,23 @@ private fun ReadingDiaryPage(
         verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
         if (!uiState.isImageEmpty) {
-            ImageSlider(images = uiState.imageUris)
+            ImageSlider(
+                images = uiState.imageUris,
+                onImageClick = { index -> viewerInitialPage = index },
+            )
         }
         DiaryTextField(
             readOnly = true,
             state = remember(uiState.comment) { TextFieldState(initialText = uiState.comment) },
             modifier = Modifier.fillMaxWidth().weight(1f),
+        )
+    }
+
+    viewerInitialPage?.let { page ->
+        ImageViewerDialog(
+            images = uiState.imageUris,
+            initialPage = page,
+            onDismiss = { viewerInitialPage = null },
         )
     }
 }
