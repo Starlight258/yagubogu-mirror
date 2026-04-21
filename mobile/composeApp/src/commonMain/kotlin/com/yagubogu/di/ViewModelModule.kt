@@ -49,6 +49,10 @@ val viewModelModule =
         viewModelOf(::StatsViewModel)
 
         viewModel { (gameId: Long) ->
-            AttendanceDetailViewModel(gameId)
+            AttendanceDetailViewModel(
+                gameId = gameId,
+                checkInRepository = get(),
+                thirdPartyRepository = get(),
+            )
         }
     }

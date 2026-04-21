@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import com.yagubogu.ui.attendance.detail.component.ImagePickerBoxRow
 import com.yagubogu.ui.attendance.detail.component.ImageSlider
 import com.yagubogu.ui.attendance.detail.model.AttendanceDetailDiaryUiState
+import com.yagubogu.ui.attendance.detail.model.DiaryImageItem
 import com.yagubogu.ui.attendance.detail.model.DiaryMode
 import com.yagubogu.ui.common.component.image.ImagePicker
 import com.yagubogu.ui.theme.Gray400
@@ -148,7 +149,7 @@ private fun WritingDiaryPage(
         verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
         ImagePickerBoxRow(
-            images = uiState.images,
+            images = uiState.imageUris,
             onAddClick = { isGalleryOpen = true },
             onDeleteClick = onImageDeleted,
         )
@@ -198,7 +199,7 @@ private fun ReadingDiaryPage(
         verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
         if (!uiState.isImageEmpty) {
-            ImageSlider(images = uiState.images)
+            ImageSlider(images = uiState.imageUris)
         }
         DiaryTextField(
             readOnly = true,
@@ -270,7 +271,7 @@ private fun AttendanceDetailDiaryScreenWritingPagePreview() {
     AttendanceDetailDiaryScreen(
         uiState =
             AttendanceDetailDiaryUiState(
-                images = persistentListOf("", "", ""),
+                images = persistentListOf(DiaryImageItem(), DiaryImageItem(), DiaryImageItem()),
             ),
         onImagesSelected = {},
         onImageDeleted = {},
@@ -286,7 +287,7 @@ private fun AttendanceDetailDiaryScreenReadingPagePreview() {
         uiState =
             AttendanceDetailDiaryUiState(
                 mode = DiaryMode.READ,
-                images = persistentListOf("", "", ""),
+                images = persistentListOf(DiaryImageItem(), DiaryImageItem(), DiaryImageItem()),
                 comment =
                     """
                     어쩌구저쩌구 그런데 직관 기록 최대 몇 자로 해야되지? 제한이 있어야 할 거 같긴 한데.. 몇자로 제한함? 백엔드에서 정했겠지? 크림이 알아서 하겠지? 백엔드에서 정했으면 물어봐야 됨. 어쩌구 저쩌구 직관 기록..

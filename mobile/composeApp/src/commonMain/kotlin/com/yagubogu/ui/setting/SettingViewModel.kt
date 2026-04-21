@@ -8,7 +8,9 @@ import com.yagubogu.data.repository.member.MemberRepository
 import com.yagubogu.data.repository.member.NicknameUpdateError
 import com.yagubogu.data.repository.member.toNicknameUpdateError
 import com.yagubogu.data.repository.thirdparty.ThirdPartyRepository
-import com.yagubogu.ui.common.component.image.handleImagePickerKMPCroppedImage
+import com.yagubogu.ui.common.component.image.CompressedImage
+import com.yagubogu.ui.common.component.image.ImageCompressionSpec
+import com.yagubogu.ui.common.component.image.compressImage
 import com.yagubogu.ui.mapper.toUiModel
 import com.yagubogu.ui.setting.model.MemberInfoItem
 import com.yagubogu.ui.setting.model.PresignedUrlCompleteItem
@@ -106,20 +108,17 @@ class SettingViewModel(
     fun handleProfileImage(uri: String) {
         viewModelScope.launch {
             runCatching {
-                handleImagePickerKMPCroppedImage(
-                    sourceImageUri = uri,
-                    onUploadFailure = {
-                        emitProfileError(UiText.StringRes(Res.string.image_upload_failed))
-                    },
-                    onProcessingFailure = {
-                        emitProfileError(UiText.StringRes(Res.string.image_processing_failed))
-                    },
-                    onProfileImageUpload = ::uploadProfileImage,
-                )
-            }.onFailure { exception ->
-                logger.e(exception) { "이미지 처리 과정 중 예외 발생" }
-                emitProfileError(UiText.StringRes(Res.string.image_processing_failed))
-            }
+                compressImage(sourceUri = uri, spec = ImageCompressionSpec.Profile)
+            }.fold(
+                onSuccess = { image: CompressedImage ->
+                    uploadProfileImage(image.uri, image.mimeType, image.fileSize)
+                        .onFailure { emitProfileError(UiText.StringRes(Res.string.image_upload_failed)) }
+                },
+                onFailure = { exception ->
+                    logger.e(exception) { "이미지 처리 과정 중 예외 발생" }
+                    emitProfileError(UiText.StringRes(Res.string.image_processing_failed))
+                },
+            )
         }
     }
 

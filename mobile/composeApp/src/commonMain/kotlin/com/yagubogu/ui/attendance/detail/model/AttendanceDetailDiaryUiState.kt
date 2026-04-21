@@ -7,9 +7,11 @@ import kotlinx.collections.immutable.toImmutableList
 data class AttendanceDetailDiaryUiState(
     val isLoading: Boolean = true,
     val mode: DiaryMode = DiaryMode.WRITE,
-    val images: ImmutableList<String?> = List(DIARY_MAX_IMAGE_SIZE) { null }.toImmutableList(),
+    val images: ImmutableList<DiaryImageItem> = List(DIARY_MAX_IMAGE_SIZE) { DiaryImageItem() }.toImmutableList(),
     val comment: String = "",
 ) {
-    val isImageEmpty: Boolean get() = images.all { it == null }
-    val emptyImageCount: Long get() = images.count { it == null }.toLong()
+    val isImageEmpty: Boolean = images.all { it.isEmpty }
+    val emptyImageCount: Long = images.count { it.isEmpty }.toLong()
+
+    val imageUris: ImmutableList<String?> = images.map { it.uri }.toImmutableList()
 }
