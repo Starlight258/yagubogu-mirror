@@ -25,6 +25,7 @@ import com.yagubogu.ui.attendance.detail.model.AttendanceDetailTab
 import com.yagubogu.ui.theme.Gray050
 import com.yagubogu.ui.theme.PretendardSemiBold
 import com.yagubogu.ui.theme.PretendardSemiBold16
+import com.yagubogu.ui.theme.Primary050
 import com.yagubogu.ui.theme.Primary100
 import com.yagubogu.ui.theme.Primary500
 import com.yagubogu.ui.theme.Primary700
@@ -45,7 +46,7 @@ fun AttendanceDetailTabRow(pagerState: PagerState) {
                 .height(60.dp)
                 .clip(RoundedCornerShape(12.dp))
                 .border(1.dp, Primary100, RoundedCornerShape(12.dp)),
-        containerColor = Primary100,
+        containerColor = Primary050,
         contentColor = Primary500,
         indicator = {
             Box(
