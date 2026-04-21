@@ -203,7 +203,7 @@ private fun ReadingDiaryPage(
         }
         DiaryTextField(
             readOnly = true,
-            state = rememberTextFieldState(initialText = uiState.comment),
+            state = remember(uiState.comment) { TextFieldState(initialText = uiState.comment) },
             modifier = Modifier.fillMaxWidth().weight(1f),
         )
     }
