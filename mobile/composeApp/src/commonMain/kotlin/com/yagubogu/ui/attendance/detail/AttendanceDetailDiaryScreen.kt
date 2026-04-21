@@ -1,7 +1,9 @@
 package com.yagubogu.ui.attendance.detail
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -10,33 +12,42 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.yagubogu.analytics.AnalyticsLogger
 import com.yagubogu.ui.attendance.detail.component.ImagePickerBoxRow
 import com.yagubogu.ui.attendance.detail.component.ImageSlider
 import com.yagubogu.ui.attendance.detail.model.AttendanceDetailDiaryUiState
 import com.yagubogu.ui.attendance.detail.model.DiaryMode
+import com.yagubogu.ui.common.component.image.ImagePicker
 import com.yagubogu.ui.theme.Gray400
 import com.yagubogu.ui.theme.Gray500
+import com.yagubogu.ui.theme.Gray900
 import com.yagubogu.ui.theme.PretendardBold16
 import com.yagubogu.ui.theme.PretendardBold20
 import com.yagubogu.ui.theme.PretendardRegular
 import com.yagubogu.ui.theme.PretendardRegular12
 import com.yagubogu.ui.theme.Primary500
 import com.yagubogu.ui.theme.White
+import com.yagubogu.ui.util.noRippleClickable
 import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -49,22 +60,32 @@ import yagubogu.composeapp.generated.resources.ic_pencil
 
 @Composable
 fun AttendanceDetailDiaryScreen(
+    uiState: AttendanceDetailDiaryUiState,
+    onImagesSelected: (images: List<String>) -> Unit,
+    onImageDeleted: (index: Int) -> Unit,
+    onEditClick: () -> Unit,
+    onSaveClick: (comment: String) -> Unit,
     modifier: Modifier = Modifier,
-    uiState: AttendanceDetailDiaryUiState = AttendanceDetailDiaryUiState(),
 ) {
     Column(
-        modifier =
-            modifier
-                .fillMaxSize()
-                .padding(horizontal = 20.dp)
-                .padding(bottom = 20.dp),
+        modifier = modifier.fillMaxSize().padding(horizontal = 20.dp).padding(bottom = 20.dp),
     ) {
-        AttendanceDetailDiaryTitle(showEditButton = uiState.mode == DiaryMode.WRITE)
+        AttendanceDetailDiaryTitle(
+            showEditButton = uiState.mode == DiaryMode.READ,
+            onEditClick = onEditClick,
+        )
         Spacer(modifier = Modifier.height(10.dp))
 
         when (uiState.mode) {
             DiaryMode.READ -> ReadingDiaryPage(uiState = uiState)
-            DiaryMode.WRITE -> WritingDiaryPage(uiState = uiState)
+
+            DiaryMode.WRITE ->
+                WritingDiaryPage(
+                    uiState = uiState,
+                    onImagesSelected = onImagesSelected,
+                    onImageDeleted = onImageDeleted,
+                    onSaveClick = onSaveClick,
+                )
         }
     }
 }
@@ -72,6 +93,7 @@ fun AttendanceDetailDiaryScreen(
 @Composable
 private fun AttendanceDetailDiaryTitle(
     showEditButton: Boolean,
+    onEditClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -84,7 +106,10 @@ private fun AttendanceDetailDiaryTitle(
             contentDescription = stringResource(Res.string.attendance_detail_tab_diary),
             tint = Primary500,
         )
-        Text(text = stringResource(Res.string.attendance_detail_tab_diary), style = PretendardBold20)
+        Text(
+            text = stringResource(Res.string.attendance_detail_tab_diary),
+            style = PretendardBold20,
+        )
 
         if (showEditButton) {
             Spacer(modifier = Modifier.weight(1f))
@@ -93,6 +118,7 @@ private fun AttendanceDetailDiaryTitle(
                 style = PretendardRegular12,
                 color = Gray500,
                 textDecoration = TextDecoration.Underline,
+                modifier = Modifier.noRippleClickable { onEditClick() },
             )
         }
     }
@@ -101,8 +127,14 @@ private fun AttendanceDetailDiaryTitle(
 @Composable
 private fun WritingDiaryPage(
     uiState: AttendanceDetailDiaryUiState,
+    onImagesSelected: (images: List<String>) -> Unit,
+    onImageDeleted: (index: Int) -> Unit,
+    onSaveClick: (comment: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var isGalleryOpen by remember { mutableStateOf(false) }
+    val textFieldState = rememberTextFieldState(initialText = uiState.comment)
+
     Column(
         modifier =
             modifier
@@ -111,13 +143,40 @@ private fun WritingDiaryPage(
                 .padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
-        ImagePickerBoxRow()
+        ImagePickerBoxRow(
+            images = uiState.images,
+            onAddClick = { isGalleryOpen = true },
+            onDeleteClick = onImageDeleted,
+        )
         DiaryTextField(
             readOnly = false,
-            comment = uiState.comment,
+            state = textFieldState,
             modifier = Modifier.fillMaxWidth().weight(1f),
         )
-        DiarySaveButton(onDiarySave = {})
+        DiarySaveButton(onClick = { onSaveClick(textFieldState.text.toString()) })
+    }
+
+    if (isGalleryOpen) {
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .background(Gray900.copy(alpha = 0.3f))
+                    .systemBarsPadding()
+                    .pointerInput(Unit) { detectTapGestures { } },
+            // 배경 터치 차단
+        ) {
+            ImagePicker(
+                allowMultiple = true,
+                selectionLimit = uiState.emptyImageCount,
+                onPhotosSelected = { uris: List<String> ->
+                    isGalleryOpen = false
+                    onImagesSelected(uris)
+                },
+                onError = { uiText -> },
+                onClosePicker = { isGalleryOpen = false },
+            )
+        }
     }
 }
 
@@ -134,10 +193,12 @@ private fun ReadingDiaryPage(
                 .padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
-        ImageSlider(images = uiState.images)
+        if (!uiState.isImageEmpty) {
+            ImageSlider(images = uiState.images)
+        }
         DiaryTextField(
             readOnly = true,
-            comment = uiState.comment,
+            state = rememberTextFieldState(initialText = uiState.comment),
             modifier = Modifier.fillMaxWidth().weight(1f),
         )
     }
@@ -146,11 +207,9 @@ private fun ReadingDiaryPage(
 @Composable
 private fun DiaryTextField(
     readOnly: Boolean,
-    comment: String,
+    state: TextFieldState,
     modifier: Modifier = Modifier,
 ) {
-    val state = rememberTextFieldState(initialText = comment)
-
     BasicTextField(
         modifier = modifier,
         state = state,
@@ -170,15 +229,12 @@ private fun DiaryTextField(
 
 @Composable
 private fun DiarySaveButton(
-    onDiarySave: () -> Unit,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Button(
         modifier = modifier.fillMaxWidth(),
-        onClick = {
-            onDiarySave()
-            AnalyticsLogger.logEvent("diary_save_button")
-        },
+        onClick = onClick,
         colors =
             ButtonDefaults.buttonColors(
                 containerColor = Primary500,
@@ -197,7 +253,16 @@ private fun DiarySaveButton(
 @Preview(showBackground = true)
 @Composable
 private fun AttendanceDetailDiaryScreenWritingPagePreview() {
-    AttendanceDetailDiaryScreen(uiState = AttendanceDetailDiaryUiState())
+    AttendanceDetailDiaryScreen(
+        uiState =
+            AttendanceDetailDiaryUiState(
+                images = persistentListOf("", "", ""),
+            ),
+        onImagesSelected = {},
+        onImageDeleted = {},
+        onEditClick = {},
+        onSaveClick = { _ -> },
+    )
 }
 
 @Preview(showBackground = true)
@@ -215,5 +280,9 @@ private fun AttendanceDetailDiaryScreenReadingPagePreview() {
                     와! 오늘 이겼다 어쩌구.. 오늘 졌다 어쩌구 이런 걸 작성하는 건가
                     """.trimIndent(),
             ),
+        onImagesSelected = {},
+        onImageDeleted = {},
+        onEditClick = {},
+        onSaveClick = { _ -> },
     )
 }

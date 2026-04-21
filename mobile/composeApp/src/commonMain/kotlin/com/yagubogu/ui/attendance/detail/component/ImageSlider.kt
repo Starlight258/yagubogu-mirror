@@ -6,12 +6,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,6 +17,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.shadow.Shadow
@@ -37,19 +36,28 @@ import yagubogu.composeapp.generated.resources.attendance_detail_image_content_d
 
 @Composable
 fun ImageSlider(
-    pagerState: PagerState = rememberPagerState(initialPage = 0, pageCount = { images.size }),
-    images: ImmutableList<String>,
+    images: ImmutableList<String?>,
     modifier: Modifier = Modifier,
 ) {
+    val imageSize = images.count { it != null }
+    val pagerState = rememberPagerState(initialPage = 0, pageCount = { imageSize })
+
     Column(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        HorizontalPager(state = pagerState) {
+        HorizontalPager(
+            state = pagerState,
+            beyondViewportPageCount = images.size,
+        ) { page ->
             AsyncImage(
-                model = images[pagerState.currentPage],
-                contentDescription = stringResource(Res.string.attendance_detail_image_content_description, pagerState.currentPage),
+                model = images[page],
+                contentDescription =
+                    stringResource(
+                        Res.string.attendance_detail_image_content_description,
+                        page,
+                    ),
                 contentScale = ContentScale.Crop,
                 modifier =
                     Modifier
@@ -63,13 +71,11 @@ fun ImageSlider(
                                     offset = DpOffset(x = 0.dp, 4.dp),
                                     alpha = 0.25f,
                                 ),
-                        ).background(
-                            color = Color.White,
-                            shape = RoundedCornerShape(20.dp),
-                        ),
+                        ).clip(RoundedCornerShape(20.dp))
+                        .background(color = Color.White),
             )
         }
-        SliderDots(size = images.size, selectedIndex = pagerState.currentPage)
+        SliderDots(size = imageSize, selectedIndex = pagerState.currentPage)
     }
 }
 
@@ -98,9 +104,8 @@ private fun SliderDots(
 @Preview(showBackground = true)
 @Composable
 private fun ImageSliderPreview() {
-    Surface(modifier = Modifier.fillMaxSize().padding(20.dp)) {
+    Surface(modifier = Modifier.fillMaxWidth().padding(20.dp)) {
         ImageSlider(
-            pagerState = rememberPagerState { 3 },
             images = persistentListOf("", "", ""),
         )
     }

@@ -10,10 +10,18 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yagubogu.ui.attendance.detail.component.AttendanceDetailTabRow
+import com.yagubogu.ui.attendance.detail.component.ExitDiaryDialog
+import com.yagubogu.ui.attendance.detail.model.AttendanceDetailDiaryUiState
 import com.yagubogu.ui.attendance.detail.model.AttendanceDetailTab
+import com.yagubogu.ui.attendance.detail.model.DiaryMode
 import com.yagubogu.ui.common.component.DefaultToolbar
 import com.yagubogu.ui.theme.Gray050
 import com.yagubogu.ui.util.yyyyMMddDayOfWeekFormatter
@@ -21,6 +29,8 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.format
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.attendance_detail_delete
 import yagubogu.composeapp.generated.resources.ic_trash
@@ -31,7 +41,53 @@ fun AttendanceDetailScreen(
     date: LocalDate,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
-    pagerState: PagerState = rememberPagerState { AttendanceDetailTab.entries.size },
+    viewModel: AttendanceDetailViewModel = koinViewModel(parameters = { parametersOf(gameId) }),
+) {
+    var showExitDialog by remember { mutableStateOf(false) }
+
+    val pagerState = rememberPagerState { AttendanceDetailTab.entries.size }
+    val attendanceDetailDiaryUiState: AttendanceDetailDiaryUiState by viewModel.attendanceDetailDiaryUiState.collectAsStateWithLifecycle()
+
+    val isWriting =
+        pagerState.currentPage == AttendanceDetailTab.DIARY.ordinal && attendanceDetailDiaryUiState.mode == DiaryMode.WRITE
+
+    AttendanceDetailScreen(
+        attendanceDetailDiaryUiState = attendanceDetailDiaryUiState,
+        date = date.format(yyyyMMddDayOfWeekFormatter),
+        pagerState = pagerState,
+        onBackClick = {
+            if (isWriting) {
+                showExitDialog = true
+            } else {
+                onBackClick()
+            }
+        },
+        onImagesSelected = viewModel::addImages,
+        onImageDeleted = viewModel::deleteImage,
+        onEditClick = viewModel::editDiary,
+        onSaveClick = viewModel::saveDiary,
+        modifier = modifier,
+    )
+
+    if (showExitDialog) {
+        ExitDiaryDialog(
+            onConfirm = onBackClick,
+            onCancel = { showExitDialog = false },
+        )
+    }
+}
+
+@Composable
+private fun AttendanceDetailScreen(
+    attendanceDetailDiaryUiState: AttendanceDetailDiaryUiState,
+    pagerState: PagerState,
+    date: String,
+    onBackClick: () -> Unit,
+    onImagesSelected: (images: List<String>) -> Unit,
+    onImageDeleted: (index: Int) -> Unit,
+    onEditClick: () -> Unit,
+    onSaveClick: (comment: String) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier =
@@ -40,7 +96,7 @@ fun AttendanceDetailScreen(
                 .background(Gray050),
     ) {
         AttendanceDetailToolbar(
-            date = date.format(yyyyMMddDayOfWeekFormatter),
+            date = date,
             onBackClick = onBackClick,
             onDeleteClick = {},
         )
@@ -51,7 +107,14 @@ fun AttendanceDetailScreen(
         ) { page ->
             when (page) {
                 AttendanceDetailTab.GAME_RECORD.ordinal -> Unit
-                AttendanceDetailTab.DIARY.ordinal -> AttendanceDetailDiaryScreen()
+                AttendanceDetailTab.DIARY.ordinal ->
+                    AttendanceDetailDiaryScreen(
+                        uiState = attendanceDetailDiaryUiState,
+                        onImagesSelected = onImagesSelected,
+                        onImageDeleted = onImageDeleted,
+                        onEditClick = onEditClick,
+                        onSaveClick = onSaveClick,
+                    )
             }
         }
     }
@@ -82,12 +145,15 @@ private fun AttendanceDetailToolbar(
 
 @Preview
 @Composable
-private fun AttendanceDetailScreenDiaryTabPreview(modifier: Modifier = Modifier) {
+private fun AttendanceDetailScreenDiaryTabPreview() {
     AttendanceDetailScreen(
-        pagerState = rememberPagerState(initialPage = AttendanceDetailTab.DIARY.ordinal) { AttendanceDetailTab.entries.size },
-        modifier = modifier,
-        gameId = 0,
-        date = LocalDate(2025, 8, 14),
+        attendanceDetailDiaryUiState = AttendanceDetailDiaryUiState(),
+        pagerState = rememberPagerState(AttendanceDetailTab.DIARY.ordinal) { AttendanceDetailTab.entries.size },
+        date = "2025.08.14 (화)",
         onBackClick = {},
+        onImagesSelected = {},
+        onImageDeleted = {},
+        onEditClick = {},
+        onSaveClick = { _ -> },
     )
 }
