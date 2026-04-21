@@ -12,7 +12,7 @@ import com.yagubogu.data.dto.response.checkin.FanRateResponse
 import com.yagubogu.data.dto.response.checkin.MemoResponse
 import com.yagubogu.data.dto.response.checkin.StadiumCheckInCountDto
 import com.yagubogu.data.dto.response.checkin.StadiumCheckInCountsResponse
-import com.yagubogu.data.dto.response.presigned.PresignedUrlStartResponse
+import com.yagubogu.ui.attendance.detail.model.CheckInPresignedUrlItem
 import kotlinx.datetime.LocalDate
 
 class CheckInDefaultRepository(
@@ -79,7 +79,10 @@ class CheckInDefaultRepository(
     override suspend fun getImagePresignedUrl(
         contentType: String,
         contentLength: Long,
-    ): Result<PresignedUrlStartResponse> = checkInDataSource.getImagePresignedUrl(contentType, contentLength)
+    ): Result<CheckInPresignedUrlItem> =
+        checkInDataSource
+            .getImagePresignedUrl(contentType, contentLength)
+            .map { CheckInPresignedUrlItem(key = it.key, url = it.url) }
 
     override suspend fun getImages(checkInId: Long): Result<List<CheckInImageDto>> =
         checkInDataSource
