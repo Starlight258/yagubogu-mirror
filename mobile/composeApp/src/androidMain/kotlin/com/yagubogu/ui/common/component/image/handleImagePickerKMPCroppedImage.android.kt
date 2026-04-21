@@ -1,4 +1,4 @@
-package com.yagubogu.ui.setting
+package com.yagubogu.ui.common.component.image
 
 import android.app.Application
 import android.graphics.Bitmap

@@ -1,4 +1,4 @@
-package com.yagubogu.ui.setting
+package com.yagubogu.ui.common.component.image
 
 import co.touchlab.kermit.Logger
 import kotlinx.cinterop.ExperimentalForeignApi
@@ -48,7 +48,8 @@ actual suspend fun handleImagePickerKMPCroppedImage(
         val timestamp = (NSDate().timeIntervalSince1970 * 1000).toLong()
         val tempFileName = "profile_$timestamp.jpg"
         val tmpDir = NSTemporaryDirectory()
-        val tempFilePath = if (tmpDir.endsWith("/")) "$tmpDir$tempFileName" else "$tmpDir/$tempFileName"
+        val tempFilePath =
+            if (tmpDir.endsWith("/")) "$tmpDir$tempFileName" else "$tmpDir/$tempFileName"
 
         // 파일 쓰기
         val success = imageData.writeToFile(tempFilePath, true)

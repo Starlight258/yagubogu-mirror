@@ -20,6 +20,7 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import com.yagubogu.ui.common.component.DefaultToolbar
+import com.yagubogu.ui.common.component.image.ImagePicker
 import com.yagubogu.ui.navigation.model.NavigationState
 import com.yagubogu.ui.navigation.model.SettingNavKey
 import com.yagubogu.ui.navigation.model.toEntries
@@ -115,9 +116,9 @@ fun SettingScreen(
                         .systemBarsPadding()
                         .pointerInput(Unit) { detectTapGestures { } }, // 배경 터치 차단
             ) {
-                ProfileImagePicker(
-                    onPhotosSelected = { uri: String ->
-                        viewModel.handleProfileImage(uri)
+                ImagePicker(
+                    onPhotosSelected = { uri: List<String> ->
+                        uri.firstOrNull()?.let { viewModel.handleProfileImage(it) }
                     },
                     onError = { uiText -> viewModel.emitProfileError(uiText) },
                     onClosePicker = { isGalleryOpen = false },
