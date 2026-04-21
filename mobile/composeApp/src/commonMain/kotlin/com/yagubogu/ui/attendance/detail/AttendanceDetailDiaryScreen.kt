@@ -15,7 +15,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.input.InputTransformation
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.maxLength
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -57,6 +59,8 @@ import yagubogu.composeapp.generated.resources.attendance_detail_diary_placehold
 import yagubogu.composeapp.generated.resources.attendance_detail_diary_save
 import yagubogu.composeapp.generated.resources.attendance_detail_tab_diary
 import yagubogu.composeapp.generated.resources.ic_pencil
+
+private const val DIARY_MAX_LENGTH = 500
 
 @Composable
 fun AttendanceDetailDiaryScreen(
@@ -215,14 +219,24 @@ private fun DiaryTextField(
         state = state,
         readOnly = readOnly,
         textStyle = PretendardRegular.copy(fontSize = 14.sp),
+        inputTransformation = if (!readOnly) InputTransformation.maxLength(DIARY_MAX_LENGTH) else null,
         decorator = { innerTextField ->
-            if (state.text.isEmpty()) {
-                Text(
-                    text = stringResource(Res.string.attendance_detail_diary_placeholder),
-                    style = PretendardRegular.copy(fontSize = 14.sp, color = Gray400),
-                )
+            Box(modifier = Modifier.fillMaxSize()) {
+                if (state.text.isEmpty()) {
+                    Text(
+                        text = stringResource(Res.string.attendance_detail_diary_placeholder),
+                        style = PretendardRegular.copy(fontSize = 14.sp, color = Gray400),
+                    )
+                }
+                innerTextField()
+                if (!readOnly) {
+                    Text(
+                        text = "${state.text.length}/$DIARY_MAX_LENGTH",
+                        style = PretendardRegular12.copy(color = Gray400),
+                        modifier = Modifier.align(Alignment.BottomEnd),
+                    )
+                }
             }
-            innerTextField()
         },
     )
 }
