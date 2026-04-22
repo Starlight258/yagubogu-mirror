@@ -70,6 +70,7 @@ fun SettingScreen(
                             onSettingAccountClick = { onSettingItemClick(SettingNavKey.SettingAccount) },
                             onFavoriteTeamEditClick = { onFavoriteTeamEditClick() },
                             onProfileImagePickerOpen = { isGalleryOpen = true },
+                            onClickNotice = { onSettingItemClick(SettingNavKey.SettingNotice) },
                             onOssLicenseClick = { onSettingItemClick(SettingNavKey.OssLicense) },
                         )
                     }
@@ -80,6 +81,11 @@ fun SettingScreen(
                             onLogout = onLogout,
                         )
                     }
+
+                    entry<SettingNavKey.SettingNotice> {
+                        SettingNoticeScreen()
+                    }
+
                     entry<SettingNavKey.SettingDeleteAccount> {
                         SettingDeleteAccountScreen(
                             viewModel = viewModel,
