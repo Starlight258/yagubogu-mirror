@@ -15,7 +15,10 @@ import com.yagubogu.ui.common.component.image.ImageCompressionSpec
 import com.yagubogu.ui.common.component.image.compressImage
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -75,9 +78,16 @@ class AttendanceDetailViewModel(
 
     fun saveDiary(comment: String) {
         AnalyticsLogger.logEvent("diary_save_button")
-        _attendanceDetailDiaryUiState.update { it.copy(comment = comment, mode = DiaryMode.READ) }
-        viewModelScope.launch { updateMemo(checkInId = gameId, comment = comment) }
-        viewModelScope.launch { uploadDiaryImages() }
+        _attendanceDetailDiaryUiState.update { it.copy(isLoading = true) }
+        viewModelScope.launch {
+            coroutineScope {
+                launch { updateMemo(checkInId = gameId, comment = comment) }
+                launch { uploadDiaryImages() }
+            }
+            _attendanceDetailDiaryUiState.update { state ->
+                state.copy(comment = comment, mode = DiaryMode.READ, isLoading = false)
+            }
+        }
     }
 
     private suspend fun updateMemo(
@@ -93,17 +103,21 @@ class AttendanceDetailViewModel(
     }
 
     private suspend fun uploadDiaryImages() {
-        // 로컬에 저장된(id == null인) 이미지만 업로드
         val targets: List<DiaryImageItem> =
             attendanceDetailDiaryUiState.value.images.filter { !it.isEmpty && it.id == null }
 
-        targets.forEach { item: DiaryImageItem ->
-            uploadDiaryImage(checkInId = gameId, sourceUri = item.uri ?: "")
-                .onSuccess { imageDto -> handleUploadDiaryImageSuccess(item, imageDto) }
-                .onFailure { e ->
-                    _uiEvent.emit(AttendanceDetailUiEvent.UploadImageFailed)
-                    logger.e(e) { "직관 이미지 업로드 실패: ${item.uri}" }
+        coroutineScope {
+            targets.map { item: DiaryImageItem ->
+                async {
+                    val uri = item.uri ?: return@async
+                    uploadDiaryImage(checkInId = gameId, sourceUri = uri)
+                        .onSuccess { imageDto -> handleUploadDiaryImageSuccess(item, imageDto) }
+                        .onFailure { e ->
+                            _uiEvent.emit(AttendanceDetailUiEvent.UploadImageFailed)
+                            logger.e(e) { "직관 이미지 업로드 실패: ${item.uri}" }
+                        }
                 }
+            }.awaitAll()
         }
     }
 

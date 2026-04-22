@@ -5,7 +5,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
 data class AttendanceDetailDiaryUiState(
-    val isLoading: Boolean = true,
+    val isLoading: Boolean = false,
     val mode: DiaryMode = DiaryMode.WRITE,
     val images: ImmutableList<DiaryImageItem> = List(DIARY_MAX_IMAGE_SIZE) { DiaryImageItem() }.toImmutableList(),
     val comment: String = "",

@@ -1,6 +1,7 @@
 package com.yagubogu.ui.attendance.detail
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -26,6 +27,7 @@ import com.yagubogu.ui.attendance.detail.model.AttendanceDetailTab
 import com.yagubogu.ui.attendance.detail.model.AttendanceDetailUiEvent
 import com.yagubogu.ui.attendance.detail.model.DiaryMode
 import com.yagubogu.ui.common.component.DefaultToolbar
+import com.yagubogu.ui.main.component.LoadingOverlay
 import com.yagubogu.ui.theme.Gray050
 import com.yagubogu.ui.util.LocalSnackbarHostState
 import com.yagubogu.ui.util.showSingleSnackbar
@@ -82,10 +84,10 @@ fun AttendanceDetailScreen(
         date = date.format(yyyyMMddDayOfWeekFormatter),
         pagerState = pagerState,
         onBackClick = {
-            if (isWriting) {
-                showExitDialog = true
-            } else {
-                onBackClick()
+            when {
+                attendanceDetailDiaryUiState.isLoading -> Unit
+                isWriting -> showExitDialog = true
+                else -> onBackClick()
             }
         },
         onImagesSelected = viewModel::addImages,
@@ -115,34 +117,37 @@ private fun AttendanceDetailScreen(
     onSaveClick: (comment: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier =
-            modifier
-                .fillMaxSize()
-                .background(Gray050),
-    ) {
-        AttendanceDetailToolbar(
-            date = date,
-            onBackClick = onBackClick,
-            onDeleteClick = {},
-        )
-        AttendanceDetailTabRow(pagerState)
-        HorizontalPager(
-            state = pagerState,
-            modifier = Modifier.fillMaxSize(),
-        ) { page ->
-            when (page) {
-                AttendanceDetailTab.GAME_RECORD.ordinal -> Unit
-                AttendanceDetailTab.DIARY.ordinal ->
-                    AttendanceDetailDiaryScreen(
-                        uiState = attendanceDetailDiaryUiState,
-                        onImagesSelected = onImagesSelected,
-                        onImageDeleted = onImageDeleted,
-                        onEditClick = onEditClick,
-                        onSaveClick = onSaveClick,
-                    )
+    Box(modifier = modifier.fillMaxSize()) {
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .background(Gray050),
+        ) {
+            AttendanceDetailToolbar(
+                date = date,
+                onBackClick = onBackClick,
+                onDeleteClick = {},
+            )
+            AttendanceDetailTabRow(pagerState)
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier.fillMaxSize(),
+            ) { page ->
+                when (page) {
+                    AttendanceDetailTab.GAME_RECORD.ordinal -> Unit
+                    AttendanceDetailTab.DIARY.ordinal ->
+                        AttendanceDetailDiaryScreen(
+                            uiState = attendanceDetailDiaryUiState,
+                            onImagesSelected = onImagesSelected,
+                            onImageDeleted = onImageDeleted,
+                            onEditClick = onEditClick,
+                            onSaveClick = onSaveClick,
+                        )
+                }
             }
         }
+        LoadingOverlay(isLoading = attendanceDetailDiaryUiState.isLoading)
     }
 }
 
