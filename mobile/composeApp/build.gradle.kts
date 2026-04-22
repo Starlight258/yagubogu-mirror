@@ -14,10 +14,8 @@ val appVersionName = "2.2.6"
 fun TargetConfigDsl.stringField(
     name: String,
     key: String = name,
-    required: Boolean = true,
 ) {
     val value = gradleLocalProperties(rootDir, providers).getProperty(key)
-    require(!required || !value.isNullOrBlank()) { "local.properties에 '$key'가 누락되었습니다." }
     buildConfigField(STRING, name, value ?: "")
 }
 
@@ -46,7 +44,7 @@ buildkonfig {
         stringField("BASE_URL", key = "BASE_URL_DEBUG")
         stringField("WEB_CLIENT_ID")
         stringField("IOS_CLIENT_ID")
-        stringField("DEBUG_FIXED_DATE", required = false)
+        stringField("DEBUG_FIXED_DATE")
         buildConfigField(INT, "VERSION_CODE", "$appVersionCode")
 
         // AdMob Ids
