@@ -8,14 +8,19 @@ import com.yagubogu.data.dto.response.checkin.CheckInImageDto
 import com.yagubogu.data.repository.checkin.CheckInRepository
 import com.yagubogu.data.repository.thirdparty.ThirdPartyRepository
 import com.yagubogu.ui.attendance.detail.model.AttendanceDetailDiaryUiState
+import com.yagubogu.ui.attendance.detail.model.AttendanceDetailUiEvent
 import com.yagubogu.ui.attendance.detail.model.DiaryImageItem
 import com.yagubogu.ui.attendance.detail.model.DiaryMode
 import com.yagubogu.ui.common.component.image.ImageCompressionSpec
 import com.yagubogu.ui.common.component.image.compressImage
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -30,6 +35,14 @@ class AttendanceDetailViewModel(
     private val _attendanceDetailDiaryUiState = MutableStateFlow(AttendanceDetailDiaryUiState())
     val attendanceDetailDiaryUiState: StateFlow<AttendanceDetailDiaryUiState> =
         _attendanceDetailDiaryUiState.asStateFlow()
+
+    private val _uiEvent =
+        MutableSharedFlow<AttendanceDetailUiEvent>(
+            replay = 0,
+            extraBufferCapacity = 1,
+            onBufferOverflow = BufferOverflow.DROP_OLDEST,
+        )
+    val uiEvent: SharedFlow<AttendanceDetailUiEvent> = _uiEvent.asSharedFlow()
 
     fun addImages(uris: List<String>) {
         _attendanceDetailDiaryUiState.update {
@@ -73,7 +86,10 @@ class AttendanceDetailViewModel(
     ) {
         checkInRepository
             .updateMemo(checkInId = checkInId, content = comment)
-            .onFailure { e -> logger.e(e) { "메모 저장 실패" } }
+            .onFailure { e ->
+                _uiEvent.emit(AttendanceDetailUiEvent.UpdateMemoFailed)
+                logger.e(e) { "메모 저장 실패" }
+            }
     }
 
     private suspend fun uploadDiaryImages() {
@@ -84,7 +100,10 @@ class AttendanceDetailViewModel(
         targets.forEach { item: DiaryImageItem ->
             uploadDiaryImage(checkInId = gameId, sourceUri = item.uri ?: "")
                 .onSuccess { imageDto -> handleUploadDiaryImageSuccess(item, imageDto) }
-                .onFailure { e -> logger.e(e) { "직관 이미지 업로드 실패: ${item.uri}" } }
+                .onFailure { e ->
+                    _uiEvent.emit(AttendanceDetailUiEvent.UploadImageFailed)
+                    logger.e(e) { "직관 이미지 업로드 실패: ${item.uri}" }
+                }
         }
     }
 

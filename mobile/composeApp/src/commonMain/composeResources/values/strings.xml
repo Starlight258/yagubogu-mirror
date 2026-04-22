@@ -139,6 +139,8 @@
     <string name="attendance_detail_diary_placeholder">뜨거웠던 직관의 순간을 기록해 보세요!</string>
     <string name="attendance_detail_image_picker">사진</string>
     <string name="attendance_detail_image_content_description">%1$d번 사진</string>
+    <string name="attendance_detail_update_memo_failed">기록을 서버에 업로드하는 데 실패했어요. 다시 시도해 주세요.</string>
+    <string name="attendance_detail_upload_image_failed">이미지를 서버에 업로드하는 데 실패했어요. 다시 시도해 주세요.</string>
 
     <string name="login_failed_message">로그인에 실패했습니다.</string>
 

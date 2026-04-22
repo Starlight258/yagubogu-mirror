@@ -9,7 +9,9 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,9 +23,12 @@ import com.yagubogu.ui.attendance.detail.component.AttendanceDetailTabRow
 import com.yagubogu.ui.attendance.detail.component.ExitDiaryDialog
 import com.yagubogu.ui.attendance.detail.model.AttendanceDetailDiaryUiState
 import com.yagubogu.ui.attendance.detail.model.AttendanceDetailTab
+import com.yagubogu.ui.attendance.detail.model.AttendanceDetailUiEvent
 import com.yagubogu.ui.attendance.detail.model.DiaryMode
 import com.yagubogu.ui.common.component.DefaultToolbar
 import com.yagubogu.ui.theme.Gray050
+import com.yagubogu.ui.util.LocalSnackbarHostState
+import com.yagubogu.ui.util.showSingleSnackbar
 import com.yagubogu.ui.util.yyyyMMddDayOfWeekFormatter
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.format
@@ -33,6 +38,8 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.attendance_detail_delete
+import yagubogu.composeapp.generated.resources.attendance_detail_update_memo_failed
+import yagubogu.composeapp.generated.resources.attendance_detail_upload_image_failed
 import yagubogu.composeapp.generated.resources.ic_trash
 
 @Composable
@@ -45,11 +52,30 @@ fun AttendanceDetailScreen(
 ) {
     var showExitDialog by remember { mutableStateOf(false) }
 
+    val snackbarState: SnackbarHostState = LocalSnackbarHostState.current
     val pagerState = rememberPagerState { AttendanceDetailTab.entries.size }
     val attendanceDetailDiaryUiState: AttendanceDetailDiaryUiState by viewModel.attendanceDetailDiaryUiState.collectAsStateWithLifecycle()
 
     val isWriting =
         pagerState.currentPage == AttendanceDetailTab.DIARY.ordinal && attendanceDetailDiaryUiState.mode == DiaryMode.WRITE
+
+    LaunchedEffect(Unit) {
+        viewModel.uiEvent.collect {
+            when (it) {
+                AttendanceDetailUiEvent.UpdateMemoFailed ->
+                    snackbarState.showSingleSnackbar(
+                        scope = this,
+                        stringResource = Res.string.attendance_detail_update_memo_failed,
+                    )
+
+                AttendanceDetailUiEvent.UploadImageFailed ->
+                    snackbarState.showSingleSnackbar(
+                        scope = this,
+                        stringResource = Res.string.attendance_detail_upload_image_failed,
+                    )
+            }
+        }
+    }
 
     AttendanceDetailScreen(
         attendanceDetailDiaryUiState = attendanceDetailDiaryUiState,
