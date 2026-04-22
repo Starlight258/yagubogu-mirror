@@ -57,6 +57,7 @@ import yagubogu.composeapp.generated.resources.setting_edit_my_team
 import yagubogu.composeapp.generated.resources.setting_edit_nickname
 import yagubogu.composeapp.generated.resources.setting_edit_profile_image
 import yagubogu.composeapp.generated.resources.setting_edited_nickname_alert
+import yagubogu.composeapp.generated.resources.setting_faq
 import yagubogu.composeapp.generated.resources.setting_main_sign_up_date
 import yagubogu.composeapp.generated.resources.setting_manage_account
 import yagubogu.composeapp.generated.resources.setting_notice
@@ -69,6 +70,7 @@ fun SettingMainScreen(
     onFavoriteTeamEditClick: () -> Unit,
     onProfileImagePickerOpen: () -> Unit,
     onClickNotice: () -> Unit,
+    onClickFaq: () -> Unit,
     onOssLicenseClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -117,6 +119,7 @@ fun SettingMainScreen(
         onNicknameEdit = { showNicknameEditDialog = true },
         onProfileImageUpload = onProfileImagePickerOpen,
         onClickNotice = onClickNotice,
+        onClickFaq = onClickFaq,
         onOssLicenseClick = onOssLicenseClick,
         memberInfoItem = memberInfoItem.value,
         appVersion = getAppVersion(),
@@ -145,6 +148,7 @@ private fun SettingMainScreen(
     onProfileImageUpload: () -> Unit,
     onFavoriteTeamEditClick: () -> Unit,
     onClickNotice: () -> Unit,
+    onClickFaq: () -> Unit,
     onOssLicenseClick: () -> Unit,
     memberInfoItem: MemberInfoItem,
     appVersion: String,
@@ -186,6 +190,10 @@ private fun SettingMainScreen(
             SettingButton(
                 text = stringResource(Res.string.setting_notice),
                 onClick = onClickNotice,
+            )
+            SettingButton(
+                text = stringResource(Res.string.setting_faq),
+                onClick = onClickFaq,
             )
             SettingButton(
                 text = stringResource(Res.string.setting_contact_us),
@@ -277,6 +285,7 @@ private fun SettingMainScreenPreview() {
         onProfileImageUpload = {},
         onFavoriteTeamEditClick = {},
         onClickNotice = {},
+        onClickFaq = {},
         onOssLicenseClick = {},
         memberInfoItem = MemberInfoItem(nickName = "야구보구"),
         appVersion = "1.0.0",

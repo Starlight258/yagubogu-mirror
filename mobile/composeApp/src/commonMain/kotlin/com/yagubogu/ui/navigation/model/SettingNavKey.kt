@@ -4,6 +4,7 @@ import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.StringResource
 import yagubogu.composeapp.generated.resources.Res
+import yagubogu.composeapp.generated.resources.setting_faq
 import yagubogu.composeapp.generated.resources.setting_main_title
 import yagubogu.composeapp.generated.resources.setting_manage_account
 import yagubogu.composeapp.generated.resources.setting_notice
@@ -31,6 +32,11 @@ sealed interface SettingNavKey : NavKey {
     @Serializable
     data object SettingNotice : SettingNavKey {
         override val label: StringResource = Res.string.setting_notice
+    }
+
+    @Serializable
+    data object SettingFaq : SettingNavKey {
+        override val label: StringResource = Res.string.setting_faq
     }
 
     @Serializable
