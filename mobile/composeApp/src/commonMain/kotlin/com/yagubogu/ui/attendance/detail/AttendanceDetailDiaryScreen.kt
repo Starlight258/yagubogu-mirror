@@ -15,10 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.input.InputTransformation
-import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.foundation.text.input.maxLength
-import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -139,7 +135,7 @@ private fun WritingDiaryPage(
     modifier: Modifier = Modifier,
 ) {
     var isGalleryOpen by remember { mutableStateOf(false) }
-    val textFieldState = rememberTextFieldState(initialText = uiState.comment)
+    var comment by remember { mutableStateOf(uiState.comment) }
 
     Column(
         modifier =
@@ -156,10 +152,11 @@ private fun WritingDiaryPage(
         )
         DiaryTextField(
             readOnly = false,
-            state = textFieldState,
+            value = comment,
+            onValueChange = { if (it.length <= DIARY_MAX_LENGTH) comment = it },
             modifier = Modifier.fillMaxWidth().weight(1f),
         )
-        DiarySaveButton(onClick = { onSaveClick(textFieldState.text.toString()) })
+        DiarySaveButton(onClick = { onSaveClick(comment) })
     }
 
     if (isGalleryOpen) {
@@ -209,7 +206,8 @@ private fun ReadingDiaryPage(
         }
         DiaryTextField(
             readOnly = true,
-            state = remember(uiState.comment) { TextFieldState(initialText = uiState.comment) },
+            value = uiState.comment,
+            onValueChange = {},
             modifier = Modifier.fillMaxWidth().weight(1f),
         )
     }
@@ -226,18 +224,19 @@ private fun ReadingDiaryPage(
 @Composable
 private fun DiaryTextField(
     readOnly: Boolean,
-    state: TextFieldState,
+    value: String,
+    onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     BasicTextField(
         modifier = modifier,
-        state = state,
+        value = value,
+        onValueChange = onValueChange,
         readOnly = readOnly,
         textStyle = PretendardRegular.copy(fontSize = 14.sp),
-        inputTransformation = if (!readOnly) InputTransformation.maxLength(DIARY_MAX_LENGTH) else null,
-        decorator = { innerTextField ->
+        decorationBox = { innerTextField ->
             Box(modifier = Modifier.fillMaxSize()) {
-                if (state.text.isEmpty()) {
+                if (value.isEmpty()) {
                     Text(
                         text = stringResource(Res.string.attendance_detail_diary_placeholder),
                         style = PretendardRegular.copy(fontSize = 14.sp, color = Gray400),
@@ -246,7 +245,7 @@ private fun DiaryTextField(
                 innerTextField()
                 if (!readOnly) {
                     Text(
-                        text = "${state.text.length}/$DIARY_MAX_LENGTH",
+                        text = "${value.length}/$DIARY_MAX_LENGTH",
                         style = PretendardRegular12.copy(color = Gray400),
                         modifier = Modifier.align(Alignment.BottomEnd),
                     )
