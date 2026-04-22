@@ -5,6 +5,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.yagubogu.ui.common.component.DefaultDialog
 import com.yagubogu.ui.common.model.DefaultDialogUiModel
+import org.jetbrains.compose.resources.stringResource
+import yagubogu.composeapp.generated.resources.Res
+import yagubogu.composeapp.generated.resources.all_cancel
+import yagubogu.composeapp.generated.resources.attendance_detail_exit_diary_message
+import yagubogu.composeapp.generated.resources.attendance_detail_exit_diary_positive
+import yagubogu.composeapp.generated.resources.attendance_detail_exit_diary_title
 
 @Composable
 fun ExitDiaryDialog(
@@ -15,11 +21,11 @@ fun ExitDiaryDialog(
     DefaultDialog(
         dialogUiModel =
             DefaultDialogUiModel(
-                title = "저장하지 않고 나갈까요?",
-                emoji = "\uD83D\uDEA8",
-                message = "변경사항이 저장되지 않아요.",
-                negativeText = "취소",
-                positiveText = "나가기",
+                title = stringResource(Res.string.attendance_detail_exit_diary_title),
+                emoji = "🚨",
+                message = stringResource(Res.string.attendance_detail_exit_diary_message),
+                negativeText = stringResource(Res.string.all_cancel),
+                positiveText = stringResource(Res.string.attendance_detail_exit_diary_positive),
             ),
         onConfirm = onConfirm,
         onCancel = onCancel,
