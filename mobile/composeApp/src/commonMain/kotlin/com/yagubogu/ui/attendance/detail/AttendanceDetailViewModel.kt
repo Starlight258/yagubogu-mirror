@@ -75,6 +75,30 @@ class AttendanceDetailViewModel(
         }
     }
 
+    fun deleteDiary() {
+        _attendanceDetailDiaryUiState.update { it.copy(isLoading = true) }
+        viewModelScope.launch {
+            val imageIds = attendanceDetailDiaryUiState.value.images.mapNotNull { it.id }
+
+            val results: List<Result<Unit>> =
+                coroutineScope {
+                    val imageJobs = imageIds.map { id -> async { checkInRepository.deleteImage(gameId, id) } }
+                    val memoJob = async { checkInRepository.deleteMemo(gameId) }
+                    (imageJobs + memoJob).awaitAll()
+                }
+
+            if (results.any { it.isFailure }) {
+                results
+                    .firstOrNull { it.isFailure }
+                    ?.onFailure { e -> logger.e(e) { "직관 기록 삭제 실패" } }
+                _attendanceDetailDiaryUiState.update { it.copy(isLoading = false) }
+                _uiEvent.emit(AttendanceDetailUiEvent.DeleteDiaryFailed)
+            } else {
+                _attendanceDetailDiaryUiState.value = AttendanceDetailDiaryUiState()
+            }
+        }
+    }
+
     fun editDiary() = _attendanceDetailDiaryUiState.update { it.copy(mode = DiaryMode.WRITE) }
 
     fun saveDiary(comment: String) {

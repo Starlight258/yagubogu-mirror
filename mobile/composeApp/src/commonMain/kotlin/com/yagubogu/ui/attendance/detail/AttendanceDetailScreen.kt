@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yagubogu.ui.attendance.detail.component.AttendanceDetailTabRow
+import com.yagubogu.ui.attendance.detail.component.DeleteDiaryDialog
 import com.yagubogu.ui.attendance.detail.component.ExitDiaryDialog
 import com.yagubogu.ui.attendance.detail.model.AttendanceDetailDiaryUiState
 import com.yagubogu.ui.attendance.detail.model.AttendanceDetailTab
@@ -40,6 +41,7 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.attendance_detail_delete
+import yagubogu.composeapp.generated.resources.attendance_detail_delete_failed
 import yagubogu.composeapp.generated.resources.attendance_detail_update_memo_failed
 import yagubogu.composeapp.generated.resources.attendance_detail_upload_image_failed
 import yagubogu.composeapp.generated.resources.ic_trash
@@ -53,6 +55,7 @@ fun AttendanceDetailScreen(
     viewModel: AttendanceDetailViewModel = koinViewModel(parameters = { parametersOf(gameId) }),
 ) {
     var showExitDialog by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
 
     val snackbarState: SnackbarHostState = LocalSnackbarHostState.current
     val pagerState = rememberPagerState { AttendanceDetailTab.entries.size }
@@ -75,6 +78,12 @@ fun AttendanceDetailScreen(
                         scope = this,
                         stringResource = Res.string.attendance_detail_upload_image_failed,
                     )
+
+                AttendanceDetailUiEvent.DeleteDiaryFailed ->
+                    snackbarState.showSingleSnackbar(
+                        scope = this,
+                        stringResource = Res.string.attendance_detail_delete_failed,
+                    )
             }
         }
     }
@@ -90,6 +99,7 @@ fun AttendanceDetailScreen(
                 else -> onBackClick()
             }
         },
+        onDeleteClick = { if (!attendanceDetailDiaryUiState.isLoading) showDeleteDialog = true },
         onImagesSelected = viewModel::addImages,
         onImageDeleted = viewModel::deleteImage,
         onEditClick = viewModel::editDiary,
@@ -103,6 +113,16 @@ fun AttendanceDetailScreen(
             onCancel = { showExitDialog = false },
         )
     }
+
+    if (showDeleteDialog) {
+        DeleteDiaryDialog(
+            onConfirm = {
+                showDeleteDialog = false
+                viewModel.deleteDiary()
+            },
+            onCancel = { showDeleteDialog = false },
+        )
+    }
 }
 
 @Composable
@@ -111,6 +131,7 @@ private fun AttendanceDetailScreen(
     pagerState: PagerState,
     date: String,
     onBackClick: () -> Unit,
+    onDeleteClick: () -> Unit,
     onImagesSelected: (images: List<String>) -> Unit,
     onImageDeleted: (index: Int) -> Unit,
     onEditClick: () -> Unit,
@@ -127,7 +148,7 @@ private fun AttendanceDetailScreen(
             AttendanceDetailToolbar(
                 date = date,
                 onBackClick = onBackClick,
-                onDeleteClick = {},
+                onDeleteClick = onDeleteClick,
             )
             AttendanceDetailTabRow(pagerState)
             HorizontalPager(
@@ -182,6 +203,7 @@ private fun AttendanceDetailScreenDiaryTabPreview() {
         pagerState = rememberPagerState(AttendanceDetailTab.DIARY.ordinal) { AttendanceDetailTab.entries.size },
         date = "2025.08.14 (화)",
         onBackClick = {},
+        onDeleteClick = {},
         onImagesSelected = {},
         onImageDeleted = {},
         onEditClick = {},
