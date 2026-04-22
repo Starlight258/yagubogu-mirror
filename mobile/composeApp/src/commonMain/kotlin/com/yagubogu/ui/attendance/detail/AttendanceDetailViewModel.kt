@@ -4,15 +4,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import com.yagubogu.analytics.AnalyticsLogger
-import com.yagubogu.data.dto.response.checkin.CheckInImageDto
 import com.yagubogu.data.repository.checkin.CheckInRepository
 import com.yagubogu.data.repository.thirdparty.ThirdPartyRepository
 import com.yagubogu.ui.attendance.detail.model.AttendanceDetailDiaryUiState
 import com.yagubogu.ui.attendance.detail.model.AttendanceDetailUiEvent
+import com.yagubogu.ui.attendance.detail.model.CheckInImageItem
 import com.yagubogu.ui.attendance.detail.model.DiaryImageItem
 import com.yagubogu.ui.attendance.detail.model.DiaryMode
 import com.yagubogu.ui.common.component.image.ImageCompressionSpec
 import com.yagubogu.ui.common.component.image.compressImage
+import com.yagubogu.ui.mapper.toUiModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.async
@@ -107,28 +108,29 @@ class AttendanceDetailViewModel(
             attendanceDetailDiaryUiState.value.images.filter { !it.isEmpty && it.id == null }
 
         coroutineScope {
-            targets.map { item: DiaryImageItem ->
-                async {
-                    val uri = item.uri ?: return@async
-                    uploadDiaryImage(checkInId = gameId, sourceUri = uri)
-                        .onSuccess { imageDto -> handleUploadDiaryImageSuccess(item, imageDto) }
-                        .onFailure { e ->
-                            _uiEvent.emit(AttendanceDetailUiEvent.UploadImageFailed)
-                            logger.e(e) { "직관 이미지 업로드 실패: ${item.uri}" }
-                        }
-                }
-            }.awaitAll()
+            targets
+                .map { item: DiaryImageItem ->
+                    async {
+                        val uri = item.uri ?: return@async
+                        uploadDiaryImage(checkInId = gameId, sourceUri = uri)
+                            .onSuccess { imageDto -> handleUploadDiaryImageSuccess(item, imageDto) }
+                            .onFailure { e ->
+                                _uiEvent.emit(AttendanceDetailUiEvent.UploadImageFailed)
+                                logger.e(e) { "직관 이미지 업로드 실패: ${item.uri}" }
+                            }
+                    }
+                }.awaitAll()
         }
     }
 
     private fun handleUploadDiaryImageSuccess(
         item: DiaryImageItem,
-        imageDto: CheckInImageDto,
+        imageItem: CheckInImageItem,
     ) {
         _attendanceDetailDiaryUiState.update { state ->
             val updated = state.images.toMutableList()
             val idx = updated.indexOfFirst { it.uri == item.uri && it.id == null }
-            if (idx != -1) updated[idx] = item.copy(id = imageDto.imageId)
+            if (idx != -1) updated[idx] = item.copy(id = imageItem.id)
             state.copy(images = updated.toImmutableList())
         }
     }
@@ -136,7 +138,7 @@ class AttendanceDetailViewModel(
     private suspend fun uploadDiaryImage(
         checkInId: Long,
         sourceUri: String,
-    ): Result<CheckInImageDto> =
+    ): Result<CheckInImageItem> =
         runCatching {
             // 1. 압축
             val compressed = compressImage(sourceUri, ImageCompressionSpec.CheckIn)
@@ -160,6 +162,7 @@ class AttendanceDetailViewModel(
             checkInRepository
                 .addImage(checkInId, presigned.key)
                 .getOrThrow()
+                .toUiModel()
         }
 
     companion object {

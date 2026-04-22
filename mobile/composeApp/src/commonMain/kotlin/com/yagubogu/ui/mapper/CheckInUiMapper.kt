@@ -2,12 +2,14 @@ package com.yagubogu.ui.mapper
 
 import com.yagubogu.data.dto.response.checkin.CheckInGameDto
 import com.yagubogu.data.dto.response.checkin.CheckInGameTeamDto
+import com.yagubogu.data.dto.response.checkin.CheckInImageDto
 import com.yagubogu.data.dto.response.checkin.FanRateByGameDto
 import com.yagubogu.data.dto.response.checkin.ScoreBoardDto
 import com.yagubogu.data.dto.response.checkin.StadiumCheckInCountDto
 import com.yagubogu.data.dto.response.checkin.TeamFanRateDto
 import com.yagubogu.domain.model.GameResult
 import com.yagubogu.domain.model.Team
+import com.yagubogu.ui.attendance.detail.model.CheckInImageItem
 import com.yagubogu.ui.attendance.model.AttendanceHistoryItem
 import com.yagubogu.ui.attendance.model.GameScoreBoard
 import com.yagubogu.ui.attendance.model.GameTeam
@@ -80,4 +82,10 @@ fun StadiumCheckInCountDto.toUiModel(): StadiumVisitCount =
     StadiumVisitCount(
         location = location,
         visitCounts = checkInCounts,
+    )
+
+fun CheckInImageDto.toUiModel(): CheckInImageItem =
+    CheckInImageItem(
+        id = imageId,
+        url = imageUrl,
     )
