@@ -258,6 +258,7 @@ public class CustomCheckInRepositoryImpl implements CustomCheckInRepository {
                         homeTeamResp(GAME, home, team),
                         awayTeamResp(GAME, away, team),
                         GAME.date,
+                        GAME.startAt,
                         GAME.homeScoreBoard,
                         GAME.awayScoreBoard
                 )).from(CHECK_IN)
