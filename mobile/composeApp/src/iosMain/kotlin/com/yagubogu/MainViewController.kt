@@ -13,6 +13,7 @@ import com.yagubogu.di.networkModule
 import com.yagubogu.di.repositoryModule
 import com.yagubogu.di.serviceModule
 import com.yagubogu.di.timeModule
+import com.yagubogu.di.useCaseModule
 import com.yagubogu.di.viewModelModule
 import com.yagubogu.ui.login.AppleSignInDelegate
 import com.yagubogu.ui.login.GoogleSignInDelegate
@@ -48,6 +49,7 @@ fun MainViewController(
                         repositoryModule,
                         serviceModule,
                         timeModule,
+                        useCaseModule,
                         viewModelModule,
                     )
                 },

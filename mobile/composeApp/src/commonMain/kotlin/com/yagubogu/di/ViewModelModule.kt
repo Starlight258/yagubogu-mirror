@@ -53,6 +53,8 @@ val viewModelModule =
                 gameId = gameId,
                 checkInRepository = get(),
                 thirdPartyRepository = get(),
+                loadDiaryUseCase = get(),
+                deleteDiaryUseCase = get(),
             )
         }
     }

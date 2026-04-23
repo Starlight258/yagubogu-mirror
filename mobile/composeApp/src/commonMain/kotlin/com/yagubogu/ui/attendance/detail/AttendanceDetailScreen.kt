@@ -42,6 +42,7 @@ import org.koin.core.parameter.parametersOf
 import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.attendance_detail_delete
 import yagubogu.composeapp.generated.resources.attendance_detail_delete_failed
+import yagubogu.composeapp.generated.resources.attendance_detail_load_failed
 import yagubogu.composeapp.generated.resources.attendance_detail_update_memo_failed
 import yagubogu.composeapp.generated.resources.attendance_detail_upload_image_failed
 import yagubogu.composeapp.generated.resources.ic_trash
@@ -67,6 +68,12 @@ fun AttendanceDetailScreen(
     LaunchedEffect(Unit) {
         viewModel.uiEvent.collect {
             when (it) {
+                AttendanceDetailUiEvent.LoadDiaryFailed ->
+                    snackbarState.showSingleSnackbar(
+                        scope = this,
+                        stringResource = Res.string.attendance_detail_load_failed,
+                    )
+
                 AttendanceDetailUiEvent.UpdateMemoFailed ->
                     snackbarState.showSingleSnackbar(
                         scope = this,

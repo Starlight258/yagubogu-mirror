@@ -6,6 +6,10 @@ import co.touchlab.kermit.Logger
 import com.yagubogu.analytics.AnalyticsLogger
 import com.yagubogu.data.repository.checkin.CheckInRepository
 import com.yagubogu.data.repository.thirdparty.ThirdPartyRepository
+import com.yagubogu.domain.attendance.AttendanceDiary
+import com.yagubogu.domain.attendance.DeleteDiaryUseCase
+import com.yagubogu.domain.attendance.LoadDiaryUseCase
+import com.yagubogu.ui.attendance.detail.AttendanceDetailViewModel.Companion.DIARY_MAX_IMAGE_SIZE
 import com.yagubogu.ui.attendance.detail.model.AttendanceDetailDiaryUiState
 import com.yagubogu.ui.attendance.detail.model.AttendanceDetailUiEvent
 import com.yagubogu.ui.attendance.detail.model.CheckInImageItem
@@ -33,6 +37,8 @@ class AttendanceDetailViewModel(
     private val gameId: Long,
     private val checkInRepository: CheckInRepository,
     private val thirdPartyRepository: ThirdPartyRepository,
+    private val loadDiaryUseCase: LoadDiaryUseCase,
+    private val deleteDiaryUseCase: DeleteDiaryUseCase,
 ) : ViewModel() {
     private val logger = Logger.withTag("AttendanceDetailViewModel")
 
@@ -48,26 +54,28 @@ class AttendanceDetailViewModel(
         )
     val uiEvent: SharedFlow<AttendanceDetailUiEvent> = _uiEvent.asSharedFlow()
 
+    init {
+        viewModelScope.launch { loadDiary() }
+    }
+
     fun addImages(uris: List<String>) {
-        _attendanceDetailDiaryUiState.update {
+        _attendanceDetailDiaryUiState.update { state ->
             val combined: List<DiaryImageItem> =
-                (it.images.filter { item -> !item.isEmpty } + uris.map { uri -> DiaryImageItem(uri = uri) })
+                (state.images.filterNot { it.isEmpty } + uris.map { DiaryImageItem(uri = it) })
                     .take(DIARY_MAX_IMAGE_SIZE)
-            val updatedImages: ImmutableList<DiaryImageItem> =
-                (combined + List(DIARY_MAX_IMAGE_SIZE - combined.size) { DiaryImageItem() }).toImmutableList()
-            it.copy(images = updatedImages)
+            state.copy(images = combined.padToMaxImageSize())
         }
     }
 
     fun deleteImage(index: Int) {
         val target = attendanceDetailDiaryUiState.value.images[index]
-        _attendanceDetailDiaryUiState.update {
-            val updatedImages: ImmutableList<DiaryImageItem> =
-                (it.images.filterIndexed { idx, _ -> idx != index } + listOf(DiaryImageItem())).toImmutableList()
-            it.copy(images = updatedImages)
+        _attendanceDetailDiaryUiState.update { state ->
+            state.copy(
+                images = state.images.filterIndexed { idx, _ -> idx != index }.padToMaxImageSize(),
+            )
         }
-
         if (target.id == null) return
+
         viewModelScope.launch {
             checkInRepository
                 .deleteImage(checkInId = gameId, imageId = target.id)
@@ -79,23 +87,13 @@ class AttendanceDetailViewModel(
         _attendanceDetailDiaryUiState.update { it.copy(isLoading = true) }
         viewModelScope.launch {
             val imageIds = attendanceDetailDiaryUiState.value.images.mapNotNull { it.id }
-
-            val results: List<Result<Unit>> =
-                coroutineScope {
-                    val imageJobs = imageIds.map { id -> async { checkInRepository.deleteImage(gameId, id) } }
-                    val memoJob = async { checkInRepository.deleteMemo(gameId) }
-                    (imageJobs + memoJob).awaitAll()
+            deleteDiaryUseCase(checkInId = gameId, imageIds = imageIds)
+                .onSuccess { _attendanceDetailDiaryUiState.value = AttendanceDetailDiaryUiState() }
+                .onFailure { e ->
+                    logger.e(e) { "직관 기록 삭제 실패" }
+                    _attendanceDetailDiaryUiState.update { it.copy(isLoading = false) }
+                    _uiEvent.emit(AttendanceDetailUiEvent.DeleteDiaryFailed)
                 }
-
-            if (results.any { it.isFailure }) {
-                results
-                    .firstOrNull { it.isFailure }
-                    ?.onFailure { e -> logger.e(e) { "직관 기록 삭제 실패" } }
-                _attendanceDetailDiaryUiState.update { it.copy(isLoading = false) }
-                _uiEvent.emit(AttendanceDetailUiEvent.DeleteDiaryFailed)
-            } else {
-                _attendanceDetailDiaryUiState.value = AttendanceDetailDiaryUiState()
-            }
         }
     }
 
@@ -112,6 +110,33 @@ class AttendanceDetailViewModel(
             _attendanceDetailDiaryUiState.update { state ->
                 state.copy(comment = comment, mode = DiaryMode.READ, isLoading = false)
             }
+        }
+    }
+
+    private suspend fun loadDiary() {
+        loadDiaryUseCase(gameId)
+            .onSuccess { diary -> applyLoadedDiary(diary) }
+            .onFailure { e ->
+                logger.e(e) { "직관 기록 조회 실패" }
+                _attendanceDetailDiaryUiState.update { it.copy(isLoading = false) }
+                _uiEvent.emit(AttendanceDetailUiEvent.LoadDiaryFailed)
+            }
+    }
+
+    private fun applyLoadedDiary(diary: AttendanceDiary) {
+        val diaryImages: ImmutableList<DiaryImageItem> =
+            diary.images
+                .map { image -> DiaryImageItem(id = image.id, uri = image.url) }
+                .take(DIARY_MAX_IMAGE_SIZE)
+                .padToMaxImageSize()
+
+        _attendanceDetailDiaryUiState.update { state ->
+            state.copy(
+                isLoading = false,
+                mode = if (diary.hasContent) DiaryMode.READ else DiaryMode.WRITE,
+                comment = diary.memo.orEmpty(),
+                images = diaryImages,
+            )
         }
     }
 
@@ -188,6 +213,10 @@ class AttendanceDetailViewModel(
                 .getOrThrow()
                 .toUiModel()
         }
+
+    /** 리스트 크기가 [DIARY_MAX_IMAGE_SIZE] 보다 작은 경우 기본 UI 모델로 채운 `ImmutableList` 반환. */
+    private fun List<DiaryImageItem>.padToMaxImageSize(): ImmutableList<DiaryImageItem> =
+        (this + List(DIARY_MAX_IMAGE_SIZE - size) { DiaryImageItem() }).toImmutableList()
 
     companion object {
         const val DIARY_MAX_IMAGE_SIZE = 3
