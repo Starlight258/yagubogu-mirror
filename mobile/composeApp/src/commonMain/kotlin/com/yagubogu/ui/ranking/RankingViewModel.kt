@@ -39,10 +39,12 @@ class RankingViewModel(
             val rankingResult: Result<RankingUiModel> =
                 when (type) {
                     RankingType.CHECK_IN ->
-                        // TODO
                         statsRepository
-                            .getVictoryFairyRankings(year, null)
-                            .map { it.toUiModel() }
+                            .getCheckInRankings(
+                                year = year,
+                                before = rankingUiModel.value.nextCursorId,
+                                limit = RANKING_LIMIT,
+                            ).map { it.toUiModel() }
 
                     RankingType.VICTORY_FAIRY ->
                         statsRepository
@@ -69,5 +71,9 @@ class RankingViewModel(
                     logger.w(exception) { "API 호출 실패 (fetchMemberProfile)" }
                 }
         }
+    }
+
+    companion object {
+        private const val RANKING_LIMIT = 25
     }
 }

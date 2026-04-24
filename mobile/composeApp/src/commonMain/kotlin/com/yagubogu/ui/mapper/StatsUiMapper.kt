@@ -1,5 +1,7 @@
 package com.yagubogu.ui.mapper
 
+import com.yagubogu.data.dto.response.stats.AttendanceRankingCursorResponse
+import com.yagubogu.data.dto.response.stats.AttendanceRankingDto
 import com.yagubogu.data.dto.response.stats.AverageStatisticResponse
 import com.yagubogu.data.dto.response.stats.OpponentWinRateTeamDto
 import com.yagubogu.data.dto.response.stats.StatsCountsResponse
@@ -50,10 +52,29 @@ fun VictoryFairyRankingResponse.toUiModel(): RankingUiModel =
 
 fun VictoryFairyRankingDto.toUiModel(): RankingProfileItem =
     RankingProfileItem.VictoryFairyRanking(
+        memberId = memberId,
         rank = ranking,
         nickname = nickname,
         profileImageUrl = profileImageUrl,
         teamName = teamShortName,
         score = victoryFairyScore,
+    )
+
+fun AttendanceRankingCursorResponse.toUiModel(): RankingUiModel =
+    RankingUiModel(
+        type = RankingType.CHECK_IN,
+        topRankings = rankings.map { it.toUiModel() },
+        myRanking = myRanking.toUiModel(),
+        nextCursorId = nextCursorId,
+        hasNext = hasNext,
+    )
+
+fun AttendanceRankingDto.toUiModel(): RankingProfileItem =
+    RankingProfileItem.CheckInRanking(
         memberId = memberId,
+        rank = ranking,
+        nickname = nickname,
+        profileImageUrl = imageUrl,
+        teamName = teamShortName,
+        count = checkInCount,
     )

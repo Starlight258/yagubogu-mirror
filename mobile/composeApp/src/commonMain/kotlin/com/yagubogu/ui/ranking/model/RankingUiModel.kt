@@ -8,4 +8,6 @@ data class RankingUiModel(
             RankingType.CHECK_IN -> RankingProfileItem.CheckInRanking()
             RankingType.VICTORY_FAIRY -> RankingProfileItem.VictoryFairyRanking()
         },
+    val nextCursorId: Long? = null,
+    val hasNext: Boolean = false,
 )

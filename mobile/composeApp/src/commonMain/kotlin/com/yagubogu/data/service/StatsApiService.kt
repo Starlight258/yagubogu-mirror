@@ -1,5 +1,6 @@
 package com.yagubogu.data.service
 
+import com.yagubogu.data.dto.response.stats.AttendanceRankingCursorResponse
 import com.yagubogu.data.dto.response.stats.AverageStatisticResponse
 import com.yagubogu.data.dto.response.stats.OpponentWinRateResponse
 import com.yagubogu.data.dto.response.stats.StatsCountsResponse
@@ -40,4 +41,11 @@ interface StatsApiService {
         @Query("year") year: Int,
         @Query("team") teamCode: String?,
     ): VictoryFairyRankingResponse
+
+    @GET("/api/v1/stats/attendance/rankings")
+    suspend fun getCheckInRankings(
+        @Query("year") year: Int,
+        @Query("before") before: Long?, // 이전 응답의 nextCursorId 값
+        @Query("limit") limit: Int, // 조회할 랭킹 개수
+    ): AttendanceRankingCursorResponse
 }

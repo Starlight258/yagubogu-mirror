@@ -144,6 +144,7 @@ class HomeViewModel(
     fun fetchAll() {
         fetchMemberStats()
         fetchStadiumStats()
+        fetchCheckInRanking()
         fetchVictoryFairyRanking()
     }
 
@@ -288,6 +289,24 @@ class HomeViewModel(
         }
     }
 
+    private fun fetchCheckInRanking(year: Int = LocalDate.now(clock).year) {
+        viewModelScope.launch {
+            val checkInRankingResult: Result<RankingUiModel> =
+                statsRepository
+                    .getCheckInRankings(
+                        year = year,
+                        before = checkInRanking.value.nextCursorId,
+                        limit = RANKING_LIMIT,
+                    ).map { it.toUiModel() }
+            checkInRankingResult
+                .onSuccess { ranking: RankingUiModel ->
+                    _checkInRanking.value = ranking
+                }.onFailure { exception: Throwable ->
+                    logger.w(exception) { "API 호출 실패 (fetchCheckInRanking)" }
+                }
+        }
+    }
+
     private fun fetchVictoryFairyRanking(year: Int = LocalDate.now(clock).year) {
         viewModelScope.launch {
             val victoryFairyRankingResult: Result<RankingUiModel> =
@@ -381,5 +400,6 @@ class HomeViewModel(
 
     companion object {
         private const val THRESHOLD_IN_METERS = 2200.0 // TODO: 300.0 으로 변경
+        private const val RANKING_LIMIT = 5
     }
 }

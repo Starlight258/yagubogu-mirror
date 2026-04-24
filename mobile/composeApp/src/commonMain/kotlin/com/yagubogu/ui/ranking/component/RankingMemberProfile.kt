@@ -102,7 +102,7 @@ fun RankingMemberProfile(
                 if (item.rank in 1..3) {
                     Spacer(modifier = Modifier.width(6.dp))
                     RankMedal(
-                        rank = item.rank,
+                        rank = item.rank.toInt(),
                         modifier = Modifier.height(14.dp),
                     )
                 }

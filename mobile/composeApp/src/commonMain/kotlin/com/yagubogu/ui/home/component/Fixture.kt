@@ -49,7 +49,7 @@ val CHECK_IN_RANKING =
         type = RankingType.CHECK_IN,
         topRankings =
             List(5) { index: Int ->
-                CHECK_IN_RANKING_ITEM.copy(rank = index + 1)
+                CHECK_IN_RANKING_ITEM.copy(rank = (index + 1).toLong())
             },
         myRanking = CHECK_IN_RANKING_ITEM,
     )
@@ -67,7 +67,7 @@ val VICTORY_FAIRY_RANKING =
         type = RankingType.VICTORY_FAIRY,
         topRankings =
             List(5) { index: Int ->
-                VICTORY_FAIRY_RANKING_ITEM.copy(rank = index + 1)
+                VICTORY_FAIRY_RANKING_ITEM.copy(rank = (index + 1).toLong())
             },
         myRanking = VICTORY_FAIRY_RANKING_ITEM,
     )
