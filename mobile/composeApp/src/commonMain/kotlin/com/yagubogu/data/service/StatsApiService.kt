@@ -40,6 +40,8 @@ interface StatsApiService {
     suspend fun getVictoryFairyRankings(
         @Query("year") year: Int,
         @Query("team") teamCode: String?,
+        @Query("before") before: Long?, // 이전 응답의 nextCursorId 값
+        @Query("limit") limit: Int, // 조회할 랭킹 개수
     ): VictoryFairyRankingResponse
 
     @GET("/api/v1/stats/attendance/rankings")

@@ -20,6 +20,8 @@ interface StatsRepository {
     suspend fun getVictoryFairyRankings(
         year: Int,
         teamCode: String?,
+        before: Long?,
+        limit: Int,
     ): Result<VictoryFairyRankingResponse>
 
     suspend fun getCheckInRankings(

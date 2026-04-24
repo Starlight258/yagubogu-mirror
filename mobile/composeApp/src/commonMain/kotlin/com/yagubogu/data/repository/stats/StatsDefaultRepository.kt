@@ -41,7 +41,9 @@ class StatsDefaultRepository(
     override suspend fun getVictoryFairyRankings(
         year: Int,
         teamCode: String?,
-    ): Result<VictoryFairyRankingResponse> = statsDataSource.getVictoryFairyRankings(year, teamCode)
+        before: Long?,
+        limit: Int,
+    ): Result<VictoryFairyRankingResponse> = statsDataSource.getVictoryFairyRankings(year, teamCode, before, limit)
 
     override suspend fun getCheckInRankings(
         year: Int,

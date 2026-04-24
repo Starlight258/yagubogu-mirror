@@ -48,8 +48,12 @@ class RankingViewModel(
 
                     RankingType.VICTORY_FAIRY ->
                         statsRepository
-                            .getVictoryFairyRankings(year, null)
-                            .map { it.toUiModel() }
+                            .getVictoryFairyRankings(
+                                year = year,
+                                teamCode = null,
+                                before = rankingUiModel.value.nextCursorId,
+                                limit = RANKING_LIMIT,
+                            ).map { it.toUiModel() }
                 }
             rankingResult
                 .onSuccess { ranking: RankingUiModel ->

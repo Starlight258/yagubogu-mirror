@@ -310,7 +310,13 @@ class HomeViewModel(
     private fun fetchVictoryFairyRanking(year: Int = LocalDate.now(clock).year) {
         viewModelScope.launch {
             val victoryFairyRankingResult: Result<RankingUiModel> =
-                statsRepository.getVictoryFairyRankings(year, null).map { it.toUiModel() }
+                statsRepository
+                    .getVictoryFairyRankings(
+                        year = year,
+                        teamCode = null,
+                        before = victoryFairyRanking.value.nextCursorId,
+                        limit = RANKING_LIMIT,
+                    ).map { it.toUiModel() }
             victoryFairyRankingResult
                 .onSuccess { ranking: RankingUiModel ->
                     _victoryFairyRanking.value = ranking

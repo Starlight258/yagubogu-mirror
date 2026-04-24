@@ -41,9 +41,11 @@ class StatsRemoteDataSource(
     override suspend fun getVictoryFairyRankings(
         year: Int,
         teamCode: String?,
+        before: Long?,
+        limit: Int,
     ): Result<VictoryFairyRankingResponse> =
         safeApiCall {
-            statsApiService.getVictoryFairyRankings(year, teamCode)
+            statsApiService.getVictoryFairyRankings(year, teamCode, before, limit)
         }
 
     override suspend fun getCheckInRankings(
