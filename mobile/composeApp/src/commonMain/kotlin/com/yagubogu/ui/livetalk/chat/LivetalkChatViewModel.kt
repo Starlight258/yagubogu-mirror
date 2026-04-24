@@ -197,6 +197,10 @@ class LivetalkChatViewModel(
         }
     }
 
+    fun toggleLike(chat: LivetalkChatItem) {
+        messageStateHolder.toggleLike(chat.chatId)
+    }
+
     fun addLikeToBatch() {
         viewModelScope.launch {
             likeCountStateHolder.increaseMyTeamShowingCount()
