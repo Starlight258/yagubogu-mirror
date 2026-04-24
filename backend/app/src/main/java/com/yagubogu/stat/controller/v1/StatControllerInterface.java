@@ -95,12 +95,15 @@ public interface StatControllerInterface {
 
     @Operation(summary = "승리 요정 랭킹 조회", description = "전체 유저 중 상위 승리 요정을 조회합니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "승리 요정 랭킹 조회 성공")
+            @ApiResponse(responseCode = "200", description = "승리 요정 랭킹 조회 성공"),
+            @ApiResponse(responseCode = "400", description = "limit가 허용 범위를 벗어남")
     })
     @GetMapping("/victory-fairy/rankings")
     ResponseEntity<VictoryFairyRankingResponse> findVictoryFairyRankings(
             @Parameter(hidden = true) MemberClaims memberClaims,
             @RequestParam(name = "team", defaultValue = "ALL") TeamFilter teamFilter,
-            @RequestParam(required = false) Integer year
+            @RequestParam(required = false) Integer year,
+            @RequestParam(value = "before", required = false) Long cursorId,
+            @RequestParam("limit") int limit
     );
 }
