@@ -35,8 +35,8 @@ import com.yagubogu.ui.home.model.LocationPermissionManager
 import com.yagubogu.ui.home.model.MemberStatsUiModel
 import com.yagubogu.ui.home.model.PermissionState
 import com.yagubogu.ui.home.model.StadiumStatsUiModel
-import com.yagubogu.ui.home.ranking.component.Ranking
-import com.yagubogu.ui.home.ranking.model.RankingUiModel
+import com.yagubogu.ui.ranking.component.Ranking
+import com.yagubogu.ui.ranking.model.RankingUiModel
 import com.yagubogu.ui.theme.Gray050
 import com.yagubogu.ui.util.BackPressHandler
 import com.yagubogu.ui.util.LocalSnackbarHostState

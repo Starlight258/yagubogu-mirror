@@ -1,4 +1,4 @@
-package com.yagubogu.ui.home.ranking.component
+package com.yagubogu.ui.ranking.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -11,8 +11,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.yagubogu.ui.home.ranking.model.RankingType
-import com.yagubogu.ui.home.ranking.model.RankingUiModel
+import com.yagubogu.ui.ranking.model.RankingType
+import com.yagubogu.ui.ranking.model.RankingUiModel
 import com.yagubogu.ui.theme.Gray100
 import com.yagubogu.ui.theme.PretendardRegular12
 import org.jetbrains.compose.resources.stringResource

@@ -5,9 +5,9 @@ import com.yagubogu.ui.home.model.MemberStatsUiModel
 import com.yagubogu.ui.home.model.StadiumFanRateItem
 import com.yagubogu.ui.home.model.StadiumStatsUiModel
 import com.yagubogu.ui.home.model.TeamFanRate
-import com.yagubogu.ui.home.ranking.model.RankingProfileItem
-import com.yagubogu.ui.home.ranking.model.RankingType
-import com.yagubogu.ui.home.ranking.model.RankingUiModel
+import com.yagubogu.ui.ranking.model.RankingProfileItem
+import com.yagubogu.ui.ranking.model.RankingType
+import com.yagubogu.ui.ranking.model.RankingUiModel
 
 val MEMBER_STATS_UI_MODEL =
     MemberStatsUiModel(

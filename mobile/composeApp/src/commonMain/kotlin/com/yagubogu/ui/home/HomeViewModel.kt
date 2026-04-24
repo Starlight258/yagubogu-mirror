@@ -23,10 +23,10 @@ import com.yagubogu.ui.home.model.StadiumFanRateItem
 import com.yagubogu.ui.home.model.StadiumStatsUiModel
 import com.yagubogu.ui.home.model.StadiumWithGame
 import com.yagubogu.ui.home.model.StadiumsWithGames
-import com.yagubogu.ui.home.ranking.model.RankingType
-import com.yagubogu.ui.home.ranking.model.RankingUiModel
 import com.yagubogu.ui.mapper.toDomain
 import com.yagubogu.ui.mapper.toUiModel
+import com.yagubogu.ui.ranking.model.RankingType
+import com.yagubogu.ui.ranking.model.RankingUiModel
 import com.yagubogu.ui.util.mapList
 import com.yagubogu.ui.util.now
 import com.yagubogu.ui.util.toInstantKST

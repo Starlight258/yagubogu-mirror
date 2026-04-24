@@ -1,4 +1,4 @@
-package com.yagubogu.ui.home.ranking.component
+package com.yagubogu.ui.ranking.component
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,7 +22,7 @@ import com.yagubogu.analytics.AnalyticsLogger
 import com.yagubogu.ui.common.component.profile.ProfileImage
 import com.yagubogu.ui.home.component.CHECK_IN_RANKING_ITEM
 import com.yagubogu.ui.home.component.VICTORY_FAIRY_RANKING_ITEM
-import com.yagubogu.ui.home.ranking.model.RankingProfileItem
+import com.yagubogu.ui.ranking.model.RankingProfileItem
 import com.yagubogu.ui.theme.Bronze
 import com.yagubogu.ui.theme.Gold
 import com.yagubogu.ui.theme.Gray400
