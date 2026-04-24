@@ -19,11 +19,11 @@ import com.yagubogu.ui.home.model.CheckInSseEvent
 import com.yagubogu.ui.home.model.CheckInUiEvent
 import com.yagubogu.ui.home.model.HomeDialogEvent
 import com.yagubogu.ui.home.model.MemberStatsUiModel
+import com.yagubogu.ui.home.model.RankingItem
 import com.yagubogu.ui.home.model.StadiumFanRateItem
 import com.yagubogu.ui.home.model.StadiumStatsUiModel
 import com.yagubogu.ui.home.model.StadiumWithGame
 import com.yagubogu.ui.home.model.StadiumsWithGames
-import com.yagubogu.ui.home.model.VictoryFairyRanking
 import com.yagubogu.ui.mapper.toDomain
 import com.yagubogu.ui.mapper.toUiModel
 import com.yagubogu.ui.util.mapList
@@ -54,9 +54,6 @@ import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.until
-import yagubogu.composeapp.generated.resources.Res
-import yagubogu.composeapp.generated.resources.home_victory_fairy_ranking
-import yagubogu.composeapp.generated.resources.home_victory_fairy_score
 import kotlin.math.roundToInt
 import kotlin.time.Clock
 
@@ -85,14 +82,9 @@ class HomeViewModel(
     private val _isStadiumStatsExpanded = MutableStateFlow(false)
     val isStadiumStatsExpanded: StateFlow<Boolean> = _isStadiumStatsExpanded.asStateFlow()
 
-    private val _victoryFairyRanking =
-        MutableStateFlow(
-            VictoryFairyRanking(
-                titleRes = Res.string.home_victory_fairy_ranking,
-                labelRes = Res.string.home_victory_fairy_score,
-            ),
-        )
-    val victoryFairyRanking: StateFlow<VictoryFairyRanking> = _victoryFairyRanking.asStateFlow()
+    private val _victoryFairyRanking = MutableStateFlow(RankingItem.VictoryFairyRanking())
+    val victoryFairyRanking: StateFlow<RankingItem.VictoryFairyRanking> =
+        _victoryFairyRanking.asStateFlow()
 
     private val _isCheckInLoading = MutableStateFlow(false)
     val isCheckInLoading: StateFlow<Boolean> = _isCheckInLoading.asStateFlow()
@@ -295,10 +287,10 @@ class HomeViewModel(
 
     private fun fetchVictoryFairyRanking(year: Int = LocalDate.now(clock).year) {
         viewModelScope.launch {
-            val victoryFairyRankingResult: Result<VictoryFairyRanking> =
+            val victoryFairyRankingResult: Result<RankingItem.VictoryFairyRanking> =
                 statsRepository.getVictoryFairyRankings(year, null).map { it.toUiModel() }
             victoryFairyRankingResult
-                .onSuccess { ranking: VictoryFairyRanking ->
+                .onSuccess { ranking: RankingItem.VictoryFairyRanking ->
                     _victoryFairyRanking.value = ranking
                 }.onFailure { exception: Throwable ->
                     logger.w(exception) { "API 호출 실패 (fetchVictoryFairyRanking)" }

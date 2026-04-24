@@ -2,14 +2,11 @@ package com.yagubogu.ui.home.component
 
 import com.yagubogu.domain.model.Team
 import com.yagubogu.ui.home.model.MemberStatsUiModel
+import com.yagubogu.ui.home.model.RankingItem
+import com.yagubogu.ui.home.model.RankingProfileItem
 import com.yagubogu.ui.home.model.StadiumFanRateItem
 import com.yagubogu.ui.home.model.StadiumStatsUiModel
 import com.yagubogu.ui.home.model.TeamFanRate
-import com.yagubogu.ui.home.model.VictoryFairyItem
-import com.yagubogu.ui.home.model.VictoryFairyRanking
-import yagubogu.composeapp.generated.resources.Res
-import yagubogu.composeapp.generated.resources.home_victory_fairy_ranking
-import yagubogu.composeapp.generated.resources.home_victory_fairy_score
 
 val MEMBER_STATS_UI_MODEL =
     MemberStatsUiModel(
@@ -39,7 +36,7 @@ val STADIUM_STATS_UI_MODEL =
     StadiumStatsUiModel(stadiumFanRates = List(5) { STADIUM_FAN_RATE_ITEM })
 
 val VICTORY_FAIRY_RANKING_ITEM =
-    VictoryFairyItem(
+    RankingProfileItem(
         rank = 1,
         nickname = "닉네임",
         teamName = "KIA",
@@ -47,9 +44,7 @@ val VICTORY_FAIRY_RANKING_ITEM =
     )
 
 val VICTORY_FAIRY_RANKING =
-    VictoryFairyRanking(
-        titleRes = Res.string.home_victory_fairy_ranking,
-        labelRes = Res.string.home_victory_fairy_score,
+    RankingItem.VictoryFairyRanking(
         topRankings =
             List(5) { index: Int ->
                 VICTORY_FAIRY_RANKING_ITEM.copy(rank = index + 1)

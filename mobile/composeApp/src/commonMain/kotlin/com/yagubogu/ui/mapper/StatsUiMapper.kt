@@ -6,14 +6,11 @@ import com.yagubogu.data.dto.response.stats.StatsCountsResponse
 import com.yagubogu.data.dto.response.stats.VictoryFairyRankingDto
 import com.yagubogu.data.dto.response.stats.VictoryFairyRankingResponse
 import com.yagubogu.domain.model.Team
-import com.yagubogu.ui.home.model.VictoryFairyItem
-import com.yagubogu.ui.home.model.VictoryFairyRanking
+import com.yagubogu.ui.home.model.RankingItem
+import com.yagubogu.ui.home.model.RankingProfileItem
 import com.yagubogu.ui.stats.detail.model.VsTeamStatItem
 import com.yagubogu.ui.stats.my.model.AverageStats
 import com.yagubogu.ui.stats.my.model.StatsCounts
-import yagubogu.composeapp.generated.resources.Res
-import yagubogu.composeapp.generated.resources.home_victory_fairy_ranking
-import yagubogu.composeapp.generated.resources.home_victory_fairy_score
 
 fun StatsCountsResponse.toUiModel(): StatsCounts =
     StatsCounts(
@@ -43,16 +40,14 @@ fun OpponentWinRateTeamDto.toUiModel(): VsTeamStatItem =
         winningPercentage = winRate,
     )
 
-fun VictoryFairyRankingResponse.toUiModel(): VictoryFairyRanking =
-    VictoryFairyRanking(
-        titleRes = Res.string.home_victory_fairy_ranking,
-        labelRes = Res.string.home_victory_fairy_score,
+fun VictoryFairyRankingResponse.toUiModel(): RankingItem.VictoryFairyRanking =
+    RankingItem.VictoryFairyRanking(
         topRankings = topRankings.map { it.toUiModel() },
         myRanking = myRanking.toUiModel(),
     )
 
-fun VictoryFairyRankingDto.toUiModel(): VictoryFairyItem =
-    VictoryFairyItem(
+fun VictoryFairyRankingDto.toUiModel(): RankingProfileItem =
+    RankingProfileItem(
         rank = ranking,
         nickname = nickname,
         profileImageUrl = profileImageUrl,

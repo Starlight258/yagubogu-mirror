@@ -24,18 +24,18 @@ import com.yagubogu.analytics.AnalyticsLogger
 import com.yagubogu.ui.home.component.CheckInButton
 import com.yagubogu.ui.home.component.MemberStats
 import com.yagubogu.ui.home.component.OpeningCountdown
+import com.yagubogu.ui.home.component.Ranking
 import com.yagubogu.ui.home.component.STADIUM_STATS_UI_MODEL
 import com.yagubogu.ui.home.component.StadiumFanRate
 import com.yagubogu.ui.home.component.VICTORY_FAIRY_RANKING
-import com.yagubogu.ui.home.component.VictoryFairyRanking
 import com.yagubogu.ui.home.component.dialog.HomeDialog
 import com.yagubogu.ui.home.component.dialog.PermissionDeniedDialog
 import com.yagubogu.ui.home.model.CheckInUiEvent
 import com.yagubogu.ui.home.model.LocationPermissionManager
 import com.yagubogu.ui.home.model.MemberStatsUiModel
 import com.yagubogu.ui.home.model.PermissionState
+import com.yagubogu.ui.home.model.RankingItem
 import com.yagubogu.ui.home.model.StadiumStatsUiModel
-import com.yagubogu.ui.home.model.VictoryFairyRanking
 import com.yagubogu.ui.theme.Gray050
 import com.yagubogu.ui.util.BackPressHandler
 import com.yagubogu.ui.util.LocalSnackbarHostState
@@ -76,7 +76,7 @@ fun HomeScreen(
     val memberStatsUiModel: MemberStatsUiModel by viewModel.memberStatsUiModel.collectAsStateWithLifecycle()
     val stadiumStatsUiModel: StadiumStatsUiModel by viewModel.stadiumStatsUiModel.collectAsStateWithLifecycle()
     val isStadiumStatsExpanded: Boolean by viewModel.isStadiumStatsExpanded.collectAsStateWithLifecycle()
-    val victoryFairyRanking: VictoryFairyRanking by viewModel.victoryFairyRanking.collectAsStateWithLifecycle()
+    val victoryFairyRanking: RankingItem.VictoryFairyRanking by viewModel.victoryFairyRanking.collectAsStateWithLifecycle()
     val leftSecondsUntilOpening: StateFlow<Long> = viewModel.leftSecondsUntilOpening
     val openingHour: Int = viewModel.openingHour
 
@@ -201,7 +201,7 @@ private fun HomeScreen(
     isStadiumStatsExpanded: Boolean,
     onStadiumStatsClick: () -> Unit,
     onStadiumStatsRefresh: () -> Unit,
-    victoryFairyRanking: VictoryFairyRanking,
+    victoryFairyRanking: RankingItem.VictoryFairyRanking,
     onVictoryFairyRankingClick: (Long) -> Unit,
     leftSecondsUntilOpening: StateFlow<Long>,
     openingHour: Int,
@@ -257,7 +257,7 @@ private fun HomeScreen(
                 onRefresh = onStadiumStatsRefresh,
             )
         }
-        VictoryFairyRanking(
+        Ranking(
             ranking = victoryFairyRanking,
             onRankingItemClick = onVictoryFairyRankingClick,
         )
