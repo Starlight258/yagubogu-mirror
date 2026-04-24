@@ -2,6 +2,7 @@ package com.yagubogu.admin.controller;
 
 import com.yagubogu.auth.annotation.RequireRole;
 import com.yagubogu.member.domain.Role;
+import com.yagubogu.stat.service.AttendanceRankingSyncService;
 import com.yagubogu.stat.service.StatSyncService;
 import io.swagger.v3.oas.annotations.Hidden;
 import java.time.LocalDate;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminController {
 
     private final StatSyncService statSyncService;
+    private final AttendanceRankingSyncService attendanceRankingSyncService;
 
     @PostMapping("/victory-fairy-rankings/sync")
     public ResponseEntity<Void> syncVictoryRankings() {
@@ -29,5 +31,12 @@ public class AdminController {
         }
 
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/attendance-rankings/sync")
+    public ResponseEntity<Integer> syncAttendanceRankings() {
+        int syncedCount = attendanceRankingSyncService.rebuildAll();
+
+        return ResponseEntity.ok(syncedCount);
     }
 }

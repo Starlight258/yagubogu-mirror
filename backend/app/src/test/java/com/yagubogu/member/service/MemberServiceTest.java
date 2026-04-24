@@ -24,6 +24,7 @@ import com.yagubogu.member.dto.v1.VictoryFairyProfileResponse;
 import com.yagubogu.member.repository.MemberRepository;
 import com.yagubogu.stat.dto.CheckInSummaryParam;
 import com.yagubogu.stat.dto.VictoryFairySummaryParam;
+import com.yagubogu.stat.repository.AttendanceRankingRepository;
 import com.yagubogu.stat.service.StatService;
 import com.yagubogu.checkin.repository.CheckInRepository;
 import com.yagubogu.game.domain.GameState;
@@ -39,8 +40,10 @@ import com.yagubogu.support.member.MemberFactory;
 import com.yagubogu.team.domain.Team;
 import com.yagubogu.team.repository.TeamRepository;
 import jakarta.persistence.EntityManager;
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -111,6 +114,9 @@ public class MemberServiceTest {
 
     @Autowired
     private VictoryFairyRankingRepository victoryFairyRankingRepository;
+
+    @Autowired
+    private AttendanceRankingRepository attendanceRankingRepository;
 
     @BeforeEach
     void setUp() {
@@ -563,7 +569,13 @@ public class MemberServiceTest {
         checkInFactory.save(b -> b.member(member).team(HT).game(game2025));
 
         // 실제 StatService 사용
-        StatService realStatService = new StatService(checkInRepository, memberRepository, victoryFairyRankingRepository);
+        StatService realStatService = new StatService(
+                checkInRepository,
+                memberRepository,
+                victoryFairyRankingRepository,
+                attendanceRankingRepository,
+                Clock.system(ZoneId.of("Asia/Seoul"))
+        );
         MemberService realMemberService = new MemberService(memberRepository, teamRepository, badgeRepository,
                 memberBadgeRepository, publisher, realStatService);
 

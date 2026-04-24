@@ -66,6 +66,7 @@ public abstract class ServiceUsingMysqlTestBase {
             em.createNativeQuery("TRUNCATE TABLE likes").executeUpdate();
             em.createNativeQuery("TRUNCATE TABLE like_windows").executeUpdate();
             em.createNativeQuery("TRUNCATE TABLE victory_fairy_rankings").executeUpdate();
+            em.createNativeQuery("TRUNCATE TABLE attendance_rankings").executeUpdate();
 
             em.createNativeQuery("SET FOREIGN_KEY_CHECKS = 1").executeUpdate();
         });
