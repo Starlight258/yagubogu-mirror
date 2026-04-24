@@ -36,6 +36,7 @@ import com.yagubogu.ui.home.model.MemberStatsUiModel
 import com.yagubogu.ui.home.model.PermissionState
 import com.yagubogu.ui.home.model.StadiumStatsUiModel
 import com.yagubogu.ui.ranking.component.Ranking
+import com.yagubogu.ui.ranking.model.RankingType
 import com.yagubogu.ui.ranking.model.RankingUiModel
 import com.yagubogu.ui.theme.Gray050
 import com.yagubogu.ui.util.BackPressHandler
@@ -71,6 +72,7 @@ expect fun rememberAppSettingsOpener(): () -> Unit
 fun HomeScreen(
     scrollToTopEvent: SharedFlow<Unit>,
     onLoading: (Boolean) -> Unit,
+    onRankingShowMoreClick: (RankingType) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = koinViewModel(),
 ) {
@@ -174,6 +176,7 @@ fun HomeScreen(
         onStadiumStatsRefresh = viewModel::refreshStadiumStats,
         checkInRanking = checkInRanking,
         victoryFairyRanking = victoryFairyRanking,
+        onRankingShowMoreClick = onRankingShowMoreClick,
         onMemberProfileClick = viewModel::fetchMemberProfile,
         leftSecondsUntilOpening = leftSecondsUntilOpening,
         openingHour = openingHour,
@@ -206,6 +209,7 @@ private fun HomeScreen(
     onStadiumStatsRefresh: () -> Unit,
     checkInRanking: RankingUiModel,
     victoryFairyRanking: RankingUiModel,
+    onRankingShowMoreClick: (RankingType) -> Unit,
     onMemberProfileClick: (Long) -> Unit,
     leftSecondsUntilOpening: StateFlow<Long>,
     openingHour: Int,
@@ -265,13 +269,15 @@ private fun HomeScreen(
         if (checkInRanking.topRankings.isNotEmpty()) {
             Ranking(
                 ranking = checkInRanking,
-                onRankingItemClick = onMemberProfileClick,
+                onRankingShowMoreClick = onRankingShowMoreClick,
+                onMemberProfileClick = onMemberProfileClick,
             )
         }
         if (victoryFairyRanking.topRankings.isNotEmpty()) {
             Ranking(
                 ranking = victoryFairyRanking,
-                onRankingItemClick = onMemberProfileClick,
+                onRankingShowMoreClick = onRankingShowMoreClick,
+                onMemberProfileClick = onMemberProfileClick,
             )
         }
     }
@@ -315,6 +321,7 @@ private fun HomeScreenPreview() {
         onStadiumStatsRefresh = {},
         checkInRanking = CHECK_IN_RANKING,
         victoryFairyRanking = VICTORY_FAIRY_RANKING,
+        onRankingShowMoreClick = {},
         onMemberProfileClick = {},
         leftSecondsUntilOpening = MutableStateFlow(1_000_000L),
         openingHour = 14,

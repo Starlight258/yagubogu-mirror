@@ -44,7 +44,8 @@ import yagubogu.composeapp.generated.resources.ic_info
 @Composable
 fun Ranking(
     ranking: RankingUiModel,
-    onRankingItemClick: (Long) -> Unit,
+    onRankingShowMoreClick: (RankingType) -> Unit,
+    onMemberProfileClick: (Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -91,13 +92,25 @@ fun Ranking(
                                 .padding(horizontal = 8.dp)
                                 .noRippleClickable {
                                     showTooltip()
-                                    AnalyticsLogger.logEvent("tooltip_victory_fairy_ranking")
+                                    when (ranking.type) {
+                                        RankingType.CHECK_IN ->
+                                            AnalyticsLogger.logEvent("tooltip_check_in_ranking")
+
+                                        RankingType.VICTORY_FAIRY ->
+                                            AnalyticsLogger.logEvent("tooltip_victory_fairy_ranking")
+                                    }
                                 },
                     )
                 }
             }
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier =
+                    Modifier.noRippleClickable {
+                        onRankingShowMoreClick(ranking.type)
+                    },
+            ) {
                 Text(
                     text = stringResource(Res.string.all_show_more),
                     style = PretendardMedium.copy(fontSize = 14.sp, color = Gray400),
@@ -118,7 +131,7 @@ fun Ranking(
 
             RankingMemberProfile(
                 item = ranking.myRanking,
-                onClick = onRankingItemClick,
+                onClick = onMemberProfileClick,
                 isMyRanking = true,
             )
             HorizontalDivider(color = Gray300, thickness = 0.4.dp)
@@ -126,7 +139,7 @@ fun Ranking(
             ranking.topRankings.forEach { item: RankingProfileItem ->
                 RankingMemberProfile(
                     item = item,
-                    onClick = onRankingItemClick,
+                    onClick = onMemberProfileClick,
                 )
             }
         }
@@ -138,7 +151,8 @@ fun Ranking(
 private fun CheckInRankingPreview() {
     Ranking(
         ranking = CHECK_IN_RANKING,
-        onRankingItemClick = {},
+        onRankingShowMoreClick = {},
+        onMemberProfileClick = {},
     )
 }
 
@@ -147,6 +161,7 @@ private fun CheckInRankingPreview() {
 private fun VictoryFairyRankingPreview() {
     Ranking(
         ranking = VICTORY_FAIRY_RANKING,
-        onRankingItemClick = {},
+        onRankingShowMoreClick = {},
+        onMemberProfileClick = {},
     )
 }
