@@ -23,6 +23,7 @@ import com.yagubogu.talk.domain.Talk;
 import com.yagubogu.talk.dto.v1.TalkCursorResultResponse;
 import com.yagubogu.talk.dto.v1.TalkRequest;
 import com.yagubogu.talk.dto.v1.TalkResponse;
+import com.yagubogu.talk.repository.TalkLikeRepository;
 import com.yagubogu.talk.repository.TalkReportRepository;
 import com.yagubogu.talk.repository.TalkRepository;
 import com.yagubogu.team.domain.Team;
@@ -80,6 +81,9 @@ class TalkServiceTest {
     @Autowired
     private TalkReportRepository talkReportRepository;
 
+    @Autowired
+    private TalkLikeRepository talkLikeRepository;
+
     @Mock
     private ApplicationEventPublisher publisher;
 
@@ -89,7 +93,7 @@ class TalkServiceTest {
     @BeforeEach
     void setUp() {
         talkService = new TalkService(talkRepository, gameRepository, memberRepository, talkReportRepository,
-                publisher, entityManager);
+                talkLikeRepository, publisher, entityManager);
     }
 
     @DisplayName("최신 커서가 없는 경우 첫 페이지를 조회한다 - 다음 페이지가 없는 경우")

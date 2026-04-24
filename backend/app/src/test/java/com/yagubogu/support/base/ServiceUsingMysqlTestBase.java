@@ -61,6 +61,7 @@ public abstract class ServiceUsingMysqlTestBase {
             em.createNativeQuery("TRUNCATE TABLE games").executeUpdate();
             em.createNativeQuery("TRUNCATE TABLE refresh_tokens").executeUpdate();
             em.createNativeQuery("TRUNCATE TABLE talk_reports").executeUpdate();
+            em.createNativeQuery("TRUNCATE TABLE talk_likes").executeUpdate();
             em.createNativeQuery("TRUNCATE TABLE check_ins").executeUpdate();
             em.createNativeQuery("TRUNCATE TABLE talks").executeUpdate();
             em.createNativeQuery("TRUNCATE TABLE likes").executeUpdate();

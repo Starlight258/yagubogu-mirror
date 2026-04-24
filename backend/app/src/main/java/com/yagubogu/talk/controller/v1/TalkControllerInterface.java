@@ -3,6 +3,7 @@ package com.yagubogu.talk.controller.v1;
 import com.yagubogu.auth.dto.MemberClaims;
 import com.yagubogu.talk.dto.v1.TalkCursorResultResponse;
 import com.yagubogu.talk.dto.v1.TalkEntranceResponse;
+import com.yagubogu.talk.dto.v1.TalkLikeResponse;
 import com.yagubogu.talk.dto.v1.TalkRequest;
 import com.yagubogu.talk.dto.v1.TalkResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -98,6 +99,17 @@ public interface TalkControllerInterface {
     ResponseEntity<Void> removeTalk(
             @Parameter(hidden = true) MemberClaims memberClaims,
             @PathVariable long gameId,
+            @PathVariable long talkId
+    );
+
+    @Operation(summary = "톡 좋아요 토글", description = "특정 톡에 좋아요를 누르거나 취소합니다. (더블탭)")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "좋아요 토글 성공"),
+            @ApiResponse(responseCode = "404", description = "톡 또는 회원을 찾을 수 없음")
+    })
+    @PostMapping("/{talkId}/likes")
+    ResponseEntity<TalkLikeResponse> toggleLike(
+            @Parameter(hidden = true) MemberClaims memberClaims,
             @PathVariable long talkId
     );
 }
