@@ -82,6 +82,8 @@ class HomeViewModel(
     private val _isStadiumStatsExpanded = MutableStateFlow(false)
     val isStadiumStatsExpanded: StateFlow<Boolean> = _isStadiumStatsExpanded.asStateFlow()
 
+    private val _checkInRanking = MutableStateFlow(RankingItem.CheckInRanking())
+    val checkInRanking: StateFlow<RankingItem.CheckInRanking> = _checkInRanking.asStateFlow()
     private val _victoryFairyRanking = MutableStateFlow(RankingItem.VictoryFairyRanking())
     val victoryFairyRanking: StateFlow<RankingItem.VictoryFairyRanking> =
         _victoryFairyRanking.asStateFlow()

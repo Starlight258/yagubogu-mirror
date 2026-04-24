@@ -47,7 +47,7 @@ fun VictoryFairyRankingResponse.toUiModel(): RankingItem.VictoryFairyRanking =
     )
 
 fun VictoryFairyRankingDto.toUiModel(): RankingProfileItem =
-    RankingProfileItem(
+    RankingProfileItem.VictoryFairyRanking(
         rank = ranking,
         nickname = nickname,
         profileImageUrl = profileImageUrl,

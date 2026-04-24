@@ -35,8 +35,25 @@ val STADIUM_FAN_RATE_ITEM =
 val STADIUM_STATS_UI_MODEL =
     StadiumStatsUiModel(stadiumFanRates = List(5) { STADIUM_FAN_RATE_ITEM })
 
+val CHECK_IN_RANKING_ITEM =
+    RankingProfileItem.CheckInRanking(
+        rank = 1,
+        nickname = "닉네임",
+        teamName = "KIA",
+        count = 10,
+    )
+
+val CHECK_IN_RANKING =
+    RankingItem.CheckInRanking(
+        topRankings =
+            List(5) { index: Int ->
+                CHECK_IN_RANKING_ITEM.copy(rank = index + 1)
+            },
+        myRanking = CHECK_IN_RANKING_ITEM,
+    )
+
 val VICTORY_FAIRY_RANKING_ITEM =
-    RankingProfileItem(
+    RankingProfileItem.VictoryFairyRanking(
         rank = 1,
         nickname = "닉네임",
         teamName = "KIA",

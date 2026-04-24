@@ -52,12 +52,16 @@ import org.jetbrains.compose.resources.stringResource
 import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.all_fan
 import yagubogu.composeapp.generated.resources.all_show_more
+import yagubogu.composeapp.generated.resources.home_check_in_count
+import yagubogu.composeapp.generated.resources.home_check_in_count_format
+import yagubogu.composeapp.generated.resources.home_check_in_ranking
+import yagubogu.composeapp.generated.resources.home_check_in_ranking_tooltip
 import yagubogu.composeapp.generated.resources.home_user_profile
 import yagubogu.composeapp.generated.resources.home_victory_fairy_my_nickname
 import yagubogu.composeapp.generated.resources.home_victory_fairy_ranking
+import yagubogu.composeapp.generated.resources.home_victory_fairy_ranking_tooltip
 import yagubogu.composeapp.generated.resources.home_victory_fairy_score
 import yagubogu.composeapp.generated.resources.home_victory_fairy_score_format
-import yagubogu.composeapp.generated.resources.home_victory_fairy_tooltip
 import yagubogu.composeapp.generated.resources.ic_arrow_right
 import yagubogu.composeapp.generated.resources.ic_info
 import yagubogu.composeapp.generated.resources.ic_medal_first
@@ -90,6 +94,7 @@ fun Ranking(
                     text =
                         stringResource(
                             when (ranking) {
+                                is RankingItem.CheckInRanking -> Res.string.home_check_in_ranking
                                 is RankingItem.VictoryFairyRanking -> Res.string.home_victory_fairy_ranking
                             },
                         ),
@@ -99,7 +104,8 @@ fun Ranking(
                     text =
                         stringResource(
                             when (ranking) {
-                                is RankingItem.VictoryFairyRanking -> Res.string.home_victory_fairy_tooltip
+                                is RankingItem.CheckInRanking -> Res.string.home_check_in_ranking_tooltip
+                                is RankingItem.VictoryFairyRanking -> Res.string.home_victory_fairy_ranking_tooltip
                             },
                         ),
                 ) { showTooltip ->
@@ -152,6 +158,7 @@ fun Ranking(
                     text =
                         stringResource(
                             when (ranking) {
+                                is RankingItem.CheckInRanking -> Res.string.home_check_in_count
                                 is RankingItem.VictoryFairyRanking -> Res.string.home_victory_fairy_score
                             },
                         ),
@@ -246,10 +253,19 @@ private fun RankingMemberProfile(
 
         Text(
             text =
-                stringResource(
-                    Res.string.home_victory_fairy_score_format,
-                    item.score.formatOneDecimal(),
-                ),
+                when (item) {
+                    is RankingProfileItem.CheckInRanking ->
+                        stringResource(
+                            Res.string.home_check_in_count_format,
+                            item.count,
+                        )
+
+                    is RankingProfileItem.VictoryFairyRanking ->
+                        stringResource(
+                            Res.string.home_victory_fairy_score_format,
+                            item.score.formatOneDecimal(),
+                        )
+                },
             style = PretendardRegular16,
         )
     }
@@ -278,7 +294,16 @@ private fun RankMedal(
 
 @Preview
 @Composable
-private fun RankingPreview() {
+private fun CheckInRankingPreview() {
+    Ranking(
+        ranking = CHECK_IN_RANKING,
+        onRankingItemClick = {},
+    )
+}
+
+@Preview
+@Composable
+private fun VictoryFairyRankingPreview() {
     Ranking(
         ranking = VICTORY_FAIRY_RANKING,
         onRankingItemClick = {},
@@ -287,6 +312,12 @@ private fun RankingPreview() {
 
 @Preview(showBackground = true)
 @Composable
-private fun RankingMemberProfilePreview() {
+private fun VictoryFairyRankingMemberProfilePreview() {
     RankingMemberProfile(item = VICTORY_FAIRY_RANKING_ITEM, onClick = {})
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun CheckInRankingMemberProfilePreview() {
+    RankingMemberProfile(item = CHECK_IN_RANKING_ITEM, onClick = {})
 }

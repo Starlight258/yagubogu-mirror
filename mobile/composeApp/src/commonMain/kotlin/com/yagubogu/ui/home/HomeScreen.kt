@@ -21,6 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yagubogu.analytics.AnalyticsLogger
+import com.yagubogu.ui.home.component.CHECK_IN_RANKING
 import com.yagubogu.ui.home.component.CheckInButton
 import com.yagubogu.ui.home.component.MemberStats
 import com.yagubogu.ui.home.component.OpeningCountdown
@@ -76,6 +77,7 @@ fun HomeScreen(
     val memberStatsUiModel: MemberStatsUiModel by viewModel.memberStatsUiModel.collectAsStateWithLifecycle()
     val stadiumStatsUiModel: StadiumStatsUiModel by viewModel.stadiumStatsUiModel.collectAsStateWithLifecycle()
     val isStadiumStatsExpanded: Boolean by viewModel.isStadiumStatsExpanded.collectAsStateWithLifecycle()
+    val checkInRanking: RankingItem.CheckInRanking by viewModel.checkInRanking.collectAsStateWithLifecycle()
     val victoryFairyRanking: RankingItem.VictoryFairyRanking by viewModel.victoryFairyRanking.collectAsStateWithLifecycle()
     val leftSecondsUntilOpening: StateFlow<Long> = viewModel.leftSecondsUntilOpening
     val openingHour: Int = viewModel.openingHour
@@ -170,8 +172,9 @@ fun HomeScreen(
         isStadiumStatsExpanded = isStadiumStatsExpanded,
         onStadiumStatsClick = viewModel::toggleStadiumStats,
         onStadiumStatsRefresh = viewModel::refreshStadiumStats,
+        checkInRanking = checkInRanking,
         victoryFairyRanking = victoryFairyRanking,
-        onVictoryFairyRankingClick = viewModel::fetchMemberProfile,
+        onMemberProfileClick = viewModel::fetchMemberProfile,
         leftSecondsUntilOpening = leftSecondsUntilOpening,
         openingHour = openingHour,
         modifier = modifier,
@@ -201,8 +204,9 @@ private fun HomeScreen(
     isStadiumStatsExpanded: Boolean,
     onStadiumStatsClick: () -> Unit,
     onStadiumStatsRefresh: () -> Unit,
+    checkInRanking: RankingItem.CheckInRanking,
     victoryFairyRanking: RankingItem.VictoryFairyRanking,
-    onVictoryFairyRankingClick: (Long) -> Unit,
+    onMemberProfileClick: (Long) -> Unit,
     leftSecondsUntilOpening: StateFlow<Long>,
     openingHour: Int,
     modifier: Modifier = Modifier,
@@ -257,10 +261,19 @@ private fun HomeScreen(
                 onRefresh = onStadiumStatsRefresh,
             )
         }
-        Ranking(
-            ranking = victoryFairyRanking,
-            onRankingItemClick = onVictoryFairyRankingClick,
-        )
+
+        if (checkInRanking.topRankings.isNotEmpty()) {
+            Ranking(
+                ranking = checkInRanking,
+                onRankingItemClick = onMemberProfileClick,
+            )
+        }
+        if (victoryFairyRanking.topRankings.isNotEmpty()) {
+            Ranking(
+                ranking = victoryFairyRanking,
+                onRankingItemClick = onMemberProfileClick,
+            )
+        }
     }
 }
 
@@ -300,8 +313,9 @@ private fun HomeScreenPreview() {
         isStadiumStatsExpanded = false,
         onStadiumStatsClick = {},
         onStadiumStatsRefresh = {},
+        checkInRanking = CHECK_IN_RANKING,
         victoryFairyRanking = VICTORY_FAIRY_RANKING,
-        onVictoryFairyRankingClick = {},
+        onMemberProfileClick = {},
         leftSecondsUntilOpening = MutableStateFlow(1_000_000L),
         openingHour = 14,
     )
