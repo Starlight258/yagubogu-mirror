@@ -21,6 +21,7 @@ import com.yagubogu.stat.dto.OpponentWinRateTeamParam;
 import com.yagubogu.stat.dto.StadiumStatsParam;
 import com.yagubogu.stat.dto.VictoryFairySummaryParam;
 import com.yagubogu.stat.dto.v1.AttendanceRankingCursorResponse;
+import com.yagubogu.stat.dto.v1.AttendanceRankingResponse;
 import com.yagubogu.stat.dto.v1.AverageStatisticResponse;
 import com.yagubogu.stat.dto.v1.LuckyStadiumResponse;
 import com.yagubogu.stat.dto.v1.OpponentWinRateResponse;
@@ -205,12 +206,15 @@ public class StatService {
     }
 
     public AttendanceRankingCursorResponse findAttendanceRankings(
+            final long memberId,
             final Long cursorMemberId,
             final int limit,
             final Integer year
     ) {
         validateAttendanceRankingLimit(limit);
         int gameYear = resolveYear(year);
+        Member member = getMember(memberId);
+        AttendanceRankingResponse myRanking = findMyAttendanceRanking(member, gameYear);
 
         AttendanceRankingCursorParam cursor = findAttendanceRankingCursor(cursorMemberId, gameYear);
         List<AttendanceRankingParam> rankings = attendanceRankingRepository.findRankingsByCursor(
@@ -224,12 +228,18 @@ public class StatService {
         List<AttendanceRankingParam> content = hasNext ? rankings.subList(0, limit) : rankings;
         Long nextCursorId = hasNext ? content.getLast().getMemberId() : null;
 
-        return AttendanceRankingCursorResponse.from(content, nextCursorId, hasNext);
+        return AttendanceRankingCursorResponse.from(myRanking, content, nextCursorId, hasNext);
+    }
+
+    private AttendanceRankingResponse findMyAttendanceRanking(final Member member, final int gameYear) {
+        return attendanceRankingRepository.findRankingByMemberIdAndGameYear(member.getId(), gameYear)
+                .map(AttendanceRankingResponse::from)
+                .orElseGet(() -> AttendanceRankingResponse.emptyRanking(member));
     }
 
     private void validateAttendanceRankingLimit(final int limit) {
         if (limit <= 0 || limit > MAX_ATTENDANCE_RANKING_LIMIT) {
-            throw new BadRequestException("Invalid limit");
+            throw new BadRequestException("limit must be between 1 and 50");
         }
     }
 

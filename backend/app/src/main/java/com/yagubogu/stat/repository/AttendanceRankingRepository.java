@@ -103,6 +103,36 @@ public interface AttendanceRankingRepository extends JpaRepository<AttendanceRan
             @Param("limit") int limit
     );
 
+    @Query(value = """
+            SELECT
+                ranked.ranking AS ranking,
+                ranked.memberId AS memberId,
+                ranked.checkInCount AS checkInCount,
+                ranked.nickname AS nickname,
+                ranked.imageUrl AS imageUrl,
+                ranked.teamShortName AS teamShortName
+            FROM (
+                SELECT
+                    RANK() OVER (ORDER BY ar.check_in_count DESC) AS ranking,
+                    ar.member_id AS memberId,
+                    ar.check_in_count AS checkInCount,
+                    m.nickname AS nickname,
+                    m.image_url AS imageUrl,
+                    t.short_name AS teamShortName
+                FROM attendance_rankings ar
+                JOIN members m ON m.member_id = ar.member_id
+                JOIN teams t ON t.team_id = m.team_id
+                WHERE ar.game_year = :gameYear
+                  AND m.deleted_at IS NULL
+                  AND m.team_id IS NOT NULL
+            ) ranked
+            WHERE ranked.memberId = :memberId
+            """, nativeQuery = true)
+    Optional<AttendanceRankingParam> findRankingByMemberIdAndGameYear(
+            @Param("memberId") long memberId,
+            @Param("gameYear") int gameYear
+    );
+
     @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query(value = "DELETE FROM attendance_rankings", nativeQuery = true)
     void deleteRankings();

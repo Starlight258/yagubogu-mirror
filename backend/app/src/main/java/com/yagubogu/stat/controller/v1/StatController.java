@@ -97,7 +97,12 @@ public class StatController implements StatControllerInterface {
             @RequestParam("limit") final int limit,
             @RequestParam(required = false) final Integer year
     ) {
-        AttendanceRankingCursorResponse response = statService.findAttendanceRankings(cursorMemberId, limit, year);
+        AttendanceRankingCursorResponse response = statService.findAttendanceRankings(
+                memberClaims.id(),
+                cursorMemberId,
+                limit,
+                year
+        );
 
         return ResponseEntity.ok(response);
     }

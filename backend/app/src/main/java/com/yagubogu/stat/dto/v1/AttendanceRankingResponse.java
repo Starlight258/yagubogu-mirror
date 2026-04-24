@@ -1,5 +1,6 @@
 package com.yagubogu.stat.dto.v1;
 
+import com.yagubogu.member.domain.Member;
 import com.yagubogu.stat.dto.AttendanceRankingParam;
 
 public record AttendanceRankingResponse(
@@ -19,6 +20,19 @@ public record AttendanceRankingResponse(
                 param.getNickname(),
                 param.getImageUrl(),
                 param.getTeamShortName()
+        );
+    }
+
+    public static AttendanceRankingResponse emptyRanking(final Member member) {
+        String teamShortName = member.getTeam() == null ? null : member.getTeam().getShortName();
+
+        return new AttendanceRankingResponse(
+                0,
+                member.getId(),
+                0,
+                member.getNickname().toString(),
+                member.getImageUrl(),
+                teamShortName
         );
     }
 }

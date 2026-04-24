@@ -105,15 +105,24 @@ class StatServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
         checkInService.createCheckIn(member.getId(), new CreateCheckInRequest(game2.getId()));
 
         // then
-        AttendanceRankingCursorResponse response = statService.findAttendanceRankings(null, 10, year);
+        AttendanceRankingCursorResponse response = statService.findAttendanceRankings(member.getId(), null, 10, year);
 
-        assertThat(response.cursorResult().content())
+        assertSoftly(softAssertions -> {
+            softAssertions.assertThat(response.myRanking())
+                    .extracting(
+                            AttendanceRankingResponse::memberId,
+                            AttendanceRankingResponse::ranking,
+                            AttendanceRankingResponse::checkInCount
+                    )
+                    .containsExactly(member.getId(), 1L, 2);
+            softAssertions.assertThat(response.rankings())
                 .extracting(
                         AttendanceRankingResponse::memberId,
                         AttendanceRankingResponse::ranking,
                         AttendanceRankingResponse::checkInCount
                 )
                 .containsExactly(org.assertj.core.api.Assertions.tuple(member.getId(), 1L, 2));
+        });
     }
 
     @DisplayName("직관 랭킹은 위치 기반 직관 인증 횟수 기준으로 공동 순위를 유지하며 커서 페이지네이션된다")
@@ -147,16 +156,24 @@ class StatServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
         attendanceRankingSyncService.rebuildAll();
 
         // when
-        AttendanceRankingCursorResponse firstPage = statService.findAttendanceRankings(null, 2, year);
-        Long nextCursorId = firstPage.cursorResult().nextCursorId();
-        AttendanceRankingCursorResponse secondPage = statService.findAttendanceRankings(nextCursorId, 2, year);
+        AttendanceRankingCursorResponse firstPage = statService.findAttendanceRankings(fourth.getId(), null, 2, year);
+        Long nextCursorId = firstPage.nextCursorId();
+        AttendanceRankingCursorResponse secondPage = statService.findAttendanceRankings(fourth.getId(), nextCursorId,
+                2, year);
 
         // then
-        List<AttendanceRankingResponse> firstContent = firstPage.cursorResult().content();
-        List<AttendanceRankingResponse> secondContent = secondPage.cursorResult().content();
+        List<AttendanceRankingResponse> firstContent = firstPage.rankings();
+        List<AttendanceRankingResponse> secondContent = secondPage.rankings();
 
         assertSoftly(softAssertions -> {
-            softAssertions.assertThat(firstPage.cursorResult().hasNext()).isTrue();
+            softAssertions.assertThat(firstPage.myRanking())
+                    .extracting(
+                            AttendanceRankingResponse::memberId,
+                            AttendanceRankingResponse::ranking,
+                            AttendanceRankingResponse::checkInCount
+                    )
+                    .containsExactly(fourth.getId(), 4L, 1);
+            softAssertions.assertThat(firstPage.hasNext()).isTrue();
             softAssertions.assertThat(firstContent)
                     .extracting(
                             AttendanceRankingResponse::memberId,
@@ -167,7 +184,7 @@ class StatServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
                             org.assertj.core.api.Assertions.tuple(first.getId(), 1L, 3),
                             org.assertj.core.api.Assertions.tuple(tiedLowerId.getId(), 2L, 2)
                     );
-            softAssertions.assertThat(secondPage.cursorResult().hasNext()).isFalse();
+            softAssertions.assertThat(secondPage.hasNext()).isFalse();
             softAssertions.assertThat(secondContent)
                     .extracting(
                             AttendanceRankingResponse::memberId,
@@ -187,10 +204,12 @@ class StatServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
     @DisplayName("직관 랭킹 조회 시 limit가 50을 초과하거나 0 이하이면 예외가 발생한다")
     @Test
     void findAttendanceRankingsInvalidLimit() {
+        Member member = memberFactory.save(b -> b.team(kia).nickname("검증"));
+
         assertSoftly(softAssertions -> {
-            softAssertions.assertThatThrownBy(() -> statService.findAttendanceRankings(null, 51, 2025))
+            softAssertions.assertThatThrownBy(() -> statService.findAttendanceRankings(member.getId(), null, 51, 2025))
                     .isInstanceOf(BadRequestException.class);
-            softAssertions.assertThatThrownBy(() -> statService.findAttendanceRankings(null, 0, 2025))
+            softAssertions.assertThatThrownBy(() -> statService.findAttendanceRankings(member.getId(), null, 0, 2025))
                     .isInstanceOf(BadRequestException.class);
         });
     }
