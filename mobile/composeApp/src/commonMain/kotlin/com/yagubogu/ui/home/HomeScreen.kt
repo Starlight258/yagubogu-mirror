@@ -25,7 +25,7 @@ import com.yagubogu.ui.home.component.CHECK_IN_RANKING
 import com.yagubogu.ui.home.component.CheckInButton
 import com.yagubogu.ui.home.component.MemberStats
 import com.yagubogu.ui.home.component.OpeningCountdown
-import com.yagubogu.ui.home.component.Ranking
+import com.yagubogu.ui.home.ranking.component.Ranking
 import com.yagubogu.ui.home.component.STADIUM_STATS_UI_MODEL
 import com.yagubogu.ui.home.component.StadiumFanRate
 import com.yagubogu.ui.home.component.VICTORY_FAIRY_RANKING
@@ -35,7 +35,7 @@ import com.yagubogu.ui.home.model.CheckInUiEvent
 import com.yagubogu.ui.home.model.LocationPermissionManager
 import com.yagubogu.ui.home.model.MemberStatsUiModel
 import com.yagubogu.ui.home.model.PermissionState
-import com.yagubogu.ui.home.model.RankingItem
+import com.yagubogu.ui.home.ranking.model.RankingItem
 import com.yagubogu.ui.home.model.StadiumStatsUiModel
 import com.yagubogu.ui.theme.Gray050
 import com.yagubogu.ui.util.BackPressHandler

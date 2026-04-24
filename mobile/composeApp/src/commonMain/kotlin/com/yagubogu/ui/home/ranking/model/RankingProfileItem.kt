@@ -1,4 +1,4 @@
-package com.yagubogu.ui.home.model
+package com.yagubogu.ui.home.ranking.model
 
 sealed interface RankingProfileItem {
     val memberId: Long

@@ -2,8 +2,8 @@ package com.yagubogu.ui.home.component
 
 import com.yagubogu.domain.model.Team
 import com.yagubogu.ui.home.model.MemberStatsUiModel
-import com.yagubogu.ui.home.model.RankingItem
-import com.yagubogu.ui.home.model.RankingProfileItem
+import com.yagubogu.ui.home.ranking.model.RankingItem
+import com.yagubogu.ui.home.ranking.model.RankingProfileItem
 import com.yagubogu.ui.home.model.StadiumFanRateItem
 import com.yagubogu.ui.home.model.StadiumStatsUiModel
 import com.yagubogu.ui.home.model.TeamFanRate

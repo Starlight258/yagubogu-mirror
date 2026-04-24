@@ -19,7 +19,7 @@ import com.yagubogu.ui.home.model.CheckInSseEvent
 import com.yagubogu.ui.home.model.CheckInUiEvent
 import com.yagubogu.ui.home.model.HomeDialogEvent
 import com.yagubogu.ui.home.model.MemberStatsUiModel
-import com.yagubogu.ui.home.model.RankingItem
+import com.yagubogu.ui.home.ranking.model.RankingItem
 import com.yagubogu.ui.home.model.StadiumFanRateItem
 import com.yagubogu.ui.home.model.StadiumStatsUiModel
 import com.yagubogu.ui.home.model.StadiumWithGame

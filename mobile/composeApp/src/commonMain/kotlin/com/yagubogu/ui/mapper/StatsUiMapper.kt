@@ -6,8 +6,8 @@ import com.yagubogu.data.dto.response.stats.StatsCountsResponse
 import com.yagubogu.data.dto.response.stats.VictoryFairyRankingDto
 import com.yagubogu.data.dto.response.stats.VictoryFairyRankingResponse
 import com.yagubogu.domain.model.Team
-import com.yagubogu.ui.home.model.RankingItem
-import com.yagubogu.ui.home.model.RankingProfileItem
+import com.yagubogu.ui.home.ranking.model.RankingItem
+import com.yagubogu.ui.home.ranking.model.RankingProfileItem
 import com.yagubogu.ui.stats.detail.model.VsTeamStatItem
 import com.yagubogu.ui.stats.my.model.AverageStats
 import com.yagubogu.ui.stats.my.model.StatsCounts
