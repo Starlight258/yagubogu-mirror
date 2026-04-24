@@ -10,12 +10,10 @@ import com.yagubogu.ui.mapper.toUiModel
 import com.yagubogu.ui.ranking.model.RankingType
 import com.yagubogu.ui.ranking.model.RankingUiModel
 import com.yagubogu.ui.util.now
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlin.time.Clock
@@ -31,10 +29,11 @@ class RankingViewModel(
     private val _rankingUiModel = MutableStateFlow(RankingUiModel(type))
     val rankingUiModel: StateFlow<RankingUiModel> = _rankingUiModel.asStateFlow()
 
-    private val _profileDialogEvent = MutableSharedFlow<MemberProfile>()
-    val profileDialogEvent: SharedFlow<MemberProfile> = _profileDialogEvent.asSharedFlow()
-
     fun fetchRanking(year: Int = LocalDate.now(clock).year) {
+        if (!rankingUiModel.value.hasNext || rankingUiModel.value.isLoading) return
+
+        _rankingUiModel.update { it.copy(isLoading = true) }
+
         viewModelScope.launch {
             val rankingResult: Result<RankingUiModel> =
                 when (type) {
@@ -57,9 +56,18 @@ class RankingViewModel(
                 }
             rankingResult
                 .onSuccess { ranking: RankingUiModel ->
-                    _rankingUiModel.value = ranking
+                    _rankingUiModel.update { current: RankingUiModel ->
+                        current.copy(
+                            topRankings = current.topRankings + ranking.topRankings,
+                            myRanking = ranking.myRanking,
+                            nextCursorId = ranking.nextCursorId,
+                            hasNext = ranking.hasNext,
+                            isLoading = false, // 로딩 완료
+                        )
+                    }
                 }.onFailure { exception: Throwable ->
                     logger.w(exception) { "API 호출 실패" }
+                    _rankingUiModel.update { it.copy(isLoading = false) }
                 }
         }
     }
@@ -69,12 +77,16 @@ class RankingViewModel(
             val memberProfileResult: Result<MemberProfile> =
                 memberRepository.getMemberProfile(memberId).map { it.toUiModel() }
             memberProfileResult
-                .onSuccess { memberProfile: MemberProfile ->
-                    _profileDialogEvent.emit(memberProfile)
+                .onSuccess { profile: MemberProfile ->
+                    _rankingUiModel.update { it.copy(selectedMemberProfile = profile) }
                 }.onFailure { exception: Throwable ->
                     logger.w(exception) { "API 호출 실패 (fetchMemberProfile)" }
                 }
         }
+    }
+
+    fun clearSelectedMemberProfile() {
+        _rankingUiModel.update { it.copy(selectedMemberProfile = null) }
     }
 
     companion object {

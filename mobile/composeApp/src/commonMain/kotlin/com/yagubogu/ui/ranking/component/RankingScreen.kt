@@ -7,17 +7,19 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListLayoutInfo
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,7 +35,6 @@ import com.yagubogu.ui.ranking.model.RankingUiModel
 import com.yagubogu.ui.theme.Gray050
 import com.yagubogu.ui.theme.Gray300
 import com.yagubogu.ui.theme.White
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -49,29 +50,22 @@ fun RankingScreen(
     viewModel: RankingViewModel = koinViewModel(parameters = { parametersOf(type) }),
 ) {
     val rankingUiModel: RankingUiModel by viewModel.rankingUiModel.collectAsStateWithLifecycle()
-    var memberProfile: MemberProfile? by rememberSaveable { mutableStateOf(null) }
 
     LaunchedEffect(Unit) {
         viewModel.fetchRanking()
-
-        launch {
-            viewModel.profileDialogEvent.collect {
-                memberProfile = it
-            }
-        }
     }
 
-    memberProfile?.let { profile: MemberProfile ->
+    rankingUiModel.selectedMemberProfile?.let { profile: MemberProfile ->
         ProfileDialog(
-            onDismissRequest = { memberProfile = null },
+            onDismissRequest = viewModel::clearSelectedMemberProfile,
             memberProfile = profile,
-            modifier = modifier,
         )
     }
 
     RankingScreen(
         onBackClick = onBackClick,
         ranking = rankingUiModel,
+        onLoadMore = viewModel::fetchRanking,
         onRankingItemClick = viewModel::fetchMemberProfile,
         modifier = modifier,
     )
@@ -81,6 +75,7 @@ fun RankingScreen(
 private fun RankingScreen(
     onBackClick: () -> Unit,
     ranking: RankingUiModel,
+    onLoadMore: () -> Unit,
     onRankingItemClick: (Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -114,6 +109,7 @@ private fun RankingScreen(
             RankingLabel(ranking = ranking)
             RankingContent(
                 ranking = ranking,
+                onLoadMore = onLoadMore,
                 onRankingItemClick = onRankingItemClick,
             )
         }
@@ -123,14 +119,23 @@ private fun RankingScreen(
 @Composable
 private fun RankingContent(
     ranking: RankingUiModel,
+    onLoadMore: () -> Unit,
     onRankingItemClick: (Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val lazyListState: LazyListState = rememberLazyListState()
 
+    val isAtBottom: Boolean = lazyListState.isAtBottom()
+    LaunchedEffect(isAtBottom) {
+        if (isAtBottom && ranking.hasNext && !ranking.isLoading) {
+            onLoadMore()
+        }
+    }
+
     LazyColumn(
         state = lazyListState,
         verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier.fillMaxSize(),
     ) {
         item {
@@ -158,14 +163,43 @@ private fun RankingContent(
                 isMyRanking = false,
             )
         }
+
+        if (ranking.isLoading && ranking.topRankings.isNotEmpty()) {
+            item {
+                CircularProgressIndicator(
+                    color = Gray300,
+                    modifier = Modifier.padding(16.dp),
+                )
+            }
+        }
     }
 }
+
+@Composable
+fun LazyListState.isAtBottom(buffer: Int = 2): Boolean =
+    remember(this) {
+        // derivedStateOf를 사용하여 불필요한 리컴포지션 방지
+        derivedStateOf {
+            val layoutInfo: LazyListLayoutInfo = layoutInfo
+            val totalItemsCount: Int = layoutInfo.totalItemsCount
+            val lastVisibleItemIndex: Int = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+
+            // 데이터가 없으면 false
+            if (totalItemsCount == 0) {
+                false
+            } else {
+                // (마지막으로 보이는 인덱스 + 버퍼)가 전체 개수보다 크거나 같으면 바닥에 도달한 것으로 간주
+                lastVisibleItemIndex + buffer >= totalItemsCount
+            }
+        }
+    }.value
 
 @Preview
 @Composable
 private fun RankingScreenPreview() {
     RankingScreen(
         onBackClick = {},
+        onLoadMore = {},
         ranking = CHECK_IN_RANKING,
         onRankingItemClick = {},
     )

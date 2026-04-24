@@ -38,6 +38,7 @@ val STADIUM_STATS_UI_MODEL =
 
 val CHECK_IN_RANKING_ITEM =
     RankingProfileItem.CheckInRanking(
+        memberId = 0L,
         rank = 1,
         nickname = "닉네임",
         teamName = "KIA",
@@ -49,13 +50,17 @@ val CHECK_IN_RANKING =
         type = RankingType.CHECK_IN,
         topRankings =
             List(5) { index: Int ->
-                CHECK_IN_RANKING_ITEM.copy(rank = (index + 1).toLong())
+                CHECK_IN_RANKING_ITEM.copy(
+                    memberId = (index + 1).toLong(),
+                    rank = (index + 1).toLong(),
+                )
             },
         myRanking = CHECK_IN_RANKING_ITEM,
     )
 
 val VICTORY_FAIRY_RANKING_ITEM =
     RankingProfileItem.VictoryFairyRanking(
+        memberId = 0L,
         rank = 1,
         nickname = "닉네임",
         teamName = "KIA",
@@ -67,7 +72,10 @@ val VICTORY_FAIRY_RANKING =
         type = RankingType.VICTORY_FAIRY,
         topRankings =
             List(5) { index: Int ->
-                VICTORY_FAIRY_RANKING_ITEM.copy(rank = (index + 1).toLong())
+                VICTORY_FAIRY_RANKING_ITEM.copy(
+                    memberId = (index + 1).toLong(),
+                    rank = (index + 1).toLong(),
+                )
             },
         myRanking = VICTORY_FAIRY_RANKING_ITEM,
     )
