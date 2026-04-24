@@ -39,7 +39,6 @@ import com.yagubogu.ui.theme.PretendardMedium12
 import com.yagubogu.ui.theme.PretendardRegular
 import com.yagubogu.ui.theme.PretendardRegular12
 import com.yagubogu.ui.theme.PretendardRegular16
-import com.yagubogu.ui.theme.PretendardSemiBold
 import com.yagubogu.ui.theme.PretendardSemiBold16
 import com.yagubogu.ui.theme.Silver
 import com.yagubogu.ui.theme.White
@@ -55,8 +54,6 @@ import yagubogu.composeapp.generated.resources.all_fan
 import yagubogu.composeapp.generated.resources.all_show_more
 import yagubogu.composeapp.generated.resources.home_user_profile
 import yagubogu.composeapp.generated.resources.home_victory_fairy_my_nickname
-import yagubogu.composeapp.generated.resources.home_victory_fairy_ranking
-import yagubogu.composeapp.generated.resources.home_victory_fairy_score
 import yagubogu.composeapp.generated.resources.home_victory_fairy_score_format
 import yagubogu.composeapp.generated.resources.home_victory_fairy_tooltip
 import yagubogu.composeapp.generated.resources.ic_arrow_right
@@ -88,7 +85,7 @@ fun VictoryFairyRanking(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = stringResource(Res.string.home_victory_fairy_ranking),
+                    text = stringResource(ranking.titleRes),
                     style = PretendardBold20,
                 )
                 BalloonTooltip(
@@ -140,7 +137,7 @@ fun VictoryFairyRanking(
                     style = PretendardRegular12,
                 )
                 Text(
-                    text = stringResource(Res.string.home_victory_fairy_score),
+                    text = stringResource(ranking.labelRes),
                     style = PretendardRegular12,
                 )
             }

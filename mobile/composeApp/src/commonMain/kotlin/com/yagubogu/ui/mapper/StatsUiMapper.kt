@@ -11,6 +11,9 @@ import com.yagubogu.ui.home.model.VictoryFairyRanking
 import com.yagubogu.ui.stats.detail.model.VsTeamStatItem
 import com.yagubogu.ui.stats.my.model.AverageStats
 import com.yagubogu.ui.stats.my.model.StatsCounts
+import yagubogu.composeapp.generated.resources.Res
+import yagubogu.composeapp.generated.resources.home_victory_fairy_ranking
+import yagubogu.composeapp.generated.resources.home_victory_fairy_score
 
 fun StatsCountsResponse.toUiModel(): StatsCounts =
     StatsCounts(
@@ -42,6 +45,8 @@ fun OpponentWinRateTeamDto.toUiModel(): VsTeamStatItem =
 
 fun VictoryFairyRankingResponse.toUiModel(): VictoryFairyRanking =
     VictoryFairyRanking(
+        titleRes = Res.string.home_victory_fairy_ranking,
+        labelRes = Res.string.home_victory_fairy_score,
         topRankings = topRankings.map { it.toUiModel() },
         myRanking = myRanking.toUiModel(),
     )

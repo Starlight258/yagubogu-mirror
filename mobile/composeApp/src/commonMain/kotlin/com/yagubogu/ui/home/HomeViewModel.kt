@@ -54,6 +54,9 @@ import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.until
+import yagubogu.composeapp.generated.resources.Res
+import yagubogu.composeapp.generated.resources.home_victory_fairy_ranking
+import yagubogu.composeapp.generated.resources.home_victory_fairy_score
 import kotlin.math.roundToInt
 import kotlin.time.Clock
 
@@ -82,7 +85,13 @@ class HomeViewModel(
     private val _isStadiumStatsExpanded = MutableStateFlow(false)
     val isStadiumStatsExpanded: StateFlow<Boolean> = _isStadiumStatsExpanded.asStateFlow()
 
-    private val _victoryFairyRanking = MutableStateFlow(VictoryFairyRanking())
+    private val _victoryFairyRanking =
+        MutableStateFlow(
+            VictoryFairyRanking(
+                titleRes = Res.string.home_victory_fairy_ranking,
+                labelRes = Res.string.home_victory_fairy_score,
+            ),
+        )
     val victoryFairyRanking: StateFlow<VictoryFairyRanking> = _victoryFairyRanking.asStateFlow()
 
     private val _isCheckInLoading = MutableStateFlow(false)
