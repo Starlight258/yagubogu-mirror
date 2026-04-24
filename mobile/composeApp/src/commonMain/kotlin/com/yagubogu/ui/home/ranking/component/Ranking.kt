@@ -20,14 +20,13 @@ import androidx.compose.ui.unit.sp
 import com.yagubogu.analytics.AnalyticsLogger
 import com.yagubogu.ui.home.component.CHECK_IN_RANKING
 import com.yagubogu.ui.home.component.VICTORY_FAIRY_RANKING
-import com.yagubogu.ui.home.ranking.model.RankingItem
 import com.yagubogu.ui.home.ranking.model.RankingProfileItem
-import com.yagubogu.ui.theme.Gray100
+import com.yagubogu.ui.home.ranking.model.RankingType
+import com.yagubogu.ui.home.ranking.model.RankingUiModel
 import com.yagubogu.ui.theme.Gray300
 import com.yagubogu.ui.theme.Gray400
 import com.yagubogu.ui.theme.PretendardBold20
 import com.yagubogu.ui.theme.PretendardMedium
-import com.yagubogu.ui.theme.PretendardRegular12
 import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.util.BalloonTooltip
 import com.yagubogu.ui.util.noRippleClickable
@@ -35,19 +34,16 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.all_show_more
-import yagubogu.composeapp.generated.resources.home_check_in_count
 import yagubogu.composeapp.generated.resources.home_check_in_ranking
 import yagubogu.composeapp.generated.resources.home_check_in_ranking_tooltip
-import yagubogu.composeapp.generated.resources.home_user_profile
 import yagubogu.composeapp.generated.resources.home_victory_fairy_ranking
 import yagubogu.composeapp.generated.resources.home_victory_fairy_ranking_tooltip
-import yagubogu.composeapp.generated.resources.home_victory_fairy_score
 import yagubogu.composeapp.generated.resources.ic_arrow_right
 import yagubogu.composeapp.generated.resources.ic_info
 
 @Composable
 fun Ranking(
-    ranking: RankingItem,
+    ranking: RankingUiModel,
     onRankingItemClick: (Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -70,9 +66,9 @@ fun Ranking(
                 Text(
                     text =
                         stringResource(
-                            when (ranking) {
-                                is RankingItem.CheckInRanking -> Res.string.home_check_in_ranking
-                                is RankingItem.VictoryFairyRanking -> Res.string.home_victory_fairy_ranking
+                            when (ranking.type) {
+                                RankingType.CHECK_IN -> Res.string.home_check_in_ranking
+                                RankingType.VICTORY_FAIRY -> Res.string.home_victory_fairy_ranking
                             },
                         ),
                     style = PretendardBold20,
@@ -80,9 +76,9 @@ fun Ranking(
                 BalloonTooltip(
                     text =
                         stringResource(
-                            when (ranking) {
-                                is RankingItem.CheckInRanking -> Res.string.home_check_in_ranking_tooltip
-                                is RankingItem.VictoryFairyRanking -> Res.string.home_victory_fairy_ranking_tooltip
+                            when (ranking.type) {
+                                RankingType.CHECK_IN -> Res.string.home_check_in_ranking_tooltip
+                                RankingType.VICTORY_FAIRY -> Res.string.home_victory_fairy_ranking_tooltip
                             },
                         ),
                 ) { showTooltip ->
@@ -118,30 +114,7 @@ fun Ranking(
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .background(color = Gray100)
-                        .padding(horizontal = 8.dp, vertical = 10.dp),
-            ) {
-                Text(
-                    text = stringResource(Res.string.home_user_profile),
-                    style = PretendardRegular12,
-                )
-                Text(
-                    text =
-                        stringResource(
-                            when (ranking) {
-                                is RankingItem.CheckInRanking -> Res.string.home_check_in_count
-                                is RankingItem.VictoryFairyRanking -> Res.string.home_victory_fairy_score
-                            },
-                        ),
-                    style = PretendardRegular12,
-                )
-            }
+            RankingLabel(ranking = ranking)
 
             RankingMemberProfile(
                 item = ranking.myRanking,

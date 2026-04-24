@@ -25,7 +25,6 @@ import com.yagubogu.ui.home.component.CHECK_IN_RANKING
 import com.yagubogu.ui.home.component.CheckInButton
 import com.yagubogu.ui.home.component.MemberStats
 import com.yagubogu.ui.home.component.OpeningCountdown
-import com.yagubogu.ui.home.ranking.component.Ranking
 import com.yagubogu.ui.home.component.STADIUM_STATS_UI_MODEL
 import com.yagubogu.ui.home.component.StadiumFanRate
 import com.yagubogu.ui.home.component.VICTORY_FAIRY_RANKING
@@ -35,8 +34,9 @@ import com.yagubogu.ui.home.model.CheckInUiEvent
 import com.yagubogu.ui.home.model.LocationPermissionManager
 import com.yagubogu.ui.home.model.MemberStatsUiModel
 import com.yagubogu.ui.home.model.PermissionState
-import com.yagubogu.ui.home.ranking.model.RankingItem
 import com.yagubogu.ui.home.model.StadiumStatsUiModel
+import com.yagubogu.ui.home.ranking.component.Ranking
+import com.yagubogu.ui.home.ranking.model.RankingUiModel
 import com.yagubogu.ui.theme.Gray050
 import com.yagubogu.ui.util.BackPressHandler
 import com.yagubogu.ui.util.LocalSnackbarHostState
@@ -77,8 +77,8 @@ fun HomeScreen(
     val memberStatsUiModel: MemberStatsUiModel by viewModel.memberStatsUiModel.collectAsStateWithLifecycle()
     val stadiumStatsUiModel: StadiumStatsUiModel by viewModel.stadiumStatsUiModel.collectAsStateWithLifecycle()
     val isStadiumStatsExpanded: Boolean by viewModel.isStadiumStatsExpanded.collectAsStateWithLifecycle()
-    val checkInRanking: RankingItem.CheckInRanking by viewModel.checkInRanking.collectAsStateWithLifecycle()
-    val victoryFairyRanking: RankingItem.VictoryFairyRanking by viewModel.victoryFairyRanking.collectAsStateWithLifecycle()
+    val checkInRanking: RankingUiModel by viewModel.checkInRanking.collectAsStateWithLifecycle()
+    val victoryFairyRanking: RankingUiModel by viewModel.victoryFairyRanking.collectAsStateWithLifecycle()
     val leftSecondsUntilOpening: StateFlow<Long> = viewModel.leftSecondsUntilOpening
     val openingHour: Int = viewModel.openingHour
 
@@ -204,8 +204,8 @@ private fun HomeScreen(
     isStadiumStatsExpanded: Boolean,
     onStadiumStatsClick: () -> Unit,
     onStadiumStatsRefresh: () -> Unit,
-    checkInRanking: RankingItem.CheckInRanking,
-    victoryFairyRanking: RankingItem.VictoryFairyRanking,
+    checkInRanking: RankingUiModel,
+    victoryFairyRanking: RankingUiModel,
     onMemberProfileClick: (Long) -> Unit,
     leftSecondsUntilOpening: StateFlow<Long>,
     openingHour: Int,

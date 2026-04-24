@@ -2,11 +2,12 @@ package com.yagubogu.ui.home.component
 
 import com.yagubogu.domain.model.Team
 import com.yagubogu.ui.home.model.MemberStatsUiModel
-import com.yagubogu.ui.home.ranking.model.RankingItem
-import com.yagubogu.ui.home.ranking.model.RankingProfileItem
 import com.yagubogu.ui.home.model.StadiumFanRateItem
 import com.yagubogu.ui.home.model.StadiumStatsUiModel
 import com.yagubogu.ui.home.model.TeamFanRate
+import com.yagubogu.ui.home.ranking.model.RankingProfileItem
+import com.yagubogu.ui.home.ranking.model.RankingType
+import com.yagubogu.ui.home.ranking.model.RankingUiModel
 
 val MEMBER_STATS_UI_MODEL =
     MemberStatsUiModel(
@@ -44,7 +45,8 @@ val CHECK_IN_RANKING_ITEM =
     )
 
 val CHECK_IN_RANKING =
-    RankingItem.CheckInRanking(
+    RankingUiModel(
+        type = RankingType.CHECK_IN,
         topRankings =
             List(5) { index: Int ->
                 CHECK_IN_RANKING_ITEM.copy(rank = index + 1)
@@ -61,7 +63,8 @@ val VICTORY_FAIRY_RANKING_ITEM =
     )
 
 val VICTORY_FAIRY_RANKING =
-    RankingItem.VictoryFairyRanking(
+    RankingUiModel(
+        type = RankingType.VICTORY_FAIRY,
         topRankings =
             List(5) { index: Int ->
                 VICTORY_FAIRY_RANKING_ITEM.copy(rank = index + 1)

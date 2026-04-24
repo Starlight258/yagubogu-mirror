@@ -6,8 +6,9 @@ import com.yagubogu.data.dto.response.stats.StatsCountsResponse
 import com.yagubogu.data.dto.response.stats.VictoryFairyRankingDto
 import com.yagubogu.data.dto.response.stats.VictoryFairyRankingResponse
 import com.yagubogu.domain.model.Team
-import com.yagubogu.ui.home.ranking.model.RankingItem
 import com.yagubogu.ui.home.ranking.model.RankingProfileItem
+import com.yagubogu.ui.home.ranking.model.RankingType
+import com.yagubogu.ui.home.ranking.model.RankingUiModel
 import com.yagubogu.ui.stats.detail.model.VsTeamStatItem
 import com.yagubogu.ui.stats.my.model.AverageStats
 import com.yagubogu.ui.stats.my.model.StatsCounts
@@ -40,8 +41,9 @@ fun OpponentWinRateTeamDto.toUiModel(): VsTeamStatItem =
         winningPercentage = winRate,
     )
 
-fun VictoryFairyRankingResponse.toUiModel(): RankingItem.VictoryFairyRanking =
-    RankingItem.VictoryFairyRanking(
+fun VictoryFairyRankingResponse.toUiModel(): RankingUiModel =
+    RankingUiModel(
+        type = RankingType.VICTORY_FAIRY,
         topRankings = topRankings.map { it.toUiModel() },
         myRanking = myRanking.toUiModel(),
     )
