@@ -1,10 +1,14 @@
 package com.yagubogu.ui.ranking.model
 
+import androidx.compose.runtime.Immutable
 import com.yagubogu.ui.common.model.MemberProfile
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
+@Immutable
 data class RankingUiModel(
     val type: RankingType,
-    val topRankings: List<RankingProfileItem> = emptyList(),
+    val topRankings: ImmutableList<RankingProfileItem> = persistentListOf(),
     val myRanking: RankingProfileItem =
         when (type) {
             RankingType.CHECK_IN -> RankingProfileItem.CheckInRanking()

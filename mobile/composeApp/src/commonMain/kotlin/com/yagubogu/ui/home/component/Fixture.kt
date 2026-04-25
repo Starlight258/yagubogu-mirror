@@ -8,6 +8,7 @@ import com.yagubogu.ui.home.model.TeamFanRate
 import com.yagubogu.ui.ranking.model.RankingProfileItem
 import com.yagubogu.ui.ranking.model.RankingType
 import com.yagubogu.ui.ranking.model.RankingUiModel
+import kotlinx.collections.immutable.toImmutableList
 
 val MEMBER_STATS_UI_MODEL =
     MemberStatsUiModel(
@@ -54,7 +55,7 @@ val CHECK_IN_RANKING =
                     memberId = (index + 1).toLong(),
                     rank = (index + 1).toLong(),
                 )
-            },
+            }.toImmutableList(),
         myRanking = CHECK_IN_RANKING_ITEM,
     )
 
@@ -76,6 +77,6 @@ val VICTORY_FAIRY_RANKING =
                     memberId = (index + 1).toLong(),
                     rank = (index + 1).toLong(),
                 )
-            },
+            }.toImmutableList(),
         myRanking = VICTORY_FAIRY_RANKING_ITEM,
     )

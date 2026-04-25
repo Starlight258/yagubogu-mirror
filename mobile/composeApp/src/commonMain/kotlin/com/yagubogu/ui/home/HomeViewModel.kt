@@ -85,6 +85,7 @@ class HomeViewModel(
 
     private val _checkInRanking = MutableStateFlow(RankingUiModel(type = RankingType.CHECK_IN))
     val checkInRanking: StateFlow<RankingUiModel> = _checkInRanking.asStateFlow()
+
     private val _victoryFairyRanking =
         MutableStateFlow(RankingUiModel(type = RankingType.VICTORY_FAIRY))
     val victoryFairyRanking: StateFlow<RankingUiModel> = _victoryFairyRanking.asStateFlow()
@@ -405,7 +406,7 @@ class HomeViewModel(
     }
 
     companion object {
-        private const val THRESHOLD_IN_METERS = 1000.0 // TODO: 300.0 으로 변경
+        private const val THRESHOLD_IN_METERS = 1000.0
         private const val RANKING_LIMIT = 5
     }
 }

@@ -14,6 +14,7 @@ import com.yagubogu.ui.ranking.model.RankingUiModel
 import com.yagubogu.ui.stats.detail.model.VsTeamStatItem
 import com.yagubogu.ui.stats.my.model.AverageStats
 import com.yagubogu.ui.stats.my.model.StatsCounts
+import kotlinx.collections.immutable.toImmutableList
 
 fun StatsCountsResponse.toUiModel(): StatsCounts =
     StatsCounts(
@@ -46,7 +47,7 @@ fun OpponentWinRateTeamDto.toUiModel(): VsTeamStatItem =
 fun VictoryFairyRankingResponse.toUiModel(): RankingUiModel =
     RankingUiModel(
         type = RankingType.VICTORY_FAIRY,
-        topRankings = topRankings.map { it.toUiModel() },
+        topRankings = topRankings.map { it.toUiModel() }.toImmutableList(),
         myRanking = myRanking.toUiModel(),
         nextCursorId = nextCursorId,
         hasNext = hasNext,
@@ -65,7 +66,7 @@ fun VictoryFairyRankingDto.toUiModel(): RankingProfileItem =
 fun LocationCheckInRankingCursorResponse.toUiModel(): RankingUiModel =
     RankingUiModel(
         type = RankingType.CHECK_IN,
-        topRankings = rankings.map { it.toUiModel() },
+        topRankings = rankings.map { it.toUiModel() }.toImmutableList(),
         myRanking = myRanking.toUiModel(),
         nextCursorId = nextCursorId,
         hasNext = hasNext,

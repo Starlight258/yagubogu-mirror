@@ -10,6 +10,7 @@ import com.yagubogu.ui.mapper.toUiModel
 import com.yagubogu.ui.ranking.model.RankingType
 import com.yagubogu.ui.ranking.model.RankingUiModel
 import com.yagubogu.ui.util.now
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -58,7 +59,7 @@ class RankingViewModel(
                 .onSuccess { ranking: RankingUiModel ->
                     _rankingUiModel.update { current: RankingUiModel ->
                         current.copy(
-                            topRankings = current.topRankings + ranking.topRankings,
+                            topRankings = (current.topRankings + ranking.topRankings).toImmutableList(),
                             myRanking = ranking.myRanking,
                             nextCursorId = ranking.nextCursorId,
                             hasNext = ranking.hasNext,
