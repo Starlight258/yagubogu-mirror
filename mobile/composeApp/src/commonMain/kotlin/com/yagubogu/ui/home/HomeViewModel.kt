@@ -295,7 +295,7 @@ class HomeViewModel(
                 statsRepository
                     .getCheckInRankings(
                         year = year,
-                        before = checkInRanking.value.nextCursorId,
+                        before = null,
                         limit = RANKING_LIMIT,
                     ).map { it.toUiModel() }
             checkInRankingResult
@@ -314,7 +314,7 @@ class HomeViewModel(
                     .getVictoryFairyRankings(
                         year = year,
                         teamCode = null,
-                        before = victoryFairyRanking.value.nextCursorId,
+                        before = null,
                         limit = RANKING_LIMIT,
                     ).map { it.toUiModel() }
             victoryFairyRankingResult

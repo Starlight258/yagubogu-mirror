@@ -48,6 +48,8 @@ fun VictoryFairyRankingResponse.toUiModel(): RankingUiModel =
         type = RankingType.VICTORY_FAIRY,
         topRankings = topRankings.map { it.toUiModel() },
         myRanking = myRanking.toUiModel(),
+        nextCursorId = nextCursorId,
+        hasNext = hasNext,
     )
 
 fun VictoryFairyRankingDto.toUiModel(): RankingProfileItem =
