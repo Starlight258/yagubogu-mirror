@@ -89,12 +89,14 @@ buildkonfig {
         stringField("ADMOB_ANDROID_STATS_BANNER")
         stringField("ADMOB_ANDROID_ATTENDANCE_CALENDAR_BANNER")
         stringField("ADMOB_ANDROID_EXIT_DIALOG_BANNER")
+        stringField("ADMOB_ANDROID_PROFILE_DIALOG_BANNER")
         stringField("ADMOB_ANDROID_PAST_CHECK_IN_INTERSTITIAL")
         stringField("ADMOB_IOS_HOME_BANNER")
         stringField("ADMOB_IOS_RANKING_BANNER")
         stringField("ADMOB_IOS_LIVETALK_BANNER")
         stringField("ADMOB_IOS_STATS_BANNER")
         stringField("ADMOB_IOS_ATTENDANCE_CALENDAR_BANNER")
+        stringField("ADMOB_IOS_PROFILE_DIALOG_BANNER")
         stringField("ADMOB_IOS_PAST_CHECK_IN_INTERSTITIAL")
     }
 }
