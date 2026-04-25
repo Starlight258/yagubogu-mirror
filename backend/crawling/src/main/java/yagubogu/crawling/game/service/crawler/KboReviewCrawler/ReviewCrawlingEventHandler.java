@@ -7,6 +7,8 @@ import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 import yagubogu.crawling.game.domain.ReviewCrawlRetry;
@@ -22,6 +24,7 @@ public class ReviewCrawlingEventHandler {
     private final ReviewCrawlRetryRepository retryRepository;
     private final Clock clock;
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleGameFinalized(final GameFinalizedEvent event) {
         if (event.state() == GameState.CANCELED) {
