@@ -66,7 +66,7 @@ class CheckInDefaultRepository(
         checkInDataSource
             .getMemo(checkInId)
             .map { memoResponse: MemoResponse ->
-                memoResponse.content
+                memoResponse.memo
             }
 
     override suspend fun updateMemo(

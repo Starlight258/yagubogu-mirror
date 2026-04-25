@@ -5,6 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class MemoRequest(
-    @SerialName("content")
+    @SerialName("memo")
     val content: String,
 )
