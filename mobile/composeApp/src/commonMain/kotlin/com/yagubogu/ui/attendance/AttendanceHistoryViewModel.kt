@@ -132,7 +132,7 @@ class AttendanceHistoryViewModel(
             checkInRepository
                 .addPastCheckIn(gameId)
                 .onSuccess {
-                    _pastCheckInUiEvent.emit(Unit)
+                    emitPastCheckInEvent()
                     fetchAttendanceHistoryItems(yearMonth = selectedMonth.value)
                 }.onFailure { exception: Throwable ->
                     logger.w(exception) { "API 호출 실패" }
