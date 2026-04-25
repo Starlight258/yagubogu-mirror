@@ -1,8 +1,8 @@
 package com.yagubogu.stat.repository;
 
-import com.yagubogu.stat.domain.AttendanceRanking;
-import com.yagubogu.stat.dto.AttendanceRankingCursorParam;
-import com.yagubogu.stat.dto.AttendanceRankingParam;
+import com.yagubogu.stat.domain.LocationCheckInRanking;
+import com.yagubogu.stat.dto.LocationCheckInRankingCursorParam;
+import com.yagubogu.stat.dto.LocationCheckInRankingParam;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,11 +12,11 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface AttendanceRankingRepository extends JpaRepository<AttendanceRanking, Long> {
+public interface LocationCheckInRankingRepository extends JpaRepository<LocationCheckInRanking, Long> {
 
     @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query(value = """
-            INSERT INTO attendance_rankings(member_id, game_year, check_in_count, updated_at)
+            INSERT INTO location_check_in_rankings(member_id, game_year, check_in_count, updated_at)
             VALUES (:memberId, :gameYear, 1, NOW())
             ON DUPLICATE KEY UPDATE
               check_in_count = check_in_count + 1,
@@ -29,7 +29,7 @@ public interface AttendanceRankingRepository extends JpaRepository<AttendanceRan
 
     @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query(value = """
-            UPDATE attendance_rankings
+            UPDATE location_check_in_rankings
             SET check_in_count = check_in_count - 1,
                 updated_at = NOW()
             WHERE member_id = :memberId
@@ -43,7 +43,7 @@ public interface AttendanceRankingRepository extends JpaRepository<AttendanceRan
 
     @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query(value = """
-            DELETE FROM attendance_rankings
+            DELETE FROM location_check_in_rankings
             WHERE member_id = :memberId
               AND game_year = :gameYear
               AND check_in_count = 0
@@ -54,15 +54,15 @@ public interface AttendanceRankingRepository extends JpaRepository<AttendanceRan
     );
 
     @Query("""
-            SELECT new com.yagubogu.stat.dto.AttendanceRankingCursorParam(
+            SELECT new com.yagubogu.stat.dto.LocationCheckInRankingCursorParam(
                 ar.member.id,
                 ar.checkInCount
             )
-            FROM AttendanceRanking ar
+            FROM LocationCheckInRanking ar
             WHERE ar.member.id = :memberId
             AND ar.gameYear = :gameYear
             """)
-    Optional<AttendanceRankingCursorParam> findCursorByMemberIdAndGameYear(
+    Optional<LocationCheckInRankingCursorParam> findCursorByMemberIdAndGameYear(
             @Param("memberId") long memberId,
             @Param("gameYear") int gameYear
     );
@@ -83,7 +83,7 @@ public interface AttendanceRankingRepository extends JpaRepository<AttendanceRan
                     m.nickname AS nickname,
                     m.image_url AS imageUrl,
                     t.short_name AS teamShortName
-                FROM attendance_rankings ar
+                FROM location_check_in_rankings ar
                 JOIN members m ON m.member_id = ar.member_id
                 JOIN teams t ON t.team_id = m.team_id
                 WHERE ar.game_year = :gameYear
@@ -96,7 +96,7 @@ public interface AttendanceRankingRepository extends JpaRepository<AttendanceRan
             ORDER BY ranked.checkInCount DESC, ranked.memberId ASC
             LIMIT :limit
             """, nativeQuery = true)
-    List<AttendanceRankingParam> findRankingsByCursor(
+    List<LocationCheckInRankingParam> findRankingsByCursor(
             @Param("gameYear") int gameYear,
             @Param("cursorMemberId") Long cursorMemberId,
             @Param("cursorCheckInCount") Integer cursorCheckInCount,
@@ -119,7 +119,7 @@ public interface AttendanceRankingRepository extends JpaRepository<AttendanceRan
                     m.nickname AS nickname,
                     m.image_url AS imageUrl,
                     t.short_name AS teamShortName
-                FROM attendance_rankings ar
+                FROM location_check_in_rankings ar
                 JOIN members m ON m.member_id = ar.member_id
                 JOIN teams t ON t.team_id = m.team_id
                 WHERE ar.game_year = :gameYear
@@ -128,18 +128,18 @@ public interface AttendanceRankingRepository extends JpaRepository<AttendanceRan
             ) ranked
             WHERE ranked.memberId = :memberId
             """, nativeQuery = true)
-    Optional<AttendanceRankingParam> findRankingByMemberIdAndGameYear(
+    Optional<LocationCheckInRankingParam> findRankingByMemberIdAndGameYear(
             @Param("memberId") long memberId,
             @Param("gameYear") int gameYear
     );
 
     @Modifying(flushAutomatically = true, clearAutomatically = true)
-    @Query(value = "DELETE FROM attendance_rankings", nativeQuery = true)
+    @Query(value = "DELETE FROM location_check_in_rankings", nativeQuery = true)
     void deleteRankings();
 
     @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query(value = """
-            INSERT INTO attendance_rankings(member_id, game_year, check_in_count, updated_at)
+            INSERT INTO location_check_in_rankings(member_id, game_year, check_in_count, updated_at)
             SELECT
                 c.member_id,
                 YEAR(g.date) AS game_year,

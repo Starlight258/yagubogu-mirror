@@ -33,7 +33,7 @@ import com.yagubogu.member.domain.Member;
 import com.yagubogu.member.repository.MemberRepository;
 import com.yagubogu.stadium.domain.Stadium;
 import com.yagubogu.stadium.repository.StadiumRepository;
-import com.yagubogu.stat.repository.AttendanceRankingRepository;
+import com.yagubogu.stat.repository.LocationCheckInRankingRepository;
 import com.yagubogu.support.TestFixture;
 import com.yagubogu.support.checkin.CheckInFactory;
 import com.yagubogu.support.game.GameFactory;
@@ -83,7 +83,7 @@ class CheckInServiceTest {
     @Autowired
     private GameRepository gameRepository;
 
-    private AttendanceRankingRepository attendanceRankingRepository;
+    private LocationCheckInRankingRepository locationCheckInRankingRepository;
 
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
@@ -93,12 +93,12 @@ class CheckInServiceTest {
 
     @BeforeEach
     void setUp() {
-        attendanceRankingRepository = mock(AttendanceRankingRepository.class);
+        locationCheckInRankingRepository = mock(LocationCheckInRankingRepository.class);
         checkInService = new CheckInService(
                 checkInRepository,
                 memberRepository,
                 gameRepository,
-                attendanceRankingRepository,
+                locationCheckInRankingRepository,
                 applicationEventPublisher
         );
 

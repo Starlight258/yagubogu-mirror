@@ -24,7 +24,7 @@ import com.yagubogu.member.dto.v1.VictoryFairyProfileResponse;
 import com.yagubogu.member.repository.MemberRepository;
 import com.yagubogu.stat.dto.CheckInSummaryParam;
 import com.yagubogu.stat.dto.VictoryFairySummaryParam;
-import com.yagubogu.stat.repository.AttendanceRankingRepository;
+import com.yagubogu.stat.repository.LocationCheckInRankingRepository;
 import com.yagubogu.stat.service.StatService;
 import com.yagubogu.checkin.repository.CheckInRepository;
 import com.yagubogu.game.domain.GameState;
@@ -116,7 +116,7 @@ public class MemberServiceTest {
     private VictoryFairyRankingRepository victoryFairyRankingRepository;
 
     @Autowired
-    private AttendanceRankingRepository attendanceRankingRepository;
+    private LocationCheckInRankingRepository locationCheckInRankingRepository;
 
     @BeforeEach
     void setUp() {
@@ -573,7 +573,7 @@ public class MemberServiceTest {
                 checkInRepository,
                 memberRepository,
                 victoryFairyRankingRepository,
-                attendanceRankingRepository,
+                locationCheckInRankingRepository,
                 Clock.system(ZoneId.of("Asia/Seoul"))
         );
         MemberService realMemberService = new MemberService(memberRepository, teamRepository, badgeRepository,

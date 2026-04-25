@@ -3,7 +3,7 @@ package com.yagubogu.stat.controller.v1;
 import com.yagubogu.auth.dto.MemberClaims;
 import com.yagubogu.checkin.dto.v1.TeamFilter;
 import com.yagubogu.checkin.dto.v1.VictoryFairyRankingResponse;
-import com.yagubogu.stat.dto.v1.AttendanceRankingCursorResponse;
+import com.yagubogu.stat.dto.v1.LocationCheckInRankingCursorResponse;
 import com.yagubogu.stat.dto.v1.AverageStatisticResponse;
 import com.yagubogu.stat.dto.v1.LuckyStadiumResponse;
 import com.yagubogu.stat.dto.v1.OpponentWinRateResponse;
@@ -113,8 +113,8 @@ public interface StatControllerInterface {
             @ApiResponse(responseCode = "200", description = "직관 랭킹 조회 성공"),
             @ApiResponse(responseCode = "400", description = "잘못된 limit 또는 cursor")
     })
-    @GetMapping("/attendance/rankings")
-    ResponseEntity<AttendanceRankingCursorResponse> findAttendanceRankings(
+    @GetMapping("/location-check-in/rankings")
+    ResponseEntity<LocationCheckInRankingCursorResponse> findLocationCheckInRankings(
             @Parameter(hidden = true) MemberClaims memberClaims,
             @RequestParam(value = "before", required = false) Long cursorMemberId,
             @RequestParam(value = "limit", defaultValue = "5") int limit,

@@ -27,7 +27,7 @@ import com.yagubogu.member.domain.Member;
 import com.yagubogu.member.repository.MemberRepository;
 import com.yagubogu.sse.dto.GameWithFanRateParam;
 import com.yagubogu.sse.dto.event.CheckInCreatedEvent;
-import com.yagubogu.stat.repository.AttendanceRankingRepository;
+import com.yagubogu.stat.repository.LocationCheckInRankingRepository;
 import com.yagubogu.team.domain.Team;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -48,7 +48,7 @@ public class CheckInService {
     private final CheckInRepository checkInRepository;
     private final MemberRepository memberRepository;
     private final GameRepository gameRepository;
-    private final AttendanceRankingRepository attendanceRankingRepository;
+    private final LocationCheckInRankingRepository locationCheckInRankingRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Transactional
@@ -59,7 +59,7 @@ public class CheckInService {
 
         validateNotExistGameAndMember(game, member);
         saveCheckInSafely(game, member, team);
-        attendanceRankingRepository.upsertIncrement(member.getId(), game.getDate().getYear());
+        locationCheckInRankingRepository.upsertIncrement(member.getId(), game.getDate().getYear());
 
         applicationEventPublisher.publishEvent(new CheckInEvent(member));
         applicationEventPublisher.publishEvent(new StadiumVisitEvent(member, game.getStadium().getId()));
@@ -76,8 +76,8 @@ public class CheckInService {
         checkInRepository.delete(checkIn);
         if (checkIn.getCheckInType() == CheckInType.LOCATION_CHECK_IN) {
             int gameYear = checkIn.getGame().getDate().getYear();
-            attendanceRankingRepository.decrement(checkIn.getMember().getId(), gameYear);
-            attendanceRankingRepository.deleteZeroCount(checkIn.getMember().getId(), gameYear);
+            locationCheckInRankingRepository.decrement(checkIn.getMember().getId(), gameYear);
+            locationCheckInRankingRepository.deleteZeroCount(checkIn.getMember().getId(), gameYear);
         }
     }
 

@@ -28,7 +28,7 @@ import com.yagubogu.stat.dto.v1.LuckyStadiumResponse;
 import com.yagubogu.stat.dto.v1.OpponentWinRateResponse;
 import com.yagubogu.stat.dto.v1.StatCountsResponse;
 import com.yagubogu.stat.dto.v1.WinRateResponse;
-import com.yagubogu.stat.repository.AttendanceRankingRepository;
+import com.yagubogu.stat.repository.LocationCheckInRankingRepository;
 import com.yagubogu.stat.repository.VictoryFairyRankingRepository;
 import com.yagubogu.support.checkin.CheckInFactory;
 import com.yagubogu.support.game.GameFactory;
@@ -83,7 +83,7 @@ class StatServiceTest {
     private VictoryFairyRankingRepository victoryFairyRankingRepository;
 
     @Autowired
-    private AttendanceRankingRepository attendanceRankingRepository;
+    private LocationCheckInRankingRepository locationCheckInRankingRepository;
 
     @BeforeEach
     void setUp() {
@@ -91,7 +91,7 @@ class StatServiceTest {
                 checkInRepository,
                 memberRepository,
                 victoryFairyRankingRepository,
-                attendanceRankingRepository,
+                locationCheckInRankingRepository,
                 Clock.system(ZoneId.of("Asia/Seoul"))
         );
     }

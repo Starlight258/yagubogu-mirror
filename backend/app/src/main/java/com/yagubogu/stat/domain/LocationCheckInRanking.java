@@ -23,22 +23,22 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Table(
-        name = "attendance_rankings",
+        name = "location_check_in_rankings",
         uniqueConstraints = {
-                @UniqueConstraint(name = "uq_attendance_rankings_member_year", columnNames = {"member_id", "game_year"})
+                @UniqueConstraint(name = "uq_location_check_in_rankings_member_year", columnNames = {"member_id", "game_year"})
         },
         indexes = {
-                @Index(name = "idx_attendance_rankings_year_count_member",
+                @Index(name = "idx_location_check_in_rankings_year_count_member",
                         columnList = "game_year, check_in_count DESC, member_id ASC")
         }
 )
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-public class AttendanceRanking {
+public class LocationCheckInRanking {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "attendance_ranking_id")
+    @Column(name = "location_check_in_ranking_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -55,7 +55,7 @@ public class AttendanceRanking {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public AttendanceRanking(final Member member, final int checkInCount, final int gameYear) {
+    public LocationCheckInRanking(final Member member, final int checkInCount, final int gameYear) {
         this.member = member;
         this.checkInCount = checkInCount;
         this.gameYear = gameYear;

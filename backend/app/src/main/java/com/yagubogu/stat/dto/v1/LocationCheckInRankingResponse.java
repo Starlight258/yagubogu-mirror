@@ -1,9 +1,9 @@
 package com.yagubogu.stat.dto.v1;
 
 import com.yagubogu.member.domain.Member;
-import com.yagubogu.stat.dto.AttendanceRankingParam;
+import com.yagubogu.stat.dto.LocationCheckInRankingParam;
 
-public record AttendanceRankingResponse(
+public record LocationCheckInRankingResponse(
         long ranking,
         long memberId,
         int checkInCount,
@@ -12,8 +12,8 @@ public record AttendanceRankingResponse(
         String teamShortName
 ) {
 
-    public static AttendanceRankingResponse from(final AttendanceRankingParam param) {
-        return new AttendanceRankingResponse(
+    public static LocationCheckInRankingResponse from(final LocationCheckInRankingParam param) {
+        return new LocationCheckInRankingResponse(
                 param.getRanking(),
                 param.getMemberId(),
                 param.getCheckInCount(),
@@ -23,10 +23,10 @@ public record AttendanceRankingResponse(
         );
     }
 
-    public static AttendanceRankingResponse emptyRanking(final Member member) {
+    public static LocationCheckInRankingResponse emptyRanking(final Member member) {
         String teamShortName = member.getTeam() == null ? null : member.getTeam().getShortName();
 
-        return new AttendanceRankingResponse(
+        return new LocationCheckInRankingResponse(
                 0,
                 member.getId(),
                 0,

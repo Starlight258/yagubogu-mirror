@@ -20,8 +20,8 @@ import com.yagubogu.member.domain.Member;
 import com.yagubogu.stadium.domain.Stadium;
 import com.yagubogu.stadium.repository.StadiumRepository;
 import com.yagubogu.stat.domain.VictoryFairyRanking;
-import com.yagubogu.stat.dto.v1.AttendanceRankingCursorResponse;
-import com.yagubogu.stat.dto.v1.AttendanceRankingResponse;
+import com.yagubogu.stat.dto.v1.LocationCheckInRankingCursorResponse;
+import com.yagubogu.stat.dto.v1.LocationCheckInRankingResponse;
 import com.yagubogu.stat.repository.VictoryFairyRankingRepository;
 import com.yagubogu.support.TestFixture;
 import com.yagubogu.support.base.ServiceUsingMysqlTestBase;
@@ -50,7 +50,7 @@ class StatServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
     private CheckInService checkInService;
 
     @Autowired
-    private AttendanceRankingSyncService attendanceRankingSyncService;
+    private LocationCheckInRankingSyncService locationCheckInRankingSyncService;
 
     @Autowired
     private CheckInRepository checkInRepository;
@@ -93,7 +93,7 @@ class StatServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
 
     @DisplayName("위치 기반 직관 인증을 성공하면 직관 랭킹 인증 횟수가 증가한다")
     @Test
-    void createLocationCheckInUpdatesAttendanceRanking() {
+    void createLocationCheckInUpdatesLocationCheckInRanking() {
         // given
         int year = 2025;
         Member member = memberFactory.save(b -> b.team(kia).nickname("직관러"));
@@ -105,21 +105,21 @@ class StatServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
         checkInService.createCheckIn(member.getId(), new CreateCheckInRequest(game2.getId()));
 
         // then
-        AttendanceRankingCursorResponse response = statService.findAttendanceRankings(member.getId(), null, 10, year);
+        LocationCheckInRankingCursorResponse response = statService.findLocationCheckInRankings(member.getId(), null, 10, year);
 
         assertSoftly(softAssertions -> {
             softAssertions.assertThat(response.myRanking())
                     .extracting(
-                            AttendanceRankingResponse::memberId,
-                            AttendanceRankingResponse::ranking,
-                            AttendanceRankingResponse::checkInCount
+                            LocationCheckInRankingResponse::memberId,
+                            LocationCheckInRankingResponse::ranking,
+                            LocationCheckInRankingResponse::checkInCount
                     )
                     .containsExactly(member.getId(), 1L, 2);
             softAssertions.assertThat(response.rankings())
                 .extracting(
-                        AttendanceRankingResponse::memberId,
-                        AttendanceRankingResponse::ranking,
-                        AttendanceRankingResponse::checkInCount
+                        LocationCheckInRankingResponse::memberId,
+                        LocationCheckInRankingResponse::ranking,
+                        LocationCheckInRankingResponse::checkInCount
                 )
                 .containsExactly(org.assertj.core.api.Assertions.tuple(member.getId(), 1L, 2));
         });
@@ -127,7 +127,7 @@ class StatServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
 
     @DisplayName("직관 랭킹은 위치 기반 직관 인증 횟수 기준으로 공동 순위를 유지하며 커서 페이지네이션된다")
     @Test
-    void findAttendanceRankingsWithCursor() {
+    void findLocationCheckInRankingsWithCursor() {
         // given
         int year = 2025;
         Member first = memberFactory.save(b -> b.team(kia).nickname("일등"));
@@ -153,32 +153,32 @@ class StatServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
                 .game(game1)
                 .checkInType(CheckInType.NON_LOCATION_CHECK_IN));
 
-        attendanceRankingSyncService.rebuildAll();
+        locationCheckInRankingSyncService.rebuildAll();
 
         // when
-        AttendanceRankingCursorResponse firstPage = statService.findAttendanceRankings(fourth.getId(), null, 2, year);
+        LocationCheckInRankingCursorResponse firstPage = statService.findLocationCheckInRankings(fourth.getId(), null, 2, year);
         Long nextCursorId = firstPage.nextCursorId();
-        AttendanceRankingCursorResponse secondPage = statService.findAttendanceRankings(fourth.getId(), nextCursorId,
+        LocationCheckInRankingCursorResponse secondPage = statService.findLocationCheckInRankings(fourth.getId(), nextCursorId,
                 2, year);
 
         // then
-        List<AttendanceRankingResponse> firstContent = firstPage.rankings();
-        List<AttendanceRankingResponse> secondContent = secondPage.rankings();
+        List<LocationCheckInRankingResponse> firstContent = firstPage.rankings();
+        List<LocationCheckInRankingResponse> secondContent = secondPage.rankings();
 
         assertSoftly(softAssertions -> {
             softAssertions.assertThat(firstPage.myRanking())
                     .extracting(
-                            AttendanceRankingResponse::memberId,
-                            AttendanceRankingResponse::ranking,
-                            AttendanceRankingResponse::checkInCount
+                            LocationCheckInRankingResponse::memberId,
+                            LocationCheckInRankingResponse::ranking,
+                            LocationCheckInRankingResponse::checkInCount
                     )
                     .containsExactly(fourth.getId(), 4L, 1);
             softAssertions.assertThat(firstPage.hasNext()).isTrue();
             softAssertions.assertThat(firstContent)
                     .extracting(
-                            AttendanceRankingResponse::memberId,
-                            AttendanceRankingResponse::ranking,
-                            AttendanceRankingResponse::checkInCount
+                            LocationCheckInRankingResponse::memberId,
+                            LocationCheckInRankingResponse::ranking,
+                            LocationCheckInRankingResponse::checkInCount
                     )
                     .containsExactly(
                             org.assertj.core.api.Assertions.tuple(first.getId(), 1L, 3),
@@ -187,29 +187,29 @@ class StatServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
             softAssertions.assertThat(secondPage.hasNext()).isFalse();
             softAssertions.assertThat(secondContent)
                     .extracting(
-                            AttendanceRankingResponse::memberId,
-                            AttendanceRankingResponse::ranking,
-                            AttendanceRankingResponse::checkInCount
+                            LocationCheckInRankingResponse::memberId,
+                            LocationCheckInRankingResponse::ranking,
+                            LocationCheckInRankingResponse::checkInCount
                     )
                     .containsExactly(
                             org.assertj.core.api.Assertions.tuple(tiedHigherId.getId(), 2L, 2),
                             org.assertj.core.api.Assertions.tuple(fourth.getId(), 4L, 1)
                     );
             softAssertions.assertThat(secondContent)
-                    .extracting(AttendanceRankingResponse::memberId)
+                    .extracting(LocationCheckInRankingResponse::memberId)
                     .doesNotContain(pastOnly.getId());
         });
     }
 
     @DisplayName("직관 랭킹 조회 시 limit가 50을 초과하거나 0 이하이면 예외가 발생한다")
     @Test
-    void findAttendanceRankingsInvalidLimit() {
+    void findLocationCheckInRankingsInvalidLimit() {
         Member member = memberFactory.save(b -> b.team(kia).nickname("검증"));
 
         assertSoftly(softAssertions -> {
-            softAssertions.assertThatThrownBy(() -> statService.findAttendanceRankings(member.getId(), null, 51, 2025))
+            softAssertions.assertThatThrownBy(() -> statService.findLocationCheckInRankings(member.getId(), null, 51, 2025))
                     .isInstanceOf(BadRequestException.class);
-            softAssertions.assertThatThrownBy(() -> statService.findAttendanceRankings(member.getId(), null, 0, 2025))
+            softAssertions.assertThatThrownBy(() -> statService.findLocationCheckInRankings(member.getId(), null, 0, 2025))
                     .isInstanceOf(BadRequestException.class);
         });
     }

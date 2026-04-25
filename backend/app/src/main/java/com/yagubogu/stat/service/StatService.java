@@ -12,23 +12,23 @@ import com.yagubogu.global.exception.NotFoundException;
 import com.yagubogu.global.exception.UnprocessableEntityException;
 import com.yagubogu.member.domain.Member;
 import com.yagubogu.member.repository.MemberRepository;
-import com.yagubogu.stat.dto.AttendanceRankingCursorParam;
-import com.yagubogu.stat.dto.AttendanceRankingParam;
+import com.yagubogu.stat.dto.LocationCheckInRankingCursorParam;
+import com.yagubogu.stat.dto.LocationCheckInRankingParam;
 import com.yagubogu.stat.dto.AverageStatisticParam;
 import com.yagubogu.stat.dto.CheckInSummaryParam;
 import com.yagubogu.stat.dto.OpponentWinRateRowParam;
 import com.yagubogu.stat.dto.OpponentWinRateTeamParam;
 import com.yagubogu.stat.dto.StadiumStatsParam;
 import com.yagubogu.stat.dto.VictoryFairySummaryParam;
-import com.yagubogu.stat.dto.v1.AttendanceRankingCursorResponse;
-import com.yagubogu.stat.dto.v1.AttendanceRankingResponse;
+import com.yagubogu.stat.dto.v1.LocationCheckInRankingCursorResponse;
+import com.yagubogu.stat.dto.v1.LocationCheckInRankingResponse;
 import com.yagubogu.stat.dto.v1.AverageStatisticResponse;
 import com.yagubogu.stat.dto.v1.LuckyStadiumResponse;
 import com.yagubogu.stat.dto.v1.OpponentWinRateResponse;
 import com.yagubogu.stat.dto.v1.RecentGamesWinRateResponse;
 import com.yagubogu.stat.dto.v1.StatCountsResponse;
 import com.yagubogu.stat.dto.v1.WinRateResponse;
-import com.yagubogu.stat.repository.AttendanceRankingRepository;
+import com.yagubogu.stat.repository.LocationCheckInRankingRepository;
 import com.yagubogu.stat.repository.VictoryFairyRankingRepository;
 import com.yagubogu.team.domain.Team;
 import java.time.Clock;
@@ -49,6 +49,7 @@ public class StatService {
 
     private static final int RECENT_LIMIT = 10;
     private static final int VICTORY_RANKING_LIMIT = 5;
+    private static final int MAX_LOCATION_CHECK_IN_RANKING_LIMIT = 50;
     private static final int VICTORY_RANKING_MAX_LIMIT = 50;
     private static final int MAX_ATTENDANCE_RANKING_LIMIT = 50;
     private static final Comparator<OpponentWinRateTeamParam> OPPONENT_WIN_RATE_TEAM_COMPARATOR = Comparator
@@ -60,7 +61,7 @@ public class StatService {
     private final CheckInRepository checkInRepository;
     private final MemberRepository memberRepository;
     private final VictoryFairyRankingRepository victoryFairyRankingRepository;
-    private final AttendanceRankingRepository attendanceRankingRepository;
+    private final LocationCheckInRankingRepository locationCheckInRankingRepository;
     private final Clock clock;
 
     public StatCountsResponse findStatCounts(final long memberId, final Integer year) {
@@ -205,19 +206,19 @@ public class StatService {
         return new VictoryFairyRankingResponse(pagedTopRankings, myRankingResponse, nextCursorId, hasNext);
     }
 
-    public AttendanceRankingCursorResponse findAttendanceRankings(
+    public LocationCheckInRankingCursorResponse findLocationCheckInRankings(
             final long memberId,
             final Long cursorMemberId,
             final int limit,
             final Integer year
     ) {
-        validateAttendanceRankingLimit(limit);
+        validateLocationCheckInRankingLimit(limit);
         int gameYear = resolveYear(year);
         Member member = getMember(memberId);
-        AttendanceRankingResponse myRanking = findMyAttendanceRanking(member, gameYear);
+        LocationCheckInRankingResponse myRanking = findMyLocationCheckInRanking(member, gameYear);
 
-        AttendanceRankingCursorParam cursor = findAttendanceRankingCursor(cursorMemberId, gameYear);
-        List<AttendanceRankingParam> rankings = attendanceRankingRepository.findRankingsByCursor(
+        LocationCheckInRankingCursorParam cursor = findLocationCheckInRankingCursor(cursorMemberId, gameYear);
+        List<LocationCheckInRankingParam> rankings = locationCheckInRankingRepository.findRankingsByCursor(
                 gameYear,
                 cursor == null ? null : cursor.memberId(),
                 cursor == null ? null : cursor.checkInCount(),
@@ -225,20 +226,20 @@ public class StatService {
         );
 
         boolean hasNext = rankings.size() > limit;
-        List<AttendanceRankingParam> content = hasNext ? rankings.subList(0, limit) : rankings;
+        List<LocationCheckInRankingParam> content = hasNext ? rankings.subList(0, limit) : rankings;
         Long nextCursorId = hasNext ? content.getLast().getMemberId() : null;
 
-        return AttendanceRankingCursorResponse.from(myRanking, content, nextCursorId, hasNext);
+        return LocationCheckInRankingCursorResponse.from(myRanking, content, nextCursorId, hasNext);
     }
 
-    private AttendanceRankingResponse findMyAttendanceRanking(final Member member, final int gameYear) {
-        return attendanceRankingRepository.findRankingByMemberIdAndGameYear(member.getId(), gameYear)
-                .map(AttendanceRankingResponse::from)
-                .orElseGet(() -> AttendanceRankingResponse.emptyRanking(member));
+    private LocationCheckInRankingResponse findMyLocationCheckInRanking(final Member member, final int gameYear) {
+        return locationCheckInRankingRepository.findRankingByMemberIdAndGameYear(member.getId(), gameYear)
+                .map(LocationCheckInRankingResponse::from)
+                .orElseGet(() -> LocationCheckInRankingResponse.emptyRanking(member));
     }
 
-    private void validateAttendanceRankingLimit(final int limit) {
-        if (limit <= 0 || limit > MAX_ATTENDANCE_RANKING_LIMIT) {
+    private void validateLocationCheckInRankingLimit(final int limit) {
+        if (limit <= 0 || limit > MAX_LOCATION_CHECK_IN_RANKING_LIMIT) {
             throw new BadRequestException("limit must be between 1 and 50");
         }
     }
@@ -251,12 +252,12 @@ public class StatService {
         return LocalDate.now(clock).getYear();
     }
 
-    private AttendanceRankingCursorParam findAttendanceRankingCursor(final Long cursorMemberId, final int gameYear) {
+    private LocationCheckInRankingCursorParam findLocationCheckInRankingCursor(final Long cursorMemberId, final int gameYear) {
         if (cursorMemberId == null) {
             return null;
         }
 
-        return attendanceRankingRepository.findCursorByMemberIdAndGameYear(cursorMemberId, gameYear)
+        return locationCheckInRankingRepository.findCursorByMemberIdAndGameYear(cursorMemberId, gameYear)
                 .orElseThrow(() -> new BadRequestException("Invalid cursor"));
     }
 

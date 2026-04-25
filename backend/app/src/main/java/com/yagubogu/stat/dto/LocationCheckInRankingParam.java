@@ -1,6 +1,6 @@
 package com.yagubogu.stat.dto;
 
-public interface AttendanceRankingParam {
+public interface LocationCheckInRankingParam {
 
     long getRanking();
 
