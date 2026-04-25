@@ -9,12 +9,3 @@ CREATE TABLE review_crawl_retries
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
 
-CREATE TABLE shedlock
-(
-    name       VARCHAR(64)  NOT NULL,
-    lock_until DATETIME(3)  NOT NULL,
-    locked_at  DATETIME(3)  NOT NULL,
-    locked_by  VARCHAR(255) NOT NULL,
-    PRIMARY KEY (name)
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4;

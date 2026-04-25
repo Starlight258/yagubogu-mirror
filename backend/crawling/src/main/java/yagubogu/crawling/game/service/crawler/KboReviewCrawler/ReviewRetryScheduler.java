@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import yagubogu.crawling.game.domain.ReviewCrawlRetry;
@@ -32,7 +31,6 @@ public class ReviewRetryScheduler {
     private final Clock clock;
 
     @Scheduled(fixedDelay = 10 * 60 * 1000)
-    @SchedulerLock(name = "processReviewRetryQueue", lockAtLeastFor = "30s")
     public void processRetryQueue() {
         LocalDateTime now = LocalDateTime.now(clock);
         List<ReviewCrawlRetry> dueItems = retryRepository.findByStatusAndNextRetryAtLessThanEqual(
