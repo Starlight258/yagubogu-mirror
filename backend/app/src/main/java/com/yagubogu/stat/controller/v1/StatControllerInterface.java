@@ -104,6 +104,6 @@ public interface StatControllerInterface {
             @RequestParam(name = "team", defaultValue = "ALL") TeamFilter teamFilter,
             @RequestParam(required = false) Integer year,
             @RequestParam(value = "before", required = false) Long cursorId,
-            @RequestParam("limit") int limit
+            @RequestParam(value = "limit", defaultValue = "5") int limit
     );
 }

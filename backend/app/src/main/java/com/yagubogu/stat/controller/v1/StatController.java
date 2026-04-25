@@ -82,7 +82,7 @@ public class StatController implements StatControllerInterface {
             @RequestParam(name = "team", defaultValue = "ALL") final TeamFilter teamFilter,
             @RequestParam(required = false) final Integer year,
             @RequestParam(value = "before", required = false) final Long cursorId,
-            @RequestParam("limit") final int limit
+            @RequestParam(value = "limit", defaultValue = "5") final int limit
     ) {
         VictoryFairyRankingResponse response = statService.findVictoryFairyRankings(memberClaims.id(), teamFilter,
                 year, cursorId, limit);
