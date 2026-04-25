@@ -123,16 +123,17 @@ fun AttendanceCalendarContent(
             )
 
             when {
+                // 직관 내역이 있는 경우
                 currentItems != null -> {
                     currentItems.forEach { item: AttendanceHistoryItem ->
                         AttendanceItem(item = item, isExpanded = true)
                     }
                 }
 
-                isToday -> Unit
-
+                // 경기가 없는 날인 경우
                 selectedDate !in gameDates -> NoGameDayView()
 
+                // 직관 내역이 없는 경우
                 else -> {
                     if (!isToday) {
                         AttendanceAdditionButton(
@@ -143,6 +144,7 @@ fun AttendanceCalendarContent(
                             modifier = Modifier.padding(top = 10.dp),
                         )
                     }
+
                     BannerAd(
                         adUnitId = AdUnitIds.attendanceCalendarBanner,
                         bannerAdType = BannerAdType.BANNER,

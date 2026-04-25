@@ -4,11 +4,11 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class VictoryFairyRankingResponse(
-    @SerialName("topRankings")
-    val topRankings: List<VictoryFairyRankingDto>,
+data class LocationCheckInRankingCursorResponse(
     @SerialName("myRanking")
-    val myRanking: VictoryFairyRankingDto,
+    val myRanking: LocationCheckInRankingDto,
+    @SerialName("rankings")
+    val rankings: List<LocationCheckInRankingDto>,
     @SerialName("nextCursorId")
     val nextCursorId: Long?, // 다음 페이지 커서, 다음 페이지가 없으면 null
     @SerialName("hasNext")
