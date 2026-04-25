@@ -20,8 +20,6 @@ admin:
   oauth:
     google:
       client-id: 'admin-google-client-id'
-    apple:
-      client-id: 'admin-apple-client-id'
 
 security:
   token:

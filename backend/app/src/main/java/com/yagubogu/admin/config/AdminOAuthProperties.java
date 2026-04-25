@@ -4,8 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "admin.oauth")
 public record AdminOAuthProperties(
-        OAuthClient google,
-        OAuthClient apple
+        OAuthClient google
 ) {
 
     public record OAuthClient(

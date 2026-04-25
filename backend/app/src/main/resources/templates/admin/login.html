@@ -6,12 +6,10 @@
     <title>야구보구 Admin</title>
     <link rel="stylesheet" th:href="@{/admin/admin.css}">
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <script src="https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js" async defer></script>
 </head>
 <body class="admin-shell login-shell">
 <main class="login-panel"
-      th:data-google-client-id="${googleClientId}"
-      th:data-apple-client-id="${appleClientId}">
+      th:data-google-client-id="${googleClientId}">
     <section class="brand-block">
         <p class="eyebrow">YAGU BOGU</p>
         <h1>Admin</h1>
@@ -19,9 +17,6 @@
 
     <section class="login-actions">
         <div id="google-login"></div>
-        <button class="oauth-button oauth-button-apple" type="button" id="apple-login">
-            Apple로 로그인
-        </button>
         <p class="login-message" id="login-message" role="status"></p>
     </section>
 </main>

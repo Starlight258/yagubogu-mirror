@@ -99,10 +99,6 @@ h2 {
     color: #ffffff;
 }
 
-.oauth-button-apple:disabled {
-    display: none;
-}
-
 .login-message {
     min-height: 22px;
     margin: 0;

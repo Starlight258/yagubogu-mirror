@@ -1,7 +1,6 @@
 const loginPanel = document.querySelector(".login-panel");
 const message = document.querySelector("#login-message");
 const googleClientId = loginPanel.dataset.googleClientId;
-const appleClientId = loginPanel.dataset.appleClientId;
 
 const setMessage = (text) => {
   message.textContent = text;
@@ -44,25 +43,4 @@ window.addEventListener("load", () => {
     });
   }
 
-  const appleButton = document.querySelector("#apple-login");
-  if (!appleClientId || !window.AppleID?.auth) {
-    appleButton.disabled = true;
-    return;
-  }
-
-  AppleID.auth.init({
-    clientId: appleClientId,
-    scope: "name email",
-    redirectURI: window.location.origin + "/admin/login",
-    usePopup: true,
-  });
-
-  appleButton.addEventListener("click", async () => {
-    try {
-      const response = await AppleID.auth.signIn();
-      await login(response.authorization.id_token, "APPLE");
-    } catch (error) {
-      setMessage("로그인이 취소되었습니다");
-    }
-  });
 });

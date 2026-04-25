@@ -59,8 +59,6 @@ public class AdminWebController {
         }
 
         model.addAttribute("googleClientId", adminOAuthProperties.google().clientId());
-        model.addAttribute("appleClientId", adminOAuthProperties.apple().clientId());
-
         return LOGIN_VIEW;
     }
 

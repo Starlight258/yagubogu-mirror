@@ -28,7 +28,7 @@ class AdminWebControllerTest {
     private final AdminWebController adminWebController = new AdminWebController(
             authService,
             authTokenProvider,
-            new AdminOAuthProperties(new OAuthClient("admin-google-client-id"), new OAuthClient("admin-apple-client-id"))
+            new AdminOAuthProperties(new OAuthClient("admin-google-client-id"))
     );
 
     @DisplayName("어드민 토큰이 없으면 로그인 페이지로 이동한다")
