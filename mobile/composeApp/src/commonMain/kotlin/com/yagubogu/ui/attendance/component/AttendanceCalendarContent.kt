@@ -35,6 +35,9 @@ import androidx.compose.ui.unit.dp
 import com.yagubogu.analytics.AnalyticsLogger
 import com.yagubogu.ui.attendance.model.AttendanceHistoryItem
 import com.yagubogu.ui.attendance.model.PastGameUiState
+import com.yagubogu.ui.common.AdUnitIds
+import com.yagubogu.ui.common.component.BannerAd
+import com.yagubogu.ui.common.component.BannerAdType
 import com.yagubogu.ui.theme.Gray400
 import com.yagubogu.ui.theme.PretendardBold16
 import com.yagubogu.ui.theme.PretendardMedium16
@@ -131,12 +134,18 @@ fun AttendanceCalendarContent(
                 selectedDate !in gameDates -> NoGameDayView()
 
                 else -> {
-                    AttendanceAdditionButton(
-                        onClick = {
-                            onPastGamesRequest(selectedDate)
-                            showBottomSheet = true
-                        },
-                        modifier = Modifier.padding(vertical = 30.dp),
+                    if (!isToday) {
+                        AttendanceAdditionButton(
+                            onClick = {
+                                onPastGamesRequest(selectedDate)
+                                showBottomSheet = true
+                            },
+                            modifier = Modifier.padding(top = 10.dp),
+                        )
+                    }
+                    BannerAd(
+                        adUnitId = AdUnitIds.attendanceCalendarBanner,
+                        bannerAdType = BannerAdType.BANNER,
                     )
                 }
             }

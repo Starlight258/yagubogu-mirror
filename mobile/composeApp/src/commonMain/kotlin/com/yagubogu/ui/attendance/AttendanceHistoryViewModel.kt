@@ -64,6 +64,16 @@ class AttendanceHistoryViewModel(
         )
     val pastCheckInUiEvent: SharedFlow<Unit> = _pastCheckInUiEvent.asSharedFlow()
 
+    private val _showInterstitialAdEvent =
+        MutableSharedFlow<Unit>(
+            replay = 0,
+            extraBufferCapacity = 1,
+            onBufferOverflow = BufferOverflow.DROP_OLDEST,
+        )
+    val showInterstitialAdEvent: SharedFlow<Unit> = _showInterstitialAdEvent.asSharedFlow()
+
+    private var pastCheckInCount = 0
+
     fun fetchAttendanceHistoryItems(
         yearMonth: YearMonth,
         isYearly: Boolean = false,
@@ -127,6 +137,15 @@ class AttendanceHistoryViewModel(
                 }.onFailure { exception: Throwable ->
                     logger.w(exception) { "API 호출 실패" }
                 }
+        }
+    }
+
+    private suspend fun emitPastCheckInEvent() {
+        pastCheckInCount++
+        if (pastCheckInCount % 3 == 1) {
+            _showInterstitialAdEvent.emit(Unit)
+        } else {
+            _pastCheckInUiEvent.emit(Unit)
         }
     }
 
