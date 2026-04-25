@@ -153,17 +153,26 @@ class MessageStateHolder {
         logger.d { "신고 요청: ${chat.chatId}" }
     }
 
-    fun toggleLike(chatId: Long) {
+    fun updateLikeStatus(
+        chatId: Long,
+        liked: Boolean,
+        likeCount: Int,
+    ) {
         _livetalkChatBubbleItems.value =
             _livetalkChatBubbleItems.value.map { bubbleItem ->
                 if (bubbleItem.livetalkChatItem.chatId != chatId) return@map bubbleItem
-                val item = bubbleItem.livetalkChatItem
-                val updatedItem =
-                    item.copy(
-                        isLiked = !item.isLiked,
-                        likeCount = if (item.isLiked) (item.likeCount - 1).coerceAtLeast(0) else item.likeCount + 1,
-                    )
-                LivetalkChatBubbleItem.OtherBubbleItem(updatedItem)
+                val updatedItem: LivetalkChatItem =
+                    bubbleItem.livetalkChatItem.copy(isLiked = liked, likeCount = likeCount)
+                when (bubbleItem) {
+                    is LivetalkChatBubbleItem.MyBubbleItem ->
+                        LivetalkChatBubbleItem.MyBubbleItem(updatedItem)
+
+                    is LivetalkChatBubbleItem.MyPendingBubbleItem ->
+                        LivetalkChatBubbleItem.MyPendingBubbleItem(updatedItem)
+
+                    is LivetalkChatBubbleItem.OtherBubbleItem ->
+                        LivetalkChatBubbleItem.OtherBubbleItem(updatedItem)
+                }
             }
     }
 

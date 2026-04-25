@@ -198,7 +198,24 @@ class LivetalkChatViewModel(
     }
 
     fun toggleLike(chat: LivetalkChatItem) {
-        messageStateHolder.toggleLike(chat.chatId)
+        val optimisticLiked = !chat.isLiked
+        val optimisticCount =
+            if (chat.isLiked) (chat.likeCount - 1).coerceAtLeast(0) else chat.likeCount + 1
+        messageStateHolder.updateLikeStatus(chat.chatId, optimisticLiked, optimisticCount)
+        viewModelScope.launch {
+            talkRepository
+                .toggleLike(talkId = chat.chatId)
+                .onSuccess { response ->
+                    messageStateHolder.updateLikeStatus(
+                        chatId = chat.chatId,
+                        liked = response.liked,
+                        likeCount = response.likeCount,
+                    )
+                }.onFailure { exception ->
+                    messageStateHolder.updateLikeStatus(chat.chatId, chat.isLiked, chat.likeCount)
+                    logger.w(exception) { "현장톡 좋아요 API 호출 실패" }
+                }
+        }
     }
 
     fun addLikeToBatch() {
