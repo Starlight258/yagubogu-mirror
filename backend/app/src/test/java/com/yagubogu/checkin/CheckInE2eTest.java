@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.yagubogu.auth.config.AuthTestConfig;
 import com.yagubogu.checkin.domain.CheckInOrderFilter;
 import com.yagubogu.checkin.domain.CheckInResultFilter;
+import com.yagubogu.checkin.dto.CheckInGameParam;
 import com.yagubogu.checkin.dto.StadiumCheckInCountParam;
 import com.yagubogu.checkin.dto.v1.CheckInCountsResponse;
 import com.yagubogu.checkin.dto.v1.CheckInHistoryResponse;
@@ -428,6 +429,8 @@ public class CheckInE2eTest extends E2eTestBase {
 
         CheckInHistoryResponse result = response.as(CheckInHistoryResponse.class);
         assertThat(result.checkInHistory()).hasSize(3);
+        assertThat(result.checkInHistory()).extracting(CheckInGameParam::gameState)
+                .containsOnly(GameState.COMPLETED);
     }
 
     @DisplayName("모든 직관 내역을 오래된순으로 조회한다")
@@ -830,6 +833,8 @@ public class CheckInE2eTest extends E2eTestBase {
         // then: 전체 기간(5경기) 조회 확인
         CheckInHistoryResponse result = response.as(CheckInHistoryResponse.class);
         assertThat(result.checkInHistory()).hasSize(5);
+        assertThat(result.checkInHistory()).extracting(CheckInGameParam::gameState)
+                .containsOnly(GameState.COMPLETED);
     }
 
     // ── 메모 CRUD ──────────────────────────────────────────────────────────────

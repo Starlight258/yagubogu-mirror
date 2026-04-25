@@ -261,7 +261,8 @@ public class CustomCheckInRepositoryImpl implements CustomCheckInRepository {
                         GAME.startAt,
                         GAME.homeScoreBoard,
                         GAME.awayScoreBoard,
-                        CHECK_IN.memo
+                        CHECK_IN.memo,
+                        GAME.gameState
                 )).from(CHECK_IN)
                 .join(CHECK_IN.game, GAME)
                 .join(GAME.stadium, STADIUM)
@@ -272,7 +273,6 @@ public class CustomCheckInRepositoryImpl implements CustomCheckInRepository {
                 .where(
                         CHECK_IN.member.eq(member),
                         dateFilter(GAME, year, month),
-                        isCompleteOrCanceled(),
                         myTeamWinFilter
                 ).orderBy(order)
                 .fetch();

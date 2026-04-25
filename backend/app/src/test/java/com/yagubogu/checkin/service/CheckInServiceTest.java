@@ -28,6 +28,8 @@ import com.yagubogu.checkin.dto.v1.StadiumCheckInCountsResponse;
 import com.yagubogu.checkin.repository.CheckInRepository;
 import com.yagubogu.game.domain.Game;
 import com.yagubogu.game.domain.GameState;
+import com.yagubogu.game.repository.GameHitterRecordRepository;
+import com.yagubogu.game.repository.GamePitcherRecordRepository;
 import com.yagubogu.game.repository.GameRepository;
 import com.yagubogu.global.config.JpaAuditingConfig;
 import com.yagubogu.global.config.S3Properties;
@@ -98,6 +100,12 @@ class CheckInServiceTest {
     private LocationCheckInRankingRepository locationCheckInRankingRepository;
 
     @Autowired
+    private GameHitterRecordRepository hitterRecordRepository;
+
+    @Autowired
+    private GamePitcherRecordRepository pitcherRecordRepository;
+
+    @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
 
     private Team kia, kt, lg, samsung, doosan, lotte;
@@ -116,6 +124,8 @@ class CheckInServiceTest {
                 checkInImageRepository,
                 memberRepository,
                 gameRepository,
+                hitterRecordRepository,
+                pitcherRecordRepository,
                 locationCheckInRankingRepository,
                 applicationEventPublisher,
                 mockS3Client,
@@ -265,12 +275,13 @@ class CheckInServiceTest {
                         r -> r.homeTeam().name(),
                         r -> r.homeScoreBoard().getRuns(),
                         r -> r.awayTeam().name(),
-                        r -> r.awayScoreBoard().getRuns()
+                        r -> r.awayScoreBoard().getRuns(),
+                        CheckInGameParam::gameState
                 ).containsExactly(
-                        tuple(startDate.plusDays(3), "롯데", 10, "KIA", 1),
-                        tuple(startDate.plusDays(2), "롯데", 10, "KIA", 10),
-                        tuple(startDate.plusDays(1), "롯데", 1, "KIA", 10),
-                        tuple(startDate, "롯데", 10, "KIA", 1)
+                        tuple(startDate.plusDays(3), "롯데", 10, "KIA", 1, GameState.COMPLETED),
+                        tuple(startDate.plusDays(2), "롯데", 10, "KIA", 10, GameState.COMPLETED),
+                        tuple(startDate.plusDays(1), "롯데", 1, "KIA", 10, GameState.COMPLETED),
+                        tuple(startDate, "롯데", 10, "KIA", 1, GameState.COMPLETED)
                 );
     }
 
@@ -301,12 +312,13 @@ class CheckInServiceTest {
                         r -> r.homeTeam().name(),
                         r -> r.homeScoreBoard().getRuns(),
                         r -> r.awayTeam().name(),
-                        r -> r.awayScoreBoard().getRuns()
+                        r -> r.awayScoreBoard().getRuns(),
+                        CheckInGameParam::gameState
                 ).containsExactly(
-                        tuple(startDate, "롯데", 10, "KIA", 1),
-                        tuple(startDate.plusDays(1), "롯데", 1, "KIA", 10),
-                        tuple(startDate.plusDays(2), "롯데", 10, "KIA", 10),
-                        tuple(startDate.plusDays(3), "롯데", 10, "KIA", 1)
+                        tuple(startDate, "롯데", 10, "KIA", 1, GameState.COMPLETED),
+                        tuple(startDate.plusDays(1), "롯데", 1, "KIA", 10, GameState.COMPLETED),
+                        tuple(startDate.plusDays(2), "롯데", 10, "KIA", 10, GameState.COMPLETED),
+                        tuple(startDate.plusDays(3), "롯데", 10, "KIA", 1, GameState.COMPLETED)
                 );
     }
 
@@ -341,11 +353,12 @@ class CheckInServiceTest {
                         r -> r.homeTeam().name(),
                         r -> r.homeScoreBoard().getRuns(),
                         r -> r.awayTeam().name(),
-                        r -> r.awayScoreBoard().getRuns()
+                        r -> r.awayScoreBoard().getRuns(),
+                        CheckInGameParam::gameState
                 ).containsExactly(
-                        tuple(startDate.plusDays(2), "KIA", 4, "삼성", 0),
-                        tuple(startDate.plusDays(1), "KIA", 5, "LG", 4),
-                        tuple(startDate, "KIA", 10, "KT", 1)
+                        tuple(startDate.plusDays(2), "KIA", 4, "삼성", 0, GameState.COMPLETED),
+                        tuple(startDate.plusDays(1), "KIA", 5, "LG", 4, GameState.COMPLETED),
+                        tuple(startDate, "KIA", 10, "KT", 1, GameState.COMPLETED)
                 );
     }
 
@@ -380,11 +393,12 @@ class CheckInServiceTest {
                         r -> r.homeTeam().name(),
                         r -> r.homeScoreBoard().getRuns(),
                         r -> r.awayTeam().name(),
-                        r -> r.awayScoreBoard().getRuns()
+                        r -> r.awayScoreBoard().getRuns(),
+                        CheckInGameParam::gameState
                 ).containsExactly(
-                        tuple(startDate, "KIA", 10, "KT", 1),
-                        tuple(startDate.plusDays(1), "KIA", 5, "LG", 4),
-                        tuple(startDate.plusDays(2), "KIA", 4, "삼성", 0)
+                        tuple(startDate, "KIA", 10, "KT", 1, GameState.COMPLETED),
+                        tuple(startDate.plusDays(1), "KIA", 5, "LG", 4, GameState.COMPLETED),
+                        tuple(startDate.plusDays(2), "KIA", 4, "삼성", 0, GameState.COMPLETED)
                 );
 
     }
@@ -438,11 +452,12 @@ class CheckInServiceTest {
                 .extracting(
                         CheckInGameParam::attendanceDate,
                         r -> r.homeTeam().name(),
-                        r -> r.awayTeam().name()
+                        r -> r.awayTeam().name(),
+                        CheckInGameParam::gameState
                 ).containsExactly(
-                        tuple(startDate.plusDays(2), "롯데", "KIA"),
-                        tuple(startDate.plusDays(1), "롯데", "KIA"),
-                        tuple(startDate, "롯데", "KIA")
+                        tuple(startDate.plusDays(2), "롯데", "KIA", GameState.COMPLETED),
+                        tuple(startDate.plusDays(1), "롯데", "KIA", GameState.CANCELED),
+                        tuple(startDate, "롯데", "KIA", GameState.COMPLETED)
                 );
 
         CheckInGameParam canceledResponse = actual.checkInHistory().get(1);
@@ -564,12 +579,13 @@ class CheckInServiceTest {
                         CheckInGameParam::attendanceDate,
                         CheckInGameParam::startAt,
                         r -> r.homeTeam().name(),
-                        r -> r.awayTeam().name()
+                        r -> r.awayTeam().name(),
+                        CheckInGameParam::gameState
                 ).containsExactly(
-                        tuple(startDate.plusDays(1), startAt, "KIA", "LG"),
-                        tuple(startDate, startAt, "KIA", "KT"),
-                        tuple(startDate.minusDays(9), pastCheckInStartAt, "두산", "KIA"),
-                        tuple(startDate.minusDays(10), pastCheckInStartAt, "KIA", "삼성")
+                        tuple(startDate.plusDays(1), "KIA", "LG", GameState.COMPLETED),
+                        tuple(startDate, "KIA", "KT", GameState.COMPLETED),
+                        tuple(startDate.minusDays(9), pastCheckInStartAt, "두산", "KIA", GameState.COMPLETED),
+                        tuple(startDate.minusDays(10), pastCheckInStartAt, "KIA", "삼성", GameState.COMPLETED)
                 );
     }
 
