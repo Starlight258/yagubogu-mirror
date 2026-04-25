@@ -117,7 +117,7 @@ public interface StatControllerInterface {
     ResponseEntity<AttendanceRankingCursorResponse> findAttendanceRankings(
             @Parameter(hidden = true) MemberClaims memberClaims,
             @RequestParam(value = "before", required = false) Long cursorMemberId,
-            @RequestParam("limit") int limit,
+            @RequestParam(value = "limit", defaultValue = "5") int limit,
             @RequestParam(required = false) Integer year
     );
 }
