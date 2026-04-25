@@ -16,6 +16,11 @@ oauth:
     jwks-uri: 'https://appleid.apple.com/auth/keys'
     client-id: 'com.example.app'
 
+admin:
+  oauth:
+    google:
+      client-id: 'admin-google-client-id'
+
 security:
   token:
     access-token:

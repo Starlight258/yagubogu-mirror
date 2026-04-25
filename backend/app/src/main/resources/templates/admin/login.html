@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>야구보구 Admin</title>
+    <link rel="stylesheet" th:href="@{/admin/admin.css}">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body class="admin-shell login-shell">
+<main class="login-panel"
+      th:data-google-client-id="${googleClientId}">
+    <section class="brand-block">
+        <p class="eyebrow">YAGU BOGU</p>
+        <h1>Admin</h1>
+    </section>
+
+    <section class="login-actions">
+        <div id="google-login"></div>
+        <p class="login-message" id="login-message" role="status"></p>
+    </section>
+</main>
+<script th:src="@{/admin/login.js}"></script>
+</body>
+</html>
