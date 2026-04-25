@@ -104,22 +104,10 @@ fun Ranking(
                 }
             }
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier =
-                    Modifier.noRippleClickable {
-                        onRankingShowMoreClick(ranking.type)
-                    },
-            ) {
-                Text(
-                    text = stringResource(Res.string.all_show_more),
-                    style = PretendardMedium.copy(fontSize = 14.sp, color = Gray400),
-                )
-                Icon(
-                    modifier = Modifier.size(16.dp),
-                    painter = painterResource(Res.drawable.ic_arrow_right),
-                    contentDescription = null,
-                    tint = Gray400,
+            if (ranking.hasNext) {
+                RankingShowMore(
+                    type = ranking.type,
+                    onRankingShowMoreClick = onRankingShowMoreClick,
                 )
             }
         }
@@ -143,6 +131,32 @@ fun Ranking(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun RankingShowMore(
+    type: RankingType,
+    onRankingShowMoreClick: (RankingType) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier =
+            modifier.noRippleClickable {
+                onRankingShowMoreClick(type)
+            },
+    ) {
+        Text(
+            text = stringResource(Res.string.all_show_more),
+            style = PretendardMedium.copy(fontSize = 14.sp, color = Gray400),
+        )
+        Icon(
+            modifier = Modifier.size(16.dp),
+            painter = painterResource(Res.drawable.ic_arrow_right),
+            contentDescription = null,
+            tint = Gray400,
+        )
     }
 }
 
