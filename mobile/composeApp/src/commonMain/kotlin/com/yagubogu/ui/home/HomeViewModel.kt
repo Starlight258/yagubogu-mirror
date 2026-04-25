@@ -405,7 +405,7 @@ class HomeViewModel(
     }
 
     companion object {
-        private const val THRESHOLD_IN_METERS = 2200.0 // TODO: 300.0 으로 변경
+        private const val THRESHOLD_IN_METERS = 1000.0 // TODO: 300.0 으로 변경
         private const val RANKING_LIMIT = 5
     }
 }
