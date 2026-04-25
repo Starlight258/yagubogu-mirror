@@ -196,6 +196,10 @@ class KboGameCenterCrawlerTest {
         lenient().when(yearLocator.selectOption(anyString())).thenReturn(List.of());
         lenient().when(monthLocator.selectOption(anyString())).thenReturn(List.of());
 
+        // Loading Overlay
+        Locator loadingLocator = mock(Locator.class);
+        lenient().when(mockPage.locator(".bx-loading")).thenReturn(loadingLocator);
+
         // Day Click
         Locator dayLocator = mock(Locator.class);
         lenient().when(mockPage.locator(contains("26"))).thenReturn(dayLocator);
