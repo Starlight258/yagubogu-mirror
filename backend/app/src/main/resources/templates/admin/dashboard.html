@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>야구보구 Admin</title>
+    <link rel="stylesheet" th:href="@{/admin/admin.css}">
+</head>
+<body class="admin-shell">
+<header class="topbar">
+    <div>
+        <p class="eyebrow">YAGU BOGU</p>
+        <h1>Admin</h1>
+    </div>
+    <button class="ghost-button" type="button" id="logout-button">로그아웃</button>
+</header>
+
+<main class="dashboard-grid">
+    <section class="admin-panel">
+        <div>
+            <p class="panel-kicker">Statistics</p>
+            <h2>승요 랭킹 동기화</h2>
+        </div>
+        <button class="primary-button" type="button" data-admin-action="/admin/victory-fairy-rankings/sync">
+            실행
+        </button>
+    </section>
+
+    <section class="admin-panel">
+        <div>
+            <p class="panel-kicker">Check-in</p>
+            <h2>위치별 직관 랭킹 재생성</h2>
+        </div>
+        <button class="primary-button" type="button" data-admin-action="/admin/location-check-in-rankings/sync">
+            실행
+        </button>
+    </section>
+</main>
+
+<aside class="toast" id="toast" role="status"></aside>
+<script th:src="@{/admin/dashboard.js}"></script>
+</body>
+</html>
