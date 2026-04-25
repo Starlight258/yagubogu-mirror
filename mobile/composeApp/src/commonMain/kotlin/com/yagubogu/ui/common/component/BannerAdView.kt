@@ -9,7 +9,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.Dp
@@ -58,8 +57,7 @@ fun BannerAd(
                 Modifier
                     .fillMaxWidth()
                     .height(height)
-                    .background(backgroundColor, finalShape)
-                    .clip(finalShape),
+                    .background(backgroundColor, finalShape),
             contentAlignment = Alignment.Center,
         ) {
             BannerAdView(
