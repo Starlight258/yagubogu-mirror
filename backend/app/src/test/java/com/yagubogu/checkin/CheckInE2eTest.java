@@ -15,7 +15,11 @@ import com.yagubogu.checkin.dto.v1.CheckInStatusResponse;
 import com.yagubogu.checkin.dto.v1.CreateCheckInRequest;
 import com.yagubogu.checkin.dto.v1.StadiumCheckInCountsResponse;
 import com.yagubogu.game.domain.Game;
+import com.yagubogu.game.domain.GameHitterRecord;
+import com.yagubogu.game.domain.GamePitcherRecord;
 import com.yagubogu.game.domain.GameState;
+import com.yagubogu.game.repository.GameHitterRecordRepository;
+import com.yagubogu.game.repository.GamePitcherRecordRepository;
 import com.yagubogu.global.config.JpaAuditingConfig;
 import com.yagubogu.member.domain.Member;
 import com.yagubogu.member.domain.Role;
@@ -67,6 +71,12 @@ public class CheckInE2eTest extends E2eTestBase {
 
     @Autowired
     private StadiumRepository stadiumRepository;
+
+    @Autowired
+    private GameHitterRecordRepository hitterRecordRepository;
+
+    @Autowired
+    private GamePitcherRecordRepository pitcherRecordRepository;
 
     private Team kia, kt, lg, samsung, doosan, lotte;
     private Stadium stadiumJamsil, stadiumGocheok, stadiumIncheon;
@@ -835,6 +845,54 @@ public class CheckInE2eTest extends E2eTestBase {
         assertThat(result.checkInHistory()).hasSize(5);
         assertThat(result.checkInHistory()).extracting(CheckInGameParam::gameState)
                 .containsOnly(GameState.COMPLETED);
+    }
+
+    // ── 리뷰 조회 ──────────────────────────────────────────────────────────────
+
+    @DisplayName("직관 경기 리뷰를 조회한다")
+    @Test
+    void findCheckInReview() {
+        // given
+        Member fora = memberFactory.save(b -> b.team(kia));
+        String accessToken = authFactory.getAccessTokenByMemberId(fora.getId(), Role.USER);
+
+        Game game = gameFactory.save(builder ->
+                builder.stadium(stadiumJamsil)
+                        .date(LocalDate.of(2025, 8, 10))
+                        .gameState(GameState.COMPLETED)
+                        .homeTeam(kt).homeScore(3).homeScoreBoard(TestFixture.getHomeScoreBoard())
+                        .awayTeam(kia).awayScore(5).awayScoreBoard(TestFixture.getAwayScoreBoard()));
+        com.yagubogu.checkin.domain.CheckIn checkIn = checkInFactory.save(b -> b.game(game).team(kia).member(fora));
+
+        hitterRecordRepository.save(new GameHitterRecord(game, true, 1, "CF", "홈타자1", 4, 1, 0, 0));
+        hitterRecordRepository.save(new GameHitterRecord(game, false, 1, "CF", "원정타자1", 4, 2, 1, 1));
+        pitcherRecordRepository.save(new GamePitcherRecord(game, true, "홈투수1", "L", "6", 22, 85, 21, 5, 0, 2, 6, 5, 5));
+        pitcherRecordRepository.save(new GamePitcherRecord(game, false, "원정투수1", "W", "7", 25, 90, 24, 3, 0, 1, 8, 3, 3));
+
+        // when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .when().get("/api/v1/check-ins/" + checkIn.getId() + "/review")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @DisplayName("예외: 존재하지 않는 직관 기록의 리뷰를 조회하면 404가 발생한다")
+    @Test
+    void findCheckInReview_notFound() {
+        // given
+        Member fora = memberFactory.save(b -> b.team(kia));
+        String accessToken = authFactory.getAccessTokenByMemberId(fora.getId(), Role.USER);
+        long invalidCheckInId = 999999L;
+
+        // when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .when().get("/api/v1/check-ins/" + invalidCheckInId + "/review")
+                .then().log().all()
+                .statusCode(404);
     }
 
     // ── 메모 CRUD ──────────────────────────────────────────────────────────────

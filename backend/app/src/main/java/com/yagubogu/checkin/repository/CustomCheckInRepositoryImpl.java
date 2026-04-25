@@ -261,8 +261,8 @@ public class CustomCheckInRepositoryImpl implements CustomCheckInRepository {
                         GAME.startAt,
                         GAME.homeScoreBoard,
                         GAME.awayScoreBoard,
-                        CHECK_IN.memo,
-                        GAME.gameState
+                        GAME.gameState,
+                        CHECK_IN.memo
                 )).from(CHECK_IN)
                 .join(CHECK_IN.game, GAME)
                 .join(GAME.stadium, STADIUM)

@@ -10,13 +10,6 @@ import com.yagubogu.checkin.dto.event.CheckInEvent;
 import com.yagubogu.checkin.dto.event.StadiumVisitEvent;
 import com.yagubogu.checkin.dto.v1.*;
 import com.yagubogu.checkin.repository.CheckInImageRepository;
-import com.yagubogu.checkin.dto.v1.CheckInCountsResponse;
-import com.yagubogu.checkin.dto.v1.CheckInHistoryResponse;
-import com.yagubogu.checkin.dto.v1.CheckInReviewResponse;
-import com.yagubogu.checkin.dto.v1.CheckInStatusResponse;
-import com.yagubogu.checkin.dto.v1.CreateCheckInRequest;
-import com.yagubogu.checkin.dto.v1.FanRateResponse;
-import com.yagubogu.checkin.dto.v1.StadiumCheckInCountsResponse;
 import com.yagubogu.checkin.repository.CheckInRepository;
 import com.yagubogu.game.domain.Game;
 import com.yagubogu.game.domain.GameHitterRecord;
@@ -209,7 +202,7 @@ public class CheckInService {
                 .map(p -> new CheckInGameParam(
                         p.checkInId(), p.stadiumFullName(), p.homeTeam(), p.awayTeam(),
                         p.attendanceDate(), p.startAt(), p.homeScoreBoard(), p.awayScoreBoard(),
-                        p.memo(), imageUrlsByCheckInId.getOrDefault(p.checkInId(), List.of())
+                        p.gameState(), p.memo(), imageUrlsByCheckInId.getOrDefault(p.checkInId(), List.of())
                 ))
                 .toList();
 
