@@ -1,3 +1,4 @@
+import AppTrackingTransparency
 import ComposeApp
 import GoogleMobileAds
 import GoogleSignIn
@@ -18,9 +19,11 @@ struct iOSApp: App {
 
     // AdMob SDK 초기화 및 Kotlin 브릿지 팩토리 등록
     init() {
-        MobileAds.shared.start(completionHandler: nil)
         setupBannerAdProvider()
         setupInterstitialAdProvider()
+        ATTrackingManager.requestTrackingAuthorization { _ in
+            MobileAds.shared.start(completionHandler: nil)
+        }
     }
 
     // Kotlin BannerAdProvider에 GADBannerView 생성 팩토리 주입
