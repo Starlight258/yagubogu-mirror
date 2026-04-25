@@ -11,10 +11,16 @@ public record TalkResponse(
         String imageUrl,
         String content,
         LocalDateTime createdAt,
-        boolean isMine
+        boolean isMine,
+        int likeCount,
+        boolean isLiked
 ) {
 
     public static TalkResponse from(Talk talk, long memberId) {
+        return from(talk, memberId, 0, false);
+    }
+
+    public static TalkResponse from(Talk talk, long memberId, int likeCount, boolean isLiked) {
         if (talk.getMember() == null) {
             return new TalkResponse(
                     talk.getId(),
@@ -24,7 +30,9 @@ public record TalkResponse(
                     null,
                     talk.getContent(),
                     talk.getCreatedAt(),
-                    false
+                    false,
+                    likeCount,
+                    isLiked
             );
         }
 
@@ -36,7 +44,9 @@ public record TalkResponse(
                 talk.getMember().getImageUrl(),
                 talk.getContent(),
                 talk.getCreatedAt(),
-                talk.getMember().isSameId(memberId)
+                talk.getMember().isSameId(memberId),
+                likeCount,
+                isLiked
         );
     }
 
@@ -49,7 +59,9 @@ public record TalkResponse(
                 talkResponse.imageUrl(),
                 "숨김처리되었습니다",
                 talkResponse.createdAt(),
-                talkResponse.isMine()
+                talkResponse.isMine(),
+                talkResponse.likeCount(),
+                talkResponse.isLiked()
         );
     }
 }

@@ -31,4 +31,3 @@ public record CheckInGameParam(
         this(checkInId, stadiumFullName, homeTeam, awayTeam, attendanceDate, startAt, homeScoreBoard, awayScoreBoard, memo, List.of());
     }
 }
-

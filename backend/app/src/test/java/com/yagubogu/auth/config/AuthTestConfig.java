@@ -18,7 +18,9 @@ import com.yagubogu.support.game.GameFactory;
 import com.yagubogu.support.member.MemberFactory;
 import com.yagubogu.support.refreshtoken.RefreshTokenFactory;
 import com.yagubogu.support.talk.TalkFactory;
+import com.yagubogu.support.talk.TalkLikeFactory;
 import com.yagubogu.support.talk.TalkReportFactory;
+import com.yagubogu.talk.repository.TalkLikeRepository;
 import com.yagubogu.talk.repository.TalkReportRepository;
 import com.yagubogu.talk.repository.TalkRepository;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -76,6 +78,11 @@ public class AuthTestConfig {
     @Bean
     public TalkReportFactory talkReportFactory(final TalkReportRepository talkRepository) {
         return new TalkReportFactory(talkRepository);
+    }
+
+    @Bean
+    public TalkLikeFactory talkLikeFactory(final TalkLikeRepository talkLikeRepository) {
+        return new TalkLikeFactory(talkLikeRepository);
     }
 
     @Bean
