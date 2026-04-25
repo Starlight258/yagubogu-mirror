@@ -1,8 +1,7 @@
 package com.yagubogu.admin.controller;
 
 import com.yagubogu.admin.dto.AdminLoginRequest;
-import com.yagubogu.auth.config.AppleAuthProperties;
-import com.yagubogu.auth.config.GoogleAuthProperties;
+import com.yagubogu.admin.config.AdminOAuthProperties;
 import com.yagubogu.auth.dto.LoginParam;
 import com.yagubogu.auth.dto.v1.LoginResponse;
 import com.yagubogu.auth.service.AuthService;
@@ -13,7 +12,6 @@ import com.yagubogu.global.exception.UnAuthorizedException;
 import com.yagubogu.member.domain.Role;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -38,8 +36,7 @@ public class AdminWebController {
 
     private final AuthService authService;
     private final AuthTokenProvider authTokenProvider;
-    private final GoogleAuthProperties googleAuthProperties;
-    private final AppleAuthProperties appleAuthProperties;
+    private final AdminOAuthProperties adminOAuthProperties;
 
     @GetMapping({"", "/"})
     public String dashboard(
@@ -61,8 +58,8 @@ public class AdminWebController {
             return "redirect:/admin";
         }
 
-        model.addAttribute("googleClientId", firstClientId(googleAuthProperties.clientId()));
-        model.addAttribute("appleClientId", firstClientId(appleAuthProperties.clientId()));
+        model.addAttribute("googleClientId", adminOAuthProperties.google().clientId());
+        model.addAttribute("appleClientId", adminOAuthProperties.apple().clientId());
 
         return LOGIN_VIEW;
     }
@@ -135,15 +132,4 @@ public class AdminWebController {
                 .build();
     }
 
-    private String firstClientId(final String clientIds) {
-        if (clientIds == null) {
-            return "";
-        }
-
-        return Arrays.stream(clientIds.split(","))
-                .map(String::trim)
-                .filter(clientId -> !clientId.isBlank())
-                .findFirst()
-                .orElse("");
-    }
 }

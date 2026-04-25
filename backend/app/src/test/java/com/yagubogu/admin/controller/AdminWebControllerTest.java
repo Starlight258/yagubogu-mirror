@@ -6,15 +6,14 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 import com.yagubogu.admin.dto.AdminLoginRequest;
-import com.yagubogu.auth.config.AppleAuthProperties;
-import com.yagubogu.auth.config.GoogleAuthProperties;
+import com.yagubogu.admin.config.AdminOAuthProperties;
+import com.yagubogu.admin.config.AdminOAuthProperties.OAuthClient;
 import com.yagubogu.auth.dto.v1.LoginResponse;
 import com.yagubogu.auth.service.AuthService;
 import com.yagubogu.auth.support.AuthTokenProvider;
 import com.yagubogu.global.exception.ForbiddenException;
 import com.yagubogu.member.domain.OAuthProvider;
 import com.yagubogu.member.domain.Role;
-import java.time.Duration;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -29,9 +28,7 @@ class AdminWebControllerTest {
     private final AdminWebController adminWebController = new AdminWebController(
             authService,
             authTokenProvider,
-            new GoogleAuthProperties("https://example.com", "/tokeninfo", "google-client-id", Duration.ofSeconds(1),
-                    Duration.ofSeconds(1)),
-            new AppleAuthProperties("https://appleid.apple.com", "apple-client-id", "https://appleid.apple.com/keys")
+            new AdminOAuthProperties(new OAuthClient("admin-google-client-id"), new OAuthClient("admin-apple-client-id"))
     );
 
     @DisplayName("어드민 토큰이 없으면 로그인 페이지로 이동한다")

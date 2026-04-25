@@ -53,6 +53,13 @@ oauth:
     jwks-uri: 'https://appleid.apple.com/auth/keys'
     client-id: ${APPLE_CLIENT_ID}
 
+admin:
+  oauth:
+    google:
+      client-id: ${ADMIN_GOOGLE_CLIENT_ID:${GOOGLE_CLIENT_ID}}
+    apple:
+      client-id: ${ADMIN_APPLE_CLIENT_ID:${APPLE_CLIENT_ID}}
+
 security:
   token:
     access-token:
