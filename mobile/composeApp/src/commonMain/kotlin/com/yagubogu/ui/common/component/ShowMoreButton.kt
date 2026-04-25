@@ -27,8 +27,8 @@ import com.yagubogu.ui.util.noRippleClickable
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import yagubogu.composeapp.generated.resources.Res
-import yagubogu.composeapp.generated.resources.home_show_less
 import yagubogu.composeapp.generated.resources.all_show_more
+import yagubogu.composeapp.generated.resources.home_show_less
 import yagubogu.composeapp.generated.resources.ic_arrow_down
 import yagubogu.composeapp.generated.resources.ic_arrow_up
 
