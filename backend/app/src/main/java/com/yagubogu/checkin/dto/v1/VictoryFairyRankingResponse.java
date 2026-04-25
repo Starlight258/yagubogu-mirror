@@ -8,8 +8,17 @@ import java.util.List;
 
 public record VictoryFairyRankingResponse(
         List<VictoryFairyRankingParam> topRankings,
-        VictoryFairyRankingParam myRanking
+        VictoryFairyRankingParam myRanking,
+        Long nextCursorId,
+        boolean hasNext
 ) {
+
+    public VictoryFairyRankingResponse(
+            final List<VictoryFairyRankingParam> topRankings,
+            final VictoryFairyRankingParam myRanking
+    ) {
+        this(topRankings, myRanking, null, false);
+    }
 
     public record VictoryFairyRankingParam(
             long ranking,

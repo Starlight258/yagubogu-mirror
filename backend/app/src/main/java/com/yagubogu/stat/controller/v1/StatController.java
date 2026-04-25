@@ -80,10 +80,12 @@ public class StatController implements StatControllerInterface {
     public ResponseEntity<VictoryFairyRankingResponse> findVictoryFairyRankings(
             final MemberClaims memberClaims,
             @RequestParam(name = "team", defaultValue = "ALL") final TeamFilter teamFilter,
-            @RequestParam(required = false) final Integer year
+            @RequestParam(required = false) final Integer year,
+            @RequestParam(value = "before", required = false) final Long cursorId,
+            @RequestParam(value = "limit", defaultValue = "5") final int limit
     ) {
         VictoryFairyRankingResponse response = statService.findVictoryFairyRankings(memberClaims.id(), teamFilter,
-                year);
+                year, cursorId, limit);
 
         return ResponseEntity.ok(response);
     }
