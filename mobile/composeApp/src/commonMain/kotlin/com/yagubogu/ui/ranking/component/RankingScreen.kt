@@ -23,6 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.yagubogu.analytics.AnalyticsLogger
 import com.yagubogu.ui.common.AdUnitIds
 import com.yagubogu.ui.common.component.BannerAd
 import com.yagubogu.ui.common.component.BannerAdType
@@ -57,6 +58,10 @@ fun RankingScreen(
 
     LaunchedEffect(Unit) {
         viewModel.fetchRanking()
+    }
+
+    LaunchedEffect(Unit) {
+        AnalyticsLogger.logEvent("screen_view", mapOf("screen_name" to "랭킹 Screen"))
     }
 
     rankingUiModel.selectedMemberProfile?.let { profile: MemberProfile ->
