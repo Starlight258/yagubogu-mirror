@@ -18,8 +18,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
         PipelineConfig.class,
         GameEtlScheduler.class
 })
-@EntityScan(basePackages = "com.yagubogu")
-@EnableJpaRepositories(basePackages = "com.yagubogu")
+@EntityScan(basePackages = {"com.yagubogu", "yagubogu.crawling.game.domain"})
+@EnableJpaRepositories(basePackages = {"com.yagubogu", "yagubogu.crawling.game.repository"})
 @SpringBootApplication
 public class CrawlingApplication {
 

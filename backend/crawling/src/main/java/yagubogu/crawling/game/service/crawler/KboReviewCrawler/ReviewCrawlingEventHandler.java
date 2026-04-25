@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
+import yagubogu.crawling.game.domain.ReviewCrawlRetry;
+import yagubogu.crawling.game.repository.ReviewCrawlRetryRepository;
 
 @Slf4j
 @Component
@@ -17,7 +19,7 @@ public class ReviewCrawlingEventHandler {
 
     private static final long INITIAL_DELAY_MINUTES = 30;
 
-    private final ReviewRetryQueue retryQueue;
+    private final ReviewCrawlRetryRepository retryRepository;
     private final Clock clock;
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
@@ -27,8 +29,9 @@ public class ReviewCrawlingEventHandler {
             return;
         }
 
-        LocalDateTime nextRetryAt = LocalDateTime.now(clock).plusMinutes(INITIAL_DELAY_MINUTES);
-        retryQueue.enqueue(event.gameCode(), nextRetryAt);
+        LocalDateTime now = LocalDateTime.now(clock);
+        LocalDateTime nextRetryAt = now.plusMinutes(INITIAL_DELAY_MINUTES);
+        retryRepository.save(ReviewCrawlRetry.of(event.gameCode(), nextRetryAt, now));
         log.info("[REVIEW] 리뷰 크롤링 예약: gameCode={}, nextRetryAt={}", event.gameCode(), nextRetryAt);
     }
 }

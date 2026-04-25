@@ -1,5 +1,6 @@
 package yagubogu.crawling.game.config;
 
+import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,6 +9,7 @@ import yagubogu.crawling.game.service.crawler.KboReviewCrawler.KboReviewCrawler;
 import yagubogu.crawling.game.service.crawler.KboScoardboardCrawler.KboScoreboardCrawler;
 
 @Configuration
+@EnableSchedulerLock(defaultLockAtMostFor = "9m")
 @EnableConfigurationProperties({
         KboCrawlerProperties.class,
         CrawlerSchedulerProperties.class,

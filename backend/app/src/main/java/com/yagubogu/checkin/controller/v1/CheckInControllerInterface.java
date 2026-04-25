@@ -9,6 +9,7 @@ import com.yagubogu.checkin.dto.v1.CheckInHistoryResponse;
 import com.yagubogu.checkin.dto.v1.CheckInImageParam;
 import com.yagubogu.checkin.dto.v1.CheckInImagesResponse;
 import com.yagubogu.checkin.dto.v1.CheckInMemoResponse;
+import com.yagubogu.checkin.dto.v1.CheckInReviewResponse;
 import com.yagubogu.checkin.dto.v1.CheckInStatusResponse;
 import com.yagubogu.checkin.dto.v1.CreateCheckInRequest;
 import com.yagubogu.checkin.dto.v1.FanRateResponse;
@@ -105,6 +106,17 @@ public interface CheckInControllerInterface {
     ResponseEntity<CheckInStatusResponse> findCheckInStatus(
             @Parameter(hidden = true) MemberClaims memberClaims,
             @RequestParam LocalDate date
+    );
+
+    @Operation(summary = "직관 경기 리뷰 조회", description = "checkInId에 해당하는 경기의 타자/투수 기록을 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "리뷰 조회 성공"),
+            @ApiResponse(responseCode = "404", description = "해당 직관 내역을 찾을 수 없음")
+    })
+    @GetMapping("/{checkInId}/review")
+    ResponseEntity<CheckInReviewResponse> findCheckInReview(
+            @Parameter(hidden = true) MemberClaims memberClaims,
+            @PathVariable long checkInId
     );
 
     @Operation(summary = "구장별 방문 횟수 조회", description = "사용자의 현재 연도 기준 구장별 체크인 횟수를 조회합니다.")
