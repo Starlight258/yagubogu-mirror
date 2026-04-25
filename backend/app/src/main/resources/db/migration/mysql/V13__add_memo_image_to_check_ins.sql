@@ -1,4 +1,4 @@
--- V12__add_memo_image_to_check_ins.sql
+-- V13__add_memo_image_to_check_ins.sql
 ALTER TABLE check_ins ADD COLUMN memo TEXT NULL;
 
 CREATE TABLE check_in_images
