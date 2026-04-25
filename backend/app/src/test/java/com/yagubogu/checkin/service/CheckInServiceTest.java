@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.tuple;
+import static org.mockito.Mockito.mock;
 
 import com.yagubogu.auth.config.AuthTestConfig;
 import com.yagubogu.checkin.domain.CheckIn;
@@ -32,6 +33,7 @@ import com.yagubogu.member.domain.Member;
 import com.yagubogu.member.repository.MemberRepository;
 import com.yagubogu.stadium.domain.Stadium;
 import com.yagubogu.stadium.repository.StadiumRepository;
+import com.yagubogu.stat.repository.LocationCheckInRankingRepository;
 import com.yagubogu.support.TestFixture;
 import com.yagubogu.support.checkin.CheckInFactory;
 import com.yagubogu.support.game.GameFactory;
@@ -81,6 +83,8 @@ class CheckInServiceTest {
     @Autowired
     private GameRepository gameRepository;
 
+    private LocationCheckInRankingRepository locationCheckInRankingRepository;
+
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
 
@@ -89,10 +93,12 @@ class CheckInServiceTest {
 
     @BeforeEach
     void setUp() {
+        locationCheckInRankingRepository = mock(LocationCheckInRankingRepository.class);
         checkInService = new CheckInService(
                 checkInRepository,
                 memberRepository,
                 gameRepository,
+                locationCheckInRankingRepository,
                 applicationEventPublisher
         );
 

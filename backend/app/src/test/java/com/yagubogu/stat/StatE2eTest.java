@@ -17,12 +17,14 @@ import com.yagubogu.stadium.domain.Stadium;
 import com.yagubogu.stadium.repository.StadiumRepository;
 import com.yagubogu.stat.domain.VictoryFairyRanking;
 import com.yagubogu.stat.dto.OpponentWinRateTeamParam;
+import com.yagubogu.stat.dto.v1.LocationCheckInRankingCursorResponse;
 import com.yagubogu.stat.dto.v1.AverageStatisticResponse;
 import com.yagubogu.stat.dto.v1.LuckyStadiumResponse;
 import com.yagubogu.stat.dto.v1.OpponentWinRateResponse;
 import com.yagubogu.stat.dto.v1.RecentGamesWinRateResponse;
 import com.yagubogu.stat.dto.v1.StatCountsResponse;
 import com.yagubogu.stat.dto.v1.WinRateResponse;
+import com.yagubogu.stat.service.LocationCheckInRankingSyncService;
 import com.yagubogu.stat.repository.VictoryFairyRankingRepository;
 import com.yagubogu.support.auth.AuthFactory;
 import com.yagubogu.support.base.E2eTestBase;
@@ -62,6 +64,9 @@ public class StatE2eTest extends E2eTestBase {
 
     @Autowired
     private CheckInFactory checkInFactory;
+
+    @Autowired
+    private LocationCheckInRankingSyncService locationCheckInRankingSyncService;
 
     @Autowired
     private TeamRepository teamRepository;
@@ -483,6 +488,42 @@ public class StatE2eTest extends E2eTestBase {
                             .thenComparing(OpponentWinRateTeamParam::name))
                     .toList();
             s.assertThat(actual.opponents()).containsExactlyElementsOf(sorted);
+        });
+    }
+
+    @DisplayName("직관 랭킹 조회 시 limit를 생략하면 기본값 5를 사용한다")
+    @Test
+    void findLocationCheckInRankings_defaultLimit() {
+        // given
+        Member member = memberFactory.save(b -> b.team(ht));
+        accessToken = authFactory.getAccessTokenByMemberId(member.getId(), Role.USER);
+        Game game = gameFactory.save(b -> b.stadium(kia)
+                .homeTeam(ht).awayTeam(lt)
+                .date(LocalDate.of(2025, 7, 10))
+                .gameState(GameState.COMPLETED));
+
+        checkInFactory.save(b -> b.game(game).member(member).team(ht));
+        for (int i = 0; i < 5; i++) {
+            Member other = memberFactory.save(b -> b.team(ht));
+            checkInFactory.save(b -> b.game(game).member(other).team(ht));
+        }
+        locationCheckInRankingSyncService.rebuildAll();
+
+        // when
+        LocationCheckInRankingCursorResponse actual = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .queryParam("year", 2025)
+                .when().get("/api/v1/stats/location-check-in/rankings")
+                .then().log().all()
+                .statusCode(200)
+                .extract()
+                .as(LocationCheckInRankingCursorResponse.class);
+
+        // then
+        assertSoftly(s -> {
+            s.assertThat(actual.rankings()).hasSize(5);
+            s.assertThat(actual.hasNext()).isTrue();
         });
     }
 
