@@ -1,8 +1,8 @@
 package com.yagubogu.data.repository.stats
 
 import com.yagubogu.data.datasource.stats.StatsDataSource
-import com.yagubogu.data.dto.response.stats.AttendanceRankingCursorResponse
 import com.yagubogu.data.dto.response.stats.AverageStatisticResponse
+import com.yagubogu.data.dto.response.stats.LocationCheckInRankingCursorResponse
 import com.yagubogu.data.dto.response.stats.OpponentWinRateResponse
 import com.yagubogu.data.dto.response.stats.OpponentWinRateTeamDto
 import com.yagubogu.data.dto.response.stats.StatsCountsResponse
@@ -49,5 +49,5 @@ class StatsDefaultRepository(
         year: Int,
         before: Long?,
         limit: Int,
-    ): Result<AttendanceRankingCursorResponse> = statsDataSource.getCheckInRankings(year, before, limit)
+    ): Result<LocationCheckInRankingCursorResponse> = statsDataSource.getCheckInRankings(year, before, limit)
 }

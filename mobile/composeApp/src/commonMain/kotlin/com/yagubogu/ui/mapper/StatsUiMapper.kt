@@ -1,8 +1,8 @@
 package com.yagubogu.ui.mapper
 
-import com.yagubogu.data.dto.response.stats.AttendanceRankingCursorResponse
-import com.yagubogu.data.dto.response.stats.AttendanceRankingDto
 import com.yagubogu.data.dto.response.stats.AverageStatisticResponse
+import com.yagubogu.data.dto.response.stats.LocationCheckInRankingCursorResponse
+import com.yagubogu.data.dto.response.stats.LocationCheckInRankingDto
 import com.yagubogu.data.dto.response.stats.OpponentWinRateTeamDto
 import com.yagubogu.data.dto.response.stats.StatsCountsResponse
 import com.yagubogu.data.dto.response.stats.VictoryFairyRankingDto
@@ -60,7 +60,7 @@ fun VictoryFairyRankingDto.toUiModel(): RankingProfileItem =
         score = victoryFairyScore,
     )
 
-fun AttendanceRankingCursorResponse.toUiModel(): RankingUiModel =
+fun LocationCheckInRankingCursorResponse.toUiModel(): RankingUiModel =
     RankingUiModel(
         type = RankingType.CHECK_IN,
         topRankings = rankings.map { it.toUiModel() },
@@ -69,7 +69,7 @@ fun AttendanceRankingCursorResponse.toUiModel(): RankingUiModel =
         hasNext = hasNext,
     )
 
-fun AttendanceRankingDto.toUiModel(): RankingProfileItem =
+fun LocationCheckInRankingDto.toUiModel(): RankingProfileItem =
     RankingProfileItem.CheckInRanking(
         memberId = memberId,
         rank = ranking,

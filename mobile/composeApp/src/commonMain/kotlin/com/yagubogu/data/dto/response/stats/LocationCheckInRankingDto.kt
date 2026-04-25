@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class AttendanceRankingDto(
+data class LocationCheckInRankingDto(
     @SerialName("ranking")
     val ranking: Long, // 직관 랭킹
     @SerialName("memberId")

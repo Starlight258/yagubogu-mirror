@@ -1,7 +1,7 @@
 package com.yagubogu.data.repository.stats
 
-import com.yagubogu.data.dto.response.stats.AttendanceRankingCursorResponse
 import com.yagubogu.data.dto.response.stats.AverageStatisticResponse
+import com.yagubogu.data.dto.response.stats.LocationCheckInRankingCursorResponse
 import com.yagubogu.data.dto.response.stats.OpponentWinRateTeamDto
 import com.yagubogu.data.dto.response.stats.StatsCountsResponse
 import com.yagubogu.data.dto.response.stats.VictoryFairyRankingResponse
@@ -28,5 +28,5 @@ interface StatsRepository {
         year: Int,
         before: Long?,
         limit: Int,
-    ): Result<AttendanceRankingCursorResponse>
+    ): Result<LocationCheckInRankingCursorResponse>
 }
