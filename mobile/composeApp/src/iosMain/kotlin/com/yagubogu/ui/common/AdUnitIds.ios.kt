@@ -4,6 +4,7 @@ import com.yagubogu.BuildKonfig
 
 actual object AdUnitIds {
     actual val homeBanner: String = BuildKonfig.ADMOB_IOS_HOME_BANNER
+    actual val rankingBanner: String = BuildKonfig.ADMOB_IOS_RANKING_BANNER
     actual val livetalkBanner: String = BuildKonfig.ADMOB_IOS_LIVETALK_BANNER
     actual val statsBanner: String = BuildKonfig.ADMOB_IOS_STATS_BANNER
     actual val attendanceCalendarBanner: String = BuildKonfig.ADMOB_IOS_ATTENDANCE_CALENDAR_BANNER

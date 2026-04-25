@@ -51,6 +51,7 @@ buildkonfig {
         buildConfigField(STRING, "ADMOB_ANDROID_APP_ID", "ca-app-pub-3940256099942544~3347511713")
         val testAndroidBannerId = "ca-app-pub-3940256099942544/9214589741"
         buildConfigField(STRING, "ADMOB_ANDROID_HOME_BANNER", testAndroidBannerId)
+        buildConfigField(STRING, "ADMOB_ANDROID_RANKING_BANNER", testAndroidBannerId)
         buildConfigField(STRING, "ADMOB_ANDROID_LIVETALK_BANNER", testAndroidBannerId)
         buildConfigField(STRING, "ADMOB_ANDROID_STATS_BANNER", testAndroidBannerId)
         buildConfigField(STRING, "ADMOB_ANDROID_ATTENDANCE_CALENDAR_BANNER", testAndroidBannerId)
@@ -64,6 +65,7 @@ buildkonfig {
         )
         val testIosBannerId = "ca-app-pub-3940256099942544/2934735716"
         buildConfigField(STRING, "ADMOB_IOS_HOME_BANNER", testIosBannerId)
+        buildConfigField(STRING, "ADMOB_IOS_RANKING_BANNER", testIosBannerId)
         buildConfigField(STRING, "ADMOB_IOS_LIVETALK_BANNER", testIosBannerId)
         buildConfigField(STRING, "ADMOB_IOS_STATS_BANNER", testIosBannerId)
         buildConfigField(STRING, "ADMOB_IOS_ATTENDANCE_CALENDAR_BANNER", testIosBannerId)
@@ -82,12 +84,14 @@ buildkonfig {
         // AdMob Ids
         stringField("ADMOB_ANDROID_APP_ID", key = "ADMOB_ANDROID_APP_ID")
         stringField("ADMOB_ANDROID_HOME_BANNER")
+        stringField("ADMOB_ANDROID_RANKING_BANNER")
         stringField("ADMOB_ANDROID_LIVETALK_BANNER")
         stringField("ADMOB_ANDROID_STATS_BANNER")
         stringField("ADMOB_ANDROID_ATTENDANCE_CALENDAR_BANNER")
         stringField("ADMOB_ANDROID_EXIT_DIALOG_BANNER")
         stringField("ADMOB_ANDROID_PAST_CHECK_IN_INTERSTITIAL")
         stringField("ADMOB_IOS_HOME_BANNER")
+        stringField("ADMOB_IOS_RANKING_BANNER")
         stringField("ADMOB_IOS_LIVETALK_BANNER")
         stringField("ADMOB_IOS_STATS_BANNER")
         stringField("ADMOB_IOS_ATTENDANCE_CALENDAR_BANNER")

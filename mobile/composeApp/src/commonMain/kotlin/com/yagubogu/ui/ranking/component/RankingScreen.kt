@@ -26,6 +26,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.yagubogu.ui.common.AdUnitIds
+import com.yagubogu.ui.common.component.BannerAd
+import com.yagubogu.ui.common.component.BannerAdType
 import com.yagubogu.ui.common.component.DefaultToolbar
 import com.yagubogu.ui.common.component.profile.ProfileDialog
 import com.yagubogu.ui.common.model.MemberProfile
@@ -42,6 +45,8 @@ import org.koin.core.parameter.parametersOf
 import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.home_check_in_ranking
 import yagubogu.composeapp.generated.resources.home_victory_fairy_ranking
+
+private const val BANNER_AD_INDEX = 8
 
 @Composable
 fun RankingScreen(
@@ -163,6 +168,14 @@ private fun RankingContent(
                 onClick = onRankingItemClick,
                 isMyRanking = false,
             )
+
+            if ((index + 1) % BANNER_AD_INDEX == 0) {
+                BannerAd(
+                    adUnitId = AdUnitIds.rankingBanner,
+                    bannerAdType = BannerAdType.BANNER,
+                    modifier = Modifier.padding(vertical = 8.dp),
+                )
+            }
         }
 
         if (ranking.isLoading && ranking.topRankings.isNotEmpty()) {
