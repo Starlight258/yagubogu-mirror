@@ -67,7 +67,7 @@ fun RankingMemberProfile(
     ) {
         Text(
             text = item.rank.toString(),
-            style = PretendardRegular.copy(fontSize = 14.dpToSp, color = Gray500),
+            style = PretendardRegular.copy(fontSize = 12.dpToSp, color = Gray500),
             textAlign = TextAlign.Center,
             modifier = Modifier.width(20.dp),
         )
