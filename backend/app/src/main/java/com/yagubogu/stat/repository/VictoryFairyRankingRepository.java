@@ -57,15 +57,9 @@ public interface VictoryFairyRankingRepository extends JpaRepository<VictoryFair
     );
 
     @Query(value = """
-            SELECT
-                RANK() OVER (ORDER BY T.score DESC) AS `rank`,
-                T.memberId,
-                T.score,
-                T.nickname,
-                T.imageUrl,
-                T.shortName
-            FROM (
-                SELECT STRAIGHT_JOIN
+            WITH ranked AS (
+                SELECT
+                    RANK() OVER (ORDER BY vfr.score DESC) AS `rank`,
                     m.member_id AS memberId,
                     vfr.score,
                     m.nickname,
@@ -82,15 +76,31 @@ public interface VictoryFairyRankingRepository extends JpaRepository<VictoryFair
                     AND m.deleted_at IS NULL
                     AND m.team_id IS NOT NULL
                     AND (:#{#teamFilter.name()} = 'ALL' OR t.team_code = :#{#teamFilter.name()})
-                ORDER BY
-                    vfr.score DESC
-                LIMIT :limit
-            ) AS T
-            ORDER BY T.score DESC
+            ),
+            cursor_ranking AS (
+                SELECT score
+                FROM ranked
+                WHERE memberId = :cursorId
+            )
+            SELECT
+                `rank`,
+                memberId,
+                score,
+                nickname,
+                imageUrl,
+                shortName
+            FROM ranked
+            WHERE
+                :cursorId IS NULL
+                OR score < (SELECT score FROM cursor_ranking)
+                OR (score = (SELECT score FROM cursor_ranking) AND memberId > :cursorId)
+            ORDER BY score DESC, memberId ASC
+            LIMIT :limit
             """, nativeQuery = true)
     List<VictoryFairyRankParam> findTopRankingByTeamFilterAndYear(
             @Param("teamFilter") TeamFilter teamFilter,
             @Param("limit") int limit,
-            @Param("gameYear") Integer gameYear
+            @Param("gameYear") Integer gameYear,
+            @Param("cursorId") Long cursorId
     );
 }

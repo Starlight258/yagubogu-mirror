@@ -5,6 +5,7 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import com.yagubogu.auth.config.AuthTestConfig;
 import com.yagubogu.checkin.domain.CheckInType;
+import com.yagubogu.checkin.dto.v1.VictoryFairyRankingResponse;
 import com.yagubogu.game.domain.Game;
 import com.yagubogu.game.domain.GameState;
 import com.yagubogu.game.domain.ScoreBoard;
@@ -14,13 +15,17 @@ import com.yagubogu.member.domain.Role;
 import com.yagubogu.member.dto.v1.MemberFavoriteRequest;
 import com.yagubogu.stadium.domain.Stadium;
 import com.yagubogu.stadium.repository.StadiumRepository;
+import com.yagubogu.stat.domain.VictoryFairyRanking;
 import com.yagubogu.stat.dto.OpponentWinRateTeamParam;
+import com.yagubogu.stat.dto.v1.LocationCheckInRankingCursorResponse;
 import com.yagubogu.stat.dto.v1.AverageStatisticResponse;
 import com.yagubogu.stat.dto.v1.LuckyStadiumResponse;
 import com.yagubogu.stat.dto.v1.OpponentWinRateResponse;
 import com.yagubogu.stat.dto.v1.RecentGamesWinRateResponse;
 import com.yagubogu.stat.dto.v1.StatCountsResponse;
 import com.yagubogu.stat.dto.v1.WinRateResponse;
+import com.yagubogu.stat.service.LocationCheckInRankingSyncService;
+import com.yagubogu.stat.repository.VictoryFairyRankingRepository;
 import com.yagubogu.support.auth.AuthFactory;
 import com.yagubogu.support.base.E2eTestBase;
 import com.yagubogu.support.checkin.CheckInFactory;
@@ -61,10 +66,16 @@ public class StatE2eTest extends E2eTestBase {
     private CheckInFactory checkInFactory;
 
     @Autowired
+    private LocationCheckInRankingSyncService locationCheckInRankingSyncService;
+
+    @Autowired
     private TeamRepository teamRepository;
 
     @Autowired
     private StadiumRepository stadiumRepository;
+
+    @Autowired
+    private VictoryFairyRankingRepository victoryFairyRankingRepository;
 
     private String accessToken;
 
@@ -480,6 +491,42 @@ public class StatE2eTest extends E2eTestBase {
         });
     }
 
+    @DisplayName("직관 랭킹 조회 시 limit를 생략하면 기본값 5를 사용한다")
+    @Test
+    void findLocationCheckInRankings_defaultLimit() {
+        // given
+        Member member = memberFactory.save(b -> b.team(ht));
+        accessToken = authFactory.getAccessTokenByMemberId(member.getId(), Role.USER);
+        Game game = gameFactory.save(b -> b.stadium(kia)
+                .homeTeam(ht).awayTeam(lt)
+                .date(LocalDate.of(2025, 7, 10))
+                .gameState(GameState.COMPLETED));
+
+        checkInFactory.save(b -> b.game(game).member(member).team(ht));
+        for (int i = 0; i < 5; i++) {
+            Member other = memberFactory.save(b -> b.team(ht));
+            checkInFactory.save(b -> b.game(game).member(other).team(ht));
+        }
+        locationCheckInRankingSyncService.rebuildAll();
+
+        // when
+        LocationCheckInRankingCursorResponse actual = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .queryParam("year", 2025)
+                .when().get("/api/v1/stats/location-check-in/rankings")
+                .then().log().all()
+                .statusCode(200)
+                .extract()
+                .as(LocationCheckInRankingCursorResponse.class);
+
+        // then
+        assertSoftly(s -> {
+            s.assertThat(actual.rankings()).hasSize(5);
+            s.assertThat(actual.hasNext()).isTrue();
+        });
+    }
+
     @DisplayName("예외: 상대팀별 승률 조회시 응원팀이 없으면 422를 반환한다")
     @Test
     void findOpponentWinRate_memberWithoutTeam_notFound() {
@@ -495,6 +542,37 @@ public class StatE2eTest extends E2eTestBase {
                 .when().get("/api/v1/stats/win-rate/opponents")
                 .then().log().all()
                 .statusCode(422);
+    }
+
+    @DisplayName("승리 요정 랭킹 조회 시 limit를 생략하면 기본값 5를 사용한다")
+    @Test
+    void findVictoryFairyRankings_defaultLimit() {
+        // given
+        Member member = memberFactory.save(b -> b.team(ht));
+        accessToken = authFactory.getAccessTokenByMemberId(member.getId(), Role.USER);
+
+        victoryFairyRankingRepository.save(new VictoryFairyRanking(member, 100.0, 10, 10, 2025, null));
+        for (int i = 0; i < 5; i++) {
+            Member other = memberFactory.save(b -> b.team(ht));
+            victoryFairyRankingRepository.save(new VictoryFairyRanking(other, 90.0 - i, 9 - i, 10, 2025, null));
+        }
+
+        // when
+        VictoryFairyRankingResponse actual = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .queryParam("year", 2025)
+                .when().get("/api/v1/stats/victory-fairy/rankings")
+                .then().log().all()
+                .statusCode(200)
+                .extract()
+                .as(VictoryFairyRankingResponse.class);
+
+        // then
+        assertSoftly(s -> {
+            s.assertThat(actual.topRankings()).hasSize(5);
+            s.assertThat(actual.hasNext()).isTrue();
+        });
     }
 
     @DisplayName("PastCheckIn과 CheckIn을 통합하여 승패무 횟수를 조회한다")

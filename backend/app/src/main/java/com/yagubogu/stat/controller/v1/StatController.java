@@ -4,6 +4,7 @@ import com.yagubogu.auth.annotation.RequireRole;
 import com.yagubogu.auth.dto.MemberClaims;
 import com.yagubogu.checkin.dto.v1.TeamFilter;
 import com.yagubogu.checkin.dto.v1.VictoryFairyRankingResponse;
+import com.yagubogu.stat.dto.v1.LocationCheckInRankingCursorResponse;
 import com.yagubogu.stat.dto.v1.AverageStatisticResponse;
 import com.yagubogu.stat.dto.v1.LuckyStadiumResponse;
 import com.yagubogu.stat.dto.v1.OpponentWinRateResponse;
@@ -80,10 +81,28 @@ public class StatController implements StatControllerInterface {
     public ResponseEntity<VictoryFairyRankingResponse> findVictoryFairyRankings(
             final MemberClaims memberClaims,
             @RequestParam(name = "team", defaultValue = "ALL") final TeamFilter teamFilter,
-            @RequestParam(required = false) final Integer year
+            @RequestParam(required = false) final Integer year,
+            @RequestParam(value = "before", required = false) final Long cursorId,
+            @RequestParam(value = "limit", defaultValue = "5") final int limit
     ) {
         VictoryFairyRankingResponse response = statService.findVictoryFairyRankings(memberClaims.id(), teamFilter,
-                year);
+                year, cursorId, limit);
+
+        return ResponseEntity.ok(response);
+    }
+
+    public ResponseEntity<LocationCheckInRankingCursorResponse> findLocationCheckInRankings(
+            final MemberClaims memberClaims,
+            @RequestParam(value = "before", required = false) final Long cursorMemberId,
+            @RequestParam(value = "limit", defaultValue = "5") final int limit,
+            @RequestParam(required = false) final Integer year
+    ) {
+        LocationCheckInRankingCursorResponse response = statService.findLocationCheckInRankings(
+                memberClaims.id(),
+                cursorMemberId,
+                limit,
+                year
+        );
 
         return ResponseEntity.ok(response);
     }

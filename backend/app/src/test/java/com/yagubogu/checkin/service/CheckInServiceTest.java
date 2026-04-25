@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.tuple;
+import static org.mockito.Mockito.mock;
 
 import com.yagubogu.auth.config.AuthTestConfig;
 import com.yagubogu.checkin.domain.CheckIn;
@@ -37,6 +38,7 @@ import com.yagubogu.member.domain.Member;
 import com.yagubogu.member.repository.MemberRepository;
 import com.yagubogu.stadium.domain.Stadium;
 import com.yagubogu.stadium.repository.StadiumRepository;
+import com.yagubogu.stat.repository.LocationCheckInRankingRepository;
 import com.yagubogu.support.TestFixture;
 import com.yagubogu.support.checkin.CheckInFactory;
 import com.yagubogu.support.game.GameFactory;
@@ -45,6 +47,7 @@ import com.yagubogu.support.member.MemberFactory;
 import com.yagubogu.team.domain.Team;
 import com.yagubogu.team.repository.TeamRepository;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -92,6 +95,8 @@ class CheckInServiceTest {
     @Autowired
     private GameRepository gameRepository;
 
+    private LocationCheckInRankingRepository locationCheckInRankingRepository;
+
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
 
@@ -105,11 +110,13 @@ class CheckInServiceTest {
         Mockito.when(mockS3Properties.endpoint()).thenReturn("http://s3.test");
         Mockito.when(mockS3Properties.bucket()).thenReturn("test-bucket");
 
+        locationCheckInRankingRepository = mock(LocationCheckInRankingRepository.class);
         checkInService = new CheckInService(
                 checkInRepository,
                 checkInImageRepository,
                 memberRepository,
                 gameRepository,
+                locationCheckInRankingRepository,
                 applicationEventPublisher,
                 mockS3Client,
                 mockS3Properties
@@ -503,11 +510,14 @@ class CheckInServiceTest {
         int month = 7;
         int day = 25;
         LocalDate startDate = LocalDate.of(year, month, day);
+        LocalTime startAt = LocalTime.of(18, 30);
+        LocalTime pastCheckInStartAt = LocalTime.of(17, 0);
 
         // CheckIn 데이터 2개
         Game checkInGame1 = gameFactory.save(b -> b
                 .stadium(stadiumJamsil)
                 .date(startDate)
+                .startAt(startAt)
                 .homeTeam(kia).homeScore(10).homeScoreBoard(TestFixture.getHomeScoreBoardAbout(10))
                 .awayTeam(kt).awayScore(1).awayScoreBoard(TestFixture.getAwayScoreBoardAbout(1))
                 .gameState(GameState.COMPLETED));
@@ -516,6 +526,7 @@ class CheckInServiceTest {
         Game checkInGame2 = gameFactory.save(b -> b
                 .stadium(stadiumJamsil)
                 .date(startDate.plusDays(1))
+                .startAt(startAt)
                 .homeTeam(kia).homeScore(1).homeScoreBoard(TestFixture.getHomeScoreBoardAbout(1))
                 .awayTeam(lg).awayScore(5).awayScoreBoard(TestFixture.getAwayScoreBoardAbout(5))
                 .gameState(GameState.COMPLETED));
@@ -525,6 +536,7 @@ class CheckInServiceTest {
         Game pastCheckInGame1 = gameFactory.save(b -> b
                 .stadium(stadiumGocheok)
                 .date(startDate.minusDays(10))
+                .startAt(pastCheckInStartAt)
                 .homeTeam(kia).homeScore(7).homeScoreBoard(TestFixture.getHomeScoreBoardAbout(7))
                 .awayTeam(samsung).awayScore(3).awayScoreBoard(TestFixture.getAwayScoreBoardAbout(3))
                 .gameState(GameState.COMPLETED));
@@ -534,6 +546,7 @@ class CheckInServiceTest {
         Game pastCheckInGame2 = gameFactory.save(b -> b
                 .stadium(stadiumGocheok)
                 .date(startDate.minusDays(9))
+                .startAt(pastCheckInStartAt)
                 .homeTeam(doosan).homeScore(8).homeScoreBoard(TestFixture.getHomeScoreBoardAbout(8))
                 .awayTeam(kia).awayScore(2).awayScoreBoard(TestFixture.getAwayScoreBoardAbout(2))
                 .gameState(GameState.COMPLETED));
@@ -549,13 +562,14 @@ class CheckInServiceTest {
         assertThat(actual.checkInHistory()).hasSize(4)
                 .extracting(
                         CheckInGameParam::attendanceDate,
+                        CheckInGameParam::startAt,
                         r -> r.homeTeam().name(),
                         r -> r.awayTeam().name()
                 ).containsExactly(
-                        tuple(startDate.plusDays(1), "KIA", "LG"),
-                        tuple(startDate, "KIA", "KT"),
-                        tuple(startDate.minusDays(9), "두산", "KIA"),
-                        tuple(startDate.minusDays(10), "KIA", "삼성")
+                        tuple(startDate.plusDays(1), startAt, "KIA", "LG"),
+                        tuple(startDate, startAt, "KIA", "KT"),
+                        tuple(startDate.minusDays(9), pastCheckInStartAt, "두산", "KIA"),
+                        tuple(startDate.minusDays(10), pastCheckInStartAt, "KIA", "삼성")
                 );
     }
 

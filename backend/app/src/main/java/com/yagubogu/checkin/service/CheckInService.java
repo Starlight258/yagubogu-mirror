@@ -21,6 +21,7 @@ import com.yagubogu.member.domain.Member;
 import com.yagubogu.member.repository.MemberRepository;
 import com.yagubogu.sse.dto.GameWithFanRateParam;
 import com.yagubogu.sse.dto.event.CheckInCreatedEvent;
+import com.yagubogu.stat.repository.LocationCheckInRankingRepository;
 import com.yagubogu.team.domain.Team;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -47,6 +48,7 @@ public class CheckInService {
     private final CheckInImageRepository checkInImageRepository;
     private final MemberRepository memberRepository;
     private final GameRepository gameRepository;
+    private final LocationCheckInRankingRepository locationCheckInRankingRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final S3Client s3Client;
     private final S3Properties s3Properties;
@@ -59,6 +61,7 @@ public class CheckInService {
 
         validateNotExistGameAndMember(game, member);
         saveCheckInSafely(game, member, team);
+        locationCheckInRankingRepository.upsertIncrement(member.getId(), game.getDate().getYear());
 
         applicationEventPublisher.publishEvent(new CheckInEvent(member));
         applicationEventPublisher.publishEvent(new StadiumVisitEvent(member, game.getStadium().getId()));
@@ -73,6 +76,11 @@ public class CheckInService {
         validateCheckInOwner(checkIn, memberId);
 
         checkInRepository.delete(checkIn);
+        if (checkIn.getCheckInType() == CheckInType.LOCATION_CHECK_IN) {
+            int gameYear = checkIn.getGame().getDate().getYear();
+            locationCheckInRankingRepository.decrement(checkIn.getMember().getId(), gameYear);
+            locationCheckInRankingRepository.deleteZeroCount(checkIn.getMember().getId(), gameYear);
+        }
     }
 
     private void validateCheckInOwner(final CheckIn checkIn, final Long memberId) {
@@ -182,7 +190,7 @@ public class CheckInService {
         List<CheckInGameParam> enriched = checkIns.stream()
                 .map(p -> new CheckInGameParam(
                         p.checkInId(), p.stadiumFullName(), p.homeTeam(), p.awayTeam(),
-                        p.attendanceDate(), p.homeScoreBoard(), p.awayScoreBoard(),
+                        p.attendanceDate(), p.startAt(), p.homeScoreBoard(), p.awayScoreBoard(),
                         p.memo(), imageUrlsByCheckInId.getOrDefault(p.checkInId(), List.of())
                 ))
                 .toList();

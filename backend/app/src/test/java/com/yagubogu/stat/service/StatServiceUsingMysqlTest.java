@@ -4,17 +4,24 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import com.yagubogu.auth.config.AuthTestConfig;
+import com.yagubogu.checkin.domain.CheckInType;
+import com.yagubogu.checkin.dto.v1.CreateCheckInRequest;
 import com.yagubogu.checkin.dto.v1.TeamFilter;
 import com.yagubogu.checkin.dto.v1.VictoryFairyRankingResponse;
 import com.yagubogu.checkin.dto.v1.VictoryFairyRankingResponse.VictoryFairyRankingParam;
 import com.yagubogu.checkin.repository.CheckInRepository;
+import com.yagubogu.checkin.service.CheckInService;
 import com.yagubogu.game.domain.Game;
 import com.yagubogu.game.domain.GameState;
+import com.yagubogu.global.exception.BadRequestException;
 import com.yagubogu.global.config.JpaAuditingConfig;
+import com.yagubogu.global.exception.BadRequestException;
 import com.yagubogu.member.domain.Member;
 import com.yagubogu.stadium.domain.Stadium;
 import com.yagubogu.stadium.repository.StadiumRepository;
 import com.yagubogu.stat.domain.VictoryFairyRanking;
+import com.yagubogu.stat.dto.v1.LocationCheckInRankingCursorResponse;
+import com.yagubogu.stat.dto.v1.LocationCheckInRankingResponse;
 import com.yagubogu.stat.repository.VictoryFairyRankingRepository;
 import com.yagubogu.support.TestFixture;
 import com.yagubogu.support.base.ServiceUsingMysqlTestBase;
@@ -38,6 +45,12 @@ class StatServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
 
     @Autowired
     private StatService statService;
+
+    @Autowired
+    private CheckInService checkInService;
+
+    @Autowired
+    private LocationCheckInRankingSyncService locationCheckInRankingSyncService;
 
     @Autowired
     private CheckInRepository checkInRepository;
@@ -76,6 +89,129 @@ class StatServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
         stadiumJamsil = stadiumRepository.findById(2L).orElseThrow();
         stadiumGocheok = stadiumRepository.findById(3L).orElseThrow();
         stadiumIncheon = stadiumRepository.findById(4L).orElseThrow();
+    }
+
+    @DisplayName("위치 기반 직관 인증을 성공하면 직관 랭킹 인증 횟수가 증가한다")
+    @Test
+    void createLocationCheckInUpdatesLocationCheckInRanking() {
+        // given
+        int year = 2025;
+        Member member = memberFactory.save(b -> b.team(kia).nickname("직관러"));
+        Game game1 = saveGame(year, 1);
+        Game game2 = saveGame(year, 2);
+
+        // when
+        checkInService.createCheckIn(member.getId(), new CreateCheckInRequest(game1.getId()));
+        checkInService.createCheckIn(member.getId(), new CreateCheckInRequest(game2.getId()));
+
+        // then
+        LocationCheckInRankingCursorResponse response = statService.findLocationCheckInRankings(member.getId(), null, 10, year);
+
+        assertSoftly(softAssertions -> {
+            softAssertions.assertThat(response.myRanking())
+                    .extracting(
+                            LocationCheckInRankingResponse::memberId,
+                            LocationCheckInRankingResponse::ranking,
+                            LocationCheckInRankingResponse::checkInCount
+                    )
+                    .containsExactly(member.getId(), 1L, 2);
+            softAssertions.assertThat(response.rankings())
+                .extracting(
+                        LocationCheckInRankingResponse::memberId,
+                        LocationCheckInRankingResponse::ranking,
+                        LocationCheckInRankingResponse::checkInCount
+                )
+                .containsExactly(org.assertj.core.api.Assertions.tuple(member.getId(), 1L, 2));
+        });
+    }
+
+    @DisplayName("직관 랭킹은 위치 기반 직관 인증 횟수 기준으로 공동 순위를 유지하며 커서 페이지네이션된다")
+    @Test
+    void findLocationCheckInRankingsWithCursor() {
+        // given
+        int year = 2025;
+        Member first = memberFactory.save(b -> b.team(kia).nickname("일등"));
+        Member tiedLowerId = memberFactory.save(b -> b.team(kia).nickname("공동앞"));
+        Member tiedHigherId = memberFactory.save(b -> b.team(kia).nickname("공동뒤"));
+        Member fourth = memberFactory.save(b -> b.team(kia).nickname("사등"));
+        Member pastOnly = memberFactory.save(b -> b.team(kia).nickname("과거"));
+
+        Game game1 = saveGame(year, 1);
+        Game game2 = saveGame(year, 2);
+        Game game3 = saveGame(year, 3);
+
+        saveLocationCheckIn(first, game1);
+        saveLocationCheckIn(first, game2);
+        saveLocationCheckIn(first, game3);
+        saveLocationCheckIn(tiedLowerId, game1);
+        saveLocationCheckIn(tiedLowerId, game2);
+        saveLocationCheckIn(tiedHigherId, game1);
+        saveLocationCheckIn(tiedHigherId, game2);
+        saveLocationCheckIn(fourth, game1);
+        checkInFactory.save(b -> b.member(pastOnly)
+                .team(kia)
+                .game(game1)
+                .checkInType(CheckInType.NON_LOCATION_CHECK_IN));
+
+        locationCheckInRankingSyncService.rebuildAll();
+
+        // when
+        LocationCheckInRankingCursorResponse firstPage = statService.findLocationCheckInRankings(fourth.getId(), null, 2, year);
+        Long nextCursorId = firstPage.nextCursorId();
+        LocationCheckInRankingCursorResponse secondPage = statService.findLocationCheckInRankings(fourth.getId(), nextCursorId,
+                2, year);
+
+        // then
+        List<LocationCheckInRankingResponse> firstContent = firstPage.rankings();
+        List<LocationCheckInRankingResponse> secondContent = secondPage.rankings();
+
+        assertSoftly(softAssertions -> {
+            softAssertions.assertThat(firstPage.myRanking())
+                    .extracting(
+                            LocationCheckInRankingResponse::memberId,
+                            LocationCheckInRankingResponse::ranking,
+                            LocationCheckInRankingResponse::checkInCount
+                    )
+                    .containsExactly(fourth.getId(), 4L, 1);
+            softAssertions.assertThat(firstPage.hasNext()).isTrue();
+            softAssertions.assertThat(firstContent)
+                    .extracting(
+                            LocationCheckInRankingResponse::memberId,
+                            LocationCheckInRankingResponse::ranking,
+                            LocationCheckInRankingResponse::checkInCount
+                    )
+                    .containsExactly(
+                            org.assertj.core.api.Assertions.tuple(first.getId(), 1L, 3),
+                            org.assertj.core.api.Assertions.tuple(tiedLowerId.getId(), 2L, 2)
+                    );
+            softAssertions.assertThat(secondPage.hasNext()).isFalse();
+            softAssertions.assertThat(secondContent)
+                    .extracting(
+                            LocationCheckInRankingResponse::memberId,
+                            LocationCheckInRankingResponse::ranking,
+                            LocationCheckInRankingResponse::checkInCount
+                    )
+                    .containsExactly(
+                            org.assertj.core.api.Assertions.tuple(tiedHigherId.getId(), 2L, 2),
+                            org.assertj.core.api.Assertions.tuple(fourth.getId(), 4L, 1)
+                    );
+            softAssertions.assertThat(secondContent)
+                    .extracting(LocationCheckInRankingResponse::memberId)
+                    .doesNotContain(pastOnly.getId());
+        });
+    }
+
+    @DisplayName("직관 랭킹 조회 시 limit가 50을 초과하거나 0 이하이면 예외가 발생한다")
+    @Test
+    void findLocationCheckInRankingsInvalidLimit() {
+        Member member = memberFactory.save(b -> b.team(kia).nickname("검증"));
+
+        assertSoftly(softAssertions -> {
+            softAssertions.assertThatThrownBy(() -> statService.findLocationCheckInRankings(member.getId(), null, 51, 2025))
+                    .isInstanceOf(BadRequestException.class);
+            softAssertions.assertThatThrownBy(() -> statService.findLocationCheckInRankings(member.getId(), null, 0, 2025))
+                    .isInstanceOf(BadRequestException.class);
+        });
     }
 
     @DisplayName("승/패 회원 모두 랭킹이 갱신된다")
@@ -354,6 +490,57 @@ class StatServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
         );
     }
 
+    @DisplayName("승리 요정 랭킹을 페이지네이션으로 조회한다")
+    @Test
+    void findVictoryFairyRankings_withPagination() {
+        // given
+        Member first = memberFactory.save(b -> b.team(kia).nickname("첫째"));
+        Member second = memberFactory.save(b -> b.team(kt).nickname("둘째"));
+        Member third = memberFactory.save(b -> b.team(lg).nickname("셋째"));
+
+        int year = 2025;
+        victoryFairyRankingRepository.save(new VictoryFairyRanking(first, 90.0, 9, 10, year, null));
+        victoryFairyRankingRepository.save(new VictoryFairyRanking(second, 80.0, 8, 10, year, null));
+        victoryFairyRankingRepository.save(new VictoryFairyRanking(third, 70.0, 7, 10, year, null));
+
+        // when
+        VictoryFairyRankingResponse firstPage = statService.findVictoryFairyRankings(first.getId(), TeamFilter.ALL,
+                year, null, 2);
+        VictoryFairyRankingResponse secondPage = statService.findVictoryFairyRankings(first.getId(), TeamFilter.ALL,
+                year, firstPage.nextCursorId(), 2);
+
+        // then
+        assertSoftly(softAssertions -> {
+            softAssertions.assertThat(firstPage.topRankings())
+                    .extracting(VictoryFairyRankingParam::nickname)
+                    .containsExactly("첫째", "둘째");
+            softAssertions.assertThat(firstPage.nextCursorId()).isEqualTo(second.getId());
+            softAssertions.assertThat(firstPage.hasNext()).isTrue();
+            softAssertions.assertThat(secondPage.topRankings())
+                    .extracting(VictoryFairyRankingParam::nickname)
+                    .containsExactly("셋째");
+            softAssertions.assertThat(secondPage.nextCursorId()).isNull();
+            softAssertions.assertThat(secondPage.hasNext()).isFalse();
+        });
+    }
+
+    @DisplayName("승리 요정 랭킹 조회 limit가 1 미만이거나 50 초과이면 예외가 발생한다")
+    @Test
+    void findVictoryFairyRankings_invalidLimit() {
+        // given
+        Member member = memberFactory.save(b -> b.team(kia));
+
+        // when & then
+        assertSoftly(softAssertions -> {
+            softAssertions.assertThatThrownBy(
+                            () -> statService.findVictoryFairyRankings(member.getId(), TeamFilter.ALL, 2025, null, 0))
+                    .isInstanceOf(BadRequestException.class);
+            softAssertions.assertThatThrownBy(
+                            () -> statService.findVictoryFairyRankings(member.getId(), TeamFilter.ALL, 2025, null, 51))
+                    .isInstanceOf(BadRequestException.class);
+        });
+    }
+
     @DisplayName("승리 요정 랭킹을 팀별로 조회한다")
     @Test
     void findVictoryFairyRankings_filterByTeam() {
@@ -502,6 +689,21 @@ class StatServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
                 checkInFactory.save(b -> b.member(member).team(member.getTeam()).game(g));
             }
         }
+    }
+
+    private Game saveGame(final int year, final int dayOfMonth) {
+        return gameFactory.save(b -> b.stadium(stadiumJamsil)
+                .homeTeam(kia)
+                .awayTeam(kt)
+                .date(LocalDate.of(year, 7, dayOfMonth))
+                .gameState(GameState.COMPLETED));
+    }
+
+    private void saveLocationCheckIn(final Member member, final Game game) {
+        checkInFactory.save(b -> b.member(member)
+                .team(member.getTeam())
+                .game(game)
+                .checkInType(CheckInType.LOCATION_CHECK_IN));
     }
 
     private double getScore(double value) {
