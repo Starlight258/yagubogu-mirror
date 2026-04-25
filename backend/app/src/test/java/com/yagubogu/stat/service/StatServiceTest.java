@@ -28,6 +28,7 @@ import com.yagubogu.stat.dto.v1.LuckyStadiumResponse;
 import com.yagubogu.stat.dto.v1.OpponentWinRateResponse;
 import com.yagubogu.stat.dto.v1.StatCountsResponse;
 import com.yagubogu.stat.dto.v1.WinRateResponse;
+import com.yagubogu.stat.repository.LocationCheckInRankingRepository;
 import com.yagubogu.stat.repository.VictoryFairyRankingRepository;
 import com.yagubogu.support.checkin.CheckInFactory;
 import com.yagubogu.support.game.GameFactory;
@@ -35,7 +36,9 @@ import com.yagubogu.support.member.MemberBuilder;
 import com.yagubogu.support.member.MemberFactory;
 import com.yagubogu.team.domain.Team;
 import com.yagubogu.team.repository.TeamRepository;
+import java.time.Clock;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -79,9 +82,18 @@ class StatServiceTest {
     @Autowired
     private VictoryFairyRankingRepository victoryFairyRankingRepository;
 
+    @Autowired
+    private LocationCheckInRankingRepository locationCheckInRankingRepository;
+
     @BeforeEach
     void setUp() {
-        statService = new StatService(checkInRepository, memberRepository, victoryFairyRankingRepository);
+        statService = new StatService(
+                checkInRepository,
+                memberRepository,
+                victoryFairyRankingRepository,
+                locationCheckInRankingRepository,
+                Clock.system(ZoneId.of("Asia/Seoul"))
+        );
     }
 
     @DisplayName("승이 1인 맴버의 통계를 계산한다.")

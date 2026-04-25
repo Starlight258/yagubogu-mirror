@@ -10,6 +10,7 @@ import java.time.LocalTime;
  * 경기 상태가 COMPLETED나 CANCELED로 변경될 때 발행
  */
 public record GameFinalizedEvent(
+        String gameCode,
         LocalDate date,
         String stadium,
         String homeTeam,

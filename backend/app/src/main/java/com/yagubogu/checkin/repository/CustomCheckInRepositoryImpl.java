@@ -69,9 +69,9 @@ public class CustomCheckInRepositoryImpl implements CustomCheckInRepository {
         return jpaQueryFactory.select(
                         Projections.constructor(
                                 StatCountsParam.class,
-                                winExpr.sum(),
-                                drawExpr.sum(),
-                                loseExpr.sum()
+                                winExpr.sum().coalesce(0),
+                                drawExpr.sum().coalesce(0),
+                                loseExpr.sum().coalesce(0)
                         )).from(CHECK_IN)
                 .join(CHECK_IN.game, CustomCheckInRepositoryImpl.GAME).on(isComplete())
                 .where(
@@ -122,8 +122,7 @@ public class CustomCheckInRepositoryImpl implements CustomCheckInRepository {
                 .where(
                         CHECK_IN.member.id.in(memberIds),
                         isBetweenYear(year),
-                        isComplete(),
-                        isLocationCheckIn()
+                        isComplete()
                 )
                 .groupBy(CHECK_IN.member.id)
                 .fetch();
@@ -258,8 +257,11 @@ public class CustomCheckInRepositoryImpl implements CustomCheckInRepository {
                         homeTeamResp(GAME, home, team),
                         awayTeamResp(GAME, away, team),
                         GAME.date,
+                        GAME.startAt,
                         GAME.homeScoreBoard,
-                        GAME.awayScoreBoard
+                        GAME.awayScoreBoard,
+                        GAME.gameState,
+                        CHECK_IN.memo
                 )).from(CHECK_IN)
                 .join(CHECK_IN.game, GAME)
                 .join(GAME.stadium, STADIUM)
@@ -270,7 +272,6 @@ public class CustomCheckInRepositoryImpl implements CustomCheckInRepository {
                 .where(
                         CHECK_IN.member.eq(member),
                         dateFilter(GAME, year, month),
-                        isCompleteOrCanceled(),
                         myTeamWinFilter
                 ).orderBy(order)
                 .fetch();

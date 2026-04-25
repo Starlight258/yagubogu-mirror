@@ -6,17 +6,20 @@ import com.yagubogu.game.dto.GameWithCheckInParam;
 import com.yagubogu.member.domain.Member;
 import com.yagubogu.stadium.domain.Stadium;
 import com.yagubogu.team.domain.Team;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
+
 @Repository
 public interface GameRepository extends JpaRepository<Game, Long> {
+
+    Optional<Game> findByGameCode(String gameCode);
 
     Optional<Game> findByDateAndStadiumAndHomeTeamAndAwayTeamAndStartAt(
             LocalDate date,
@@ -65,4 +68,14 @@ public interface GameRepository extends JpaRepository<Game, Long> {
     List<Game> findAllByDate(LocalDate date);
 
     boolean existsByDateAndGameStateIn(LocalDate date, List<GameState> states);
+
+    @Query("""
+            SELECT DISTINCT g.date 
+            FROM Game g 
+            WHERE g.date >= :start 
+                AND g.date < :end 
+                AND g.gameState <> com.yagubogu.game.domain.GameState.CANCELED 
+            ORDER BY g.date
+            """)
+    List<LocalDate> findDistinctGameDatesByMonth(@Param("start") LocalDate start, @Param("end") LocalDate end);
 }

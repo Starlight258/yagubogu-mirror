@@ -32,7 +32,7 @@ public class PastCheckInService {
 
         validateCheckInNotExists(member, game);
 
-        CheckIn pastCheckIn = new CheckIn(game, member, team, CheckInType.NON_LOCATION_CHECK_IN);
+        CheckIn pastCheckIn = new CheckIn(game, member, team, CheckInType.NON_LOCATION_CHECK_IN, null, null);
         checkInRepository.save(pastCheckIn);
     }
 

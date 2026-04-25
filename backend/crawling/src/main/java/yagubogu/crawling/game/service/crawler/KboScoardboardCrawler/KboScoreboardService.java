@@ -132,7 +132,7 @@ public class KboScoreboardService {
             // 경기 종료 시 이벤트 발행 (ETL 트리거)
             GameState state = GameState.fromName(data.getStatus());
             if (state == GameState.COMPLETED || state == GameState.CANCELED) {
-                applicationEventPublisher.publishEvent(new GameFinalizedEvent(date, stadium, homeTeamName,
+                applicationEventPublisher.publishEvent(new GameFinalizedEvent(gameCode, date, stadium, homeTeamName,
                         awayTeamName, startTime, state));
                 log.info("[EVENT] Published GameFinalizedEvent: gameCode={}, state={}", gameCode, state);
             }

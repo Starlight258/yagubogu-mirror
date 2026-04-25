@@ -98,6 +98,8 @@ public abstract class BaseKboPage {
         page.locator(calendarSelectors.getMonthSelect())
                 .selectOption(monthZeroBased);
 
+        waitForLoadingOverlay(timeout);
+
         log.debug("년/월 선택 완료: {}-{}", targetDate.getYear(), targetDate.getMonthValue());
     }
 
@@ -115,12 +117,25 @@ public abstract class BaseKboPage {
                 .setTimeout(timeout)
                 .setState(WaitForSelectorState.VISIBLE));
 
-        dayLocator.first().click(new Locator.ClickOptions()
-                .setTimeout(timeout)
-                .setForce(false)
-        );
+        // bx-loading 오버레이가 pointer events를 가로채는 경우 dispatchEvent로 우회
+        dayLocator.first().dispatchEvent("click");
 
         log.debug("날짜 {} 클릭 완료", day);
+    }
+
+    /**
+     * bx-loading 오버레이가 사라질 때까지 대기
+     * 연/월 선택 후 AJAX 로딩이 완료될 때까지 클릭을 막는 오버레이 처리
+     */
+    private void waitForLoadingOverlay(long timeout) {
+        try {
+            page.locator(".bx-loading")
+                    .waitFor(new Locator.WaitForOptions()
+                            .setTimeout(timeout)
+                            .setState(WaitForSelectorState.HIDDEN));
+        } catch (PlaywrightException e) {
+            log.debug("bx-loading 오버레이 없음 또는 이미 사라짐");
+        }
     }
 
     /**

@@ -2,9 +2,12 @@ package com.yagubogu.global.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yagubogu.game.repository.BronzeGameRepository;
+import com.yagubogu.game.repository.GameHitterRecordRepository;
+import com.yagubogu.game.repository.GamePitcherRecordRepository;
 import com.yagubogu.game.repository.GameRepository;
 import com.yagubogu.game.service.BronzeGameService;
 import com.yagubogu.game.service.GameEtlService;
+import com.yagubogu.game.service.GameReviewService;
 import com.yagubogu.stadium.repository.StadiumRepository;
 import com.yagubogu.team.repository.TeamRepository;
 import java.time.Clock;
@@ -31,5 +34,12 @@ public class PipelineConfig {
     ) {
         return new GameEtlService(bronzeGameRepository, gameRepository, teamRepository, stadiumRepository,
                 objectMapper, clock);
+    }
+
+    @Bean
+    public GameReviewService gameReviewService(final GameRepository gameRepository,
+                                               final GameHitterRecordRepository hitterRecordRepository,
+                                               final GamePitcherRecordRepository pitcherRecordRepository) {
+        return new GameReviewService(gameRepository, hitterRecordRepository, pitcherRecordRepository);
     }
 }

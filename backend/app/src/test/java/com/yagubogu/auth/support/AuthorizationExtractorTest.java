@@ -45,6 +45,22 @@ class AuthorizationExtractorTest {
         assertThat(extractedToken).isEmpty();
     }
 
+    @DisplayName("NativeWebRequest의 어드민 쿠키에서 토큰을 추출한다")
+    @Test
+    void extract_NativeWebRequest_cookie() {
+        // given
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        String token = "admin.token";
+        request.setCookies(new jakarta.servlet.http.Cookie(AuthorizationExtractor.ADMIN_ACCESS_TOKEN_COOKIE, token));
+        ServletWebRequest webRequest = new ServletWebRequest(request);
+
+        // when
+        Optional<String> extractedToken = authorizationExtractor.extract(webRequest);
+
+        // then
+        assertThat(extractedToken).contains(token);
+    }
+
     @DisplayName("NativeWebRequest가 Bearer 접두어가 아닌 경우 빈 객체를 반환한다")
     @Test
     void extract_NativeWebRequest_not_bearer() {
@@ -87,6 +103,21 @@ class AuthorizationExtractorTest {
 
         // then
         assertThat(extractedToken).isEmpty();
+    }
+
+    @DisplayName("HttpServletRequest의 어드민 쿠키에서 토큰을 추출한다")
+    @Test
+    void extract_HttpServletRequest_cookie() {
+        // given
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        String token = "admin.token";
+        request.setCookies(new jakarta.servlet.http.Cookie(AuthorizationExtractor.ADMIN_ACCESS_TOKEN_COOKIE, token));
+
+        // when
+        Optional<String> extractedToken = authorizationExtractor.extract(request);
+
+        // then
+        assertThat(extractedToken).contains(token);
     }
 
     @DisplayName("HttpServletRequest가 Bearer 접두어가 아닌 경우 빈 객체를 반환한다")

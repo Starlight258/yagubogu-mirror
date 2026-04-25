@@ -38,6 +38,6 @@ public class CheckInBuilder {
     }
 
     public CheckIn build() {
-        return new CheckIn(game, member, team, checkInType);
+        return new CheckIn(game, member, team, checkInType, null, null);
     }
 }

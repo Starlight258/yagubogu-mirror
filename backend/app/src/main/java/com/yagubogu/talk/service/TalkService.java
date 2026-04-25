@@ -16,14 +16,16 @@ import com.yagubogu.talk.dto.v1.TalkCursorResultResponse;
 import com.yagubogu.talk.dto.v1.TalkEntranceResponse;
 import com.yagubogu.talk.dto.v1.TalkRequest;
 import com.yagubogu.talk.dto.v1.TalkResponse;
+import com.yagubogu.talk.repository.TalkLikeRepository;
 import com.yagubogu.talk.repository.TalkReportRepository;
 import com.yagubogu.talk.repository.TalkRepository;
 import jakarta.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -31,8 +33,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -50,6 +52,7 @@ public class TalkService {
     private final GameRepository gameRepository;
     private final MemberRepository memberRepository;
     private final TalkReportRepository talkReportRepository;
+    private final TalkLikeRepository talkLikeRepository;
     private final ApplicationEventPublisher publisher;
     private final EntityManager entityManager;
 
@@ -89,7 +92,7 @@ public class TalkService {
     ) {
         Pageable pageable = PageRequest.of(0, limit);
         Slice<Talk> talks = talkRepository.fetchTalksAfterCursor(gameId, cursorId, pageable);
-        Slice<TalkResponse> talkResponses = talks.map(talk -> TalkResponse.from(talk, memberId));
+        Slice<TalkResponse> talkResponses = toTalkResponseSlice(talks, memberId);
 
         long nextCursorId = getNextCursorIdOrStay(cursorId, talkResponses);
         CursorResultParam<TalkResponse> cursorResultParam = new CursorResultParam<>(talkResponses.getContent(),
@@ -104,15 +107,6 @@ public class TalkService {
             final TalkRequest request,
             final long memberId
     ) {
-        // 1. 중복 체크
-        Optional<Talk> existingTalk = talkRepository.findByClientMessageId(request.clientMessageId());
-        if (existingTalk.isPresent()) {
-            log.info("중복 요청 감지 (Client Message ID) - clientMessageId: {}, talkId: {}",
-                    request.clientMessageId(), existingTalk.get().getId());
-            return TalkResponse.from(existingTalk.get(), memberId);
-        }
-
-        // 2~4. 검증
         Game game = getGame(gameId);
         Member member = getMember(memberId);
         validateBlockedFromGame(gameId, memberId);
@@ -122,7 +116,6 @@ public class TalkService {
 
         try {
             Talk talk = talkRepository.save(new Talk(
-                    request.clientMessageId(),
                     game,
                     member,
                     request.content(),
@@ -211,11 +204,45 @@ public class TalkService {
     ) {
         if (cursorId == null) {
             Slice<Talk> talks = talkRepository.fetchRecentTalks(gameId, pageable);
-            return talks.map(talk -> TalkResponse.from(talk, memberId));
+            return toTalkResponseSlice(talks, memberId);
         }
         Slice<Talk> talks = talkRepository.fetchTalksBeforeCursor(gameId, cursorId, pageable);
+        return toTalkResponseSlice(talks, memberId);
+    }
 
-        return talks.map(talk -> TalkResponse.from(talk, memberId));
+    private Slice<TalkResponse> toTalkResponseSlice(final Slice<Talk> talks, final long memberId) {
+        List<Long> talkIds = talks.getContent().stream().map(Talk::getId).toList();
+        Map<Long, Integer> likeCountMap = getLikeCountMap(talkIds);
+        Set<Long> likedTalkIds = getLikedTalkIds(talkIds, memberId);
+
+        List<TalkResponse> content = talks.getContent().stream()
+                .map(talk -> TalkResponse.from(
+                        talk,
+                        memberId,
+                        likeCountMap.getOrDefault(talk.getId(), 0),
+                        likedTalkIds.contains(talk.getId())
+                ))
+                .toList();
+
+        return new SliceImpl<>(content, talks.getPageable(), talks.hasNext());
+    }
+
+    private Map<Long, Integer> getLikeCountMap(final List<Long> talkIds) {
+        if (talkIds.isEmpty()) {
+            return Map.of();
+        }
+        return talkLikeRepository.countByTalkIds(talkIds).stream()
+                .collect(Collectors.toMap(
+                        arr -> (Long) arr[0],
+                        arr -> ((Long) arr[1]).intValue()
+                ));
+    }
+
+    private Set<Long> getLikedTalkIds(final List<Long> talkIds, final long memberId) {
+        if (talkIds.isEmpty()) {
+            return Set.of();
+        }
+        return new HashSet<>(talkLikeRepository.findLikedTalkIds(memberId, talkIds));
     }
 
     private Long getNextCursorIdOrNull(

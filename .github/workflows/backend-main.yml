@@ -4,6 +4,7 @@ on:
   pull_request_target:
     types: [ closed ]
     branches: [ "main" ]
+  workflow_dispatch:
 
 env:
   IMAGE: yagubogu/yagubogu-backend
@@ -168,6 +169,7 @@ jobs:
             -e DB_USERNAME="${{ secrets.DB_USERNAME }}" \
             -e DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
             -e GOOGLE_CLIENT_ID="${{ secrets.GOOGLE_CLIENT_ID }}" \
+            -e ADMIN_GOOGLE_CLIENT_ID="${{ secrets.ADMIN_GOOGLE_CLIENT_ID }}" \
             -e APPLE_CLIENT_ID="${{ secrets.APPLE_CLIENT_ID }}" \
             -e ACCESS_TOKEN_SECRET_KEY="${{ secrets.ACCESS_TOKEN_SECRET_KEY }}" \
             -e REFRESH_TOKEN_SECRET_KEY="${{ secrets.REFRESH_TOKEN_SECRET_KEY }}" \

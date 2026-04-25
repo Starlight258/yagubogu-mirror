@@ -4,9 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.tuple;
+import static org.mockito.Mockito.mock;
 
 import com.yagubogu.auth.config.AuthTestConfig;
 import com.yagubogu.checkin.domain.CheckIn;
+import com.yagubogu.checkin.domain.CheckInImage;
 import com.yagubogu.checkin.domain.CheckInOrderFilter;
 import com.yagubogu.checkin.domain.CheckInResultFilter;
 import com.yagubogu.checkin.domain.CheckInType;
@@ -16,21 +18,32 @@ import com.yagubogu.checkin.dto.StadiumCheckInCountParam;
 import com.yagubogu.checkin.dto.TeamFanRateParam;
 import com.yagubogu.checkin.dto.v1.CheckInCountsResponse;
 import com.yagubogu.checkin.dto.v1.CheckInHistoryResponse;
+import com.yagubogu.checkin.dto.v1.CheckInImageParam;
+import com.yagubogu.checkin.dto.v1.CheckInImagesResponse;
+import com.yagubogu.checkin.dto.v1.CheckInMemoResponse;
+import com.yagubogu.checkin.dto.v1.CheckInReviewResponse;
 import com.yagubogu.checkin.dto.v1.CheckInStatusResponse;
 import com.yagubogu.checkin.dto.v1.CreateCheckInRequest;
 import com.yagubogu.checkin.dto.v1.FanRateResponse;
 import com.yagubogu.checkin.dto.v1.StadiumCheckInCountsResponse;
+import com.yagubogu.game.domain.GameHitterRecord;
+import com.yagubogu.game.domain.GamePitcherRecord;
 import com.yagubogu.checkin.repository.CheckInRepository;
 import com.yagubogu.game.domain.Game;
 import com.yagubogu.game.domain.GameState;
+import com.yagubogu.game.repository.GameHitterRecordRepository;
+import com.yagubogu.game.repository.GamePitcherRecordRepository;
 import com.yagubogu.game.repository.GameRepository;
 import com.yagubogu.global.config.JpaAuditingConfig;
+import com.yagubogu.global.config.S3Properties;
 import com.yagubogu.global.exception.ConflictException;
+import com.yagubogu.global.exception.ForbiddenException;
 import com.yagubogu.global.exception.NotFoundException;
 import com.yagubogu.member.domain.Member;
 import com.yagubogu.member.repository.MemberRepository;
 import com.yagubogu.stadium.domain.Stadium;
 import com.yagubogu.stadium.repository.StadiumRepository;
+import com.yagubogu.stat.repository.LocationCheckInRankingRepository;
 import com.yagubogu.support.TestFixture;
 import com.yagubogu.support.checkin.CheckInFactory;
 import com.yagubogu.support.game.GameFactory;
@@ -39,21 +52,26 @@ import com.yagubogu.support.member.MemberFactory;
 import com.yagubogu.team.domain.Team;
 import com.yagubogu.team.repository.TeamRepository;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Import;
+import software.amazon.awssdk.services.s3.S3Client;
 
 @Import({AuthTestConfig.class, JpaAuditingConfig.class})
 @DataJpaTest
 class CheckInServiceTest {
 
     private CheckInService checkInService;
+    private S3Client mockS3Client;
+    private S3Properties mockS3Properties;
 
     @Autowired
     private CheckInFactory checkInFactory;
@@ -71,6 +89,9 @@ class CheckInServiceTest {
     private CheckInRepository checkInRepository;
 
     @Autowired
+    private com.yagubogu.checkin.repository.CheckInImageRepository checkInImageRepository;
+
+    @Autowired
     private MemberRepository memberRepository;
 
     @Autowired
@@ -78,6 +99,14 @@ class CheckInServiceTest {
 
     @Autowired
     private GameRepository gameRepository;
+
+    private LocationCheckInRankingRepository locationCheckInRankingRepository;
+
+    @Autowired
+    private GameHitterRecordRepository hitterRecordRepository;
+
+    @Autowired
+    private GamePitcherRecordRepository pitcherRecordRepository;
 
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
@@ -87,11 +116,23 @@ class CheckInServiceTest {
 
     @BeforeEach
     void setUp() {
+        mockS3Client = Mockito.mock(S3Client.class);
+        mockS3Properties = Mockito.mock(S3Properties.class);
+        Mockito.when(mockS3Properties.endpoint()).thenReturn("http://s3.test");
+        Mockito.when(mockS3Properties.bucket()).thenReturn("test-bucket");
+
+        locationCheckInRankingRepository = mock(LocationCheckInRankingRepository.class);
         checkInService = new CheckInService(
                 checkInRepository,
+                checkInImageRepository,
                 memberRepository,
                 gameRepository,
-                applicationEventPublisher
+                hitterRecordRepository,
+                pitcherRecordRepository,
+                locationCheckInRankingRepository,
+                applicationEventPublisher,
+                mockS3Client,
+                mockS3Properties
         );
 
         kia = teamRepository.findByTeamCode("HT").orElseThrow();
@@ -237,12 +278,13 @@ class CheckInServiceTest {
                         r -> r.homeTeam().name(),
                         r -> r.homeScoreBoard().getRuns(),
                         r -> r.awayTeam().name(),
-                        r -> r.awayScoreBoard().getRuns()
+                        r -> r.awayScoreBoard().getRuns(),
+                        CheckInGameParam::gameState
                 ).containsExactly(
-                        tuple(startDate.plusDays(3), "롯데", 10, "KIA", 1),
-                        tuple(startDate.plusDays(2), "롯데", 10, "KIA", 10),
-                        tuple(startDate.plusDays(1), "롯데", 1, "KIA", 10),
-                        tuple(startDate, "롯데", 10, "KIA", 1)
+                        tuple(startDate.plusDays(3), "롯데", 10, "KIA", 1, GameState.COMPLETED),
+                        tuple(startDate.plusDays(2), "롯데", 10, "KIA", 10, GameState.COMPLETED),
+                        tuple(startDate.plusDays(1), "롯데", 1, "KIA", 10, GameState.COMPLETED),
+                        tuple(startDate, "롯데", 10, "KIA", 1, GameState.COMPLETED)
                 );
     }
 
@@ -273,12 +315,13 @@ class CheckInServiceTest {
                         r -> r.homeTeam().name(),
                         r -> r.homeScoreBoard().getRuns(),
                         r -> r.awayTeam().name(),
-                        r -> r.awayScoreBoard().getRuns()
+                        r -> r.awayScoreBoard().getRuns(),
+                        CheckInGameParam::gameState
                 ).containsExactly(
-                        tuple(startDate, "롯데", 10, "KIA", 1),
-                        tuple(startDate.plusDays(1), "롯데", 1, "KIA", 10),
-                        tuple(startDate.plusDays(2), "롯데", 10, "KIA", 10),
-                        tuple(startDate.plusDays(3), "롯데", 10, "KIA", 1)
+                        tuple(startDate, "롯데", 10, "KIA", 1, GameState.COMPLETED),
+                        tuple(startDate.plusDays(1), "롯데", 1, "KIA", 10, GameState.COMPLETED),
+                        tuple(startDate.plusDays(2), "롯데", 10, "KIA", 10, GameState.COMPLETED),
+                        tuple(startDate.plusDays(3), "롯데", 10, "KIA", 1, GameState.COMPLETED)
                 );
     }
 
@@ -313,11 +356,12 @@ class CheckInServiceTest {
                         r -> r.homeTeam().name(),
                         r -> r.homeScoreBoard().getRuns(),
                         r -> r.awayTeam().name(),
-                        r -> r.awayScoreBoard().getRuns()
+                        r -> r.awayScoreBoard().getRuns(),
+                        CheckInGameParam::gameState
                 ).containsExactly(
-                        tuple(startDate.plusDays(2), "KIA", 4, "삼성", 0),
-                        tuple(startDate.plusDays(1), "KIA", 5, "LG", 4),
-                        tuple(startDate, "KIA", 10, "KT", 1)
+                        tuple(startDate.plusDays(2), "KIA", 4, "삼성", 0, GameState.COMPLETED),
+                        tuple(startDate.plusDays(1), "KIA", 5, "LG", 4, GameState.COMPLETED),
+                        tuple(startDate, "KIA", 10, "KT", 1, GameState.COMPLETED)
                 );
     }
 
@@ -352,11 +396,12 @@ class CheckInServiceTest {
                         r -> r.homeTeam().name(),
                         r -> r.homeScoreBoard().getRuns(),
                         r -> r.awayTeam().name(),
-                        r -> r.awayScoreBoard().getRuns()
+                        r -> r.awayScoreBoard().getRuns(),
+                        CheckInGameParam::gameState
                 ).containsExactly(
-                        tuple(startDate, "KIA", 10, "KT", 1),
-                        tuple(startDate.plusDays(1), "KIA", 5, "LG", 4),
-                        tuple(startDate.plusDays(2), "KIA", 4, "삼성", 0)
+                        tuple(startDate, "KIA", 10, "KT", 1, GameState.COMPLETED),
+                        tuple(startDate.plusDays(1), "KIA", 5, "LG", 4, GameState.COMPLETED),
+                        tuple(startDate.plusDays(2), "KIA", 4, "삼성", 0, GameState.COMPLETED)
                 );
 
     }
@@ -410,11 +455,12 @@ class CheckInServiceTest {
                 .extracting(
                         CheckInGameParam::attendanceDate,
                         r -> r.homeTeam().name(),
-                        r -> r.awayTeam().name()
+                        r -> r.awayTeam().name(),
+                        CheckInGameParam::gameState
                 ).containsExactly(
-                        tuple(startDate.plusDays(2), "롯데", "KIA"),
-                        tuple(startDate.plusDays(1), "롯데", "KIA"),
-                        tuple(startDate, "롯데", "KIA")
+                        tuple(startDate.plusDays(2), "롯데", "KIA", GameState.COMPLETED),
+                        tuple(startDate.plusDays(1), "롯데", "KIA", GameState.CANCELED),
+                        tuple(startDate, "롯데", "KIA", GameState.COMPLETED)
                 );
 
         CheckInGameParam canceledResponse = actual.checkInHistory().get(1);
@@ -482,11 +528,14 @@ class CheckInServiceTest {
         int month = 7;
         int day = 25;
         LocalDate startDate = LocalDate.of(year, month, day);
+        LocalTime startAt = LocalTime.of(18, 30);
+        LocalTime pastCheckInStartAt = LocalTime.of(17, 0);
 
         // CheckIn 데이터 2개
         Game checkInGame1 = gameFactory.save(b -> b
                 .stadium(stadiumJamsil)
                 .date(startDate)
+                .startAt(startAt)
                 .homeTeam(kia).homeScore(10).homeScoreBoard(TestFixture.getHomeScoreBoardAbout(10))
                 .awayTeam(kt).awayScore(1).awayScoreBoard(TestFixture.getAwayScoreBoardAbout(1))
                 .gameState(GameState.COMPLETED));
@@ -495,6 +544,7 @@ class CheckInServiceTest {
         Game checkInGame2 = gameFactory.save(b -> b
                 .stadium(stadiumJamsil)
                 .date(startDate.plusDays(1))
+                .startAt(startAt)
                 .homeTeam(kia).homeScore(1).homeScoreBoard(TestFixture.getHomeScoreBoardAbout(1))
                 .awayTeam(lg).awayScore(5).awayScoreBoard(TestFixture.getAwayScoreBoardAbout(5))
                 .gameState(GameState.COMPLETED));
@@ -504,6 +554,7 @@ class CheckInServiceTest {
         Game pastCheckInGame1 = gameFactory.save(b -> b
                 .stadium(stadiumGocheok)
                 .date(startDate.minusDays(10))
+                .startAt(pastCheckInStartAt)
                 .homeTeam(kia).homeScore(7).homeScoreBoard(TestFixture.getHomeScoreBoardAbout(7))
                 .awayTeam(samsung).awayScore(3).awayScoreBoard(TestFixture.getAwayScoreBoardAbout(3))
                 .gameState(GameState.COMPLETED));
@@ -513,6 +564,7 @@ class CheckInServiceTest {
         Game pastCheckInGame2 = gameFactory.save(b -> b
                 .stadium(stadiumGocheok)
                 .date(startDate.minusDays(9))
+                .startAt(pastCheckInStartAt)
                 .homeTeam(doosan).homeScore(8).homeScoreBoard(TestFixture.getHomeScoreBoardAbout(8))
                 .awayTeam(kia).awayScore(2).awayScoreBoard(TestFixture.getAwayScoreBoardAbout(2))
                 .gameState(GameState.COMPLETED));
@@ -528,13 +580,15 @@ class CheckInServiceTest {
         assertThat(actual.checkInHistory()).hasSize(4)
                 .extracting(
                         CheckInGameParam::attendanceDate,
+                        CheckInGameParam::startAt,
                         r -> r.homeTeam().name(),
-                        r -> r.awayTeam().name()
+                        r -> r.awayTeam().name(),
+                        CheckInGameParam::gameState
                 ).containsExactly(
-                        tuple(startDate.plusDays(1), "KIA", "LG"),
-                        tuple(startDate, "KIA", "KT"),
-                        tuple(startDate.minusDays(9), "두산", "KIA"),
-                        tuple(startDate.minusDays(10), "KIA", "삼성")
+                        tuple(startDate.plusDays(1), startAt, "KIA", "LG", GameState.COMPLETED),
+                        tuple(startDate, startAt, "KIA", "KT", GameState.COMPLETED),
+                        tuple(startDate.minusDays(9), pastCheckInStartAt, "두산", "KIA", GameState.COMPLETED),
+                        tuple(startDate.minusDays(10), pastCheckInStartAt, "KIA", "삼성", GameState.COMPLETED)
                 );
     }
 
@@ -990,5 +1044,410 @@ class CheckInServiceTest {
                 .gameState(GameState.COMPLETED)
                 .date(startDate.plusDays(5)));
         savedCheckIns.add(checkInFactory.save(b -> b.member(member).team(member.getTeam()).game(game3)));
+    }
+
+    @DisplayName("CheckIn을 삭제한다")
+    @Test
+    void deleteCheckIn_success() {
+        // given
+        Member member = memberFactory.save(b -> b.team(lotte));
+        Game game = gameFactory.save(b -> b
+                .stadium(stadiumJamsil)
+                .date(LocalDate.of(2025, 10, 10))
+                .homeTeam(lotte).homeScore(3).homeScoreBoard(TestFixture.getHomeScoreBoardAbout(3))
+                .awayTeam(kia).awayScore(1).awayScoreBoard(TestFixture.getAwayScoreBoardAbout(1))
+                .gameState(GameState.COMPLETED)
+        );
+
+        CheckIn checkIn = checkInFactory.save(b -> b
+                .game(game).member(member).team(lotte)
+                .checkInType(CheckInType.LOCATION_CHECK_IN)
+        );
+
+        // when
+        checkInService.deleteCheckIn(member.getId(), checkIn.getId());
+
+        // then
+        boolean exists = checkInRepository.existsById(checkIn.getId());
+        assertThat(exists).isFalse();
+    }
+
+    @DisplayName("NON_LOCATION_CHECK_IN도 삭제할 수 있다")
+    @Test
+    void deleteCheckIn_success_nonLocationCheckIn() {
+        // given
+        Member member = memberFactory.save(b -> b.team(lotte));
+        Game game = gameFactory.save(b -> b
+                .stadium(stadiumJamsil)
+                .date(LocalDate.of(2025, 11, 11))
+                .homeTeam(lotte).homeScore(5).homeScoreBoard(TestFixture.getHomeScoreBoardAbout(5))
+                .awayTeam(kia).awayScore(2).awayScoreBoard(TestFixture.getAwayScoreBoardAbout(2))
+                .gameState(GameState.COMPLETED)
+        );
+
+        CheckIn checkIn = checkInFactory.save(b -> b
+                .game(game).member(member).team(lotte)
+                .checkInType(CheckInType.NON_LOCATION_CHECK_IN)
+        );
+
+        // when
+        checkInService.deleteCheckIn(member.getId(), checkIn.getId());
+
+        // then
+        boolean exists = checkInRepository.existsById(checkIn.getId());
+        assertThat(exists).isFalse();
+    }
+
+    @DisplayName("예외: 존재하지 않는 CheckIn을 삭제하면 NotFoundException이 발생한다")
+    @Test
+    void deleteCheckIn_fail_whenCheckInNotFound() {
+        // given
+        Member member = memberFactory.save(b -> b.team(lotte));
+        long nonExistingCheckInId = 9999L;
+
+        // when & then
+        assertThatThrownBy(() -> checkInService.deleteCheckIn(member.getId(), nonExistingCheckInId))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessageContaining("CheckIn is not found");
+    }
+
+    @DisplayName("예외: 다른 회원의 CheckIn은 삭제할 수 없다")
+    @Test
+    void deleteCheckIn_fail_whenNotOwner() {
+        // given
+        Member owner = memberFactory.save(b -> b.team(lotte));
+        Member otherMember = memberFactory.save(b -> b.team(lotte));
+        Game game = gameFactory.save(b -> b
+                .stadium(stadiumJamsil)
+                .date(LocalDate.of(2025, 12, 12))
+                .homeTeam(lotte).homeScore(7).homeScoreBoard(TestFixture.getHomeScoreBoardAbout(7))
+                .awayTeam(kia).awayScore(2).awayScoreBoard(TestFixture.getAwayScoreBoardAbout(2))
+                .gameState(GameState.COMPLETED)
+        );
+
+        CheckIn checkIn = checkInFactory.save(b -> b
+                .game(game).member(owner).team(lotte)
+        );
+
+        // when & then
+        assertThatThrownBy(() -> checkInService.deleteCheckIn(otherMember.getId(), checkIn.getId()))
+                .isInstanceOf(ForbiddenException.class)
+                .hasMessageContaining("Only your own check-in can be deleted");
+    }
+
+    // ── 메모 CRUD ──────────────────────────────────────────────────────────────
+
+    @DisplayName("메모를 조회한다 - 메모 없는 경우 null 반환")
+    @Test
+    void getMemo_returnsNull_whenNoMemo() {
+        // given
+        Member member = memberFactory.save(b -> b.team(kia));
+        Game game = gameFactory.save(b -> b.stadium(stadiumJamsil).homeTeam(kia).awayTeam(kt).date(LocalDate.now()));
+        CheckIn checkIn = checkInFactory.save(b -> b.member(member).team(kia).game(game));
+
+        // when
+        CheckInMemoResponse response = checkInService.getMemo(member.getId(), checkIn.getId());
+
+        // then
+        assertThat(response.memo()).isNull();
+    }
+
+    @DisplayName("메모를 조회한다 - 메모 있는 경우")
+    @Test
+    void getMemo_returnsMemo() {
+        // given
+        Member member = memberFactory.save(b -> b.team(kia));
+        Game game = gameFactory.save(b -> b.stadium(stadiumJamsil).homeTeam(kia).awayTeam(kt).date(LocalDate.now()));
+        CheckIn checkIn = checkInFactory.save(b -> b.member(member).team(kia).game(game));
+        checkInService.updateMemo(member.getId(), checkIn.getId(), "오늘 직관 최고!");
+
+        // when
+        CheckInMemoResponse response = checkInService.getMemo(member.getId(), checkIn.getId());
+
+        // then
+        assertThat(response.memo()).isEqualTo("오늘 직관 최고!");
+    }
+
+    @DisplayName("예외: 직관 기록이 없으면 메모 조회 시 예외가 발생한다")
+    @Test
+    void getMemo_throwsNotFoundException_whenCheckInNotFound() {
+        // given
+        Member member = memberFactory.save(b -> b.team(kia));
+        long invalidCheckInId = 999999L;
+
+        // when & then
+        assertThatThrownBy(() -> checkInService.getMemo(member.getId(), invalidCheckInId))
+                .isExactlyInstanceOf(NotFoundException.class);
+    }
+
+    @DisplayName("예외: 다른 회원의 직관 기록은 메모 조회가 불가능하다")
+    @Test
+    void getMemo_throwsNotFoundException_whenNotOwner() {
+        // given
+        Member owner = memberFactory.save(b -> b.team(kia));
+        Member other = memberFactory.save(b -> b.team(kt));
+        Game game = gameFactory.save(b -> b.stadium(stadiumJamsil).homeTeam(kia).awayTeam(kt).date(LocalDate.now()));
+        CheckIn checkIn = checkInFactory.save(b -> b.member(owner).team(kia).game(game));
+
+        // when & then
+        assertThatThrownBy(() -> checkInService.getMemo(other.getId(), checkIn.getId()))
+                .isExactlyInstanceOf(NotFoundException.class);
+    }
+
+    @DisplayName("메모를 수정한다")
+    @Test
+    void updateMemo_setsMemo() {
+        // given
+        Member member = memberFactory.save(b -> b.team(kia));
+        Game game = gameFactory.save(b -> b.stadium(stadiumJamsil).homeTeam(kia).awayTeam(kt).date(LocalDate.now()));
+        CheckIn checkIn = checkInFactory.save(b -> b.member(member).team(kia).game(game));
+
+        // when
+        checkInService.updateMemo(member.getId(), checkIn.getId(), "첫 번째 메모");
+        checkInService.updateMemo(member.getId(), checkIn.getId(), "수정된 메모");
+
+        // then
+        CheckInMemoResponse response = checkInService.getMemo(member.getId(), checkIn.getId());
+        assertThat(response.memo()).isEqualTo("수정된 메모");
+    }
+
+    @DisplayName("예외: 다른 회원의 직관 기록 메모는 수정할 수 없다")
+    @Test
+    void updateMemo_throwsNotFoundException_whenNotOwner() {
+        // given
+        Member owner = memberFactory.save(b -> b.team(kia));
+        Member other = memberFactory.save(b -> b.team(kt));
+        Game game = gameFactory.save(b -> b.stadium(stadiumJamsil).homeTeam(kia).awayTeam(kt).date(LocalDate.now()));
+        CheckIn checkIn = checkInFactory.save(b -> b.member(owner).team(kia).game(game));
+
+        // when & then
+        assertThatThrownBy(() -> checkInService.updateMemo(other.getId(), checkIn.getId(), "불법 메모"))
+                .isExactlyInstanceOf(NotFoundException.class);
+    }
+
+    @DisplayName("메모를 삭제한다")
+    @Test
+    void deleteMemo_clearsMemo() {
+        // given
+        Member member = memberFactory.save(b -> b.team(kia));
+        Game game = gameFactory.save(b -> b.stadium(stadiumJamsil).homeTeam(kia).awayTeam(kt).date(LocalDate.now()));
+        CheckIn checkIn = checkInFactory.save(b -> b.member(member).team(kia).game(game));
+        checkInService.updateMemo(member.getId(), checkIn.getId(), "삭제될 메모");
+
+        // when
+        checkInService.deleteMemo(member.getId(), checkIn.getId());
+
+        // then
+        CheckInMemoResponse response = checkInService.getMemo(member.getId(), checkIn.getId());
+        assertThat(response.memo()).isNull();
+    }
+
+    // ── 이미지 CRUD ────────────────────────────────────────────────────────────
+
+    @DisplayName("이미지 목록을 조회한다 - 이미지 없는 경우 빈 리스트 반환")
+    @Test
+    void getImages_returnsEmptyList_whenNoImages() {
+        // given
+        Member member = memberFactory.save(b -> b.team(kia));
+        Game game = gameFactory.save(b -> b.stadium(stadiumJamsil).homeTeam(kia).awayTeam(kt).date(LocalDate.now()));
+        CheckIn checkIn = checkInFactory.save(b -> b.member(member).team(kia).game(game));
+
+        // when
+        CheckInImagesResponse response = checkInService.getImages(member.getId(), checkIn.getId());
+
+        // then
+        assertThat(response.images()).isEmpty();
+    }
+
+    @DisplayName("이미지 목록을 조회한다 - 이미지 있는 경우")
+    @Test
+    void getImages_returnsImages() {
+        // given
+        Member member = memberFactory.save(b -> b.team(kia));
+        Game game = gameFactory.save(b -> b.stadium(stadiumJamsil).homeTeam(kia).awayTeam(kt).date(LocalDate.now()));
+        CheckIn checkIn = checkInFactory.save(b -> b.member(member).team(kia).game(game));
+        checkInImageRepository.save(new CheckInImage(checkIn, "http://s3.test/test-bucket/img1"));
+        checkInImageRepository.save(new CheckInImage(checkIn, "http://s3.test/test-bucket/img2"));
+
+        // when
+        CheckInImagesResponse response = checkInService.getImages(member.getId(), checkIn.getId());
+
+        // then
+        assertThat(response.images()).hasSize(2);
+        assertThat(response.images()).extracting(CheckInImageParam::imageUrl)
+                .containsExactlyInAnyOrder(
+                        "http://s3.test/test-bucket/img1",
+                        "http://s3.test/test-bucket/img2"
+                );
+    }
+
+    @DisplayName("예외: 다른 회원의 직관 기록 이미지는 조회할 수 없다")
+    @Test
+    void getImages_throwsNotFoundException_whenNotOwner() {
+        // given
+        Member owner = memberFactory.save(b -> b.team(kia));
+        Member other = memberFactory.save(b -> b.team(kt));
+        Game game = gameFactory.save(b -> b.stadium(stadiumJamsil).homeTeam(kia).awayTeam(kt).date(LocalDate.now()));
+        CheckIn checkIn = checkInFactory.save(b -> b.member(owner).team(kia).game(game));
+
+        // when & then
+        assertThatThrownBy(() -> checkInService.getImages(other.getId(), checkIn.getId()))
+                .isExactlyInstanceOf(NotFoundException.class);
+    }
+
+    @DisplayName("이미지를 추가한다")
+    @Test
+    void addImage_savesImageAndReturnsParam() {
+        // given
+        Member member = memberFactory.save(b -> b.team(kia));
+        Game game = gameFactory.save(b -> b.stadium(stadiumJamsil).homeTeam(kia).awayTeam(kt).date(LocalDate.now()));
+        CheckIn checkIn = checkInFactory.save(b -> b.member(member).team(kia).game(game));
+
+        // when
+        CheckInImageParam result = checkInService.addImage(member.getId(), checkIn.getId(), "images/check-ins/test-key");
+
+        // then
+        assertThat(result.imageId()).isNotNull();
+        assertThat(result.imageUrl()).isEqualTo("http://s3.test/test-bucket/images/check-ins/test-key");
+        assertThat(checkInService.getImages(member.getId(), checkIn.getId()).images()).hasSize(1);
+    }
+
+    @DisplayName("이미지를 여러 장 추가한다")
+    @Test
+    void addImage_multipleImages() {
+        // given
+        Member member = memberFactory.save(b -> b.team(kia));
+        Game game = gameFactory.save(b -> b.stadium(stadiumJamsil).homeTeam(kia).awayTeam(kt).date(LocalDate.now()));
+        CheckIn checkIn = checkInFactory.save(b -> b.member(member).team(kia).game(game));
+
+        // when
+        checkInService.addImage(member.getId(), checkIn.getId(), "images/check-ins/key1");
+        checkInService.addImage(member.getId(), checkIn.getId(), "images/check-ins/key2");
+        checkInService.addImage(member.getId(), checkIn.getId(), "images/check-ins/key3");
+
+        // then
+        assertThat(checkInService.getImages(member.getId(), checkIn.getId()).images()).hasSize(3);
+    }
+
+    @DisplayName("이미지를 삭제한다")
+    @Test
+    void deleteImage_deletesImage() {
+        // given
+        Member member = memberFactory.save(b -> b.team(kia));
+        Game game = gameFactory.save(b -> b.stadium(stadiumJamsil).homeTeam(kia).awayTeam(kt).date(LocalDate.now()));
+        CheckIn checkIn = checkInFactory.save(b -> b.member(member).team(kia).game(game));
+        CheckInImageParam image = checkInService.addImage(member.getId(), checkIn.getId(), "images/check-ins/key1");
+
+        // when
+        checkInService.deleteImage(member.getId(), checkIn.getId(), image.imageId());
+
+        // then
+        assertThat(checkInService.getImages(member.getId(), checkIn.getId()).images()).isEmpty();
+    }
+
+    @DisplayName("예외: 존재하지 않는 이미지를 삭제하면 예외가 발생한다")
+    @Test
+    void deleteImage_throwsNotFoundException_whenImageNotFound() {
+        // given
+        Member member = memberFactory.save(b -> b.team(kia));
+        Game game = gameFactory.save(b -> b.stadium(stadiumJamsil).homeTeam(kia).awayTeam(kt).date(LocalDate.now()));
+        CheckIn checkIn = checkInFactory.save(b -> b.member(member).team(kia).game(game));
+        long invalidImageId = 999999L;
+
+        // when & then
+        assertThatThrownBy(() -> checkInService.deleteImage(member.getId(), checkIn.getId(), invalidImageId))
+                .isExactlyInstanceOf(NotFoundException.class);
+    }
+
+    @DisplayName("예외: 다른 직관 기록의 이미지는 삭제할 수 없다")
+    @Test
+    void deleteImage_throwsNotFoundException_whenImageBelongsToOtherCheckIn() {
+        // given
+        Member member = memberFactory.save(b -> b.team(kia));
+        Game game1 = gameFactory.save(b -> b.stadium(stadiumJamsil).homeTeam(kia).awayTeam(kt).date(LocalDate.of(2025, 7, 1)));
+        Game game2 = gameFactory.save(b -> b.stadium(stadiumJamsil).homeTeam(kia).awayTeam(kt).date(LocalDate.of(2025, 7, 2)));
+        CheckIn checkIn1 = checkInFactory.save(b -> b.member(member).team(kia).game(game1));
+        CheckIn checkIn2 = checkInFactory.save(b -> b.member(member).team(kia).game(game2));
+
+        CheckInImageParam imageOfCheckIn1 = checkInService.addImage(member.getId(), checkIn1.getId(), "images/check-ins/key1");
+
+        // when & then: checkIn2로 checkIn1의 이미지 삭제 시도
+        assertThatThrownBy(() -> checkInService.deleteImage(member.getId(), checkIn2.getId(), imageOfCheckIn1.imageId()))
+                .isExactlyInstanceOf(NotFoundException.class);
+    }
+
+    @DisplayName("직관 경기 리뷰를 조회한다")
+    @Test
+    void findCheckInReview() {
+        // given
+        Member member = memberFactory.save(b -> b.team(kia));
+        Game game = gameFactory.save(b -> b.stadium(stadiumJamsil)
+                .homeTeam(kia).homeScore(5).homeScoreBoard(TestFixture.getHomeScoreBoardAbout(5))
+                .awayTeam(kt).awayScore(3).awayScoreBoard(TestFixture.getAwayScoreBoardAbout(3))
+                .gameState(GameState.COMPLETED)
+                .date(LocalDate.of(2025, 8, 1)));
+        CheckIn checkIn = checkInFactory.save(b -> b.member(member).team(kia).game(game));
+
+        hitterRecordRepository.save(new GameHitterRecord(game, true, 1, "CF", "홈타자1", 4, 2, 1, 1));
+        hitterRecordRepository.save(new GameHitterRecord(game, false, 1, "CF", "원정타자1", 3, 0, 0, 0));
+        pitcherRecordRepository.save(new GamePitcherRecord(game, true, "홈투수1", "W", "7", 25, 90, 24, 5, 0, 2, 8, 3, 3));
+        pitcherRecordRepository.save(new GamePitcherRecord(game, false, "원정투수1", "L", "6", 22, 85, 21, 7, 1, 3, 6, 5, 4));
+
+        // when
+        CheckInReviewResponse response = checkInService.findCheckInReview(member.getId(), checkIn.getId());
+
+        // then
+        assertThat(response.homeHitters()).hasSize(1);
+        assertThat(response.awayHitters()).hasSize(1);
+        assertThat(response.homePitchers()).hasSize(1);
+        assertThat(response.awayPitchers()).hasSize(1);
+        assertThat(response.homeHitters().get(0).playerName()).isEqualTo("홈타자1");
+        assertThat(response.awayHitters().get(0).playerName()).isEqualTo("원정타자1");
+        assertThat(response.homePitchers().get(0).playerName()).isEqualTo("홈투수1");
+        assertThat(response.awayPitchers().get(0).playerName()).isEqualTo("원정투수1");
+    }
+
+    @DisplayName("예외: 본인의 직관 기록이 아니면 리뷰 조회 시 예외가 발생한다")
+    @Test
+    void findCheckInReview_throwsNotFoundException_whenNotOwner() {
+        // given
+        Member owner = memberFactory.save(b -> b.team(kia));
+        Member other = memberFactory.save(b -> b.team(kt));
+        Game game = gameFactory.save(b -> b.stadium(stadiumJamsil)
+                .homeTeam(kia).awayTeam(kt).gameState(GameState.COMPLETED)
+                .date(LocalDate.of(2025, 8, 2)));
+        CheckIn checkIn = checkInFactory.save(b -> b.member(owner).team(kia).game(game));
+
+        // when & then
+        assertThatThrownBy(() -> checkInService.findCheckInReview(other.getId(), checkIn.getId()))
+                .isExactlyInstanceOf(NotFoundException.class);
+    }
+
+    @DisplayName("직관 내역 조회 시 메모와 이미지 URL 목록이 포함된다")
+    @Test
+    void findCheckInHistory_includesMemoAndImageUrls() {
+        // given
+        Member member = memberFactory.save(b -> b.team(kia));
+        Game game = gameFactory.save(b -> b.stadium(stadiumJamsil)
+                .homeTeam(kia).homeScore(5).homeScoreBoard(TestFixture.getHomeScoreBoardAbout(5))
+                .awayTeam(kt).awayScore(3).awayScoreBoard(TestFixture.getAwayScoreBoardAbout(3))
+                .gameState(GameState.COMPLETED)
+                .date(LocalDate.of(2025, 8, 1)));
+        CheckIn checkIn = checkInFactory.save(b -> b.member(member).team(kia).game(game));
+
+        checkInService.updateMemo(member.getId(), checkIn.getId(), "역대급 직관");
+        checkInService.addImage(member.getId(), checkIn.getId(), "images/check-ins/img1");
+        checkInService.addImage(member.getId(), checkIn.getId(), "images/check-ins/img2");
+
+        // when
+        List<CheckInGameParam> history = checkInService.findCheckInHistory(
+                member.getId(), 2025, null, CheckInResultFilter.ALL, CheckInOrderFilter.LATEST
+        ).checkInHistory();
+
+        // then
+        assertThat(history).hasSize(1);
+        CheckInGameParam result = history.get(0);
+        assertThat(result.memo()).isEqualTo("역대급 직관");
+        assertThat(result.imageUrls()).hasSize(2);
     }
 }

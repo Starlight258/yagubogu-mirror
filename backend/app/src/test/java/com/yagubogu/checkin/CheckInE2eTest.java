@@ -5,14 +5,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.yagubogu.auth.config.AuthTestConfig;
 import com.yagubogu.checkin.domain.CheckInOrderFilter;
 import com.yagubogu.checkin.domain.CheckInResultFilter;
+import com.yagubogu.checkin.dto.CheckInGameParam;
 import com.yagubogu.checkin.dto.StadiumCheckInCountParam;
 import com.yagubogu.checkin.dto.v1.CheckInCountsResponse;
 import com.yagubogu.checkin.dto.v1.CheckInHistoryResponse;
+import com.yagubogu.checkin.dto.v1.CheckInImagesResponse;
+import com.yagubogu.checkin.dto.v1.CheckInMemoResponse;
 import com.yagubogu.checkin.dto.v1.CheckInStatusResponse;
 import com.yagubogu.checkin.dto.v1.CreateCheckInRequest;
 import com.yagubogu.checkin.dto.v1.StadiumCheckInCountsResponse;
 import com.yagubogu.game.domain.Game;
+import com.yagubogu.game.domain.GameHitterRecord;
+import com.yagubogu.game.domain.GamePitcherRecord;
 import com.yagubogu.game.domain.GameState;
+import com.yagubogu.game.repository.GameHitterRecordRepository;
+import com.yagubogu.game.repository.GamePitcherRecordRepository;
 import com.yagubogu.global.config.JpaAuditingConfig;
 import com.yagubogu.member.domain.Member;
 import com.yagubogu.member.domain.Role;
@@ -64,6 +71,12 @@ public class CheckInE2eTest extends E2eTestBase {
 
     @Autowired
     private StadiumRepository stadiumRepository;
+
+    @Autowired
+    private GameHitterRecordRepository hitterRecordRepository;
+
+    @Autowired
+    private GamePitcherRecordRepository pitcherRecordRepository;
 
     private Team kia, kt, lg, samsung, doosan, lotte;
     private Stadium stadiumJamsil, stadiumGocheok, stadiumIncheon;
@@ -157,6 +170,131 @@ public class CheckInE2eTest extends E2eTestBase {
                 .when().post("/api/v1/check-ins")
                 .then().log().all()
                 .statusCode(409);
+    }
+
+    @DisplayName("직관 기록에 메모를 추가/수정한다")
+    @Test
+    void updateMemo() {
+        // given
+        Member fora = memberFactory.save(b -> b.team(kia));
+        String accessToken = authFactory.getAccessTokenByMemberId(fora.getId(), Role.USER);
+
+        LocalDate date = LocalDate.of(2025, 7, 28);
+        Game game = gameFactory.save(builder ->
+                builder.stadium(stadiumJamsil)
+                        .date(date)
+                        .homeTeam(kt).homeScore(10).homeScoreBoard(TestFixture.getHomeScoreBoard())
+                        .awayTeam(kia).awayScore(1).awayScoreBoard(TestFixture.getAwayScoreBoard()));
+        com.yagubogu.checkin.domain.CheckIn checkIn = checkInFactory.save(b -> b.game(game).team(kia).member(fora));
+
+        // when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .body(new com.yagubogu.checkin.dto.v1.UpdateCheckInMemoRequest("오늘 직관 너무 좋았다!"))
+                .when().put("/api/v1/check-ins/" + checkIn.getId() + "/memo")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @DisplayName("예외: 메모가 500자를 초과하면 예외가 발생한다")
+    @Test
+    void updateMemo_tooLong() {
+        // given
+        Member fora = memberFactory.save(b -> b.team(kia));
+        String accessToken = authFactory.getAccessTokenByMemberId(fora.getId(), Role.USER);
+
+        LocalDate date = LocalDate.of(2025, 7, 29);
+        Game game = gameFactory.save(builder ->
+                builder.stadium(stadiumJamsil)
+                        .date(date)
+                        .homeTeam(kt).homeScore(10).homeScoreBoard(TestFixture.getHomeScoreBoard())
+                        .awayTeam(kia).awayScore(1).awayScoreBoard(TestFixture.getAwayScoreBoard()));
+        com.yagubogu.checkin.domain.CheckIn checkIn = checkInFactory.save(b -> b.game(game).team(kia).member(fora));
+
+        // when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .body(new com.yagubogu.checkin.dto.v1.UpdateCheckInMemoRequest("a".repeat(501)))
+                .when().put("/api/v1/check-ins/" + checkIn.getId() + "/memo")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @DisplayName("직관 기록의 메모를 삭제한다")
+    @Test
+    void deleteMemo() {
+        // given
+        Member fora = memberFactory.save(b -> b.team(kia));
+        String accessToken = authFactory.getAccessTokenByMemberId(fora.getId(), Role.USER);
+
+        LocalDate date = LocalDate.of(2025, 7, 30);
+        Game game = gameFactory.save(builder ->
+                builder.stadium(stadiumJamsil)
+                        .date(date)
+                        .homeTeam(kt).homeScore(10).homeScoreBoard(TestFixture.getHomeScoreBoard())
+                        .awayTeam(kia).awayScore(1).awayScoreBoard(TestFixture.getAwayScoreBoard()));
+        com.yagubogu.checkin.domain.CheckIn checkIn = checkInFactory.save(b -> b.game(game).team(kia).member(fora));
+
+        // when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .when().delete("/api/v1/check-ins/" + checkIn.getId() + "/memo")
+                .then().log().all()
+                .statusCode(204);
+    }
+
+    @DisplayName("예외: 다른 회원의 직관 기록 메모는 수정할 수 없다")
+    @Test
+    void updateMemo_otherMember() {
+        // given
+        Member fora = memberFactory.save(b -> b.team(kia));
+        Member other = memberFactory.save(b -> b.team(kt));
+        String accessToken = authFactory.getAccessTokenByMemberId(other.getId(), Role.USER);
+
+        LocalDate date = LocalDate.of(2025, 7, 31);
+        Game game = gameFactory.save(builder ->
+                builder.stadium(stadiumJamsil)
+                        .date(date)
+                        .homeTeam(kt).homeScore(10).homeScoreBoard(TestFixture.getHomeScoreBoard())
+                        .awayTeam(kia).awayScore(1).awayScoreBoard(TestFixture.getAwayScoreBoard()));
+        com.yagubogu.checkin.domain.CheckIn checkIn = checkInFactory.save(b -> b.game(game).team(kia).member(fora));
+
+        // when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .body(new com.yagubogu.checkin.dto.v1.UpdateCheckInMemoRequest("내 메모가 아닌데?"))
+                .when().put("/api/v1/check-ins/" + checkIn.getId() + "/memo")
+                .then().log().all()
+                .statusCode(404);
+    }
+
+    @DisplayName("예외: 다른 회원의 직관 기록 이미지는 삭제할 수 없다")
+    @Test
+    void deleteImage_otherMember() {
+        // given
+        Member fora = memberFactory.save(b -> b.team(kia));
+        Member other = memberFactory.save(b -> b.team(kt));
+        String accessToken = authFactory.getAccessTokenByMemberId(other.getId(), Role.USER);
+
+        LocalDate date = LocalDate.of(2025, 8, 1);
+        Game game = gameFactory.save(builder ->
+                builder.stadium(stadiumJamsil)
+                        .date(date)
+                        .homeTeam(kt).homeScore(10).homeScoreBoard(TestFixture.getHomeScoreBoard())
+                        .awayTeam(kia).awayScore(1).awayScoreBoard(TestFixture.getAwayScoreBoard()));
+        com.yagubogu.checkin.domain.CheckIn checkIn = checkInFactory.save(b -> b.game(game).team(kia).member(fora));
+
+        // when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .when().delete("/api/v1/check-ins/" + checkIn.getId() + "/image")
+                .then().log().all()
+                .statusCode(404);
     }
 
     @DisplayName("회원의 총 인증 횟수를 조회한다")
@@ -301,6 +439,8 @@ public class CheckInE2eTest extends E2eTestBase {
 
         CheckInHistoryResponse result = response.as(CheckInHistoryResponse.class);
         assertThat(result.checkInHistory()).hasSize(3);
+        assertThat(result.checkInHistory()).extracting(CheckInGameParam::gameState)
+                .containsOnly(GameState.COMPLETED);
     }
 
     @DisplayName("모든 직관 내역을 오래된순으로 조회한다")
@@ -703,5 +843,212 @@ public class CheckInE2eTest extends E2eTestBase {
         // then: 전체 기간(5경기) 조회 확인
         CheckInHistoryResponse result = response.as(CheckInHistoryResponse.class);
         assertThat(result.checkInHistory()).hasSize(5);
+        assertThat(result.checkInHistory()).extracting(CheckInGameParam::gameState)
+                .containsOnly(GameState.COMPLETED);
+    }
+
+    // ── 리뷰 조회 ──────────────────────────────────────────────────────────────
+
+    @DisplayName("직관 경기 리뷰를 조회한다")
+    @Test
+    void findCheckInReview() {
+        // given
+        Member fora = memberFactory.save(b -> b.team(kia));
+        String accessToken = authFactory.getAccessTokenByMemberId(fora.getId(), Role.USER);
+
+        Game game = gameFactory.save(builder ->
+                builder.stadium(stadiumJamsil)
+                        .date(LocalDate.of(2025, 8, 10))
+                        .gameState(GameState.COMPLETED)
+                        .homeTeam(kt).homeScore(3).homeScoreBoard(TestFixture.getHomeScoreBoard())
+                        .awayTeam(kia).awayScore(5).awayScoreBoard(TestFixture.getAwayScoreBoard()));
+        com.yagubogu.checkin.domain.CheckIn checkIn = checkInFactory.save(b -> b.game(game).team(kia).member(fora));
+
+        hitterRecordRepository.save(new GameHitterRecord(game, true, 1, "CF", "홈타자1", 4, 1, 0, 0));
+        hitterRecordRepository.save(new GameHitterRecord(game, false, 1, "CF", "원정타자1", 4, 2, 1, 1));
+        pitcherRecordRepository.save(new GamePitcherRecord(game, true, "홈투수1", "L", "6", 22, 85, 21, 5, 0, 2, 6, 5, 5));
+        pitcherRecordRepository.save(new GamePitcherRecord(game, false, "원정투수1", "W", "7", 25, 90, 24, 3, 0, 1, 8, 3, 3));
+
+        // when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .when().get("/api/v1/check-ins/" + checkIn.getId() + "/review")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @DisplayName("예외: 존재하지 않는 직관 기록의 리뷰를 조회하면 404가 발생한다")
+    @Test
+    void findCheckInReview_notFound() {
+        // given
+        Member fora = memberFactory.save(b -> b.team(kia));
+        String accessToken = authFactory.getAccessTokenByMemberId(fora.getId(), Role.USER);
+        long invalidCheckInId = 999999L;
+
+        // when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .when().get("/api/v1/check-ins/" + invalidCheckInId + "/review")
+                .then().log().all()
+                .statusCode(404);
+    }
+
+    // ── 메모 CRUD ──────────────────────────────────────────────────────────────
+
+    @DisplayName("메모를 조회한다 - 메모 없는 경우 null 반환")
+    @Test
+    void getMemo_returnsNull_whenNoMemo() {
+        // given
+        Member fora = memberFactory.save(b -> b.team(kia));
+        String accessToken = authFactory.getAccessTokenByMemberId(fora.getId(), Role.USER);
+
+        Game game = gameFactory.save(b -> b.stadium(stadiumJamsil).date(LocalDate.of(2025, 9, 1))
+                .homeTeam(kt).awayTeam(kia));
+        com.yagubogu.checkin.domain.CheckIn checkIn = checkInFactory.save(b -> b.game(game).team(kia).member(fora));
+
+        // when
+        CheckInMemoResponse actual = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .when().get("/api/v1/check-ins/" + checkIn.getId() + "/memo")
+                .then().log().all()
+                .statusCode(200)
+                .extract().as(CheckInMemoResponse.class);
+
+        // then
+        assertThat(actual.memo()).isNull();
+    }
+
+    @DisplayName("메모를 수정 후 조회한다")
+    @Test
+    void getMemo_afterUpdate() {
+        // given
+        Member fora = memberFactory.save(b -> b.team(kia));
+        String accessToken = authFactory.getAccessTokenByMemberId(fora.getId(), Role.USER);
+
+        Game game = gameFactory.save(b -> b.stadium(stadiumJamsil).date(LocalDate.of(2025, 9, 2))
+                .homeTeam(kt).awayTeam(kia));
+        com.yagubogu.checkin.domain.CheckIn checkIn = checkInFactory.save(b -> b.game(game).team(kia).member(fora));
+
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .body(new com.yagubogu.checkin.dto.v1.UpdateCheckInMemoRequest("수정된 메모"))
+                .when().put("/api/v1/check-ins/" + checkIn.getId() + "/memo");
+
+        // when
+        CheckInMemoResponse actual = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .when().get("/api/v1/check-ins/" + checkIn.getId() + "/memo")
+                .then().log().all()
+                .statusCode(200)
+                .extract().as(CheckInMemoResponse.class);
+
+        // then
+        assertThat(actual.memo()).isEqualTo("수정된 메모");
+    }
+
+    @DisplayName("예외: 존재하지 않는 직관 기록의 메모를 조회하면 404가 발생한다")
+    @Test
+    void getMemo_notFound() {
+        // given
+        Member fora = memberFactory.save(b -> b.team(kia));
+        String accessToken = authFactory.getAccessTokenByMemberId(fora.getId(), Role.USER);
+        long invalidCheckInId = 999999L;
+
+        // when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .when().get("/api/v1/check-ins/" + invalidCheckInId + "/memo")
+                .then().log().all()
+                .statusCode(404);
+    }
+
+    // ── 이미지 CRUD ────────────────────────────────────────────────────────────
+
+    @DisplayName("이미지 목록을 조회한다 - 이미지 없는 경우 빈 리스트 반환")
+    @Test
+    void getImages_returnsEmptyList() {
+        // given
+        Member fora = memberFactory.save(b -> b.team(kia));
+        String accessToken = authFactory.getAccessTokenByMemberId(fora.getId(), Role.USER);
+
+        Game game = gameFactory.save(b -> b.stadium(stadiumJamsil).date(LocalDate.of(2025, 9, 3))
+                .homeTeam(kt).awayTeam(kia));
+        com.yagubogu.checkin.domain.CheckIn checkIn = checkInFactory.save(b -> b.game(game).team(kia).member(fora));
+
+        // when
+        CheckInImagesResponse actual = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .when().get("/api/v1/check-ins/" + checkIn.getId() + "/images")
+                .then().log().all()
+                .statusCode(200)
+                .extract().as(CheckInImagesResponse.class);
+
+        // then
+        assertThat(actual.images()).isEmpty();
+    }
+
+    @DisplayName("예외: 존재하지 않는 이미지를 삭제하면 404가 발생한다")
+    @Test
+    void deleteImage_notFound() {
+        // given
+        Member fora = memberFactory.save(b -> b.team(kia));
+        String accessToken = authFactory.getAccessTokenByMemberId(fora.getId(), Role.USER);
+
+        Game game = gameFactory.save(b -> b.stadium(stadiumJamsil).date(LocalDate.of(2025, 9, 4))
+                .homeTeam(kt).awayTeam(kia));
+        com.yagubogu.checkin.domain.CheckIn checkIn = checkInFactory.save(b -> b.game(game).team(kia).member(fora));
+        long invalidImageId = 999999L;
+
+        // when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .when().delete("/api/v1/check-ins/" + checkIn.getId() + "/images/" + invalidImageId)
+                .then().log().all()
+                .statusCode(404);
+    }
+
+    @DisplayName("직관 내역 조회 시 메모가 포함된다")
+    @Test
+    void findCheckInHistory_includesMemo() {
+        // given
+        Member fora = memberFactory.save(b -> b.team(kia));
+        String accessToken = authFactory.getAccessTokenByMemberId(fora.getId(), Role.USER);
+
+        Game game = gameFactory.save(b -> b.stadium(stadiumJamsil).date(LocalDate.of(2025, 9, 5))
+                .gameState(GameState.COMPLETED)
+                .homeTeam(kt).homeScore(2).homeScoreBoard(TestFixture.getHomeScoreBoard())
+                .awayTeam(kia).awayScore(5).awayScoreBoard(TestFixture.getAwayScoreBoard()));
+        com.yagubogu.checkin.domain.CheckIn checkIn = checkInFactory.save(b -> b.game(game).team(kia).member(fora));
+
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .body(new com.yagubogu.checkin.dto.v1.UpdateCheckInMemoRequest("기록에 남길 메모"))
+                .when().put("/api/v1/check-ins/" + checkIn.getId() + "/memo");
+
+        // when
+        CheckInHistoryResponse response = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .queryParam("year", 2025)
+                .queryParam("result", CheckInResultFilter.ALL)
+                .queryParam("order", CheckInOrderFilter.LATEST)
+                .when().get("/api/v1/check-ins/members")
+                .then().log().all()
+                .statusCode(200)
+                .extract().as(CheckInHistoryResponse.class);
+
+        // then
+        assertThat(response.checkInHistory()).hasSize(1);
+        assertThat(response.checkInHistory().get(0).memo()).isEqualTo("기록에 남길 메모");
+        assertThat(response.checkInHistory().get(0).imageUrls()).isEmpty();
     }
 }

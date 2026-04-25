@@ -24,15 +24,26 @@ import com.yagubogu.member.dto.v1.VictoryFairyProfileResponse;
 import com.yagubogu.member.repository.MemberRepository;
 import com.yagubogu.stat.dto.CheckInSummaryParam;
 import com.yagubogu.stat.dto.VictoryFairySummaryParam;
+import com.yagubogu.stat.repository.LocationCheckInRankingRepository;
 import com.yagubogu.stat.service.StatService;
+import com.yagubogu.checkin.repository.CheckInRepository;
+import com.yagubogu.game.domain.GameState;
+import com.yagubogu.game.domain.Game;
+import com.yagubogu.stadium.domain.Stadium;
+import com.yagubogu.stadium.repository.StadiumRepository;
+import com.yagubogu.stat.repository.VictoryFairyRankingRepository;
 import com.yagubogu.support.badge.MemberBadgeFactory;
+import com.yagubogu.support.checkin.CheckInFactory;
+import com.yagubogu.support.game.GameFactory;
 import com.yagubogu.support.member.MemberBuilder;
 import com.yagubogu.support.member.MemberFactory;
 import com.yagubogu.team.domain.Team;
 import com.yagubogu.team.repository.TeamRepository;
 import jakarta.persistence.EntityManager;
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,6 +62,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -86,6 +99,24 @@ public class MemberServiceTest {
 
     @Autowired
     private EntityManager entityManager;
+
+    @Autowired
+    private CheckInRepository checkInRepository;
+
+    @Autowired
+    private CheckInFactory checkInFactory;
+
+    @Autowired
+    private GameFactory gameFactory;
+
+    @Autowired
+    private StadiumRepository stadiumRepository;
+
+    @Autowired
+    private VictoryFairyRankingRepository victoryFairyRankingRepository;
+
+    @Autowired
+    private LocationCheckInRankingRepository locationCheckInRankingRepository;
 
     @BeforeEach
     void setUp() {
@@ -474,7 +505,8 @@ public class MemberServiceTest {
                 .build()
         );
         CheckInSummaryParam fakeSummary = new CheckInSummaryParam(14, 75.0, 9, 0, 4, LocalDate.of(2025, 7, 24));
-        when(statService.findCheckInSummary(anyLong(), anyInt())).thenReturn(fakeSummary);
+        int currentYear = LocalDate.now().getYear();
+        when(statService.findCheckInSummary(anyLong(), eq(currentYear))).thenReturn(fakeSummary);
         VictoryFairySummaryParam fakeVictorySummary = new VictoryFairySummaryParam(5L, 1L, 90.0);
         when(statService.findVictoryFairySummary(anyLong(), anyInt())).thenReturn(fakeVictorySummary);
         MemberProfileBadgeResponse expectedBadgeResponse = MemberProfileBadgeResponse.from(
@@ -507,6 +539,55 @@ public class MemberServiceTest {
             softAssertions.assertThat(actual.checkIn().loseCounts()).isEqualTo(expectedCheckInResponse.loseCounts());
             softAssertions.assertThat(actual.checkIn().recentCheckInDate())
                     .isEqualTo(expectedCheckInResponse.recentCheckInDate());
+        });
+        verify(statService).findCheckInSummary(profileOwneredMember.getId(), currentYear);
+    }
+
+    @DisplayName("이전 연도(2025)에만 직관한 멤버의 프로필 조회 시, 최신 직관 날짜는 2025년도로, 현재 연도(2026) 승률은 0%로 반환된다")
+    @Test
+    void findMemberProfile_onlyPreviousYearCheckIn_winRateIsZeroAndRecentDateIsPreviousYear() {
+        // given
+        Team HT = teamRepository.findByTeamCode("HT").orElseThrow();
+        Team LT = teamRepository.findByTeamCode("LT").orElseThrow();
+        Badge badge = badgeRepository.findByPolicy(Policy.SIGN_UP).getFirst();
+
+        Member member = memberFactory.save(builder -> builder.nickname("우가")
+                .team(HT)
+                .representativeBadge(badge)
+                .build()
+        );
+
+        Stadium kia = stadiumRepository.findByShortName("챔피언스필드").orElseThrow();
+        LocalDate checkInDate2025 = LocalDate.of(2025, 7, 24);
+
+        // 2025년에 직관한 경기 (HT 홈 승) — 현재 연도는 2026이므로 승률 집계 대상 아님
+        Game game2025 = gameFactory.save(b -> b.stadium(kia)
+                .homeTeam(HT).awayTeam(LT)
+                .date(checkInDate2025)
+                .homeScore(5).awayScore(1)
+                .gameState(GameState.COMPLETED));
+        checkInFactory.save(b -> b.member(member).team(HT).game(game2025));
+
+        // 실제 StatService 사용
+        StatService realStatService = new StatService(
+                checkInRepository,
+                memberRepository,
+                victoryFairyRankingRepository,
+                locationCheckInRankingRepository,
+                Clock.system(ZoneId.of("Asia/Seoul"))
+        );
+        MemberService realMemberService = new MemberService(memberRepository, teamRepository, badgeRepository,
+                memberBadgeRepository, publisher, realStatService);
+
+        // when — findMemberProfile 내부에서 LocalDate.now().getYear() = 2026 사용
+        MemberProfileResponse actual = realMemberService.findMemberProfile(member.getId());
+
+        // then
+        assertSoftly(softAssertions -> {
+            // 2026년 직관 없음 → 승률 0%
+            softAssertions.assertThat(actual.checkIn().winRate()).isEqualTo(0.0);
+            // 전체 연도 기준 최신 직관 날짜 → 2025-07-24
+            softAssertions.assertThat(actual.checkIn().recentCheckInDate()).isEqualTo(checkInDate2025);
         });
     }
 

@@ -46,7 +46,8 @@ public class VictoryFairyRankingRepositoryImpl implements VictoryFairyRankingRep
                 .where(
                         V2.gameYear.eq(year),
                         filterByTeam(teamFilter, T2),
-                        V2.score.gt(VICTORY_FAIRY_RANKING.score)
+                        V2.score.gt(VICTORY_FAIRY_RANKING.score),
+                        M2.deletedAt.isNull()
                 );
 
         VictoryFairyRankParam victoryFairyRank = jpaQueryFactory.select(

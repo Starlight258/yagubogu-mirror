@@ -4,9 +4,11 @@ import com.yagubogu.auth.annotation.RequireRole;
 import com.yagubogu.auth.dto.MemberClaims;
 import com.yagubogu.talk.dto.v1.TalkCursorResultResponse;
 import com.yagubogu.talk.dto.v1.TalkEntranceResponse;
+import com.yagubogu.talk.dto.v1.TalkLikeResponse;
 import com.yagubogu.talk.dto.v1.TalkRequest;
 import com.yagubogu.talk.dto.v1.TalkResponse;
 import com.yagubogu.talk.service.RateLimiter;
+import com.yagubogu.talk.service.TalkLikeService;
 import com.yagubogu.talk.service.TalkReportService;
 import com.yagubogu.talk.service.TalkService;
 import jakarta.validation.Valid;
@@ -28,6 +30,7 @@ public class TalkController implements TalkControllerInterface {
 
     private final TalkService talkService;
     private final TalkReportService talkReportService;
+    private final TalkLikeService talkLikeService;
     private final RateLimiter rateLimiter;
 
     public ResponseEntity<TalkEntranceResponse> findInitialTalks(
@@ -94,5 +97,14 @@ public class TalkController implements TalkControllerInterface {
         talkService.removeTalk(gameId, talkId, memberClaims.id());
 
         return ResponseEntity.noContent().build();
+    }
+
+    public ResponseEntity<TalkLikeResponse> toggleLike(
+            final MemberClaims memberClaims,
+            @PathVariable final long talkId
+    ) {
+        TalkLikeResponse response = talkLikeService.toggleLike(talkId, memberClaims.id());
+
+        return ResponseEntity.ok(response);
     }
 }

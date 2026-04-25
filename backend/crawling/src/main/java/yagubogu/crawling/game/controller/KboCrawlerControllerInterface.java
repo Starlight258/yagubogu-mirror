@@ -36,4 +36,11 @@ public interface KboCrawlerControllerInterface {
     @PostMapping("/game-center")
     ResponseEntity<Integer> fetchGameCenter(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date);
+
+    @Operation(summary = "리뷰 크롤링 수동 실행", description = "특정 경기의 타자/투수 기록을 크롤링합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "크롤링 성공")
+    })
+    @PostMapping("/review")
+    ResponseEntity<Void> fetchReview(@RequestParam String gameCode);
 }
