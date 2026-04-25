@@ -5,6 +5,7 @@ import com.yagubogu.checkin.domain.CheckInType;
 import com.yagubogu.game.domain.Game;
 import com.yagubogu.member.domain.Member;
 import java.time.LocalDate;
+import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -67,4 +68,6 @@ public interface CheckInRepository extends JpaRepository<CheckIn, Long>, CustomC
     );
 
     boolean existsByGameAndMember(Game game, Member member);
+
+    Optional<CheckIn> findByIdAndMemberId(Long id, Long memberId);
 }

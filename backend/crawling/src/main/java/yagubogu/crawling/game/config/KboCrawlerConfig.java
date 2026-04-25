@@ -4,6 +4,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import yagubogu.crawling.game.service.crawler.KboGameCenterCrawler.KboGameCenterCrawler;
+import yagubogu.crawling.game.service.crawler.KboReviewCrawler.KboReviewCrawler;
 import yagubogu.crawling.game.service.crawler.KboScoardboardCrawler.KboScoreboardCrawler;
 
 @Configuration
@@ -35,6 +36,16 @@ public class KboCrawlerConfig {
             final KboCrawlerProperties properties,
             final PlaywrightManager playwrightManager) {
         return new KboGameCenterCrawler(
+                properties,
+                playwrightManager
+        );
+    }
+
+    @Bean
+    public KboReviewCrawler kboReviewCrawler(
+            final KboCrawlerProperties properties,
+            final PlaywrightManager playwrightManager) {
+        return new KboReviewCrawler(
                 properties,
                 playwrightManager
         );

@@ -10,6 +10,7 @@ import com.yagubogu.checkin.dto.v1.CheckInHistoryResponse;
 import com.yagubogu.checkin.dto.v1.CheckInImageParam;
 import com.yagubogu.checkin.dto.v1.CheckInImagesResponse;
 import com.yagubogu.checkin.dto.v1.CheckInMemoResponse;
+import com.yagubogu.checkin.dto.v1.CheckInReviewResponse;
 import com.yagubogu.checkin.dto.v1.CheckInStatusResponse;
 import com.yagubogu.checkin.dto.v1.CreateCheckInRequest;
 import com.yagubogu.checkin.dto.v1.FanRateResponse;
@@ -73,7 +74,11 @@ public class CheckInController implements CheckInControllerInterface {
             @RequestParam(name = "order", defaultValue = "LATEST") final CheckInOrderFilter orderFilter
     ) {
         CheckInHistoryResponse response = checkInService.findCheckInHistory(
-                memberClaims.id(), year, month, resultFilter, orderFilter
+                memberClaims.id(),
+                year,
+                month,
+                resultFilter,
+                orderFilter
         );
 
         return ResponseEntity.ok(response);
@@ -93,6 +98,16 @@ public class CheckInController implements CheckInControllerInterface {
             @RequestParam final LocalDate date
     ) {
         CheckInStatusResponse response = checkInService.findLocationCheckInStatus(memberClaims.id(), date);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @Override
+    public ResponseEntity<CheckInReviewResponse> findCheckInReview(
+            final MemberClaims memberClaims,
+            @PathVariable final long checkInId
+    ) {
+        CheckInReviewResponse response = checkInService.findCheckInReview(memberClaims.id(), checkInId);
 
         return ResponseEntity.ok(response);
     }

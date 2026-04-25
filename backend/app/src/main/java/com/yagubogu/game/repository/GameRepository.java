@@ -19,6 +19,8 @@ import java.util.Optional;
 @Repository
 public interface GameRepository extends JpaRepository<Game, Long> {
 
+    Optional<Game> findByGameCode(String gameCode);
+
     Optional<Game> findByDateAndStadiumAndHomeTeamAndAwayTeamAndStartAt(
             LocalDate date,
             Stadium stadium,

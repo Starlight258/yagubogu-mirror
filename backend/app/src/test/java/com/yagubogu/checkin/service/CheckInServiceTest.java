@@ -21,13 +21,18 @@ import com.yagubogu.checkin.dto.v1.CheckInHistoryResponse;
 import com.yagubogu.checkin.dto.v1.CheckInImageParam;
 import com.yagubogu.checkin.dto.v1.CheckInImagesResponse;
 import com.yagubogu.checkin.dto.v1.CheckInMemoResponse;
+import com.yagubogu.checkin.dto.v1.CheckInReviewResponse;
 import com.yagubogu.checkin.dto.v1.CheckInStatusResponse;
 import com.yagubogu.checkin.dto.v1.CreateCheckInRequest;
 import com.yagubogu.checkin.dto.v1.FanRateResponse;
 import com.yagubogu.checkin.dto.v1.StadiumCheckInCountsResponse;
+import com.yagubogu.game.domain.GameHitterRecord;
+import com.yagubogu.game.domain.GamePitcherRecord;
 import com.yagubogu.checkin.repository.CheckInRepository;
 import com.yagubogu.game.domain.Game;
 import com.yagubogu.game.domain.GameState;
+import com.yagubogu.game.repository.GameHitterRecordRepository;
+import com.yagubogu.game.repository.GamePitcherRecordRepository;
 import com.yagubogu.game.repository.GameRepository;
 import com.yagubogu.global.config.JpaAuditingConfig;
 import com.yagubogu.global.config.S3Properties;
@@ -98,6 +103,12 @@ class CheckInServiceTest {
     private LocationCheckInRankingRepository locationCheckInRankingRepository;
 
     @Autowired
+    private GameHitterRecordRepository hitterRecordRepository;
+
+    @Autowired
+    private GamePitcherRecordRepository pitcherRecordRepository;
+
+    @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
 
     private Team kia, kt, lg, samsung, doosan, lotte;
@@ -116,6 +127,8 @@ class CheckInServiceTest {
                 checkInImageRepository,
                 memberRepository,
                 gameRepository,
+                hitterRecordRepository,
+                pitcherRecordRepository,
                 locationCheckInRankingRepository,
                 applicationEventPublisher,
                 mockS3Client,
@@ -265,12 +278,13 @@ class CheckInServiceTest {
                         r -> r.homeTeam().name(),
                         r -> r.homeScoreBoard().getRuns(),
                         r -> r.awayTeam().name(),
-                        r -> r.awayScoreBoard().getRuns()
+                        r -> r.awayScoreBoard().getRuns(),
+                        CheckInGameParam::gameState
                 ).containsExactly(
-                        tuple(startDate.plusDays(3), "롯데", 10, "KIA", 1),
-                        tuple(startDate.plusDays(2), "롯데", 10, "KIA", 10),
-                        tuple(startDate.plusDays(1), "롯데", 1, "KIA", 10),
-                        tuple(startDate, "롯데", 10, "KIA", 1)
+                        tuple(startDate.plusDays(3), "롯데", 10, "KIA", 1, GameState.COMPLETED),
+                        tuple(startDate.plusDays(2), "롯데", 10, "KIA", 10, GameState.COMPLETED),
+                        tuple(startDate.plusDays(1), "롯데", 1, "KIA", 10, GameState.COMPLETED),
+                        tuple(startDate, "롯데", 10, "KIA", 1, GameState.COMPLETED)
                 );
     }
 
@@ -301,12 +315,13 @@ class CheckInServiceTest {
                         r -> r.homeTeam().name(),
                         r -> r.homeScoreBoard().getRuns(),
                         r -> r.awayTeam().name(),
-                        r -> r.awayScoreBoard().getRuns()
+                        r -> r.awayScoreBoard().getRuns(),
+                        CheckInGameParam::gameState
                 ).containsExactly(
-                        tuple(startDate, "롯데", 10, "KIA", 1),
-                        tuple(startDate.plusDays(1), "롯데", 1, "KIA", 10),
-                        tuple(startDate.plusDays(2), "롯데", 10, "KIA", 10),
-                        tuple(startDate.plusDays(3), "롯데", 10, "KIA", 1)
+                        tuple(startDate, "롯데", 10, "KIA", 1, GameState.COMPLETED),
+                        tuple(startDate.plusDays(1), "롯데", 1, "KIA", 10, GameState.COMPLETED),
+                        tuple(startDate.plusDays(2), "롯데", 10, "KIA", 10, GameState.COMPLETED),
+                        tuple(startDate.plusDays(3), "롯데", 10, "KIA", 1, GameState.COMPLETED)
                 );
     }
 
@@ -341,11 +356,12 @@ class CheckInServiceTest {
                         r -> r.homeTeam().name(),
                         r -> r.homeScoreBoard().getRuns(),
                         r -> r.awayTeam().name(),
-                        r -> r.awayScoreBoard().getRuns()
+                        r -> r.awayScoreBoard().getRuns(),
+                        CheckInGameParam::gameState
                 ).containsExactly(
-                        tuple(startDate.plusDays(2), "KIA", 4, "삼성", 0),
-                        tuple(startDate.plusDays(1), "KIA", 5, "LG", 4),
-                        tuple(startDate, "KIA", 10, "KT", 1)
+                        tuple(startDate.plusDays(2), "KIA", 4, "삼성", 0, GameState.COMPLETED),
+                        tuple(startDate.plusDays(1), "KIA", 5, "LG", 4, GameState.COMPLETED),
+                        tuple(startDate, "KIA", 10, "KT", 1, GameState.COMPLETED)
                 );
     }
 
@@ -380,11 +396,12 @@ class CheckInServiceTest {
                         r -> r.homeTeam().name(),
                         r -> r.homeScoreBoard().getRuns(),
                         r -> r.awayTeam().name(),
-                        r -> r.awayScoreBoard().getRuns()
+                        r -> r.awayScoreBoard().getRuns(),
+                        CheckInGameParam::gameState
                 ).containsExactly(
-                        tuple(startDate, "KIA", 10, "KT", 1),
-                        tuple(startDate.plusDays(1), "KIA", 5, "LG", 4),
-                        tuple(startDate.plusDays(2), "KIA", 4, "삼성", 0)
+                        tuple(startDate, "KIA", 10, "KT", 1, GameState.COMPLETED),
+                        tuple(startDate.plusDays(1), "KIA", 5, "LG", 4, GameState.COMPLETED),
+                        tuple(startDate.plusDays(2), "KIA", 4, "삼성", 0, GameState.COMPLETED)
                 );
 
     }
@@ -438,11 +455,12 @@ class CheckInServiceTest {
                 .extracting(
                         CheckInGameParam::attendanceDate,
                         r -> r.homeTeam().name(),
-                        r -> r.awayTeam().name()
+                        r -> r.awayTeam().name(),
+                        CheckInGameParam::gameState
                 ).containsExactly(
-                        tuple(startDate.plusDays(2), "롯데", "KIA"),
-                        tuple(startDate.plusDays(1), "롯데", "KIA"),
-                        tuple(startDate, "롯데", "KIA")
+                        tuple(startDate.plusDays(2), "롯데", "KIA", GameState.COMPLETED),
+                        tuple(startDate.plusDays(1), "롯데", "KIA", GameState.CANCELED),
+                        tuple(startDate, "롯데", "KIA", GameState.COMPLETED)
                 );
 
         CheckInGameParam canceledResponse = actual.checkInHistory().get(1);
@@ -564,12 +582,13 @@ class CheckInServiceTest {
                         CheckInGameParam::attendanceDate,
                         CheckInGameParam::startAt,
                         r -> r.homeTeam().name(),
-                        r -> r.awayTeam().name()
+                        r -> r.awayTeam().name(),
+                        CheckInGameParam::gameState
                 ).containsExactly(
-                        tuple(startDate.plusDays(1), startAt, "KIA", "LG"),
-                        tuple(startDate, startAt, "KIA", "KT"),
-                        tuple(startDate.minusDays(9), pastCheckInStartAt, "두산", "KIA"),
-                        tuple(startDate.minusDays(10), pastCheckInStartAt, "KIA", "삼성")
+                        tuple(startDate.plusDays(1), startAt, "KIA", "LG", GameState.COMPLETED),
+                        tuple(startDate, startAt, "KIA", "KT", GameState.COMPLETED),
+                        tuple(startDate.minusDays(9), pastCheckInStartAt, "두산", "KIA", GameState.COMPLETED),
+                        tuple(startDate.minusDays(10), pastCheckInStartAt, "KIA", "삼성", GameState.COMPLETED)
                 );
     }
 
@@ -1354,6 +1373,53 @@ class CheckInServiceTest {
 
         // when & then: checkIn2로 checkIn1의 이미지 삭제 시도
         assertThatThrownBy(() -> checkInService.deleteImage(member.getId(), checkIn2.getId(), imageOfCheckIn1.imageId()))
+                .isExactlyInstanceOf(NotFoundException.class);
+    }
+
+    @DisplayName("직관 경기 리뷰를 조회한다")
+    @Test
+    void findCheckInReview() {
+        // given
+        Member member = memberFactory.save(b -> b.team(kia));
+        Game game = gameFactory.save(b -> b.stadium(stadiumJamsil)
+                .homeTeam(kia).homeScore(5).homeScoreBoard(TestFixture.getHomeScoreBoardAbout(5))
+                .awayTeam(kt).awayScore(3).awayScoreBoard(TestFixture.getAwayScoreBoardAbout(3))
+                .gameState(GameState.COMPLETED)
+                .date(LocalDate.of(2025, 8, 1)));
+        CheckIn checkIn = checkInFactory.save(b -> b.member(member).team(kia).game(game));
+
+        hitterRecordRepository.save(new GameHitterRecord(game, true, 1, "CF", "홈타자1", 4, 2, 1, 1));
+        hitterRecordRepository.save(new GameHitterRecord(game, false, 1, "CF", "원정타자1", 3, 0, 0, 0));
+        pitcherRecordRepository.save(new GamePitcherRecord(game, true, "홈투수1", "W", "7", 25, 90, 24, 5, 0, 2, 8, 3, 3));
+        pitcherRecordRepository.save(new GamePitcherRecord(game, false, "원정투수1", "L", "6", 22, 85, 21, 7, 1, 3, 6, 5, 4));
+
+        // when
+        CheckInReviewResponse response = checkInService.findCheckInReview(member.getId(), checkIn.getId());
+
+        // then
+        assertThat(response.homeHitters()).hasSize(1);
+        assertThat(response.awayHitters()).hasSize(1);
+        assertThat(response.homePitchers()).hasSize(1);
+        assertThat(response.awayPitchers()).hasSize(1);
+        assertThat(response.homeHitters().get(0).playerName()).isEqualTo("홈타자1");
+        assertThat(response.awayHitters().get(0).playerName()).isEqualTo("원정타자1");
+        assertThat(response.homePitchers().get(0).playerName()).isEqualTo("홈투수1");
+        assertThat(response.awayPitchers().get(0).playerName()).isEqualTo("원정투수1");
+    }
+
+    @DisplayName("예외: 본인의 직관 기록이 아니면 리뷰 조회 시 예외가 발생한다")
+    @Test
+    void findCheckInReview_throwsNotFoundException_whenNotOwner() {
+        // given
+        Member owner = memberFactory.save(b -> b.team(kia));
+        Member other = memberFactory.save(b -> b.team(kt));
+        Game game = gameFactory.save(b -> b.stadium(stadiumJamsil)
+                .homeTeam(kia).awayTeam(kt).gameState(GameState.COMPLETED)
+                .date(LocalDate.of(2025, 8, 2)));
+        CheckIn checkIn = checkInFactory.save(b -> b.member(owner).team(kia).game(game));
+
+        // when & then
+        assertThatThrownBy(() -> checkInService.findCheckInReview(other.getId(), checkIn.getId()))
                 .isExactlyInstanceOf(NotFoundException.class);
     }
 

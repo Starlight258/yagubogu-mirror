@@ -12,6 +12,10 @@ import com.yagubogu.checkin.dto.v1.*;
 import com.yagubogu.checkin.repository.CheckInImageRepository;
 import com.yagubogu.checkin.repository.CheckInRepository;
 import com.yagubogu.game.domain.Game;
+import com.yagubogu.game.domain.GameHitterRecord;
+import com.yagubogu.game.domain.GamePitcherRecord;
+import com.yagubogu.game.repository.GameHitterRecordRepository;
+import com.yagubogu.game.repository.GamePitcherRecordRepository;
 import com.yagubogu.game.repository.GameRepository;
 import com.yagubogu.global.config.S3Properties;
 import com.yagubogu.global.exception.ConflictException;
@@ -48,6 +52,8 @@ public class CheckInService {
     private final CheckInImageRepository checkInImageRepository;
     private final MemberRepository memberRepository;
     private final GameRepository gameRepository;
+    private final GameHitterRecordRepository hitterRecordRepository;
+    private final GamePitcherRecordRepository pitcherRecordRepository;
     private final LocationCheckInRankingRepository locationCheckInRankingRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final S3Client s3Client;
@@ -176,7 +182,12 @@ public class CheckInService {
         Member member = getMember(memberId);
         Team team = member.getTeam();
         List<CheckInGameParam> checkIns = checkInRepository.findCheckInHistory(
-                member, team, year, month, resultFilter, orderFilter
+                member,
+                team,
+                year,
+                month,
+                resultFilter,
+                orderFilter
         );
 
         List<Long> checkInIds = checkIns.stream().map(CheckInGameParam::checkInId).toList();
@@ -191,11 +202,26 @@ public class CheckInService {
                 .map(p -> new CheckInGameParam(
                         p.checkInId(), p.stadiumFullName(), p.homeTeam(), p.awayTeam(),
                         p.attendanceDate(), p.startAt(), p.homeScoreBoard(), p.awayScoreBoard(),
-                        p.memo(), imageUrlsByCheckInId.getOrDefault(p.checkInId(), List.of())
+                        p.gameState(), p.memo(), imageUrlsByCheckInId.getOrDefault(p.checkInId(), List.of())
                 ))
                 .toList();
 
         return new CheckInHistoryResponse(enriched);
+    }
+
+    public CheckInReviewResponse findCheckInReview(final long memberId, final long checkInId) {
+        CheckIn checkIn = getCheckInByCheckInIdAndMemberId(checkInId, memberId);
+        Game game = checkIn.getGame();
+
+        List<GameHitterRecord> hitters = hitterRecordRepository.findAllByGame(game);
+        List<GamePitcherRecord> pitchers = pitcherRecordRepository.findAllByGame(game);
+
+        return CheckInReviewResponse.from(hitters, pitchers);
+    }
+
+    private CheckIn getCheckInByCheckInIdAndMemberId(final long checkInId, final long memberId) {
+        return checkInRepository.findByIdAndMemberId(checkInId, memberId)
+                .orElseThrow(() -> new NotFoundException("CheckIn is not found"));
     }
 
     public StadiumCheckInCountsResponse findStadiumCheckInCounts(final long memberId, final Integer year) {
@@ -208,7 +234,9 @@ public class CheckInService {
     public CheckInStatusResponse findLocationCheckInStatus(final long memberId, final LocalDate date) {
         Member member = getMember(memberId);
         boolean isCheckIn = checkInRepository.existsByMemberAndGameDateAndCheckInType(
-                member, date, CheckInType.LOCATION_CHECK_IN
+                member,
+                date,
+                CheckInType.LOCATION_CHECK_IN
         );
 
         return new CheckInStatusResponse(isCheckIn);
