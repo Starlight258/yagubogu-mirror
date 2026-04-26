@@ -1,3 +1,4 @@
+import AppTrackingTransparency
 import ComposeApp
 import GoogleMobileAds
 import GoogleSignIn
@@ -21,6 +22,7 @@ struct iOSApp: App {
         MobileAds.shared.start(completionHandler: nil)
         setupBannerAdProvider()
         setupInterstitialAdProvider()
+        ATTrackingManager.requestTrackingAuthorization(completionHandler: { _ in })
     }
 
     // Kotlin BannerAdProvider에 GADBannerView 생성 팩토리 주입
