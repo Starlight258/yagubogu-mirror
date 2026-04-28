@@ -36,7 +36,7 @@ fun CheckInGameDto.toUiModel(): AttendanceHistoryItem {
     val summary =
         AttendanceHistoryItem.Summary(
             id = checkInId,
-            attendanceDate = LocalDate.parse(attendanceDate),
+            attendanceDate = attendanceDate,
             stadiumName = stadiumFullName,
             awayTeam = awayTeam.toUiModel(homeTeam),
             homeTeam = homeTeam.toUiModel(awayTeam),
