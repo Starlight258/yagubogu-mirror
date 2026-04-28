@@ -11,9 +11,13 @@ struct iOSApp: App {
         WindowGroup {
             ContentView()
                 // Google OAuth 콜백 URL 처리 (Info.plist의 REVERSED_CLIENT_ID 스킴으로 재진입 시 호출)
-                .onOpenURL { url in
-                    GIDSignIn.sharedInstance.handle(url)
-                }
+            .onOpenURL { url in
+                GIDSignIn.sharedInstance.handle(url)
+            }
+            .task {
+                // 앱이 active 상태가 된 후 ATT 요청 (Apple 권장 시점)
+                await ATTrackingManager.requestTrackingAuthorization()
+            }
         }
     }
 
@@ -22,7 +26,6 @@ struct iOSApp: App {
         MobileAds.shared.start(completionHandler: nil)
         setupBannerAdProvider()
         setupInterstitialAdProvider()
-        ATTrackingManager.requestTrackingAuthorization(completionHandler: { _ in })
     }
 
     // Kotlin BannerAdProvider에 GADBannerView 생성 팩토리 주입
