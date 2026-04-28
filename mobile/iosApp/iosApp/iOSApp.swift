@@ -10,24 +10,35 @@ struct iOSApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
-                // Google OAuth 콜백 URL 처리 (Info.plist의 REVERSED_CLIENT_ID 스킴으로 재진입 시 호출)
-                .onOpenURL { url in
-                    GIDSignIn.sharedInstance.handle(url)
-                }
-                .onAppear {
-                    ATTrackingManager.requestTrackingAuthorization { _ in
-                        DispatchQueue.main.async {
-                            MobileAds.shared.start(completionHandler: nil)
-                        }
-                    }
-                }
+            .onOpenURL { url in
+                GIDSignIn.sharedInstance.handle(url)
+            }
+            .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
+                // 앱이 완전히 활성화된 시점에 ATT 팝업 요청
+                requestATTAndInitAds()
+            }
         }
     }
 
-    // Kotlin 브릿지 팩토리 등록 (AdMob 초기화는 ATT 응답 후 onAppear에서 처리)
     init() {
         setupBannerAdProvider()
         setupInterstitialAdProvider()
+    }
+
+    /// ATT 요청 및 AdMob 초기화 로직
+    private func requestATTAndInitAds() {
+        // iOS 14 이상에서만 실행 (그 이외 버전은 바로 초기화)
+        if #available(iOS 14, *) {
+            ATTrackingManager.requestTrackingAuthorization { status in
+                // 사용자가 허용하든 거부하든 AdMob은 초기화해야 함
+                DispatchQueue.main.async {
+                    MobileAds.shared.start(completionHandler: nil)
+                    print("ATT Status: \(status.rawValue)")
+                }
+            }
+        } else {
+            MobileAds.shared.start(completionHandler: nil)
+        }
     }
 
     // Kotlin BannerAdProvider에 GADBannerView 생성 팩토리 주입
