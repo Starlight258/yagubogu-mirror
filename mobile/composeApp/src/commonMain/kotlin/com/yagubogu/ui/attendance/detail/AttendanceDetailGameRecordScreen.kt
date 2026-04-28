@@ -8,33 +8,34 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.pager.PagerState
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
-import androidx.compose.material3.PrimaryTabRow
-import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import com.yagubogu.ui.attendance.component.ATTENDANCE_HISTORY_ITEM_PLAYED
 import com.yagubogu.ui.attendance.component.GameResultSummary
 import com.yagubogu.ui.attendance.component.ScoreboardTable
 import com.yagubogu.ui.attendance.detail.component.GameRecordTable
 import com.yagubogu.ui.attendance.detail.component.HitterRecordTable
 import com.yagubogu.ui.attendance.detail.component.PitcherRecordTable
+import com.yagubogu.ui.attendance.detail.model.PLAYER_RECORD
+import com.yagubogu.ui.attendance.detail.model.PlayerRecordUiModel
 import com.yagubogu.ui.attendance.model.AttendanceHistoryItem
 import com.yagubogu.ui.attendance.model.TeamType
 import com.yagubogu.ui.theme.PretendardBold20
@@ -45,8 +46,7 @@ import com.yagubogu.ui.theme.Primary500
 import com.yagubogu.ui.theme.Primary700
 import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.theme.dpToSp
-import com.yagubogu.ui.util.rememberNoRippleInteractionSource
-import kotlinx.coroutines.launch
+import com.yagubogu.ui.util.noRippleClickable
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import yagubogu.composeapp.generated.resources.Res
@@ -58,6 +58,7 @@ import yagubogu.composeapp.generated.resources.ic_users
 @Composable
 fun AttendanceDetailGameRecordScreen(
     item: AttendanceHistoryItem,
+    playerRecord: PlayerRecordUiModel,
     modifier: Modifier = Modifier,
 ) {
     val scrollState: ScrollState = rememberScrollState()
@@ -72,7 +73,11 @@ fun AttendanceDetailGameRecordScreen(
                 .padding(bottom = 20.dp),
     ) {
         GameResult(item = item)
-        PlayerRecord(item = item)
+        PlayerRecord(
+            awayTeamName = item.awayTeam.name,
+            homeTeamName = item.homeTeam.name,
+            playerRecord = playerRecord,
+        )
     }
 }
 
@@ -135,10 +140,12 @@ private fun GameResult(
 
 @Composable
 private fun PlayerRecord(
-    item: AttendanceHistoryItem,
+    awayTeamName: String,
+    homeTeamName: String,
+    playerRecord: PlayerRecordUiModel,
     modifier: Modifier = Modifier,
 ) {
-    val pagerState: PagerState = rememberPagerState { TeamType.entries.size }
+    var selectedTabIndex: Int by remember { mutableIntStateOf(TeamType.AWAY.ordinal) }
 
     Column(
         verticalArrangement = Arrangement.spacedBy(10.dp),
@@ -162,9 +169,10 @@ private fun PlayerRecord(
 
             Spacer(modifier = Modifier.weight(1f))
             PlayerRecordTeamTabRow(
-                pagerState = pagerState,
-                awayTeamName = item.awayTeam.name,
-                homeTeamName = item.homeTeam.name,
+                selectedIndex = selectedTabIndex,
+                onTabSelect = { newIndex: Int -> selectedTabIndex = newIndex },
+                awayTeamName = awayTeamName,
+                homeTeamName = homeTeamName,
             )
         }
 
@@ -175,76 +183,74 @@ private fun PlayerRecord(
                     .background(color = White, shape = RoundedCornerShape(12.dp))
                     .padding(20.dp),
         ) {
-            HitterRecordTable()
+            when (TeamType.entries[selectedTabIndex]) {
+                TeamType.AWAY -> {
+                    HitterRecordTable(hitters = playerRecord.awayTeamHitters)
+                    PitcherRecordTable(pitchers = playerRecord.awayTeamPitchers)
+                }
 
-            PitcherRecordTable()
+                TeamType.HOME -> {
+                    HitterRecordTable(hitters = playerRecord.homeTeamHitters)
+                    PitcherRecordTable(pitchers = playerRecord.homeTeamPitchers)
+                }
+            }
         }
     }
 }
 
 @Composable
 private fun PlayerRecordTeamTabRow(
-    pagerState: PagerState,
+    selectedIndex: Int,
+    onTabSelect: (Int) -> Unit,
     awayTeamName: String,
     homeTeamName: String,
     modifier: Modifier = Modifier,
 ) {
-    val coroutineScope = rememberCoroutineScope()
-
-    PrimaryTabRow(
-        selectedTabIndex = pagerState.currentPage,
+    Row(
         modifier =
             modifier
                 .size(width = 104.dp, height = 32.dp)
                 .clip(RoundedCornerShape(8.dp))
-                .border(1.dp, Primary100, RoundedCornerShape(8.dp)),
-        containerColor = Primary050,
-        contentColor = Primary500,
-        indicator = {
+                .border(1.dp, Primary100, RoundedCornerShape(8.dp))
+                .background(Primary050),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        TeamType.entries.forEachIndexed { index: Int, teamType: TeamType ->
+            val isSelected: Boolean = selectedIndex == index
             Box(
                 modifier =
                     Modifier
-                        .tabIndicatorOffset(
-                            selectedTabIndex = pagerState.currentPage,
-                            matchContentSize = false,
-                        ).padding(2.dp)
-                        .size(width = 50.dp, height = 28.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(Primary500)
-                        .zIndex(-1f),
-            )
-        },
-        divider = {},
-        tabs = {
-            TeamType.entries.forEachIndexed { index, teamType ->
-                val isSelected: Boolean = pagerState.currentPage == index
-                Tab(
-                    selected = isSelected,
-                    onClick = {
-                        coroutineScope.launch {
-                            pagerState.animateScrollToPage(index)
-                        }
-                    },
-                    interactionSource = rememberNoRippleInteractionSource(),
-                    content = {
-                        Text(
-                            text =
-                                when (teamType) {
-                                    TeamType.AWAY -> awayTeamName
-                                    TeamType.HOME -> homeTeamName
-                                },
-                            style =
-                                PretendardSemiBold.copy(
-                                    fontSize = 16.dpToSp,
-                                    color = if (isSelected) White else Primary700,
-                                ),
-                            modifier = Modifier.padding(4.dp),
-                        )
-                    },
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .noRippleClickable { onTabSelect(index) },
+                contentAlignment = Alignment.Center,
+            ) {
+                if (isSelected) {
+                    Box(
+                        modifier =
+                            Modifier
+                                .fillMaxSize()
+                                .padding(2.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(Primary500),
+                    )
+                }
+
+                Text(
+                    text =
+                        when (teamType) {
+                            TeamType.AWAY -> awayTeamName
+                            TeamType.HOME -> homeTeamName
+                        },
+                    style =
+                        PretendardSemiBold.copy(
+                            fontSize = 16.dpToSp,
+                            color = if (isSelected) White else Primary700,
+                        ),
                 )
             }
-        },
-    )
+        }
+    }
 }
 
 @Preview(showBackground = true)
@@ -252,5 +258,6 @@ private fun PlayerRecordTeamTabRow(
 private fun AttendanceDetailGameRecordScreenPreview() {
     AttendanceDetailGameRecordScreen(
         item = ATTENDANCE_HISTORY_ITEM_PLAYED,
+        playerRecord = PLAYER_RECORD,
     )
 }

@@ -28,6 +28,7 @@ import com.yagubogu.ui.attendance.detail.model.AttendanceDetailDiaryUiState
 import com.yagubogu.ui.attendance.detail.model.AttendanceDetailTab
 import com.yagubogu.ui.attendance.detail.model.AttendanceDetailUiEvent
 import com.yagubogu.ui.attendance.detail.model.DiaryMode
+import com.yagubogu.ui.attendance.detail.model.PLAYER_RECORD
 import com.yagubogu.ui.common.component.DefaultToolbar
 import com.yagubogu.ui.main.component.LoadingOverlay
 import com.yagubogu.ui.theme.Gray050
@@ -167,6 +168,7 @@ private fun AttendanceDetailScreen(
                     AttendanceDetailTab.GAME_RECORD.ordinal ->
                         AttendanceDetailGameRecordScreen(
                             item = ATTENDANCE_HISTORY_ITEM_PLAYED,
+                            playerRecord = PLAYER_RECORD,
                         )
 
                     AttendanceDetailTab.DIARY.ordinal ->

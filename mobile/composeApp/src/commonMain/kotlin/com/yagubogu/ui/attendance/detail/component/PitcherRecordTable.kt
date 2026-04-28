@@ -14,6 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.yagubogu.ui.attendance.detail.model.PITCHER_RECORDS
+import com.yagubogu.ui.attendance.detail.model.PlayerRecordUiModel
 import com.yagubogu.ui.theme.Gray300
 import com.yagubogu.ui.theme.PretendardMedium
 import com.yagubogu.ui.theme.PretendardRegular
@@ -24,37 +26,21 @@ import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.theme.dpToSp
 
 @Composable
-fun PitcherRecordTable(modifier: Modifier = Modifier) {
+fun PitcherRecordTable(
+    pitchers: List<PlayerRecordUiModel.PitcherRecord>,
+    modifier: Modifier = Modifier,
+) {
     Column(
         modifier = modifier.fillMaxWidth(),
     ) {
         HorizontalDivider(color = Gray300, thickness = 0.4.dp)
         PitcherRecordHeader()
         HorizontalDivider(color = Gray300, thickness = 0.4.dp)
-        PitcherRecordRow(
-            playerName = "민우가",
-            result = "승",
-            innings = "10",
-            hitsAllowed = 10,
-            runsAllowed = 10,
-            earnedRuns = 10,
-            strikeouts = 10,
-            walksAndHbp = 10,
-            pitchCount = 10,
-        )
-        HorizontalDivider(color = Gray300, thickness = 0.4.dp)
-        PitcherRecordRow(
-            playerName = "김두리",
-            result = "승",
-            innings = "10",
-            hitsAllowed = 10,
-            runsAllowed = 10,
-            earnedRuns = 10,
-            strikeouts = 10,
-            walksAndHbp = 10,
-            pitchCount = 10,
-        )
-        HorizontalDivider(color = Gray300, thickness = 0.4.dp)
+
+        pitchers.forEach {
+            PitcherRecordRow(pitcher = it)
+            HorizontalDivider(color = Gray300, thickness = 0.4.dp)
+        }
     }
 }
 
@@ -114,15 +100,7 @@ private fun PitcherRecordHeader(modifier: Modifier = Modifier) {
 
 @Composable
 private fun PitcherRecordRow(
-    playerName: String,
-    result: String,
-    innings: String,
-    hitsAllowed: Int,
-    runsAllowed: Int,
-    earnedRuns: Int,
-    strikeouts: Int,
-    walksAndHbp: Int,
-    pitchCount: Int,
+    pitcher: PlayerRecordUiModel.PitcherRecord,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -139,37 +117,37 @@ private fun PitcherRecordRow(
             modifier = Modifier.weight(2.4f).padding(start = 6.dp),
         ) {
             Text(
-                text = playerName,
+                text = pitcher.playerName,
                 style = PretendardMedium.copy(fontSize = 14.dpToSp),
             )
         }
 
         PitcherRecordText(
-            text = innings,
+            text = pitcher.innings,
             modifier = Modifier.weight(1f),
         )
         PitcherRecordText(
-            text = hitsAllowed.toString(),
+            text = pitcher.hitsAllowed.toString(),
             modifier = Modifier.weight(1f),
         )
         PitcherRecordText(
-            text = runsAllowed.toString(),
+            text = pitcher.runsAllowed.toString(),
             modifier = Modifier.weight(1f),
         )
         PitcherRecordText(
-            text = earnedRuns.toString(),
+            text = pitcher.earnedRuns.toString(),
             modifier = Modifier.weight(1f),
         )
         PitcherRecordText(
-            text = strikeouts.toString(),
+            text = pitcher.strikeouts.toString(),
             modifier = Modifier.weight(1f),
         )
         PitcherRecordText(
-            text = walksAndHbp.toString(),
+            text = pitcher.walksAndHbp.toString(),
             modifier = Modifier.weight(1f),
         )
         PitcherRecordText(
-            text = pitchCount.toString(),
+            text = pitcher.pitchCount.toString(),
             modifier = Modifier.weight(1f),
         )
     }
@@ -196,5 +174,5 @@ private fun PitcherRecordText(
 @Preview
 @Composable
 private fun PitcherRecordTablePreview() {
-    PitcherRecordTable()
+    PitcherRecordTable(pitchers = PITCHER_RECORDS)
 }

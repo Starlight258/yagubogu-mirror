@@ -15,6 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.yagubogu.ui.attendance.detail.model.HITTER_RECORDS
+import com.yagubogu.ui.attendance.detail.model.PlayerRecordUiModel
 import com.yagubogu.ui.theme.Gray300
 import com.yagubogu.ui.theme.Gray500
 import com.yagubogu.ui.theme.PretendardMedium
@@ -26,33 +28,21 @@ import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.theme.dpToSp
 
 @Composable
-fun HitterRecordTable(modifier: Modifier = Modifier) {
+fun HitterRecordTable(
+    hitters: List<PlayerRecordUiModel.HitterRecord>,
+    modifier: Modifier = Modifier,
+) {
     Column(
         modifier = modifier.fillMaxWidth(),
     ) {
         HorizontalDivider(color = Gray300, thickness = 0.4.dp)
         HitterRecordHeader()
         HorizontalDivider(color = Gray300, thickness = 0.4.dp)
-        HitterRecordRow(
-            battingOrder = 1,
-            playerName = "민우가",
-            position = "1루수",
-            atBats = 10,
-            hits = 3,
-            rbi = 1,
-            runs = 5,
-        )
-        HorizontalDivider(color = Gray300, thickness = 0.4.dp)
-        HitterRecordRow(
-            battingOrder = 2,
-            playerName = "김두리",
-            position = "2루수",
-            atBats = 10,
-            hits = 3,
-            rbi = 1,
-            runs = 5,
-        )
-        HorizontalDivider(color = Gray300, thickness = 0.4.dp)
+
+        hitters.forEach {
+            HitterRecordRow(hitter = it)
+            HorizontalDivider(color = Gray300, thickness = 0.4.dp)
+        }
     }
 }
 
@@ -93,13 +83,7 @@ private fun HitterRecordHeader(modifier: Modifier = Modifier) {
 
 @Composable
 private fun HitterRecordRow(
-    battingOrder: Int,
-    playerName: String,
-    position: String,
-    atBats: Int,
-    hits: Int,
-    rbi: Int,
-    runs: Int,
+    hitter: PlayerRecordUiModel.HitterRecord,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -116,35 +100,35 @@ private fun HitterRecordRow(
             modifier = Modifier.weight(2.8f),
         ) {
             Text(
-                text = battingOrder.toString(),
+                text = hitter.battingOrder.toString(),
                 style = PretendardRegular.copy(fontSize = 12.dpToSp, textAlign = TextAlign.Center),
                 modifier = Modifier.width(20.dp),
             )
             Text(
-                text = playerName,
+                text = hitter.playerName,
                 style = PretendardMedium.copy(fontSize = 14.dpToSp),
             )
             Text(
-                text = position,
+                text = hitter.position,
                 style = PretendardRegular.copy(fontSize = 10.dpToSp, color = Gray500),
                 modifier = Modifier.weight(1f),
             )
         }
 
         HitterRecordText(
-            text = atBats.toString(),
+            text = hitter.atBats.toString(),
             modifier = Modifier.weight(1f),
         )
         HitterRecordText(
-            text = hits.toString(),
+            text = hitter.hits.toString(),
             modifier = Modifier.weight(1f),
         )
         HitterRecordText(
-            text = rbi.toString(),
+            text = hitter.rbi.toString(),
             modifier = Modifier.weight(1f),
         )
         HitterRecordText(
-            text = runs.toString(),
+            text = hitter.runs.toString(),
             modifier = Modifier.weight(1f),
         )
     }
@@ -165,5 +149,5 @@ private fun HitterRecordText(
 @Preview
 @Composable
 private fun HitterRecordTablePreview() {
-    HitterRecordTable()
+    HitterRecordTable(hitters = HITTER_RECORDS)
 }
