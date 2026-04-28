@@ -3,13 +3,17 @@ package com.yagubogu.ui.mapper
 import com.yagubogu.data.dto.response.checkin.CheckInGameDto
 import com.yagubogu.data.dto.response.checkin.CheckInGameTeamDto
 import com.yagubogu.data.dto.response.checkin.CheckInImageDto
+import com.yagubogu.data.dto.response.checkin.CheckInReviewResponse
 import com.yagubogu.data.dto.response.checkin.FanRateByGameDto
+import com.yagubogu.data.dto.response.checkin.HitterRecordDto
+import com.yagubogu.data.dto.response.checkin.PitcherRecordDto
 import com.yagubogu.data.dto.response.checkin.ScoreBoardDto
 import com.yagubogu.data.dto.response.checkin.StadiumCheckInCountDto
 import com.yagubogu.data.dto.response.checkin.TeamFanRateDto
 import com.yagubogu.domain.model.GameResult
 import com.yagubogu.domain.model.Team
 import com.yagubogu.ui.attendance.detail.model.CheckInImageItem
+import com.yagubogu.ui.attendance.detail.model.PlayerRecordUiModel
 import com.yagubogu.ui.attendance.model.AttendanceHistoryItem
 import com.yagubogu.ui.attendance.model.GameScoreBoard
 import com.yagubogu.ui.attendance.model.GameState
@@ -71,6 +75,38 @@ fun ScoreBoardDto.toUiModel(): GameScoreBoard =
         errors = errors,
         basesOnBalls = basesOnBalls,
         scores = inningScores,
+    )
+
+fun CheckInReviewResponse.toUiModel(): PlayerRecordUiModel =
+    PlayerRecordUiModel(
+        awayTeamHitters = awayHitters.map { it.toUiModel() },
+        awayTeamPitchers = awayPitchers.map { it.toUiModel() },
+        homeTeamHitters = homeHitters.map { it.toUiModel() },
+        homeTeamPitchers = homePitchers.map { it.toUiModel() },
+    )
+
+fun HitterRecordDto.toUiModel(): PlayerRecordUiModel.HitterRecord =
+    PlayerRecordUiModel.HitterRecord(
+        battingOrder = battingOrder,
+        position = position,
+        playerName = playerName,
+        atBats = atBats,
+        hits = hits,
+        rbi = rbi,
+        runs = runs,
+    )
+
+fun PitcherRecordDto.toUiModel(): PlayerRecordUiModel.PitcherRecord =
+    PlayerRecordUiModel.PitcherRecord(
+        playerName = playerName,
+        result = result,
+        innings = innings.toString(),
+        pitchCount = pitchCount,
+        hitsAllowed = hitsAllowed,
+        walksAndHbp = walksAndHbp,
+        strikeouts = strikeouts,
+        runsAllowed = runsAllowed,
+        earnedRuns = earnedRuns,
     )
 
 fun StadiumCheckInCountDto.toUiModel(): StadiumVisitCount =
