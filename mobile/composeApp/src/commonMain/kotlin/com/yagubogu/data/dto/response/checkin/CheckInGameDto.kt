@@ -20,9 +20,9 @@ data class CheckInGameDto(
     @SerialName("startAt")
     val startAt: LocalTime, // 경기 시작 시간
     @SerialName("homeScoreBoard")
-    val homeScoreBoard: ScoreBoardDto?,
+    val homeScoreBoard: ScoreBoardDto,
     @SerialName("awayScoreBoard")
-    val awayScoreBoard: ScoreBoardDto?,
+    val awayScoreBoard: ScoreBoardDto,
     @SerialName("gameState")
     val gameState: String, // 경기 상태
 )

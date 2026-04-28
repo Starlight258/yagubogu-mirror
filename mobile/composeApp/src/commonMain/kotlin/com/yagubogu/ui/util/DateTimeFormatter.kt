@@ -1,6 +1,7 @@
 package com.yagubogu.ui.util
 
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.format.DateTimeFormat
 import kotlinx.datetime.format.DayOfWeekNames
@@ -39,3 +40,15 @@ val hhmmFormatter: DateTimeFormat<LocalTime> =
             char(':')
             minute()
         }
+
+// MM.dd hh:mm 포맷터
+val MMddhhmmFormatter: DateTimeFormat<LocalDateTime> =
+    LocalDateTime.Format {
+        monthNumber()
+        char('.')
+        day()
+        char(' ')
+        hour()
+        char(':')
+        minute()
+    }

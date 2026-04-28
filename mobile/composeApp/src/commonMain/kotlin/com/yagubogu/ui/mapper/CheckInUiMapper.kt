@@ -12,11 +12,12 @@ import com.yagubogu.domain.model.Team
 import com.yagubogu.ui.attendance.detail.model.CheckInImageItem
 import com.yagubogu.ui.attendance.model.AttendanceHistoryItem
 import com.yagubogu.ui.attendance.model.GameScoreBoard
+import com.yagubogu.ui.attendance.model.GameState
 import com.yagubogu.ui.attendance.model.GameTeam
 import com.yagubogu.ui.home.model.StadiumFanRateItem
 import com.yagubogu.ui.home.model.TeamFanRate
 import com.yagubogu.ui.stats.detail.model.StadiumVisitCount
-import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 
 fun FanRateByGameDto.toUiModel(): StadiumFanRateItem =
     StadiumFanRateItem(
@@ -32,28 +33,17 @@ fun TeamFanRateDto.toUiModel(): TeamFanRate =
         fanRate = fanRate,
     )
 
-fun CheckInGameDto.toUiModel(): AttendanceHistoryItem {
-    val summary =
-        AttendanceHistoryItem.Summary(
-            id = checkInId,
-            attendanceDate = attendanceDate,
-            stadiumName = stadiumFullName,
-            awayTeam = awayTeam.toUiModel(homeTeam),
-            homeTeam = homeTeam.toUiModel(awayTeam),
-        )
-
-    if (homeScoreBoard == null || awayScoreBoard == null || awayTeam.pitcher == null || homeTeam.pitcher == null) {
-        return AttendanceHistoryItem.Canceled(summary = summary)
-    }
-
-    return AttendanceHistoryItem.Played(
-        summary = summary,
-        awayTeamPitcher = awayTeam.pitcher,
-        homeTeamPitcher = homeTeam.pitcher,
+fun CheckInGameDto.toUiModel(): AttendanceHistoryItem =
+    AttendanceHistoryItem(
+        id = checkInId,
+        gameState = GameState.from(gameState),
+        dateTime = LocalDateTime(attendanceDate, startAt),
+        stadiumName = stadiumFullName,
+        awayTeam = awayTeam.toUiModel(homeTeam),
+        homeTeam = homeTeam.toUiModel(awayTeam),
         awayTeamScoreBoard = awayScoreBoard.toUiModel(),
         homeTeamScoreBoard = homeScoreBoard.toUiModel(),
     )
-}
 
 fun CheckInGameTeamDto.toUiModel(opponent: CheckInGameTeamDto): GameTeam =
     GameTeam(

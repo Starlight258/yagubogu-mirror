@@ -19,10 +19,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -68,43 +64,22 @@ fun AttendanceListContent(
     modifier: Modifier = Modifier,
     scrollToTopEvent: SharedFlow<Unit> = MutableSharedFlow(),
 ) {
-    var detailItemPosition: Int? by rememberSaveable { mutableStateOf(if (items.isNotEmpty()) FIRST_INDEX else null) }
-
     Column(
         modifier = modifier.fillMaxSize(),
     ) {
         AttendanceListHeader(
             filterState = filterState,
-            onWinOnlyFilterToggle = {
-                onWinOnlyFilterToggle()
-                detailItemPosition = if (items.isNotEmpty()) FIRST_INDEX else null
-            },
-            onYearlyFilterToggle = {
-                onYearlyFilterToggle()
-                detailItemPosition = if (items.isNotEmpty()) FIRST_INDEX else null
-            },
+            onWinOnlyFilterToggle = onWinOnlyFilterToggle,
+            onYearlyFilterToggle = onYearlyFilterToggle,
             sort = sort,
-            updateSort = { sort: AttendanceHistorySort ->
-                updateSort(sort)
-                detailItemPosition = if (items.isNotEmpty()) FIRST_INDEX else null
-            },
+            updateSort = updateSort,
         )
         when (items.isNotEmpty()) {
             true ->
                 AttendanceList(
                     items = items,
-                    detailItemPosition = detailItemPosition,
                     onItemClick = { item: AttendanceHistoryItem ->
-                        val position: Int = items.indexOf(item)
-                        if (position >= FIRST_INDEX) {
-                            onItemClick(item.summary.id, item.summary.attendanceDate)
-                            detailItemPosition =
-                                if (position == detailItemPosition) {
-                                    null
-                                } else {
-                                    position
-                                }
-                        }
+                        onItemClick(item.id, item.dateTime.date)
                     },
                     modifier = modifier,
                     scrollToTopEvent = scrollToTopEvent,
@@ -118,7 +93,6 @@ fun AttendanceListContent(
 @Composable
 private fun AttendanceList(
     items: List<AttendanceHistoryItem>,
-    detailItemPosition: Int?,
     onItemClick: (AttendanceHistoryItem) -> Unit,
     modifier: Modifier = Modifier,
     scrollToTopEvent: SharedFlow<Unit> = MutableSharedFlow(),
@@ -155,12 +129,11 @@ private fun AttendanceList(
         ) {
             items(
                 count = items.size,
-                key = { index: Int -> items[index].summary.id },
+                key = { index: Int -> items[index].id },
             ) { index: Int ->
                 val item: AttendanceHistoryItem = items[index]
                 AttendanceItem(
                     item = item,
-                    isExpanded = index == detailItemPosition,
                     onItemClick = onItemClick,
                 )
             }
