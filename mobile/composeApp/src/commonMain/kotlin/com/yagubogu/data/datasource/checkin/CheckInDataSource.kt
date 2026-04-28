@@ -4,6 +4,7 @@ import com.yagubogu.data.dto.response.checkin.CheckInCountsResponse
 import com.yagubogu.data.dto.response.checkin.CheckInHistoryResponse
 import com.yagubogu.data.dto.response.checkin.CheckInImageDto
 import com.yagubogu.data.dto.response.checkin.CheckInImagesResponse
+import com.yagubogu.data.dto.response.checkin.CheckInReviewResponse
 import com.yagubogu.data.dto.response.checkin.CheckInStatusResponse
 import com.yagubogu.data.dto.response.checkin.FanRateResponse
 import com.yagubogu.data.dto.response.checkin.MemoResponse
@@ -30,6 +31,8 @@ interface CheckInDataSource {
     suspend fun getStadiumCheckInCounts(year: Int?): Result<StadiumCheckInCountsResponse>
 
     suspend fun addPastCheckIn(gameId: Long): Result<Unit>
+
+    suspend fun getGameReview(checkInId: Long): Result<CheckInReviewResponse>
 
     suspend fun getMemo(checkInId: Long): Result<MemoResponse>
 

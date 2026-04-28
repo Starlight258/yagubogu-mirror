@@ -2,6 +2,7 @@ package com.yagubogu.data.repository.checkin
 
 import com.yagubogu.data.dto.response.checkin.CheckInGameDto
 import com.yagubogu.data.dto.response.checkin.CheckInImageDto
+import com.yagubogu.data.dto.response.checkin.CheckInReviewResponse
 import com.yagubogu.data.dto.response.checkin.FanRateByGameDto
 import com.yagubogu.data.dto.response.checkin.StadiumCheckInCountDto
 import com.yagubogu.ui.attendance.detail.model.CheckInPresignedUrlItem
@@ -26,6 +27,8 @@ interface CheckInRepository {
     suspend fun getStadiumCheckInCounts(year: Int?): Result<List<StadiumCheckInCountDto>>
 
     suspend fun addPastCheckIn(gameId: Long): Result<Unit>
+
+    suspend fun getGameReview(checkInId: Long): Result<CheckInReviewResponse>
 
     suspend fun getMemo(checkInId: Long): Result<String?>
 
