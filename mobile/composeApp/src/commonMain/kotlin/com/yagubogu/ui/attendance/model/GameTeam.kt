@@ -9,4 +9,5 @@ data class GameTeam(
     val score: String,
     val isMyTeam: Boolean,
     val gameResult: GameResult,
+    val type: TeamType,
 )

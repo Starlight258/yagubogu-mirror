@@ -14,6 +14,7 @@ import com.yagubogu.ui.attendance.model.AttendanceHistoryItem
 import com.yagubogu.ui.attendance.model.GameScoreBoard
 import com.yagubogu.ui.attendance.model.GameState
 import com.yagubogu.ui.attendance.model.GameTeam
+import com.yagubogu.ui.attendance.model.TeamType
 import com.yagubogu.ui.home.model.StadiumFanRateItem
 import com.yagubogu.ui.home.model.TeamFanRate
 import com.yagubogu.ui.stats.detail.model.StadiumVisitCount
@@ -39,13 +40,16 @@ fun CheckInGameDto.toUiModel(): AttendanceHistoryItem =
         gameState = GameState.from(gameState),
         dateTime = LocalDateTime(attendanceDate, startAt),
         stadiumName = stadiumFullName,
-        awayTeam = awayTeam.toUiModel(homeTeam),
-        homeTeam = homeTeam.toUiModel(awayTeam),
+        awayTeam = awayTeam.toUiModel(homeTeam, TeamType.AWAY),
+        homeTeam = homeTeam.toUiModel(awayTeam, TeamType.HOME),
         awayTeamScoreBoard = awayScoreBoard.toUiModel(),
         homeTeamScoreBoard = homeScoreBoard.toUiModel(),
     )
 
-fun CheckInGameTeamDto.toUiModel(opponent: CheckInGameTeamDto): GameTeam =
+fun CheckInGameTeamDto.toUiModel(
+    opponent: CheckInGameTeamDto,
+    type: TeamType,
+): GameTeam =
     GameTeam(
         team = Team.getByCode(code),
         name = name,
@@ -57,6 +61,7 @@ fun CheckInGameTeamDto.toUiModel(opponent: CheckInGameTeamDto): GameTeam =
             } else {
                 GameResult.from(score, opponent.score)
             },
+        type = type,
     )
 
 fun ScoreBoardDto.toUiModel(): GameScoreBoard =

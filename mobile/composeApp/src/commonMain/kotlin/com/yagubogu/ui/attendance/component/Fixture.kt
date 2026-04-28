@@ -7,6 +7,7 @@ import com.yagubogu.ui.attendance.model.GameScoreBoard
 import com.yagubogu.ui.attendance.model.GameState
 import com.yagubogu.ui.attendance.model.GameTeam
 import com.yagubogu.ui.attendance.model.PastGameUiModel
+import com.yagubogu.ui.attendance.model.TeamType
 import com.yagubogu.ui.util.minusDays
 import com.yagubogu.ui.util.now
 import kotlinx.datetime.LocalDate
@@ -26,6 +27,7 @@ val ATTENDANCE_HISTORY_ITEM_PLAYED =
                 score = "10",
                 isMyTeam = true,
                 gameResult = GameResult.WIN,
+                type = TeamType.AWAY,
             ),
         homeTeam =
             GameTeam(
@@ -34,6 +36,7 @@ val ATTENDANCE_HISTORY_ITEM_PLAYED =
                 score = "4",
                 isMyTeam = false,
                 gameResult = GameResult.LOSE,
+                type = TeamType.HOME,
             ),
         awayTeamScoreBoard =
             GameScoreBoard(
@@ -66,6 +69,7 @@ val ATTENDANCE_HISTORY_ITEM_CANCELED =
                 score = "-",
                 isMyTeam = true,
                 gameResult = GameResult.DRAW,
+                type = TeamType.AWAY,
             ),
         homeTeam =
             GameTeam(
@@ -74,6 +78,7 @@ val ATTENDANCE_HISTORY_ITEM_CANCELED =
                 score = "-",
                 isMyTeam = false,
                 gameResult = GameResult.DRAW,
+                type = TeamType.HOME,
             ),
         awayTeamScoreBoard =
             GameScoreBoard(

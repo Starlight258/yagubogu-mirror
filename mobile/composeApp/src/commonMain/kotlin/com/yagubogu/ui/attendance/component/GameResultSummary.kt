@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yagubogu.domain.model.Team
 import com.yagubogu.ui.attendance.model.AttendanceHistoryItem
+import com.yagubogu.ui.attendance.model.TeamType
 import com.yagubogu.ui.theme.EsamanruBold
 import com.yagubogu.ui.theme.Gray400
 import com.yagubogu.ui.theme.Gray500
@@ -37,7 +38,7 @@ import kotlinx.datetime.format
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun GameResult(
+fun GameResultSummary(
     item: AttendanceHistoryItem,
     modifier: Modifier = Modifier,
 ) {
@@ -49,7 +50,7 @@ fun GameResult(
         GameTeam(
             team = item.awayTeam.team,
             name = item.awayTeam.name,
-            isHomeTeam = false,
+            type = item.awayTeam.type,
         )
 
         Column(
@@ -93,7 +94,7 @@ fun GameResult(
         GameTeam(
             team = item.homeTeam.team,
             name = item.homeTeam.name,
-            isHomeTeam = true,
+            type = item.homeTeam.type,
         )
     }
 }
@@ -102,7 +103,7 @@ fun GameResult(
 private fun GameTeam(
     team: Team,
     name: String,
-    isHomeTeam: Boolean,
+    type: TeamType,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -126,7 +127,7 @@ private fun GameTeam(
             style = PretendardSemiBold16,
         )
         Text(
-            text = if (isHomeTeam) "HOME" else "AWAY",
+            text = type.name,
             style = PretendardMedium.copy(fontSize = 10.sp, color = Gray400),
         )
     }
@@ -135,7 +136,7 @@ private fun GameTeam(
 @Preview(name = "완료된 경기", showBackground = true, backgroundColor = 0xFFFFFF)
 @Composable
 private fun GameResultPlayedPreview() {
-    GameResult(
+    GameResultSummary(
         item = ATTENDANCE_HISTORY_ITEM_PLAYED,
     )
 }
@@ -143,7 +144,7 @@ private fun GameResultPlayedPreview() {
 @Preview(name = "취소된 경기", showBackground = true, backgroundColor = 0xFFFFFF)
 @Composable
 private fun GameResultCanceledPreview() {
-    GameResult(
+    GameResultSummary(
         item = ATTENDANCE_HISTORY_ITEM_CANCELED,
     )
 }

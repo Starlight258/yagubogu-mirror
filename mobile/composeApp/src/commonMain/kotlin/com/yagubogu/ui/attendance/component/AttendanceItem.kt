@@ -44,9 +44,9 @@ fun AttendanceItem(
                 .noRippleClickable {
                     onItemClick(item)
                     AnalyticsLogger.logEvent("attendance_history_item_click")
-                }.padding(horizontal = 20.dp, vertical = 24.dp),
+                }.padding(20.dp),
     ) {
-        GameResult(item = item)
+        GameResultSummary(item = item)
 
         ScoreboardTable(
             awayTeamName = item.awayTeam.name,
