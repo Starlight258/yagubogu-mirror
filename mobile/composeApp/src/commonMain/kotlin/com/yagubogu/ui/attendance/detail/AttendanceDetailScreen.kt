@@ -20,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.yagubogu.ui.attendance.component.ATTENDANCE_HISTORY_ITEM_PLAYED
 import com.yagubogu.ui.attendance.detail.component.AttendanceDetailTabRow
 import com.yagubogu.ui.attendance.detail.component.DeleteDiaryDialog
 import com.yagubogu.ui.attendance.detail.component.ExitDiaryDialog
@@ -163,7 +164,11 @@ private fun AttendanceDetailScreen(
                 modifier = Modifier.fillMaxSize(),
             ) { page ->
                 when (page) {
-                    AttendanceDetailTab.GAME_RECORD.ordinal -> Unit
+                    AttendanceDetailTab.GAME_RECORD.ordinal ->
+                        AttendanceDetailGameRecordScreen(
+                            item = ATTENDANCE_HISTORY_ITEM_PLAYED,
+                        )
+
                     AttendanceDetailTab.DIARY.ordinal ->
                         AttendanceDetailDiaryScreen(
                             uiState = attendanceDetailDiaryUiState,
