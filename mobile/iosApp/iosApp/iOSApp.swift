@@ -14,15 +14,20 @@ struct iOSApp: App {
                 .onOpenURL { url in
                     GIDSignIn.sharedInstance.handle(url)
                 }
+                .onAppear {
+                    ATTrackingManager.requestTrackingAuthorization { _ in
+                        DispatchQueue.main.async {
+                            MobileAds.shared.start(completionHandler: nil)
+                        }
+                    }
+                }
         }
     }
 
-    // AdMob SDK 초기화 및 Kotlin 브릿지 팩토리 등록
+    // Kotlin 브릿지 팩토리 등록 (AdMob 초기화는 ATT 응답 후 onAppear에서 처리)
     init() {
-        MobileAds.shared.start(completionHandler: nil)
         setupBannerAdProvider()
         setupInterstitialAdProvider()
-        ATTrackingManager.requestTrackingAuthorization(completionHandler: { _ in })
     }
 
     // Kotlin BannerAdProvider에 GADBannerView 생성 팩토리 주입
