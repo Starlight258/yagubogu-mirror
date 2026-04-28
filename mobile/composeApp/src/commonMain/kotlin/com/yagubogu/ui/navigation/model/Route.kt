@@ -1,6 +1,7 @@
 package com.yagubogu.ui.navigation.model
 
 import androidx.navigation3.runtime.NavKey
+import com.yagubogu.ui.ranking.model.RankingType
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
@@ -20,6 +21,11 @@ sealed interface Route : NavKey {
 
     @Serializable
     data object Badge : Route
+
+    @Serializable
+    data class Ranking(
+        val type: RankingType,
+    ) : Route
 
     @Serializable
     data class LivetalkChat(
