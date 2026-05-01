@@ -1,5 +1,7 @@
 package com.yagubogu.di
 
+import com.yagubogu.data.repository.appconfig.AppConfigDefaultRepository
+import com.yagubogu.data.repository.appconfig.AppConfigRepository
 import com.yagubogu.data.repository.auth.AuthDefaultRepository
 import com.yagubogu.data.repository.auth.AuthRepository
 import com.yagubogu.data.repository.checkin.CheckInDefaultRepository
@@ -47,4 +49,6 @@ val repositoryModule =
         singleOf(::TalkDefaultRepository) { bind<TalkRepository>() }
 
         singleOf(::AuthDefaultRepository) { bind<AuthRepository>() }
+
+        singleOf(::AppConfigDefaultRepository) { bind<AppConfigRepository>() }
     }
