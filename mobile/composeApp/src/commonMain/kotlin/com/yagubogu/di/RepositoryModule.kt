@@ -45,4 +45,6 @@ val repositoryModule =
         singleOf(::ThirdPartyDefaultRepository) { bind<ThirdPartyRepository>() }
 
         singleOf(::TalkDefaultRepository) { bind<TalkRepository>() }
+
+        singleOf(::AuthDefaultRepository) { bind<AuthRepository>() }
     }
