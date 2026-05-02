@@ -21,5 +21,6 @@ composeApp/release/
 iosApp/Pods/
 iosApp/Configuration/Config.xcconfig
 **/google-services.json
+**/GoogleService-Info.plist
 **/yagubogu-keystore
 keystore.properties
