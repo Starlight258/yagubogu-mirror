@@ -4,6 +4,7 @@ import GoogleMobileAds
 import GoogleSignIn
 import SwiftUI
 import UIKit
+import FirebaseCore
 
 @main
 struct iOSApp: App {
@@ -21,6 +22,7 @@ struct iOSApp: App {
     }
 
     init() {
+        FirebaseApp.configure()
         setupBannerAdProvider()
         setupInterstitialAdProvider()
     }

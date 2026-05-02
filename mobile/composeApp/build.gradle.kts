@@ -246,6 +246,9 @@ kotlin {
             implementation(libs.kermit)
             implementation(libs.kermit.crashlytics)
 
+            // Firebase Gitlive
+            implementation(libs.firebase.config.gitlive)
+
             // Oss-licenses
             implementation(libs.aboutlibraries.core)
             implementation(libs.aboutlibraries.compose.m3)
