@@ -67,6 +67,7 @@ fun AttendanceDetailDiaryScreen(
     onImageDeleted: (index: Int) -> Unit,
     onEditClick: () -> Unit,
     onSaveClick: (comment: String) -> Unit,
+    onImagePickerError: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -87,6 +88,7 @@ fun AttendanceDetailDiaryScreen(
                     onImagesSelected = onImagesSelected,
                     onImageDeleted = onImageDeleted,
                     onSaveClick = onSaveClick,
+                    onImagePickerError = onImagePickerError,
                 )
         }
     }
@@ -132,10 +134,11 @@ private fun WritingDiaryPage(
     onImagesSelected: (images: List<String>) -> Unit,
     onImageDeleted: (index: Int) -> Unit,
     onSaveClick: (comment: String) -> Unit,
+    onImagePickerError: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var isGalleryOpen by remember { mutableStateOf(false) }
-    var comment by remember { mutableStateOf(uiState.comment) }
+    var comment by remember(uiState.comment) { mutableStateOf(uiState.comment) }
 
     Column(
         modifier =
@@ -176,7 +179,7 @@ private fun WritingDiaryPage(
                     isGalleryOpen = false
                     onImagesSelected(uris)
                 },
-                onError = { uiText -> },
+                onError = { onImagePickerError() },
                 onClosePicker = { isGalleryOpen = false },
             )
         }
@@ -290,6 +293,7 @@ private fun AttendanceDetailDiaryScreenWritingPagePreview() {
         onImageDeleted = {},
         onEditClick = {},
         onSaveClick = { _ -> },
+        onImagePickerError = {},
     )
 }
 
@@ -312,5 +316,6 @@ private fun AttendanceDetailDiaryScreenReadingPagePreview() {
         onImageDeleted = {},
         onEditClick = {},
         onSaveClick = { _ -> },
+        onImagePickerError = {},
     )
 }
