@@ -27,6 +27,7 @@ import net.engawapg.lib.zoomable.zoomable
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import yagubogu.composeapp.generated.resources.Res
+import yagubogu.composeapp.generated.resources.all_close
 import yagubogu.composeapp.generated.resources.attendance_detail_image_content_description
 import yagubogu.composeapp.generated.resources.ic_close
 
@@ -83,7 +84,7 @@ fun ImageViewerDialog(
             ) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_close),
-                    contentDescription = "닫기",
+                    contentDescription = stringResource(Res.string.all_close),
                     tint = Color.White,
                     modifier = Modifier.size(20.dp),
                 )
