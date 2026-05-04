@@ -15,10 +15,10 @@ import com.yagubogu.ui.attendance.detail.model.AttendanceDetailUiEvent
 import com.yagubogu.ui.attendance.detail.model.CheckInImageItem
 import com.yagubogu.ui.attendance.detail.model.DiaryImageItem
 import com.yagubogu.ui.attendance.detail.model.DiaryMode
-import com.yagubogu.ui.util.ImageCompressionSpec
-import com.yagubogu.ui.util.compressImage
 import com.yagubogu.ui.common.model.PresignedUrlItem
 import com.yagubogu.ui.mapper.toUiModel
+import com.yagubogu.ui.util.ImageCompressionSpec
+import com.yagubogu.ui.util.compressImage
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.async

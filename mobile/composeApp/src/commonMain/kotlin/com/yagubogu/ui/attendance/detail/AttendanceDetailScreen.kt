@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
@@ -32,7 +31,6 @@ import com.yagubogu.ui.common.component.DefaultToolbar
 import com.yagubogu.ui.main.component.LoadingOverlay
 import com.yagubogu.ui.theme.Gray050
 import com.yagubogu.ui.util.LocalSnackbarHostState
-import com.yagubogu.ui.util.UiText
 import com.yagubogu.ui.util.showSingleSnackbar
 import com.yagubogu.ui.util.yyyyMMddDayOfWeekFormatter
 import kotlinx.datetime.LocalDate
@@ -45,7 +43,6 @@ import org.koin.core.parameter.parametersOf
 import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.attendance_detail_delete
 import yagubogu.composeapp.generated.resources.ic_trash
-import yagubogu.composeapp.generated.resources.image_selection_failed
 
 @Composable
 fun AttendanceDetailScreen(

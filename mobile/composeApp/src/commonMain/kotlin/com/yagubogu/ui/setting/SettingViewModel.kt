@@ -8,17 +8,16 @@ import com.yagubogu.data.repository.member.MemberRepository
 import com.yagubogu.data.repository.member.NicknameUpdateError
 import com.yagubogu.data.repository.member.toNicknameUpdateError
 import com.yagubogu.data.repository.thirdparty.ThirdPartyRepository
-import com.yagubogu.ui.util.CompressedImage
-import com.yagubogu.ui.util.ImageCompressionSpec
-import com.yagubogu.ui.util.compressImage
+import com.yagubogu.ui.common.model.PresignedUrlItem
 import com.yagubogu.ui.mapper.toUiModel
 import com.yagubogu.ui.setting.model.MemberInfoItem
 import com.yagubogu.ui.setting.model.PresignedUrlCompleteItem
-import com.yagubogu.ui.common.model.PresignedUrlItem
 import com.yagubogu.ui.setting.model.SettingEvent
+import com.yagubogu.ui.util.CompressedImage
+import com.yagubogu.ui.util.ImageCompressionSpec
 import com.yagubogu.ui.util.UiText
+import com.yagubogu.ui.util.compressImage
 import com.yagubogu.ui.util.now
-import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -38,6 +37,7 @@ import yagubogu.composeapp.generated.resources.setting_edit_nickname_no_permissi
 import yagubogu.composeapp.generated.resources.setting_edit_nickname_server_error
 import yagubogu.composeapp.generated.resources.setting_edit_nickname_too_long
 import yagubogu.composeapp.generated.resources.setting_edit_nickname_unknown_error
+import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Clock
 
 class SettingViewModel(

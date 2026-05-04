@@ -4,9 +4,9 @@ import com.yagubogu.data.dto.response.checkin.CheckInCountsResponse
 import com.yagubogu.data.dto.response.checkin.CheckInHistoryResponse
 import com.yagubogu.data.dto.response.checkin.CheckInImageDto
 import com.yagubogu.data.dto.response.checkin.CheckInImagesResponse
+import com.yagubogu.data.dto.response.checkin.CheckInMemoResponse
 import com.yagubogu.data.dto.response.checkin.CheckInStatusResponse
 import com.yagubogu.data.dto.response.checkin.FanRateResponse
-import com.yagubogu.data.dto.response.checkin.CheckInMemoResponse
 import com.yagubogu.data.dto.response.checkin.StadiumCheckInCountsResponse
 import com.yagubogu.data.dto.response.presigned.PresignedUrlStartResponse
 import kotlinx.datetime.LocalDate

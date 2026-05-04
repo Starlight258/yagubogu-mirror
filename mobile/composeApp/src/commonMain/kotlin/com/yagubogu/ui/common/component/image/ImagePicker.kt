@@ -2,7 +2,6 @@ package com.yagubogu.ui.common.component.image
 
 import androidx.compose.runtime.Composable
 import co.touchlab.kermit.Logger
-import com.yagubogu.ui.util.UiText
 import io.github.ismoy.imagepickerkmp.domain.config.CameraCaptureConfig
 import io.github.ismoy.imagepickerkmp.domain.config.CropConfig
 import io.github.ismoy.imagepickerkmp.domain.models.CompressionLevel

@@ -47,7 +47,6 @@ import com.yagubogu.ui.theme.PretendardRegular
 import com.yagubogu.ui.theme.PretendardRegular12
 import com.yagubogu.ui.theme.Primary500
 import com.yagubogu.ui.theme.White
-import com.yagubogu.ui.util.UiText
 import com.yagubogu.ui.util.noRippleClickable
 import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.StringResource
