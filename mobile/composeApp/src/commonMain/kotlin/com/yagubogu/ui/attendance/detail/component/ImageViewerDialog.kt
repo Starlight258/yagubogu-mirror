@@ -13,14 +13,16 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import coil3.compose.AsyncImage
 import com.yagubogu.ui.theme.Black
+import com.yagubogu.ui.theme.White
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import net.engawapg.lib.zoomable.ScrollGesturePropagation
 import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomable
@@ -79,13 +81,13 @@ fun ImageViewerDialog(
                     Modifier
                         .align(Alignment.TopEnd)
                         .padding(top = 16.dp, end = 16.dp)
-                        .background(Color.Black.copy(alpha = 0.4f), CircleShape)
+                        .background(Black.copy(alpha = 0.4f), CircleShape)
                         .size(40.dp),
             ) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_close),
                     contentDescription = stringResource(Res.string.all_close),
-                    tint = Color.White,
+                    tint = White,
                     modifier = Modifier.size(20.dp),
                 )
             }
@@ -102,4 +104,14 @@ fun ImageViewerDialog(
             }
         }
     }
+}
+
+@Preview
+@Composable
+private fun ImageViewerDialogPreview() {
+    ImageViewerDialog(
+        images = persistentListOf(),
+        initialPage = 0,
+        onDismiss = {},
+    )
 }
