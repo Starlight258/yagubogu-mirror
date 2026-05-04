@@ -150,7 +150,7 @@ private fun WritingDiaryPage(
         verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
         ImagePickerBoxRow(
-            images = uiState.imageUris,
+            images = uiState.imageSlots,
             onAddClick = { isGalleryOpen = true },
             onDeleteClick = onImageDeleted,
         )

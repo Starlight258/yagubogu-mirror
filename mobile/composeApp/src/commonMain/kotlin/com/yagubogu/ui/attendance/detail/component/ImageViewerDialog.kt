@@ -35,12 +35,11 @@ import yagubogu.composeapp.generated.resources.ic_close
 
 @Composable
 fun ImageViewerDialog(
-    images: ImmutableList<String?>,
+    images: ImmutableList<String>,
     initialPage: Int,
     onDismiss: () -> Unit,
 ) {
-    val validImages: List<String> = images.filterNotNull()
-    val pagerState = rememberPagerState(initialPage = initialPage, pageCount = { validImages.size })
+    val pagerState = rememberPagerState(initialPage = initialPage, pageCount = { images.size })
 
     Dialog(
         onDismissRequest = onDismiss,
@@ -58,7 +57,7 @@ fun ImageViewerDialog(
             ) { page ->
                 val zoomState = rememberZoomState()
                 AsyncImage(
-                    model = validImages[page],
+                    model = images[page],
                     contentDescription =
                         stringResource(
                             Res.string.attendance_detail_image_content_description,
@@ -92,9 +91,9 @@ fun ImageViewerDialog(
                 )
             }
 
-            if (validImages.size > 1) {
+            if (images.size > 1) {
                 SliderDots(
-                    size = validImages.size,
+                    size = images.size,
                     selectedIndex = pagerState.currentPage,
                     modifier =
                         Modifier

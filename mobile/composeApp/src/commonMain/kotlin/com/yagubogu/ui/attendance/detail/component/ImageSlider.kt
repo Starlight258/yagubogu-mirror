@@ -37,12 +37,11 @@ import yagubogu.composeapp.generated.resources.attendance_detail_image_content_d
 
 @Composable
 fun ImageSlider(
-    images: ImmutableList<String?>,
+    images: ImmutableList<String>,
     modifier: Modifier = Modifier,
     onImageClick: ((index: Int) -> Unit)? = null,
 ) {
-    val validImages = images.filterNotNull()
-    val pagerState = rememberPagerState(initialPage = 0, pageCount = { validImages.size })
+    val pagerState = rememberPagerState(initialPage = 0, pageCount = { images.size })
 
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -51,10 +50,10 @@ fun ImageSlider(
     ) {
         HorizontalPager(
             state = pagerState,
-            beyondViewportPageCount = validImages.size,
+            beyondViewportPageCount = images.size,
         ) { page ->
             AsyncImage(
-                model = validImages[page],
+                model = images[page],
                 contentDescription =
                     stringResource(
                         Res.string.attendance_detail_image_content_description,
@@ -78,7 +77,7 @@ fun ImageSlider(
                         .clickable(enabled = onImageClick != null) { onImageClick?.invoke(page) },
             )
         }
-        SliderDots(size = validImages.size, selectedIndex = pagerState.currentPage)
+        SliderDots(size = images.size, selectedIndex = pagerState.currentPage)
     }
 }
 
