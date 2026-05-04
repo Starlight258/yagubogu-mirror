@@ -27,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.yagubogu.ui.theme.Gray300
 import com.yagubogu.ui.theme.Gray500
 import com.yagubogu.ui.theme.Primary500
 import kotlinx.collections.immutable.ImmutableList
@@ -99,7 +100,7 @@ fun SliderDots(
                         .size(6.dp)
                         .background(
                             shape = CircleShape,
-                            color = if (idx == selectedIndex) Primary500 else Gray500,
+                            color = if (idx == selectedIndex) Primary500 else Gray300,
                         ),
             )
         }
