@@ -9,7 +9,7 @@ import com.yagubogu.data.dto.response.checkin.StadiumCheckInCountDto
 import com.yagubogu.data.dto.response.checkin.TeamFanRateDto
 import com.yagubogu.domain.model.GameResult
 import com.yagubogu.domain.model.Team
-import com.yagubogu.ui.attendance.detail.model.CheckInImageItem
+import com.yagubogu.ui.attendance.detail.model.DiaryImageItem
 import com.yagubogu.ui.attendance.model.AttendanceHistoryItem
 import com.yagubogu.ui.attendance.model.GameScoreBoard
 import com.yagubogu.ui.attendance.model.GameTeam
@@ -84,8 +84,8 @@ fun StadiumCheckInCountDto.toUiModel(): StadiumVisitCount =
         visitCounts = checkInCounts,
     )
 
-fun CheckInImageDto.toUiModel(): CheckInImageItem =
-    CheckInImageItem(
+fun CheckInImageDto.toUiModel(): DiaryImageItem =
+    DiaryImageItem(
         id = imageId,
-        url = imageUrl,
+        uri = imageUrl,
     )

@@ -12,7 +12,6 @@ import com.yagubogu.domain.attendance.LoadDiaryUseCase
 import com.yagubogu.ui.attendance.detail.AttendanceDetailViewModel.Companion.DIARY_MAX_IMAGE_SIZE
 import com.yagubogu.ui.attendance.detail.model.AttendanceDetailDiaryUiState
 import com.yagubogu.ui.attendance.detail.model.AttendanceDetailUiEvent
-import com.yagubogu.ui.attendance.detail.model.CheckInImageItem
 import com.yagubogu.ui.attendance.detail.model.DiaryImageItem
 import com.yagubogu.ui.attendance.detail.model.DiaryMode
 import com.yagubogu.ui.common.model.PresignedUrlItem
@@ -186,13 +185,13 @@ class AttendanceDetailViewModel(
     }
 
     private fun handleUploadDiaryImageSuccess(
-        item: DiaryImageItem,
-        imageItem: CheckInImageItem,
+        localItem: DiaryImageItem,
+        serverItem: DiaryImageItem,
     ) {
         _attendanceDetailDiaryUiState.update { state ->
             val updated = state.images.toMutableList()
-            val idx = updated.indexOfFirst { it.uri == item.uri && it.id == null }
-            if (idx != -1) updated[idx] = item.copy(id = imageItem.id)
+            val idx = updated.indexOfFirst { it.uri == localItem.uri && it.id == null }
+            if (idx != -1) updated[idx] = localItem.copy(id = serverItem.id)
             state.copy(images = updated.toImmutableList())
         }
     }
@@ -200,7 +199,7 @@ class AttendanceDetailViewModel(
     private suspend fun uploadDiaryImage(
         checkInId: Long,
         sourceUri: String,
-    ): Result<CheckInImageItem> =
+    ): Result<DiaryImageItem> =
         runCatching {
             // 1. 압축
             val compressed = compressImage(sourceUri, ImageCompressionSpec.CheckIn)
