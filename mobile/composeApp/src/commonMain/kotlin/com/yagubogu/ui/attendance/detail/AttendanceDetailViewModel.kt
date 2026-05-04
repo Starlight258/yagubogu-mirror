@@ -17,13 +17,9 @@ import com.yagubogu.ui.attendance.detail.model.DiaryImageItem
 import com.yagubogu.ui.attendance.detail.model.DiaryMode
 import com.yagubogu.ui.common.component.image.ImageCompressionSpec
 import com.yagubogu.ui.common.component.image.compressImage
+import com.yagubogu.ui.common.model.PresignedUrlItem
 import com.yagubogu.ui.mapper.toUiModel
 import kotlinx.collections.immutable.ImmutableList
-import yagubogu.composeapp.generated.resources.Res
-import yagubogu.composeapp.generated.resources.attendance_detail_delete_failed
-import yagubogu.composeapp.generated.resources.attendance_detail_load_failed
-import yagubogu.composeapp.generated.resources.attendance_detail_update_memo_failed
-import yagubogu.composeapp.generated.resources.attendance_detail_upload_image_failed
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -37,6 +33,11 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import yagubogu.composeapp.generated.resources.Res
+import yagubogu.composeapp.generated.resources.attendance_detail_delete_failed
+import yagubogu.composeapp.generated.resources.attendance_detail_load_failed
+import yagubogu.composeapp.generated.resources.attendance_detail_update_memo_failed
+import yagubogu.composeapp.generated.resources.attendance_detail_upload_image_failed
 
 class AttendanceDetailViewModel(
     private val gameId: Long,
@@ -205,10 +206,11 @@ class AttendanceDetailViewModel(
             val compressed = compressImage(sourceUri, ImageCompressionSpec.CheckIn)
 
             // 2. Presigned URL 요청
-            val presigned =
+            val presigned: PresignedUrlItem =
                 checkInRepository
                     .getImagePresignedUrl(compressed.mimeType, compressed.fileSize)
                     .getOrThrow()
+                    .toUiModel()
 
             // 3. S3 업로드
             thirdPartyRepository

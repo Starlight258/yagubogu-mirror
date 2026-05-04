@@ -14,7 +14,7 @@ import com.yagubogu.ui.common.component.image.compressImage
 import com.yagubogu.ui.mapper.toUiModel
 import com.yagubogu.ui.setting.model.MemberInfoItem
 import com.yagubogu.ui.setting.model.PresignedUrlCompleteItem
-import com.yagubogu.ui.setting.model.PresignedUrlItem
+import com.yagubogu.ui.common.model.PresignedUrlItem
 import com.yagubogu.ui.setting.model.SettingEvent
 import com.yagubogu.ui.util.UiText
 import com.yagubogu.ui.util.now

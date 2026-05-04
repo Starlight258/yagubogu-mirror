@@ -6,13 +6,13 @@ import com.yagubogu.data.dto.response.checkin.CheckInGameDto
 import com.yagubogu.data.dto.response.checkin.CheckInHistoryResponse
 import com.yagubogu.data.dto.response.checkin.CheckInImageDto
 import com.yagubogu.data.dto.response.checkin.CheckInImagesResponse
+import com.yagubogu.data.dto.response.checkin.CheckInMemoResponse
 import com.yagubogu.data.dto.response.checkin.CheckInStatusResponse
 import com.yagubogu.data.dto.response.checkin.FanRateByGameDto
 import com.yagubogu.data.dto.response.checkin.FanRateResponse
-import com.yagubogu.data.dto.response.checkin.MemoResponse
 import com.yagubogu.data.dto.response.checkin.StadiumCheckInCountDto
 import com.yagubogu.data.dto.response.checkin.StadiumCheckInCountsResponse
-import com.yagubogu.ui.attendance.detail.model.CheckInPresignedUrlItem
+import com.yagubogu.data.dto.response.presigned.PresignedUrlStartResponse
 import kotlinx.datetime.LocalDate
 
 class CheckInDefaultRepository(
@@ -65,8 +65,8 @@ class CheckInDefaultRepository(
     override suspend fun getMemo(checkInId: Long): Result<String?> =
         checkInDataSource
             .getMemo(checkInId)
-            .map { memoResponse: MemoResponse ->
-                memoResponse.memo
+            .map { checkInMemoResponse: CheckInMemoResponse ->
+                checkInMemoResponse.memo
             }
 
     override suspend fun updateMemo(
@@ -79,10 +79,9 @@ class CheckInDefaultRepository(
     override suspend fun getImagePresignedUrl(
         contentType: String,
         contentLength: Long,
-    ): Result<CheckInPresignedUrlItem> =
+    ): Result<PresignedUrlStartResponse> =
         checkInDataSource
             .getImagePresignedUrl(contentType, contentLength)
-            .map { CheckInPresignedUrlItem(key = it.key, url = it.url) }
 
     override suspend fun getImages(checkInId: Long): Result<List<CheckInImageDto>> =
         checkInDataSource

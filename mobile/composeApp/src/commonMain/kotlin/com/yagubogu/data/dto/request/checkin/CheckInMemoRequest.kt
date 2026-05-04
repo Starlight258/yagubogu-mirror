@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class MemoRequest(
+data class CheckInMemoRequest(
     @SerialName("memo")
     val content: String,
 )

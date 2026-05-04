@@ -11,7 +11,7 @@ import com.yagubogu.ui.badge.model.BadgeUiModel
 import com.yagubogu.ui.common.model.MemberProfile
 import com.yagubogu.ui.setting.model.MemberInfoItem
 import com.yagubogu.ui.setting.model.PresignedUrlCompleteItem
-import com.yagubogu.ui.setting.model.PresignedUrlItem
+import com.yagubogu.ui.common.model.PresignedUrlItem
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.daysUntil
 
