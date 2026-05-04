@@ -36,7 +36,6 @@ actual suspend fun compressImage(
 
     return CompressedImage(
         uri = Uri.fromFile(compressedFile).toString(),
-        mimeType = "image/jpeg",
         fileSize = compressedFile.length(),
     )
 }

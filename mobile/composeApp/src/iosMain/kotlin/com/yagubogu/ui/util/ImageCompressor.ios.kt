@@ -63,7 +63,6 @@ actual suspend fun compressImage(
 
     return CompressedImage(
         uri = tempFilePath,
-        mimeType = "image/jpeg",
         fileSize = imageData.length.toLong(),
     )
 }

@@ -59,6 +59,10 @@ data class ImageCompressionSpec(
  */
 data class CompressedImage(
     val uri: String,
-    val mimeType: String,
     val fileSize: Long,
-)
+    val mimeType: String = MIMETYPE_DEFAULT,
+) {
+    companion object {
+        private const val MIMETYPE_DEFAULT = "image/jpeg"
+    }
+}
