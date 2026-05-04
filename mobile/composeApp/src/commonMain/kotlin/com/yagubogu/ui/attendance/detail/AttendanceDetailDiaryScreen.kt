@@ -171,8 +171,7 @@ private fun WritingDiaryPage(
                     .fillMaxSize()
                     .background(Gray900.copy(alpha = 0.3f))
                     .systemBarsPadding()
-                    .pointerInput(Unit) { detectTapGestures { } },
-            // 배경 터치 차단
+                    .pointerInput(Unit) { detectTapGestures { } }, // 배경 터치 차단
         ) {
             ImagePicker(
                 allowMultiple = true,
