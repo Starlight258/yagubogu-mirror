@@ -18,6 +18,7 @@ import com.yagubogu.ui.setting.model.PresignedUrlItem
 import com.yagubogu.ui.setting.model.SettingEvent
 import com.yagubogu.ui.util.UiText
 import com.yagubogu.ui.util.now
+import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -115,6 +116,7 @@ class SettingViewModel(
                         .onFailure { emitProfileError(UiText.StringRes(Res.string.image_upload_failed)) }
                 },
                 onFailure = { exception ->
+                    if (exception is CancellationException) throw exception
                     logger.e(exception) { "이미지 처리 과정 중 예외 발생" }
                     emitProfileError(UiText.StringRes(Res.string.image_processing_failed))
                 },
@@ -156,6 +158,7 @@ class SettingViewModel(
             _myMemberInfoItem.value =
                 myMemberInfoItem.value.copy(profileImageUrl = completeItem.imageUrl)
         }.onFailure { exception: Throwable ->
+            if (exception is CancellationException) throw exception
             logger.e(exception) { "프로필 이미지 업로드 실패" }
         }
 
