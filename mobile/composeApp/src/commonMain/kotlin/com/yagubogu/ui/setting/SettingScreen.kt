@@ -26,6 +26,7 @@ import com.yagubogu.ui.navigation.model.SettingNavKey
 import com.yagubogu.ui.navigation.model.toEntries
 import com.yagubogu.ui.theme.Gray050
 import com.yagubogu.ui.theme.Gray900
+import com.yagubogu.ui.util.UiText
 import com.yagubogu.ui.util.slidePopTransition
 import com.yagubogu.ui.util.slidePredictivePopTransition
 import com.yagubogu.ui.util.slidePushTransition
@@ -120,7 +121,7 @@ fun SettingScreen(
                     onPhotosSelected = { uri: List<String> ->
                         uri.firstOrNull()?.let { viewModel.handleProfileImage(it) }
                     },
-                    onError = { uiText -> viewModel.emitProfileError(uiText) },
+                    onError = { message -> viewModel.emitProfileError(UiText.StringRes(message)) },
                     onClosePicker = { isGalleryOpen = false },
                 )
             }
