@@ -1,4 +1,4 @@
-package com.yagubogu.ui.common.component.image
+package com.yagubogu.ui.util
 
 /**
  * 이미지를 지정한 규격으로 압축한다.

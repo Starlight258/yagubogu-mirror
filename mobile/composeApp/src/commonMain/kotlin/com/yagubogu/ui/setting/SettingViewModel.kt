@@ -8,9 +8,9 @@ import com.yagubogu.data.repository.member.MemberRepository
 import com.yagubogu.data.repository.member.NicknameUpdateError
 import com.yagubogu.data.repository.member.toNicknameUpdateError
 import com.yagubogu.data.repository.thirdparty.ThirdPartyRepository
-import com.yagubogu.ui.common.component.image.CompressedImage
-import com.yagubogu.ui.common.component.image.ImageCompressionSpec
-import com.yagubogu.ui.common.component.image.compressImage
+import com.yagubogu.ui.util.CompressedImage
+import com.yagubogu.ui.util.ImageCompressionSpec
+import com.yagubogu.ui.util.compressImage
 import com.yagubogu.ui.mapper.toUiModel
 import com.yagubogu.ui.setting.model.MemberInfoItem
 import com.yagubogu.ui.setting.model.PresignedUrlCompleteItem
