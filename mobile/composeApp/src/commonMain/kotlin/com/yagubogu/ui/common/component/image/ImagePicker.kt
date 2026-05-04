@@ -15,11 +15,11 @@ import yagubogu.composeapp.generated.resources.image_selection_failed
 
 @Composable
 fun ImagePicker(
-    allowMultiple: Boolean = false,
-    selectionLimit: Long = 1,
     onPhotosSelected: (List<String>) -> Unit,
     onError: (message: StringResource) -> Unit,
     onClosePicker: () -> Unit,
+    allowMultiple: Boolean = false,
+    selectionLimit: Long = 1,
 ) {
     val logger: Logger = Logger.withTag("ImagePicker")
     logger.d { "ImagePicker 열림" }
