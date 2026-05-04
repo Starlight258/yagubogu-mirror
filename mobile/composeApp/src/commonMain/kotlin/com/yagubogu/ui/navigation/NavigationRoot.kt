@@ -27,6 +27,8 @@ import com.yagubogu.ui.navigation.model.Navigator
 import com.yagubogu.ui.navigation.model.Route
 import com.yagubogu.ui.navigation.model.SettingNavKey
 import com.yagubogu.ui.navigation.model.toEntries
+import com.yagubogu.ui.ranking.component.RankingScreen
+import com.yagubogu.ui.ranking.model.RankingType
 import com.yagubogu.ui.setting.SettingScreen
 import com.yagubogu.ui.util.LocalSnackbarHostState
 import com.yagubogu.ui.util.LocalSnackbarScope
@@ -77,6 +79,9 @@ fun NavigationRoot(
                         },
                         onSettingsClick = { rootNavigator.navigate(Route.Setting) },
                         onBadgeClick = { rootNavigator.navigate(Route.Badge) },
+                        onRankingShowMoreClick = { type: RankingType ->
+                            rootNavigator.navigate(Route.Ranking(type))
+                        },
                         onLivetalkItemClick = { gameId: Long, isVerified: Boolean ->
                             rootNavigator.navigate(Route.LivetalkChat(gameId, isVerified))
                         },
@@ -129,6 +134,12 @@ fun NavigationRoot(
                 }
                 entry<Route.Badge> {
                     BadgeScreen(
+                        onBackClick = { rootNavigator.goBack() },
+                    )
+                }
+                entry<Route.Ranking> { key: Route.Ranking ->
+                    RankingScreen(
+                        type = key.type,
                         onBackClick = { rootNavigator.goBack() },
                     )
                 }

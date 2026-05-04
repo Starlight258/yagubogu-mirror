@@ -7,6 +7,7 @@ import androidx.compose.ui.window.ComposeUIViewController
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yagubogu.di.authModule
 import com.yagubogu.di.commonModule
+import com.yagubogu.di.configModule
 import com.yagubogu.di.datasourceModule
 import com.yagubogu.di.localModule
 import com.yagubogu.di.networkModule
@@ -51,6 +52,7 @@ fun MainViewController(
                         timeModule,
                         useCaseModule,
                         viewModelModule,
+                        configModule,
                     )
                 },
             ),
@@ -79,6 +81,7 @@ private fun YaguBoguIosApp() {
                         AutoLoginState.Failure,
                         AutoLoginState.Loading,
                         -> Route.Login
+                        is AutoLoginState.Maintenance -> Route.Login
                     },
             )
         }

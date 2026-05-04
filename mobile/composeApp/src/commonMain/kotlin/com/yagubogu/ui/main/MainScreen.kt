@@ -30,6 +30,7 @@ import com.yagubogu.ui.main.component.MainToolbar
 import com.yagubogu.ui.navigation.model.BottomNavKey
 import com.yagubogu.ui.navigation.model.NavigationState
 import com.yagubogu.ui.navigation.model.toEntries
+import com.yagubogu.ui.ranking.model.RankingType
 import com.yagubogu.ui.stats.StatsScreen
 import com.yagubogu.ui.theme.Gray050
 import com.yagubogu.ui.theme.White
@@ -48,6 +49,7 @@ fun MainScreen(
     onBottomItemClick: (BottomNavKey) -> Unit,
     onSettingsClick: () -> Unit,
     onBadgeClick: () -> Unit,
+    onRankingShowMoreClick: (RankingType) -> Unit,
     onLivetalkItemClick: (Long, Boolean) -> Unit,
     onAttendanceHistoryItemClick: (id: Long, date: LocalDate) -> Unit,
     modifier: Modifier = Modifier,
@@ -119,6 +121,7 @@ fun MainScreen(
                         HomeScreen(
                             scrollToTopEvent = scrollToTopEvent,
                             onLoading = viewModel::setLoading,
+                            onRankingShowMoreClick = onRankingShowMoreClick,
                         )
                     }
                     entry<BottomNavKey.Livetalk> {
