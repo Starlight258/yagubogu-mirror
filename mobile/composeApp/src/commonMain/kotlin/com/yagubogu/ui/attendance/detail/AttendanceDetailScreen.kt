@@ -181,7 +181,6 @@ private fun AttendanceDetailToolbar(
                 Icon(
                     painter = painterResource(Res.drawable.ic_trash),
                     contentDescription = stringResource(Res.string.attendance_detail_delete),
-                    modifier = Modifier.padding(),
                 )
             }
         },
