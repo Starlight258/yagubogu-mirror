@@ -145,7 +145,7 @@ class AttendanceDetailViewModel(
             state.copy(
                 isLoading = false,
                 mode = if (diary.hasContent) DiaryMode.READ else DiaryMode.WRITE,
-                comment = diary.memo.orEmpty(),
+                comment = diary.memo,
                 images = diaryImages,
             )
         }
