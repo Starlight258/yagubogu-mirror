@@ -19,6 +19,11 @@ import com.yagubogu.ui.common.component.image.ImageCompressionSpec
 import com.yagubogu.ui.common.component.image.compressImage
 import com.yagubogu.ui.mapper.toUiModel
 import kotlinx.collections.immutable.ImmutableList
+import yagubogu.composeapp.generated.resources.Res
+import yagubogu.composeapp.generated.resources.attendance_detail_delete_failed
+import yagubogu.composeapp.generated.resources.attendance_detail_load_failed
+import yagubogu.composeapp.generated.resources.attendance_detail_update_memo_failed
+import yagubogu.composeapp.generated.resources.attendance_detail_upload_image_failed
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -92,7 +97,7 @@ class AttendanceDetailViewModel(
                 .onFailure { e ->
                     logger.e(e) { "직관 기록 삭제 실패" }
                     _attendanceDetailDiaryUiState.update { it.copy(isLoading = false) }
-                    _uiEvent.emit(AttendanceDetailUiEvent.DeleteDiaryFailed)
+                    _uiEvent.emit(AttendanceDetailUiEvent.ShowSnackbar(Res.string.attendance_detail_delete_failed))
                 }
         }
     }
@@ -103,12 +108,18 @@ class AttendanceDetailViewModel(
         AnalyticsLogger.logEvent("diary_save_button")
         _attendanceDetailDiaryUiState.update { it.copy(isLoading = true) }
         viewModelScope.launch {
-            coroutineScope {
-                launch { updateMemo(checkInId = gameId, comment = comment) }
-                launch { uploadDiaryImages() }
-            }
-            _attendanceDetailDiaryUiState.update { state ->
-                state.copy(comment = comment, mode = DiaryMode.READ, isLoading = false)
+            val (memoSuccess, imagesSuccess) =
+                coroutineScope {
+                    val memo = async { updateMemo(checkInId = gameId, comment = comment) }
+                    val images = async { uploadDiaryImages() }
+                    memo.await() to images.await()
+                }
+            if (memoSuccess && imagesSuccess) {
+                _attendanceDetailDiaryUiState.update { state ->
+                    state.copy(comment = comment, mode = DiaryMode.READ, isLoading = false)
+                }
+            } else {
+                _attendanceDetailDiaryUiState.update { it.copy(isLoading = false) }
             }
         }
     }
@@ -119,7 +130,7 @@ class AttendanceDetailViewModel(
             .onFailure { e ->
                 logger.e(e) { "직관 기록 조회 실패" }
                 _attendanceDetailDiaryUiState.update { it.copy(isLoading = false) }
-                _uiEvent.emit(AttendanceDetailUiEvent.LoadDiaryFailed)
+                _uiEvent.emit(AttendanceDetailUiEvent.ShowSnackbar(Res.string.attendance_detail_load_failed))
             }
     }
 
@@ -143,33 +154,34 @@ class AttendanceDetailViewModel(
     private suspend fun updateMemo(
         checkInId: Long,
         comment: String,
-    ) {
+    ): Boolean =
         checkInRepository
             .updateMemo(checkInId = checkInId, content = comment)
             .onFailure { e ->
-                _uiEvent.emit(AttendanceDetailUiEvent.UpdateMemoFailed)
+                _uiEvent.emit(AttendanceDetailUiEvent.ShowSnackbar(Res.string.attendance_detail_update_memo_failed))
                 logger.e(e) { "메모 저장 실패" }
-            }
-    }
+            }.isSuccess
 
-    private suspend fun uploadDiaryImages() {
+    private suspend fun uploadDiaryImages(): Boolean {
         val targets: List<DiaryImageItem> =
             attendanceDetailDiaryUiState.value.images.filter { !it.isEmpty && it.id == null }
 
-        coroutineScope {
-            targets
-                .map { item: DiaryImageItem ->
-                    async {
-                        val uri = item.uri ?: return@async
-                        uploadDiaryImage(checkInId = gameId, sourceUri = uri)
-                            .onSuccess { imageDto -> handleUploadDiaryImageSuccess(item, imageDto) }
-                            .onFailure { e ->
-                                _uiEvent.emit(AttendanceDetailUiEvent.UploadImageFailed)
-                                logger.e(e) { "직관 이미지 업로드 실패: ${item.uri}" }
-                            }
-                    }
-                }.awaitAll()
-        }
+        val results =
+            coroutineScope {
+                targets
+                    .map { item: DiaryImageItem ->
+                        async {
+                            val uri = item.uri ?: return@async true
+                            uploadDiaryImage(checkInId = gameId, sourceUri = uri)
+                                .onSuccess { imageDto -> handleUploadDiaryImageSuccess(item, imageDto) }
+                                .onFailure { e ->
+                                    _uiEvent.emit(AttendanceDetailUiEvent.ShowSnackbar(Res.string.attendance_detail_upload_image_failed))
+                                    logger.e(e) { "직관 이미지 업로드 실패: ${item.uri}" }
+                                }.isSuccess
+                        }
+                    }.awaitAll()
+            }
+        return results.all { it }
     }
 
     private fun handleUploadDiaryImageSuccess(

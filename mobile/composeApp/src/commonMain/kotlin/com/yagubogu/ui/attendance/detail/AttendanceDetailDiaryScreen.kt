@@ -47,8 +47,10 @@ import com.yagubogu.ui.theme.PretendardRegular
 import com.yagubogu.ui.theme.PretendardRegular12
 import com.yagubogu.ui.theme.Primary500
 import com.yagubogu.ui.theme.White
+import com.yagubogu.ui.util.UiText
 import com.yagubogu.ui.util.noRippleClickable
 import kotlinx.collections.immutable.persistentListOf
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import yagubogu.composeapp.generated.resources.Res
@@ -67,7 +69,7 @@ fun AttendanceDetailDiaryScreen(
     onImageDeleted: (index: Int) -> Unit,
     onEditClick: () -> Unit,
     onSaveClick: (comment: String) -> Unit,
-    onImagePickerError: () -> Unit,
+    onImagePickerError: (message: StringResource) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -134,7 +136,7 @@ private fun WritingDiaryPage(
     onImagesSelected: (images: List<String>) -> Unit,
     onImageDeleted: (index: Int) -> Unit,
     onSaveClick: (comment: String) -> Unit,
-    onImagePickerError: () -> Unit,
+    onImagePickerError: (message: StringResource) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var isGalleryOpen by remember { mutableStateOf(false) }
@@ -179,7 +181,7 @@ private fun WritingDiaryPage(
                     isGalleryOpen = false
                     onImagesSelected(uris)
                 },
-                onError = { onImagePickerError() },
+                onError = onImagePickerError,
                 onClosePicker = { isGalleryOpen = false },
             )
         }

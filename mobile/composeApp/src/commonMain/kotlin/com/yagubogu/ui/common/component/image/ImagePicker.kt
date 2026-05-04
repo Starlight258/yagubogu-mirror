@@ -9,6 +9,7 @@ import io.github.ismoy.imagepickerkmp.domain.models.CompressionLevel
 import io.github.ismoy.imagepickerkmp.domain.models.GalleryPhotoResult
 import io.github.ismoy.imagepickerkmp.domain.models.MimeType.Companion.ALL_SUPPORTED_TYPES
 import io.github.ismoy.imagepickerkmp.presentation.ui.components.GalleryPickerLauncher
+import org.jetbrains.compose.resources.StringResource
 import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.image_selection_failed
 
@@ -17,7 +18,7 @@ fun ImagePicker(
     allowMultiple: Boolean = false,
     selectionLimit: Long = 1,
     onPhotosSelected: (List<String>) -> Unit,
-    onError: (UiText) -> Unit,
+    onError: (message: StringResource) -> Unit,
     onClosePicker: () -> Unit,
 ) {
     val logger: Logger = Logger.withTag("ImagePicker")
@@ -37,7 +38,7 @@ fun ImagePicker(
         },
         onError = { exception: Exception ->
             logger.e(exception) { "GalleryPicker 에러 발생" }
-            onError(UiText.StringRes(Res.string.image_selection_failed))
+            onError(Res.string.image_selection_failed)
             onClosePicker()
         },
         onDismiss = {
