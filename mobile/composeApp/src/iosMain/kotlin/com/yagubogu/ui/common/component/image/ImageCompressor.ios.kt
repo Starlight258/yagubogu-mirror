@@ -26,9 +26,11 @@ actual suspend fun compressImage(
     spec: ImageCompressionSpec,
 ): CompressedImage {
     // 1. 이미지 로드
-    // file:// 로 시작하는 경우 URL 디코딩이 필요할 수 있으므로 NSURL을 거쳐서 path를 가져옴
-    val nsUrl = NSURL(string = sourceUri)
-    val path = nsUrl.path ?: sourceUri.replaceFirst("file://", "")
+    // file:// URI와 순수 경로 모두 처리: NSURL.path는 percent-decoding도 수행함
+    val path =
+        NSURL(string = sourceUri).path
+            ?: NSURL.fileURLWithPath(sourceUri).path
+            ?: error("경로를 가져올 수 없음: $sourceUri")
     val originalImage = UIImage.imageWithContentsOfFile(path) ?: error("이미지를 불러올 수 없음: $path")
 
     // 2. 리사이징 (원본 비율 유지, spec 최대 크기 이내)
