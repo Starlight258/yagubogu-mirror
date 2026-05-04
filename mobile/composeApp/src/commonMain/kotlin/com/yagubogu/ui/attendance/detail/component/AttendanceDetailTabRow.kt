@@ -43,7 +43,7 @@ fun AttendanceDetailTabRow(pagerState: PagerState) {
         modifier =
             Modifier
                 .padding(top = 8.dp, start = 20.dp, end = 20.dp, bottom = 16.dp)
-                .height(60.dp)
+                .height(56.dp)
                 .clip(RoundedCornerShape(12.dp))
                 .border(1.dp, Primary100, RoundedCornerShape(12.dp)),
         containerColor = Primary050,
@@ -55,7 +55,7 @@ fun AttendanceDetailTabRow(pagerState: PagerState) {
                         .tabIndicatorOffset(
                             selectedTabIndex = pagerState.currentPage,
                             matchContentSize = false,
-                        ).padding(horizontal = 6.dp)
+                        ).padding(horizontal = 4.dp)
                         .height(48.dp)
                         .clip(RoundedCornerShape(12.dp))
                         .background(Primary500)
