@@ -41,8 +41,8 @@ fun ImageSlider(
     modifier: Modifier = Modifier,
     onImageClick: ((index: Int) -> Unit)? = null,
 ) {
-    val imageSize = images.count { it != null }
-    val pagerState = rememberPagerState(initialPage = 0, pageCount = { imageSize })
+    val validImages = images.filterNotNull()
+    val pagerState = rememberPagerState(initialPage = 0, pageCount = { validImages.size })
 
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -51,10 +51,10 @@ fun ImageSlider(
     ) {
         HorizontalPager(
             state = pagerState,
-            beyondViewportPageCount = images.size,
+            beyondViewportPageCount = validImages.size,
         ) { page ->
             AsyncImage(
-                model = images[page],
+                model = validImages[page],
                 contentDescription =
                     stringResource(
                         Res.string.attendance_detail_image_content_description,
@@ -78,7 +78,7 @@ fun ImageSlider(
                         .clickable(enabled = onImageClick != null) { onImageClick?.invoke(page) },
             )
         }
-        SliderDots(size = imageSize, selectedIndex = pagerState.currentPage)
+        SliderDots(size = validImages.size, selectedIndex = pagerState.currentPage)
     }
 }
 
