@@ -28,13 +28,11 @@ fun ImagePicker(
         mimeTypes = ALL_SUPPORTED_TYPES,
         onPhotosSelected = { photos: List<GalleryPhotoResult> ->
             logger.d { "onPhotosSelected, 사진 개수: ${photos.size}" }
-            onClosePicker()
-
             if (photos.isEmpty()) {
                 logger.w { "선택된 사진이 없습니다" }
-                return@GalleryPickerLauncher
+            } else {
+                onPhotosSelected(photos.map { it.uri })
             }
-            onPhotosSelected(photos.map { it.uri })
             onClosePicker()
         },
         onError = { exception: Exception ->
