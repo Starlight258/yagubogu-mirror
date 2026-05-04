@@ -30,6 +30,7 @@ import coil3.compose.AsyncImage
 import com.yagubogu.ui.theme.Gray300
 import com.yagubogu.ui.theme.Gray500
 import com.yagubogu.ui.theme.Primary500
+import com.yagubogu.ui.theme.White
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.stringResource
@@ -64,18 +65,18 @@ fun ImageSlider(
                 contentScale = ContentScale.Crop,
                 modifier =
                     Modifier
-                        .padding(horizontal = 8.dp)
+                        .padding(horizontal = 4.dp)
                         .aspectRatio(1f)
                         .dropShadow(
-                            shape = RoundedCornerShape(20.dp),
+                            shape = RoundedCornerShape(12.dp),
                             shadow =
                                 Shadow(
                                     radius = 4.dp,
                                     offset = DpOffset(x = 0.dp, 4.dp),
                                     alpha = 0.25f,
                                 ),
-                        ).clip(RoundedCornerShape(20.dp))
-                        .background(color = Color.White)
+                        ).clip(RoundedCornerShape(12.dp))
+                        .background(color = White)
                         .clickable(enabled = onImageClick != null) { onImageClick?.invoke(page) },
             )
         }
