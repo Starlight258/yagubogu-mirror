@@ -178,10 +178,9 @@ class AttendanceDetailViewModel(
                                 .onSuccess { imageDto ->
                                     handleUploadDiaryImageSuccess(
                                         item,
-                                        imageDto
+                                        imageDto,
                                     )
-                                }
-                                .onFailure { e ->
+                                }.onFailure { e ->
                                     _uiEvent.emit(AttendanceDetailUiEvent.ShowSnackbar(Res.string.attendance_detail_upload_image_failed))
                                     logger.e(e) { "직관 이미지 업로드 실패: ${item.uri}" }
                                 }.isSuccess
