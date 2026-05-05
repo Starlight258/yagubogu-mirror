@@ -61,14 +61,14 @@ jobs:
           username: ${{ secrets.DOCKERHUB_DEPLOY_USERNAME }}
           password: ${{ secrets.DOCKERHUB_DEPLOY_TOKEN }}
 
-      - name: Docker Image Build & Push (arm64-arch)
+      - name: Docker Image Build & Push (multi-arch)
         run: |
           TAG_LATEST="dev-latest"
           docker buildx build \
           --cache-to=type=registry,ref=$IMAGE:build-cache,mode=max \
           --cache-from=type=registry,ref=$IMAGE:build-cache \
           -f crawling/Dockerfile.dev \
-          --platform linux/arm64 \
+          --platform linux/amd64,linux/arm64 \
           -t $IMAGE:$TAG_LATEST \
           --push \
           .
