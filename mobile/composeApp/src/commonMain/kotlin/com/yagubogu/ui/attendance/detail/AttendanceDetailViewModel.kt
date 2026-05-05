@@ -235,5 +235,6 @@ class AttendanceDetailViewModel(
 
     companion object {
         const val DIARY_MAX_IMAGE_SIZE = 3
+        const val DIARY_MAX_LENGTH = 500
     }
 }
