@@ -6,9 +6,9 @@ import co.touchlab.kermit.Logger
 import com.yagubogu.analytics.AnalyticsLogger
 import com.yagubogu.data.repository.checkin.CheckInRepository
 import com.yagubogu.data.repository.thirdparty.ThirdPartyRepository
-import com.yagubogu.domain.attendance.AttendanceDiary
-import com.yagubogu.domain.attendance.DeleteDiaryUseCase
-import com.yagubogu.domain.attendance.LoadDiaryUseCase
+import com.yagubogu.domain.model.AttendanceDiary
+import com.yagubogu.domain.usecase.DeleteDiaryUseCase
+import com.yagubogu.domain.usecase.LoadDiaryUseCase
 import com.yagubogu.ui.attendance.detail.AttendanceDetailViewModel.Companion.DIARY_MAX_IMAGE_SIZE
 import com.yagubogu.ui.attendance.detail.model.AttendanceDetailDiaryUiState
 import com.yagubogu.ui.attendance.detail.model.AttendanceDetailUiEvent
@@ -175,7 +175,12 @@ class AttendanceDetailViewModel(
                         async {
                             val uri = item.uri ?: return@async true
                             uploadDiaryImage(checkInId = gameId, sourceUri = uri)
-                                .onSuccess { imageDto -> handleUploadDiaryImageSuccess(item, imageDto) }
+                                .onSuccess { imageDto ->
+                                    handleUploadDiaryImageSuccess(
+                                        item,
+                                        imageDto
+                                    )
+                                }
                                 .onFailure { e ->
                                     _uiEvent.emit(AttendanceDetailUiEvent.ShowSnackbar(Res.string.attendance_detail_upload_image_failed))
                                     logger.e(e) { "직관 이미지 업로드 실패: ${item.uri}" }

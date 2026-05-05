@@ -1,4 +1,4 @@
-package com.yagubogu.domain.attendance
+package com.yagubogu.domain.model
 
 data class AttendanceDiary(
     val memo: String,

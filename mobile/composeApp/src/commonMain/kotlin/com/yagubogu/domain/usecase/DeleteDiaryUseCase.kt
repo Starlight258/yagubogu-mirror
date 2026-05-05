@@ -1,4 +1,4 @@
-package com.yagubogu.domain.attendance
+package com.yagubogu.domain.usecase
 
 import com.yagubogu.data.repository.checkin.CheckInRepository
 import kotlinx.coroutines.async
