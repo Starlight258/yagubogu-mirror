@@ -35,11 +35,3 @@ class FavoriteTeamViewModel(
         }
     }
 }
-
-sealed interface FavoriteTeamEvent {
-    data class NavigateToNicknameSetup(
-        val team: Team,
-    ) : FavoriteTeamEvent
-
-    data object NavigateToHome : FavoriteTeamEvent
-}
