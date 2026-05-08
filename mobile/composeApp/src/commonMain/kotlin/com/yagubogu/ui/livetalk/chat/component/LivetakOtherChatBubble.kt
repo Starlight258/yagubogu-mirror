@@ -25,7 +25,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -61,11 +64,14 @@ import yagubogu.composeapp.generated.resources.ic_heart
 import yagubogu.composeapp.generated.resources.ic_heart_outline
 import yagubogu.composeapp.generated.resources.ic_kebab
 import yagubogu.composeapp.generated.resources.livetalk_kebab_icon_description
+import yagubogu.composeapp.generated.resources.livetalk_like_icon_description
 import yagubogu.composeapp.generated.resources.livetalk_reported_chat_message
 import yagubogu.composeapp.generated.resources.livetalk_user_report_btn
 import yagubogu.composeapp.generated.resources.livetalk_user_report_icon_description
 import yagubogu.composeapp.generated.resources.time_am
 import yagubogu.composeapp.generated.resources.time_pm
+
+private const val THROTTLE_MS = 1000L
 
 @Composable
 fun LivetalkOtherChatBubble(
@@ -235,19 +241,29 @@ private fun LivetalkLikeButton(
 ) {
     val tintColor = if (isLiked) Red else Gray400
     val heartIcon = if (isLiked) Res.drawable.ic_heart else Res.drawable.ic_heart_outline
+    val scope = rememberCoroutineScope()
+    var isThrottled by remember { mutableStateOf(false) }
 
     Row(
         modifier =
             modifier
                 .clip(RoundedCornerShape(12.dp))
-                .clickable(onClick = onClick)
+                .clickable {
+                    if (isThrottled) return@clickable
+                    isThrottled = true
+                    onClick()
+                    scope.launch {
+                        delay(THROTTLE_MS)
+                        isThrottled = false
+                    }
+                }
                 .padding(horizontal = 4.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
     ) {
         Icon(
             painter = painterResource(heartIcon),
-            contentDescription = "좋아요",
+            contentDescription = stringResource(Res.string.livetalk_like_icon_description),
             tint = tintColor,
             modifier = Modifier.size(16.dp),
         )
