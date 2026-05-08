@@ -17,7 +17,13 @@ import com.yagubogu.ui.theme.Gray050
 @Composable
 fun YaguboguWebView(
     url: String,
-    modifier: Modifier = Modifier,
+    modifier: Modifier =
+        Modifier.padding(
+            top = 8.dp,
+            start = 20.dp,
+            end = 20.dp,
+            bottom = 20.dp,
+        ),
 ) {
     val webViewState =
         rememberWebViewState(url).also { state ->
@@ -32,10 +38,10 @@ fun YaguboguWebView(
         }
 
     Box(
-        modifier
-            .fillMaxSize()
-            .padding(top = 8.dp, start = 20.dp, end = 20.dp, bottom = 20.dp)
-            .background(Gray050),
+        modifier =
+            modifier
+                .fillMaxSize()
+                .background(Gray050),
     ) {
         WebView(
             state = webViewState,
