@@ -47,8 +47,8 @@ import yagubogu.composeapp.generated.resources.favorite_team_selection_confirm
 
 @Composable
 fun FavoriteTeamScreen(
-    onNavigateToNicknameSetup: (String) -> Unit,
-    onNavigateToHome: () -> Unit,
+    onConfirmClickToNicknameSetup: (String) -> Unit,
+    onConfirmClickToNavigateHome: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: FavoriteTeamViewModel = koinViewModel(),
 ) {
@@ -58,8 +58,8 @@ fun FavoriteTeamScreen(
     LaunchedEffect(Unit) {
         viewModel.event.collect { event ->
             when (event) {
-                is FavoriteTeamEvent.NavigateToNicknameSetup -> onNavigateToNicknameSetup(event.team.shortname)
-                FavoriteTeamEvent.NavigateToHome -> onNavigateToHome()
+                is FavoriteTeamEvent.NavigateToNicknameSetup -> onConfirmClickToNicknameSetup(event.team.shortname)
+                FavoriteTeamEvent.NavigateToHome -> onConfirmClickToNavigateHome()
             }
         }
     }

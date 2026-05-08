@@ -118,10 +118,10 @@ fun NavigationRoot(
                 }
                 entry<Route.FavoriteTeam> { key: Route.FavoriteTeam ->
                     FavoriteTeamScreen(
-                        onNavigateToNicknameSetup = { teamName: String ->
+                        onConfirmClickToNicknameSetup = { teamName: String ->
                             rootNavigator.navigate(Route.NicknameSetup(teamName))
                         },
-                        onNavigateToHome = {
+                        onConfirmClickToNavigateHome = {
                             mainNavigator.navigate(BottomNavKey.Home)
                             rootNavigator.clearStack()
                             rootNavigator.navigate(Route.Main)
