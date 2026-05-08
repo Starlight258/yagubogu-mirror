@@ -123,6 +123,7 @@ fun MainScreen(
                         LivetalkScreen(
                             scrollToTopEvent = scrollToTopEvent,
                             onLivetalkItemClick = onLivetalkItemClick,
+                            modifier = modifier,
                         )
                     }
                     entry<BottomNavKey.Stats> {

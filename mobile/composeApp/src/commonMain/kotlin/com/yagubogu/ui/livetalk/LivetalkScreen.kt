@@ -104,7 +104,7 @@ private fun ShimmerLivetalkScreen(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun LivetalkScreen(
+fun LivetalkScreen(
     items: List<LivetalkStadiumItem>,
     onItemClick: (LivetalkStadiumItem) -> Unit,
     modifier: Modifier = Modifier,
@@ -130,7 +130,7 @@ private fun LivetalkScreen(
                 end = 20.dp,
             ),
         modifier =
-            Modifier
+            modifier
                 .fillMaxSize()
                 .background(Gray050),
     ) {
@@ -191,6 +191,7 @@ private fun LivetalkScreenPreview() {
     LivetalkScreen(
         items = LIVETALK_STADIUM_ITEMS,
         onItemClick = {},
+        isWeatherLoaded = true,
     )
 }
 
