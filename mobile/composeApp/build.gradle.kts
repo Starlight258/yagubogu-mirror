@@ -8,8 +8,8 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.io.FileInputStream
 import java.util.Properties
 
-val appVersionCode = 20301
-val appVersionName = "2.3.1"
+val appVersionCode = 30000
+val appVersionName = "3.0.0"
 
 fun TargetConfigDsl.stringField(
     name: String,
