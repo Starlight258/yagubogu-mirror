@@ -1,6 +1,7 @@
 package com.yagubogu.data.datasource.stats
 
 import com.yagubogu.data.dto.response.stats.AverageStatisticResponse
+import com.yagubogu.data.dto.response.stats.LocationCheckInRankingCursorResponse
 import com.yagubogu.data.dto.response.stats.OpponentWinRateResponse
 import com.yagubogu.data.dto.response.stats.StatsCountsResponse
 import com.yagubogu.data.dto.response.stats.StatsLuckyStadiumsResponse
@@ -12,27 +13,27 @@ import com.yagubogu.data.util.safeApiCall
 class StatsRemoteDataSource(
     private val statsApiService: StatsApiService,
 ) : StatsDataSource {
-    override suspend fun getStatsWinRate(year: Int): Result<StatsWinRateResponse> =
+    override suspend fun getStatsWinRate(year: Int?): Result<StatsWinRateResponse> =
         safeApiCall {
             statsApiService.getStatsWinRate(year)
         }
 
-    override suspend fun getStatsCounts(year: Int): Result<StatsCountsResponse> =
+    override suspend fun getStatsCounts(year: Int?): Result<StatsCountsResponse> =
         safeApiCall {
             statsApiService.getStatsCounts(year)
         }
 
-    override suspend fun getLuckyStadiums(year: Int): Result<StatsLuckyStadiumsResponse> =
+    override suspend fun getLuckyStadiums(year: Int?): Result<StatsLuckyStadiumsResponse> =
         safeApiCall {
             statsApiService.getLuckyStadiums(year)
         }
 
-    override suspend fun getAverageStats(year: Int): Result<AverageStatisticResponse> =
+    override suspend fun getAverageStats(year: Int?): Result<AverageStatisticResponse> =
         safeApiCall {
             statsApiService.getAverageStats(year)
         }
 
-    override suspend fun getVsTeamStats(year: Int): Result<OpponentWinRateResponse> =
+    override suspend fun getVsTeamStats(year: Int?): Result<OpponentWinRateResponse> =
         safeApiCall {
             statsApiService.getVsTeamStats(year)
         }
@@ -40,8 +41,19 @@ class StatsRemoteDataSource(
     override suspend fun getVictoryFairyRankings(
         year: Int,
         teamCode: String?,
+        before: Long?,
+        limit: Int,
     ): Result<VictoryFairyRankingResponse> =
         safeApiCall {
-            statsApiService.getVictoryFairyRankings(year, teamCode)
+            statsApiService.getVictoryFairyRankings(year, teamCode, before, limit)
+        }
+
+    override suspend fun getCheckInRankings(
+        year: Int,
+        before: Long?,
+        limit: Int,
+    ): Result<LocationCheckInRankingCursorResponse> =
+        safeApiCall {
+            statsApiService.getCheckInRankings(year, before, limit)
         }
 }
