@@ -65,19 +65,19 @@ class NicknameViewModel(
 
     fun useDefaultNickname() {
         viewModelScope.launch {
-            repeat(3) {
+            for (i in 1..3) {
                 val result = memberRepository.updateNickname(generateNickname(teamName))
-                result
-                    .onSuccess {
-                        _navigateToMainEvent.emit(Unit)
-                        return@launch
-                    }.onFailure { exception ->
-                        val error = exception.toNicknameUpdateError()
-                        if (error != NicknameUpdateError.DuplicateNickname) {
-                            logger.w(exception) { "닉네임 변경 API 호출 실패" }
-                            return@repeat
-                        }
-                    }
+
+                if (result.isSuccess) {
+                    _navigateToMainEvent.emit(Unit)
+                    return@launch
+                }
+
+                val error = result.exceptionOrNull()?.toNicknameUpdateError()
+                if (error != NicknameUpdateError.DuplicateNickname) {
+                    logger.w(result.exceptionOrNull()) { "닉네임 변경 API 호출 실패 (닉네임 중복 외의 에러)" }
+                    break
+                }
             }
 
             repeat(2) {
