@@ -77,7 +77,7 @@ fun VsTeamWinRates(
                 VsTeamStatItemShimmer()
             } else {
                 vsTeamStatItems.forEach { vsTeamStatItem: VsTeamStatItem ->
-                    VsTeamStatItem(vsTeamStatItem = vsTeamStatItem)
+                    VsTeamStatItem(item = vsTeamStatItem)
                 }
             }
         }
@@ -90,7 +90,7 @@ fun VsTeamWinRates(
 
 @Composable
 private fun VsTeamStatItem(
-    vsTeamStatItem: VsTeamStatItem,
+    item: VsTeamStatItem,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -98,14 +98,14 @@ private fun VsTeamStatItem(
         modifier = modifier.padding(vertical = 8.dp),
     ) {
         Text(
-            text = vsTeamStatItem.rank.toString(),
+            text = if (item.totalCounts <= 0) "-" else item.rank.toString(),
             style = PretendardRegular16,
             textAlign = TextAlign.Center,
             color = Gray500,
             modifier = Modifier.width(20.dp),
         )
         Image(
-            painter = painterResource(vsTeamStatItem.team.mascot),
+            painter = painterResource(item.team.mascot),
             contentDescription = null,
             modifier =
                 Modifier
@@ -114,7 +114,7 @@ private fun VsTeamStatItem(
         )
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = vsTeamStatItem.teamName,
+                text = item.teamName,
                 style = PretendardSemiBold,
                 fontSize = 16.sp,
             )
@@ -122,9 +122,9 @@ private fun VsTeamStatItem(
                 text =
                     stringResource(
                         Res.string.stats_vs_team_stats,
-                        vsTeamStatItem.winCounts,
-                        vsTeamStatItem.drawCounts,
-                        vsTeamStatItem.loseCounts,
+                        item.winCounts,
+                        item.drawCounts,
+                        item.loseCounts,
                     ),
                 style = PretendardMedium12,
                 color = Gray400,
@@ -134,7 +134,7 @@ private fun VsTeamStatItem(
             text =
                 stringResource(
                     Res.string.all_win_rate,
-                    vsTeamStatItem.winningPercentage.formatOneDecimal(),
+                    item.winningPercentage.formatOneDecimal(),
                 ),
         )
     }

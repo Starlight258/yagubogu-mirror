@@ -24,6 +24,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.yagubogu.ui.common.AdUnitIds
+import com.yagubogu.ui.common.component.BannerAd
+import com.yagubogu.ui.common.component.BannerAdType
 import com.yagubogu.ui.livetalk.component.LIVETALK_STADIUM_ITEMS
 import com.yagubogu.ui.livetalk.component.LivetalkStadiumItem
 import com.yagubogu.ui.livetalk.component.ShimmerStadiumItem
@@ -42,6 +45,8 @@ import yagubogu.composeapp.generated.resources.img_baseball_fly_error
 import yagubogu.composeapp.generated.resources.livetalk_empty_game_description
 import yagubogu.composeapp.generated.resources.livetalk_empty_game_illustration_description
 import yagubogu.composeapp.generated.resources.livetalk_weather_source_info_text
+
+private const val BANNER_AD_INDEX = 3
 
 @Composable
 fun LivetalkScreen(
@@ -104,7 +109,7 @@ private fun ShimmerLivetalkScreen(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun LivetalkScreen(
+private fun LivetalkScreen(
     items: List<LivetalkStadiumItem>,
     onItemClick: (LivetalkStadiumItem) -> Unit,
     modifier: Modifier = Modifier,
@@ -112,6 +117,7 @@ fun LivetalkScreen(
     scrollToTopEvent: SharedFlow<Unit> = MutableSharedFlow(),
 ) {
     val lazyListState: LazyListState = rememberLazyListState()
+    val showBannerAd = items.size >= BANNER_AD_INDEX
 
     LaunchedEffect(Unit) {
         scrollToTopEvent.collect {
@@ -135,13 +141,26 @@ fun LivetalkScreen(
                 .background(Gray050),
     ) {
         items(
-            count = items.size,
-            key = { index -> items[index].gameId },
-        ) { index ->
-            LivetalkStadiumItem(
-                item = items[index],
-                onClick = onItemClick,
-            )
+            count = items.size + if (showBannerAd) 1 else 0,
+            key = { index: Int ->
+                if (showBannerAd && index == BANNER_AD_INDEX) {
+                    "livetalk_banner_ad"
+                } else {
+                    val itemIndex =
+                        if (showBannerAd && index > BANNER_AD_INDEX) index - 1 else index
+                    items[itemIndex].gameId
+                }
+            },
+        ) { index: Int ->
+            if (showBannerAd && index == BANNER_AD_INDEX) {
+                BannerAd(
+                    adUnitId = AdUnitIds.livetalkBanner,
+                    bannerAdType = BannerAdType.LARGE_BANNER,
+                )
+            } else {
+                val itemIndex = if (showBannerAd && index > BANNER_AD_INDEX) index - 1 else index
+                LivetalkStadiumItem(item = items[itemIndex], onClick = onItemClick)
+            }
         }
         if (isWeatherLoaded) {
             item {
