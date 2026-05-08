@@ -272,8 +272,6 @@ private fun getAppVersion(): String {
     }
 }
 
-private const val NOTICE_URL =
-    "https://scented-allosaurus-6df.notion.site/251ad073c10b805baf8af1a7badd20e7?pvs=74"
 private const val CONTACT_URL = "https://forms.gle/wBhXjfTLyobZa19K8"
 
 @Preview(showBackground = true)
