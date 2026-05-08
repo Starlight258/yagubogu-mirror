@@ -215,7 +215,7 @@ kotlin {
             implementation(libs.calendar.compose.multiplatform)
 
             // WebView
-            api(libs.compose.webview)
+            implementation(libs.compose.webview)
 
             // Logging
             implementation(libs.kermit)
