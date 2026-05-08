@@ -27,8 +27,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -54,6 +52,8 @@ import com.yagubogu.ui.util.crop
 import com.yagubogu.ui.util.formatToAmPm
 import com.yagubogu.ui.util.noRippleClickable
 import com.yagubogu.ui.util.now
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDateTime
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -256,8 +256,7 @@ private fun LivetalkLikeButton(
                         delay(THROTTLE_MS)
                         isThrottled = false
                     }
-                }
-                .padding(horizontal = 4.dp, vertical = 4.dp),
+                }.padding(horizontal = 4.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
     ) {
