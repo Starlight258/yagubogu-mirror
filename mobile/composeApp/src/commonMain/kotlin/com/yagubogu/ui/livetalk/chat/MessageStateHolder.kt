@@ -153,27 +153,29 @@ class MessageStateHolder {
         logger.d { "신고 요청: ${chat.chatId}" }
     }
 
-    fun updateLikeStatus(
+    suspend fun updateLikeStatus(
         chatId: Long,
         liked: Boolean,
         likeCount: Int,
     ) {
-        _livetalkChatBubbleItems.value =
-            _livetalkChatBubbleItems.value.map { bubbleItem ->
-                if (bubbleItem.livetalkChatItem.chatId != chatId) return@map bubbleItem
-                val updatedItem: LivetalkChatItem =
-                    bubbleItem.livetalkChatItem.copy(isLiked = liked, likeCount = likeCount)
-                when (bubbleItem) {
-                    is LivetalkChatBubbleItem.MyBubbleItem ->
-                        LivetalkChatBubbleItem.MyBubbleItem(updatedItem)
+        lock.withLock {
+            _livetalkChatBubbleItems.value =
+                _livetalkChatBubbleItems.value.map { bubbleItem ->
+                    if (bubbleItem.livetalkChatItem.chatId != chatId) return@map bubbleItem
+                    val updatedItem: LivetalkChatItem =
+                        bubbleItem.livetalkChatItem.copy(isLiked = liked, likeCount = likeCount)
+                    when (bubbleItem) {
+                        is LivetalkChatBubbleItem.MyBubbleItem ->
+                            LivetalkChatBubbleItem.MyBubbleItem(updatedItem)
 
-                    is LivetalkChatBubbleItem.MyPendingBubbleItem ->
-                        LivetalkChatBubbleItem.MyPendingBubbleItem(updatedItem)
+                        is LivetalkChatBubbleItem.MyPendingBubbleItem ->
+                            LivetalkChatBubbleItem.MyPendingBubbleItem(updatedItem)
 
-                    is LivetalkChatBubbleItem.OtherBubbleItem ->
-                        LivetalkChatBubbleItem.OtherBubbleItem(updatedItem)
+                        is LivetalkChatBubbleItem.OtherBubbleItem ->
+                            LivetalkChatBubbleItem.OtherBubbleItem(updatedItem)
+                    }
                 }
-            }
+        }
     }
 
     fun dismissReportDialog() {

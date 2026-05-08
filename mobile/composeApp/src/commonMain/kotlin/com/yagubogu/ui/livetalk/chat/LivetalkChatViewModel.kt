@@ -201,8 +201,8 @@ class LivetalkChatViewModel(
         val optimisticLiked = !chat.isLiked
         val optimisticCount =
             if (chat.isLiked) (chat.likeCount - 1).coerceAtLeast(0) else chat.likeCount + 1
-        messageStateHolder.updateLikeStatus(chat.chatId, optimisticLiked, optimisticCount)
         viewModelScope.launch {
+            messageStateHolder.updateLikeStatus(chat.chatId, optimisticLiked, optimisticCount)
             talkRepository
                 .toggleLike(talkId = chat.chatId)
                 .onSuccess { response ->
