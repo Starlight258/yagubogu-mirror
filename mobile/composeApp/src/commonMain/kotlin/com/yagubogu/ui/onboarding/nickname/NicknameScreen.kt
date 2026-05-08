@@ -1,13 +1,8 @@
 package com.yagubogu.ui.onboarding.nickname
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Scaffold
@@ -31,15 +25,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.yagubogu.ui.onboarding.nickname.component.NicknameInputField
 import com.yagubogu.ui.theme.EsamanruMedium
 import com.yagubogu.ui.theme.Gray100
-import com.yagubogu.ui.theme.Gray300
 import com.yagubogu.ui.theme.Gray400
 import com.yagubogu.ui.theme.PretendardMedium16
-import com.yagubogu.ui.theme.PretendardSemiBold
 import com.yagubogu.ui.theme.PretendardSemiBold16
 import com.yagubogu.ui.theme.Primary500
-import com.yagubogu.ui.theme.Rose
 import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.util.noRippleClickable
 import org.jetbrains.compose.resources.painterResource
@@ -47,10 +39,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.img_baseball_animal_neko
-import yagubogu.composeapp.generated.resources.nickname_available
-import yagubogu.composeapp.generated.resources.nickname_check_duplicate
 import yagubogu.composeapp.generated.resources.nickname_next
-import yagubogu.composeapp.generated.resources.nickname_placeholder
 import yagubogu.composeapp.generated.resources.nickname_start_default
 import yagubogu.composeapp.generated.resources.nickname_subtitle
 import yagubogu.composeapp.generated.resources.nickname_title
@@ -130,82 +119,16 @@ private fun NicknameScreenContent(
 
             Spacer(modifier = Modifier.height(48.dp))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                Box(
-                    modifier =
-                        Modifier
-                            .weight(1f)
-                            .height(50.dp)
-                            .background(White, RoundedCornerShape(12.dp))
-                            .border(1.dp, Gray300, RoundedCornerShape(12.dp))
-                            .padding(horizontal = 16.dp),
-                    contentAlignment = Alignment.CenterStart,
-                ) {
-                    if (nickname.isEmpty()) {
-                        Text(stringResource(Res.string.nickname_placeholder), color = Gray400, fontSize = 16.sp)
-                    }
-                    BasicTextField(
-                        value = nickname,
-                        onValueChange = { newValue ->
-                            if (newValue.length <= 15) {
-                                onNicknameChange(newValue)
-                            }
-                        },
-                        textStyle = PretendardSemiBold16,
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true,
-                    )
-                }
-
-                Button(
-                    onClick = {
-                        onCheckDuplicate()
-                        focusManager.clearFocus()
-                    },
-                    modifier = Modifier.height(50.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    colors =
-                        ButtonDefaults.buttonColors(
-                            containerColor = Primary500,
-                            contentColor = White,
-                            disabledContainerColor = Gray400,
-                            disabledContentColor = White,
-                        ),
-                    contentPadding = PaddingValues(horizontal = 16.dp),
-                    enabled = nickname.isNotEmpty() && isDuplicateChecked.not(),
-                ) {
-                    Text(stringResource(Res.string.nickname_check_duplicate), style = PretendardSemiBold16)
-                }
-            }
-
-            Box(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .height(28.dp)
-                        .padding(start = 4.dp),
-                contentAlignment = Alignment.BottomStart,
-            ) {
-                if (nicknameError != null) {
-                    Text(
-                        text = nicknameError,
-                        color = Rose,
-                        style = PretendardSemiBold,
-                        fontSize = 14.sp,
-                    )
-                } else if (isDuplicateChecked) {
-                    Text(
-                        text = stringResource(Res.string.nickname_available),
-                        color = Primary500,
-                        style = PretendardSemiBold,
-                        fontSize = 14.sp,
-                    )
-                }
-            }
+            NicknameInputField(
+                nickname = nickname,
+                onNicknameChange = onNicknameChange,
+                onCheckDuplicate = {
+                    onCheckDuplicate()
+                    focusManager.clearFocus()
+                },
+                isDuplicateChecked = isDuplicateChecked,
+                nicknameError = nicknameError,
+            )
 
             Spacer(modifier = Modifier.weight(1f))
             Box(modifier = Modifier.size(240.dp), contentAlignment = Alignment.Center) {
@@ -245,7 +168,11 @@ private fun NicknameScreenContent(
                         disabledContentColor = Gray400,
                     ),
             ) {
-                Text(stringResource(Res.string.nickname_next), style = EsamanruMedium, fontSize = 20.sp)
+                Text(
+                    stringResource(Res.string.nickname_next),
+                    style = EsamanruMedium,
+                    fontSize = 20.sp,
+                )
             }
             Spacer(modifier = Modifier.height(12.dp))
         }
