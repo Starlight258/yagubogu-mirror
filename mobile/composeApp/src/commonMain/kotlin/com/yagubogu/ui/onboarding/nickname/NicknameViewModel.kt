@@ -6,7 +6,7 @@ import co.touchlab.kermit.Logger
 import com.yagubogu.data.repository.member.MemberRepository
 import com.yagubogu.data.repository.member.NicknameUpdateError
 import com.yagubogu.data.repository.member.toNicknameUpdateError
-import com.yagubogu.data.repository.member.toUiText
+import com.yagubogu.ui.mapper.text.toUiText
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
