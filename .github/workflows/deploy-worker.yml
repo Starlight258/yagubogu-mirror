@@ -3,7 +3,7 @@ name: Deploy Yagubogu Worker
 on:
   push:
     branches:
-      - 'feat/997'
+      - 'main'
   workflow_dispatch:
 
 jobs:
