@@ -3,6 +3,7 @@ package com.yagubogu.ui.livetalk.chat.component
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -38,8 +39,10 @@ import yagubogu.composeapp.generated.resources.livetalk_like_count_message
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LivetalkChatCheeringBar(
-    team: Team,
-    cheeringCount: Long?,
+    myTeam: Team,
+    otherTeam: Team,
+    myTeamCheeringCount: Long?,
+    otherTeamCheeringCount: Long?,
     modifier: Modifier = Modifier,
     onCheeringClick: () -> Unit,
     onPositioned: (Offset) -> Unit = {},
@@ -56,13 +59,14 @@ fun LivetalkChatCheeringBar(
         val cheeringText =
             stringResource(
                 Res.string.livetalk_like_count_message,
-                team.shortname,
-                (cheeringCount ?: 0L).formatWithComma(),
+                myTeam.shortname,
+                (myTeamCheeringCount ?: 0L).formatWithComma(),
             )
 
-        Box(
+        val tempOtherTeamCheeringText = "(${otherTeam.shortname}팀 ${otherTeamCheeringCount?.formatWithComma() ?: 0L}회 응원중)"
+        Column(
             modifier = Modifier.weight(1f),
-            contentAlignment = Alignment.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
                 text = cheeringText,
@@ -71,10 +75,33 @@ fun LivetalkChatCheeringBar(
                 textAlign = TextAlign.Center,
                 modifier =
                     Modifier
-                        .shimmerIf(cheeringCount == null)
+                        .shimmerIf(myTeamCheeringCount == null)
                         .then(
                             when {
-                                cheeringCount == null -> {
+                                myTeamCheeringCount == null -> {
+                                    Modifier.size(
+                                        width = 180.dp,
+                                        height = 20.dp,
+                                    )
+                                }
+
+                                else -> {
+                                    Modifier.wrapContentSize()
+                                }
+                            },
+                        ),
+            )
+            Text(
+                text = tempOtherTeamCheeringText,
+                style = PretendardMedium16,
+                color = Color.Black,
+                textAlign = TextAlign.Center,
+                modifier =
+                    Modifier
+                        .shimmerIf(myTeamCheeringCount == null)
+                        .then(
+                            when {
+                                myTeamCheeringCount == null -> {
                                     Modifier.size(
                                         width = 180.dp,
                                         height = 20.dp,
@@ -95,12 +122,12 @@ fun LivetalkChatCheeringBar(
             contentAlignment = Alignment.Center,
         ) {
             Image(
-                painter = painterResource(team.mascot),
+                painter = painterResource(myTeam.mascot),
                 contentDescription = null,
                 modifier =
                     Modifier
                         .size(32.dp)
-                        .shimmerIf(cheeringCount == null)
+                        .shimmerIf(myTeamCheeringCount == null)
                         .noRippleClickable(
                             onClick = onCheeringClick,
                         ).onGloballyPositioned { coordinates ->
@@ -121,8 +148,10 @@ fun LivetalkChatCheeringBar(
 @Composable
 private fun LivetalkChatCheeringBarPreviewShimmer() {
     LivetalkChatCheeringBar(
-        team = Team.HH,
-        cheeringCount = null,
+        myTeam = Team.HH,
+        otherTeam = Team.HT,
+        myTeamCheeringCount = null,
+        otherTeamCheeringCount = null,
         onCheeringClick = {},
         onPositioned = {},
     )
@@ -132,8 +161,10 @@ private fun LivetalkChatCheeringBarPreviewShimmer() {
 @Composable
 private fun LivetalkChatCheeringBarPreview() {
     LivetalkChatCheeringBar(
-        team = Team.HH,
-        cheeringCount = 12345L,
+        myTeam = Team.HH,
+        otherTeam = Team.HT,
+        myTeamCheeringCount = 12345L,
+        otherTeamCheeringCount = 54321L,
         onCheeringClick = {},
         onPositioned = {},
     )
