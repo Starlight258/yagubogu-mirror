@@ -51,9 +51,10 @@ class ProfileImageServiceTest {
 
     private static final String TEST_BUCKET = "test-bucket";
     private static final Duration TEST_PRESIGN_EXPIRATION = Duration.ofMinutes(10);
-    private static final String TEST_ENDPOINT = "https://test-namespace.compat.objectstorage.ap-chuncheon-1.oraclecloud.com";
-    private static final String TEST_REGION = "ap-chuncheon-1";
-    private static final String TEST_DEFAULT_PROFILE_IMAGE_URL = "https://test-namespace.compat.objectstorage.ap-chuncheon-1.oraclecloud.com/yagubogu/images/defaults/profile.png";
+    private static final String TEST_ENDPOINT = "https://test-account.r2.cloudflarestorage.com";
+    private static final String TEST_REGION = "auto";
+    private static final String TEST_PUBLIC_BASE_URL = TEST_ENDPOINT + "/" + TEST_BUCKET;
+    private static final String TEST_DEFAULT_PROFILE_IMAGE_URL = TEST_PUBLIC_BASE_URL + "/images/defaults/profile.png";
 
     @Mock
     private MemberService memberService;
@@ -73,7 +74,7 @@ class ProfileImageServiceTest {
     @BeforeEach
     void setUp() {
         s3Properties = new S3Properties(TEST_BUCKET, TEST_PRESIGN_EXPIRATION, TEST_ENDPOINT, TEST_REGION,
-                TEST_DEFAULT_PROFILE_IMAGE_URL);
+                TEST_PUBLIC_BASE_URL, TEST_DEFAULT_PROFILE_IMAGE_URL);
         profileImageService = new ProfileImageService(s3Presigner, s3Client, s3Properties, memberService);
     }
 
@@ -123,7 +124,7 @@ class ProfileImageServiceTest {
         verify(s3Presigner, never()).presignPutObject(any(java.util.function.Consumer.class));
     }
 
-    @DisplayName("s3에 업로드된 이미지로 회원의 프로필 이미지 주소를 수정한다")
+    @DisplayName("R2에 업로드된 이미지로 회원의 프로필 이미지 주소를 수정한다")
     @Test
     void completeUpload_success() {
         // given
@@ -131,7 +132,7 @@ class ProfileImageServiceTest {
         PreSignedUrlCompleteRequest request = new PreSignedUrlCompleteRequest(key);
         Member member = memberFactory.save(builder -> builder.build());
 
-        String expectedUrl = TEST_ENDPOINT + "/" + TEST_BUCKET + "/" + key;
+        String expectedUrl = TEST_PUBLIC_BASE_URL + "/" + key;
 
         // Mock 객체 행동 정의 (Stubbing)
         // 1. s3Client.headObject가 정상 응답을 반환하도록 설정

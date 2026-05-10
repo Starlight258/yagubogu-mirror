@@ -294,7 +294,7 @@ public class CheckInService {
 
     private String resolveImageUrl(final String imageKey) {
         assertObjectExists(imageKey);
-        return s3Properties.endpoint() + "/" + s3Properties.bucket() + "/" + imageKey;
+        return s3Properties.objectUrl(imageKey);
     }
 
     private void assertObjectExists(final String key) {
