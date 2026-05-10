@@ -4,17 +4,14 @@ import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import java.time.LocalDate;
 
 public record AdminCrawlingGamesRequest(
         @NotNull
-        @Min(1982)
-        @Max(2100)
-        Integer startYear,
+        LocalDate startDate,
 
         @NotNull
-        @Min(1982)
-        @Max(2100)
-        Integer endYear,
+        LocalDate endDate,
 
         @Min(0)
         @Max(60000)
@@ -32,8 +29,8 @@ public record AdminCrawlingGamesRequest(
         return reviewRetryDelayMinutes == null ? 30L : reviewRetryDelayMinutes;
     }
 
-    @AssertTrue(message = "startYear must be less than or equal to endYear")
-    public boolean isValidYearRange() {
-        return startYear == null || endYear == null || startYear <= endYear;
+    @AssertTrue(message = "startDate must be less than or equal to endDate")
+    public boolean isValidDateRange() {
+        return startDate == null || endDate == null || !startDate.isAfter(endDate);
     }
 }

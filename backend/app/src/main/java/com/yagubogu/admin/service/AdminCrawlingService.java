@@ -21,8 +21,8 @@ public class AdminCrawlingService {
     public AdminCrawlingGamesResponse crawlGames(final AdminCrawlingGamesRequest request) {
         long sleepMillis = request.resolvedSleepMillis();
         long reviewRetryDelayMinutes = request.resolvedReviewRetryDelayMinutes();
-        LocalDate startDate = LocalDate.of(request.startYear(), 1, 1);
-        LocalDate endDate = LocalDate.of(request.endYear(), 12, 31);
+        LocalDate startDate = request.startDate();
+        LocalDate endDate = request.endDate();
 
         int requested = 0;
         int saved = 0;
