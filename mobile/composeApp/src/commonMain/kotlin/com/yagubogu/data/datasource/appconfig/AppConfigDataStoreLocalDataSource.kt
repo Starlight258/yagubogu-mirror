@@ -11,11 +11,19 @@ import kotlinx.coroutines.flow.map
 class AppConfigDataStoreLocalDataSource(
     private val dataStore: DataStore<Preferences>,
 ) : AppConfigLocalDataSource {
-    override val maintenanceIgnoreInfo: Flow<MaintenanceIgnoreInfo> =
+    override val maintenanceIgnoreInfo: Flow<IgnoreInfo> =
         dataStore.data.map { prefs ->
-            MaintenanceIgnoreInfo(
-                lastIgnoredId = prefs[LAST_IGNORED_ID_KEY] ?: -1,
+            IgnoreInfo(
+                lastIgnoredId = prefs[MAINTENANCE_LAST_IGNORED_ID_KEY] ?: -1,
                 ignoreUntil = prefs[MAINTENANCE_IGNORE_UNTIL_KEY] ?: 0L,
+            )
+        }
+
+    override val homeNoticeIgnoreInfo: Flow<IgnoreInfo> =
+        dataStore.data.map { prefs ->
+            IgnoreInfo(
+                lastIgnoredId = prefs[HOME_NOTICE_LAST_IGNORED_ID_KEY] ?: -1,
+                ignoreUntil = prefs[HOME_NOTICE_IGNORE_UNTIL_KEY] ?: 0L,
             )
         }
 
@@ -24,13 +32,26 @@ class AppConfigDataStoreLocalDataSource(
         expiryTime: Long,
     ) {
         dataStore.edit { prefs ->
-            prefs[LAST_IGNORED_ID_KEY] = id
+            prefs[MAINTENANCE_LAST_IGNORED_ID_KEY] = id
             prefs[MAINTENANCE_IGNORE_UNTIL_KEY] = expiryTime
         }
     }
 
+    override suspend fun saveHomeNoticeIgnoreInfo(
+        id: Int,
+        expiryTime: Long,
+    ) {
+        dataStore.edit { prefs ->
+            prefs[HOME_NOTICE_LAST_IGNORED_ID_KEY] = id
+            prefs[HOME_NOTICE_IGNORE_UNTIL_KEY] = expiryTime
+        }
+    }
+
     companion object {
-        private val LAST_IGNORED_ID_KEY = intPreferencesKey("last_ignored_id")
+        private val MAINTENANCE_LAST_IGNORED_ID_KEY = intPreferencesKey("maintenance_last_ignored_id")
         private val MAINTENANCE_IGNORE_UNTIL_KEY = longPreferencesKey("maintenance_ignore_until")
+
+        private val HOME_NOTICE_LAST_IGNORED_ID_KEY = intPreferencesKey("home_notice_last_ignored_id")
+        private val HOME_NOTICE_IGNORE_UNTIL_KEY = longPreferencesKey("home_notice_ignore_until")
     }
 }

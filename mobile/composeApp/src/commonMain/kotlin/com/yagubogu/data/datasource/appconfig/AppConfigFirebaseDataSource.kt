@@ -1,6 +1,7 @@
 package com.yagubogu.data.datasource.appconfig
 
 import co.touchlab.kermit.Logger
+import com.yagubogu.data.dto.response.appconfig.HomeNoticeResponse
 import com.yagubogu.data.dto.response.appconfig.MaintenanceResponse
 import dev.gitlive.firebase.remoteconfig.FirebaseRemoteConfig
 import kotlinx.serialization.json.Json
@@ -23,6 +24,16 @@ class AppConfigFirebaseDataSource(
             minimumFetchInterval = 15.minutes
         }
 
+        val defaultHomeNotice =
+            HomeNoticeResponse(
+                isShow = false,
+                id = -1,
+                emoji = null,
+                title = null,
+                message = null,
+                skippableDays = null,
+            )
+
         val defaultMaintenance =
             MaintenanceResponse(
                 isShow = false,
@@ -38,6 +49,7 @@ class AppConfigFirebaseDataSource(
             "is_maintenance" to false,
             "maintenance_message" to "",
             "maintenance" to json.encodeToString(defaultMaintenance),
+            "home_notice" to json.encodeToString(defaultHomeNotice),
         )
         isConfigured = true
     }
@@ -69,6 +81,22 @@ class AppConfigFirebaseDataSource(
                 message = null,
                 skippableDays = null,
                 isLoginBlock = true,
+            )
+        }
+    }
+
+    override fun getHomeNoticeResponse(): HomeNoticeResponse {
+        val jsonString = remoteConfig.getValue("home_notice").asString()
+        return try {
+            json.decodeFromString<HomeNoticeResponse>(jsonString)
+        } catch (e: Exception) {
+            HomeNoticeResponse(
+                isShow = false,
+                id = -1,
+                emoji = null,
+                title = null,
+                message = null,
+                skippableDays = null,
             )
         }
     }

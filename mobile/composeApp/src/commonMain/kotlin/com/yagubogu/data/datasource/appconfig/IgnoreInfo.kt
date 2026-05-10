@@ -1,6 +1,6 @@
 package com.yagubogu.data.datasource.appconfig
 
-data class MaintenanceIgnoreInfo(
+data class IgnoreInfo(
     val lastIgnoredId: Int,
     val ignoreUntil: Long,
 )
