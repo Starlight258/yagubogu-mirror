@@ -11,30 +11,21 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.yagubogu.domain.model.Team
 import com.yagubogu.ui.theme.Gray050
-import com.yagubogu.ui.theme.PretendardMedium16
-import com.yagubogu.ui.util.formatWithComma
 import com.yagubogu.ui.util.mascot
 import com.yagubogu.ui.util.noRippleClickable
 import com.yagubogu.ui.util.shimmerIf
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
-import yagubogu.composeapp.generated.resources.Res
-import yagubogu.composeapp.generated.resources.livetalk_like_count_message
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,63 +47,15 @@ fun LivetalkChatCheeringBar(
                 .padding(horizontal = 20.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        val cheeringText =
-            stringResource(
-                Res.string.livetalk_like_count_message,
-                myTeam.shortname,
-                (myTeamCheeringCount ?: 0L).formatWithComma(),
-            )
-
-        val tempOtherTeamCheeringText = "(${otherTeam.shortname}팀 ${otherTeamCheeringCount?.formatWithComma() ?: 0L}회 응원중)"
         Column(
             modifier = Modifier.weight(1f),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Text(
-                text = cheeringText,
-                style = PretendardMedium16,
-                color = Color.Black,
-                textAlign = TextAlign.Center,
-                modifier =
-                    Modifier
-                        .shimmerIf(myTeamCheeringCount == null)
-                        .then(
-                            when {
-                                myTeamCheeringCount == null -> {
-                                    Modifier.size(
-                                        width = 180.dp,
-                                        height = 20.dp,
-                                    )
-                                }
-
-                                else -> {
-                                    Modifier.wrapContentSize()
-                                }
-                            },
-                        ),
-            )
-            Text(
-                text = tempOtherTeamCheeringText,
-                style = PretendardMedium16,
-                color = Color.Black,
-                textAlign = TextAlign.Center,
-                modifier =
-                    Modifier
-                        .shimmerIf(myTeamCheeringCount == null)
-                        .then(
-                            when {
-                                myTeamCheeringCount == null -> {
-                                    Modifier.size(
-                                        width = 180.dp,
-                                        height = 20.dp,
-                                    )
-                                }
-
-                                else -> {
-                                    Modifier.wrapContentSize()
-                                }
-                            },
-                        ),
+            LiveTalkChatCheeringRateHorizontalBar(
+                myTeam = myTeam,
+                otherTeam = otherTeam,
+                myTeamCheeringCount = myTeamCheeringCount ?: 0L,
+                otherTeamCheeringCount = otherTeamCheeringCount ?: 0L,
             )
         }
         Spacer(Modifier.width(8.dp))
