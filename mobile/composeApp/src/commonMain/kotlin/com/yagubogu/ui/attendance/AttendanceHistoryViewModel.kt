@@ -74,11 +74,11 @@ class AttendanceHistoryViewModel(
         )
     val showInterstitialAdEvent: SharedFlow<Unit> = _showInterstitialAdEvent.asSharedFlow()
 
-    private var isInterstitialAdEnabled = true
+    private var isPastCheckInAdEnabled = true
     private var pastCheckInCount = 0
 
     init {
-        isInterstitialAdEnabled = appConfigRepository.isInterstitialAdEnabled()
+        isPastCheckInAdEnabled = appConfigRepository.isPastCheckInAdEnabled()
     }
 
     fun fetchAttendanceHistoryItems(
@@ -149,7 +149,7 @@ class AttendanceHistoryViewModel(
 
     private suspend fun emitPastCheckInEvent() {
         pastCheckInCount++
-        if (isInterstitialAdEnabled && pastCheckInCount % 3 == 1) {
+        if (isPastCheckInAdEnabled && pastCheckInCount % 3 == 1) {
             _showInterstitialAdEvent.emit(Unit)
         } else {
             _pastCheckInUiEvent.emit(Unit)

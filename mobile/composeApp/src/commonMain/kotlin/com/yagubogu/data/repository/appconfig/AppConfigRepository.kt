@@ -7,5 +7,5 @@ interface AppConfigRepository {
 
     fun getMaintenanceMessage(): String
 
-    fun isInterstitialAdEnabled(): Boolean
+    fun isPastCheckInAdEnabled(): Boolean
 }
