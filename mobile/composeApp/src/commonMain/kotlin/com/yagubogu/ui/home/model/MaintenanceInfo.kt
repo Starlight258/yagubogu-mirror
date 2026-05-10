@@ -1,12 +1,12 @@
 package com.yagubogu.ui.home.model
 
 data class MaintenanceInfo(
-    val id: Int,
+    override val id: Int,
     val remoteIsShow: Boolean,
     val shouldShowPopup: Boolean,
-    val emoji: String?,
-    val title: String?,
-    val message: String?,
-    val skippableDays: Int?,
+    override val emoji: String?,
+    override val title: String?,
+    override val message: String?,
+    override val skippableDays: Int?,
     val isLoginBlock: Boolean,
-)
+) : PopupNoticeInfo

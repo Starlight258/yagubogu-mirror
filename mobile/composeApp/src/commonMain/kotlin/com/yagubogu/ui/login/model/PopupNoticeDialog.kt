@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.sp
 import com.yagubogu.ui.common.component.DefaultDialog
 import com.yagubogu.ui.common.model.DefaultDialogUiModel
 import com.yagubogu.ui.home.model.MaintenanceInfo
+import com.yagubogu.ui.home.model.PopupNoticeInfo
 import com.yagubogu.ui.theme.Gray200
 import com.yagubogu.ui.theme.Gray700
 import com.yagubogu.ui.theme.PretendardMedium
@@ -31,18 +32,18 @@ import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.dialog_ignore_days_label
 
 @Composable
-fun MaintenanceDialog(
+fun PopupNoticeDialog(
     onConfirm: (Boolean) -> Unit,
-    maintenanceInfo: MaintenanceInfo,
+    popupNoticeInfo: PopupNoticeInfo,
     modifier: Modifier = Modifier,
 ) {
     var isChecked by remember { mutableStateOf(false) }
 
     val dialogUiModel =
         DefaultDialogUiModel(
-            title = maintenanceInfo.title ?: "",
-            emoji = maintenanceInfo.emoji,
-            message = maintenanceInfo.message,
+            title = popupNoticeInfo.title ?: "",
+            emoji = popupNoticeInfo.emoji,
+            message = popupNoticeInfo.message,
         )
 
     DefaultDialog(
@@ -51,7 +52,7 @@ fun MaintenanceDialog(
         onCancel = {},
         modifier = modifier,
         bottomContent =
-            maintenanceInfo.skippableDays?.takeIf { it > 0 }?.let { days ->
+            popupNoticeInfo.skippableDays?.takeIf { it > 0 }?.let { days ->
                 {
                     Spacer(modifier = Modifier.height(8.dp))
                     Row(
@@ -97,10 +98,10 @@ val MAINTENANCE_INFO =
 
 @Preview
 @Composable
-private fun MaintenanceDialogPreview() {
-    MaintenanceDialog(
+private fun PopupNoticeDialogPreview() {
+    PopupNoticeDialog(
         onConfirm = {},
-        maintenanceInfo = MAINTENANCE_INFO,
+        popupNoticeInfo = MAINTENANCE_INFO,
         modifier = Modifier,
     )
 }

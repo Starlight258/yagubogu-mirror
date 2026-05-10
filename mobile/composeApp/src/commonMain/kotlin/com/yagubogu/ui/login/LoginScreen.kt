@@ -36,8 +36,8 @@ import com.yagubogu.ui.common.platform.PlatformType
 import com.yagubogu.ui.common.platform.currentPlatform
 import com.yagubogu.ui.login.auth.OAuthCredentialManager
 import com.yagubogu.ui.login.model.LoginResult
-import com.yagubogu.ui.login.model.MaintenanceDialog
 import com.yagubogu.ui.login.model.OAuthProvider
+import com.yagubogu.ui.login.model.PopupNoticeDialog
 import com.yagubogu.ui.theme.Dimming025
 import com.yagubogu.ui.theme.Dimming050
 import com.yagubogu.ui.theme.EsamanruBold
@@ -91,14 +91,14 @@ fun LoginScreen(
 
         val info = maintenanceInfo
         if (info != null && info.shouldShowPopup && !isMaintenanceConfirm.value) {
-            MaintenanceDialog(
+            PopupNoticeDialog(
                 onConfirm = { isChecked ->
                     isMaintenanceConfirm.value = true
                     if (isChecked) {
                         viewModel.maintenanceDialogIgnore(info.id, info.skippableDays ?: 0)
                     }
                 },
-                maintenanceInfo = info,
+                popupNoticeInfo = info,
                 modifier = Modifier,
             )
         }
