@@ -9,6 +9,7 @@ import com.yagubogu.data.repository.member.NicknameUpdateError
 import com.yagubogu.data.repository.member.toNicknameUpdateError
 import com.yagubogu.data.repository.thirdparty.ThirdPartyRepository
 import com.yagubogu.ui.common.model.PresignedUrlItem
+import com.yagubogu.ui.mapper.text.toUiText
 import com.yagubogu.ui.mapper.toUiModel
 import com.yagubogu.ui.setting.model.MemberInfoItem
 import com.yagubogu.ui.setting.model.PresignedUrlCompleteItem
@@ -29,6 +30,7 @@ import kotlinx.datetime.LocalDate
 import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.image_processing_failed
 import yagubogu.composeapp.generated.resources.image_upload_failed
+import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Clock
 
 class SettingViewModel(
