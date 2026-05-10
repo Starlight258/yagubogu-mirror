@@ -4,6 +4,7 @@ import com.yagubogu.admin.client.CrawlingAdminClient;
 import com.yagubogu.admin.dto.AdminCrawlingGamesRequest;
 import com.yagubogu.admin.dto.AdminCrawlingGamesResponse;
 import com.yagubogu.admin.dto.CrawlingGameDateResponse;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -20,42 +21,66 @@ public class AdminCrawlingService {
     public AdminCrawlingGamesResponse crawlGames(final AdminCrawlingGamesRequest request) {
         long sleepMillis = request.resolvedSleepMillis();
         long reviewRetryDelayMinutes = request.resolvedReviewRetryDelayMinutes();
+        LocalDate startDate = LocalDate.of(request.startYear(), 1, 1);
+        LocalDate endDate = LocalDate.of(request.endYear(), 12, 31);
+
+        int requested = 0;
+        int saved = 0;
+        int skipped = 0;
         int reviewSaved = 0;
         int reviewQueued = 0;
+        List<String> savedGameCodes = new ArrayList<>();
         List<String> failedGameCodes = new ArrayList<>();
+        List<String> failedDates = new ArrayList<>();
 
-        CrawlingGameDateResponse crawlingResponse = crawlingAdminClient.fetchGames(request.date());
-        List<String> completedGameCodes = crawlingResponse.completedGameCodes();
-        for (int index = 0; index < completedGameCodes.size(); index++) {
-            String gameCode = completedGameCodes.get(index);
+        for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+            CrawlingGameDateResponse crawlingResponse;
             try {
-                crawlingAdminClient.fetchReview(gameCode);
-                reviewSaved++;
-            } catch (Exception reviewException) {
-                failedGameCodes.add(gameCode);
-                crawlingAdminClient.enqueueReviewRetry(gameCode, reviewRetryDelayMinutes);
-                reviewQueued++;
-                log.warn("[ADMIN_CRAWLING] Review crawl failed, queued retry: gameCode={}", gameCode,
-                        reviewException);
+                crawlingResponse = crawlingAdminClient.fetchGames(date);
+                requested += crawlingResponse.requested();
+                saved += crawlingResponse.saved();
+                skipped += crawlingResponse.skipped();
+                savedGameCodes.addAll(crawlingResponse.savedGameCodes());
+            } catch (Exception exception) {
+                failedDates.add(date.toString());
+                log.error("[ADMIN_CRAWLING] Game crawl failed: date={}", date, exception);
+                sleep(sleepMillis);
+                continue;
             }
 
-            sleepBetweenCalls(index, completedGameCodes.size(), sleepMillis);
+            sleep(sleepMillis);
+
+            for (String gameCode : crawlingResponse.completedGameCodes()) {
+                try {
+                    crawlingAdminClient.fetchReview(gameCode);
+                    reviewSaved++;
+                } catch (Exception reviewException) {
+                    failedGameCodes.add(gameCode);
+                    crawlingAdminClient.enqueueReviewRetry(gameCode, reviewRetryDelayMinutes);
+                    reviewQueued++;
+                    log.warn("[ADMIN_CRAWLING] Review crawl failed, queued retry: gameCode={}", gameCode,
+                            reviewException);
+                }
+
+                sleep(sleepMillis);
+            }
         }
 
         return new AdminCrawlingGamesResponse(
-                crawlingResponse.requested(),
-                crawlingResponse.saved(),
-                crawlingResponse.skipped(),
+                requested,
+                saved,
+                skipped,
                 reviewSaved,
                 reviewQueued,
-                failedGameCodes.size(),
-                crawlingResponse.savedGameCodes(),
-                failedGameCodes
+                failedDates.size() + failedGameCodes.size(),
+                savedGameCodes,
+                failedGameCodes,
+                failedDates
         );
     }
 
-    private void sleepBetweenCalls(final int index, final int size, final long sleepMillis) {
-        if (sleepMillis <= 0 || index >= size - 1) {
+    private void sleep(final long sleepMillis) {
+        if (sleepMillis <= 0) {
             return;
         }
 

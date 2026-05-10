@@ -44,8 +44,12 @@
         <form class="crawling-form" id="crawling-form">
             <div class="form-row">
                 <label>
-                    <span>크롤링 날짜</span>
-                    <input id="crawling-date" name="date" type="date" required>
+                    <span>시작 연도</span>
+                    <input id="start-year" name="startYear" type="number" min="1982" max="2100" placeholder="2025" required>
+                </label>
+                <label>
+                    <span>종료 연도</span>
+                    <input id="end-year" name="endYear" type="number" min="1982" max="2100" placeholder="2026" required>
                 </label>
                 <label>
                     <span>Sleep(ms)</span>

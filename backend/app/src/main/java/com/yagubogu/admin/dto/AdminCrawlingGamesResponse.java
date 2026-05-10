@@ -10,6 +10,7 @@ public record AdminCrawlingGamesResponse(
         int reviewQueued,
         int failed,
         List<String> savedGameCodes,
-        List<String> failedGameCodes
+        List<String> failedGameCodes,
+        List<String> failedDates
 ) {
 }

@@ -44,9 +44,16 @@ crawlingForm.addEventListener("submit", async (event) => {
 
   const submitButton = crawlingForm.querySelector("button[type='submit']");
   const originalText = submitButton.textContent;
+  const startYear = Number(crawlingForm.startYear.value);
+  const endYear = Number(crawlingForm.endYear.value);
 
-  if (!crawlingForm.date.value) {
-    showToast("크롤링 날짜를 선택해주세요", "error");
+  if (!startYear || !endYear) {
+    showToast("연도 범위를 입력해주세요", "error");
+    return;
+  }
+
+  if (startYear > endYear) {
+    showToast("시작 연도는 종료 연도보다 클 수 없습니다", "error");
     return;
   }
 
@@ -60,7 +67,8 @@ crawlingForm.addEventListener("submit", async (event) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        date: crawlingForm.date.value,
+        startYear,
+        endYear,
         sleepMillis: Number(crawlingForm.sleepMillis.value),
         reviewRetryDelayMinutes: Number(crawlingForm.reviewRetryDelayMinutes.value),
       }),
