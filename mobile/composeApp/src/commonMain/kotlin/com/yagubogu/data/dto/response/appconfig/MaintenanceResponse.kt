@@ -17,4 +17,6 @@ data class MaintenanceResponse(
     val message: String?, // 다이얼로그 메시지
     @SerialName("skippable_days")
     val skippableDays: Int?, // 스킵 가능한 일 수
+    @SerialName("is_login_block")
+    val isLoginBlock: Boolean, // 로그인 차단 여부
 )

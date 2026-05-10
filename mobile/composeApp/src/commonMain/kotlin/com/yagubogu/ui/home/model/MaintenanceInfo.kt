@@ -8,4 +8,5 @@ data class MaintenanceInfo(
     val title: String?,
     val message: String?,
     val skippableDays: Int?,
+    val isLoginBlock: Boolean,
 )

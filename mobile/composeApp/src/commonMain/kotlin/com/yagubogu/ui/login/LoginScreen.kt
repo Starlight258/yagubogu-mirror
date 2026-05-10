@@ -82,6 +82,7 @@ fun LoginScreen(
         LoginScreen(
             onGoogleLoginClick = { viewModel.signInWithGoogle(googleCredentialManager) },
             onAppleLoginClick = { viewModel.signInWithApple(appleCredentialManager) },
+            isLoginBlock = maintenanceInfo?.isLoginBlock ?: true,
         )
         SnackbarHost(
             hostState = snackbarHostState,
@@ -116,6 +117,7 @@ fun LoginScreen(
 private fun LoginScreen(
     onGoogleLoginClick: () -> Unit,
     onAppleLoginClick: () -> Unit,
+    isLoginBlock: Boolean,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -162,16 +164,18 @@ private fun LoginScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(20.dp),
             ) {
-                LoginButton(
-                    provider = OAuthProvider.GOOGLE,
-                    onClick = onGoogleLoginClick,
-                )
-
-                if (currentPlatform == PlatformType.IOS) {
+                if (!isLoginBlock) {
                     LoginButton(
-                        provider = OAuthProvider.APPLE,
-                        onClick = onAppleLoginClick,
+                        provider = OAuthProvider.GOOGLE,
+                        onClick = onGoogleLoginClick,
                     )
+
+                    if (currentPlatform == PlatformType.IOS) {
+                        LoginButton(
+                            provider = OAuthProvider.APPLE,
+                            onClick = onAppleLoginClick,
+                        )
+                    }
                 }
             }
             Spacer(modifier = Modifier.height(180.dp))
@@ -272,5 +276,5 @@ fun LoginResultHandler(
 @Preview
 @Composable
 private fun LoginScreenPreview() {
-    LoginScreen(onGoogleLoginClick = {}, onAppleLoginClick = {})
+    LoginScreen(onGoogleLoginClick = {}, onAppleLoginClick = {}, isLoginBlock = false)
 }

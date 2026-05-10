@@ -3,7 +3,6 @@ package com.yagubogu.data.datasource.appconfig
 import co.touchlab.kermit.Logger
 import com.yagubogu.data.dto.response.appconfig.MaintenanceResponse
 import dev.gitlive.firebase.remoteconfig.FirebaseRemoteConfig
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.time.Duration.Companion.minutes
 
@@ -32,6 +31,7 @@ class AppConfigFirebaseDataSource(
                 title = null,
                 message = null,
                 skippableDays = null,
+                isLoginBlock = true,
             )
 
         remoteConfig.setDefaults(
@@ -68,6 +68,7 @@ class AppConfigFirebaseDataSource(
                 title = null,
                 message = null,
                 skippableDays = null,
+                isLoginBlock = true,
             )
         }
     }

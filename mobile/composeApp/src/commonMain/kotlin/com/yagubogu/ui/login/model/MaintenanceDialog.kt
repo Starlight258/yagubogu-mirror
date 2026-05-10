@@ -92,6 +92,7 @@ val MAINTENANCE_INFO =
         title = "야구보구 점검중 테스트",
         message = "점검중입니다. 잠시만 기다려주세요.",
         skippableDays = 3,
+        isLoginBlock = false,
     )
 
 @Preview

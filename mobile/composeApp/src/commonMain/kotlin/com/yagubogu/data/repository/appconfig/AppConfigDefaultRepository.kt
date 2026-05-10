@@ -37,6 +37,7 @@ class AppConfigDefaultRepository(
             title = remoteResponse.title,
             message = remoteResponse.message,
             skippableDays = remoteResponse.skippableDays,
+            isLoginBlock = remoteResponse.isLoginBlock,
         )
     }
 
