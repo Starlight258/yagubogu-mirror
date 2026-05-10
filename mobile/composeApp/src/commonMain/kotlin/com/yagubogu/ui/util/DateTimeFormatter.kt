@@ -18,7 +18,7 @@ val yyyyMMddFormatter: DateTimeFormat<LocalDate> =
             day()
         }
 
-// yyyy.MM.dd (요일) 포맷터 (예: 2025.08.14 (화))
+// yyyy.MM.dd (요일) 포맷터 (예: 2025.08.14 (목))
 val yyyyMMddDayOfWeekFormatter: DateTimeFormat<LocalDate> =
     LocalDate
         .Format {

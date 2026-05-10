@@ -2,23 +2,23 @@ package com.yagubogu.ui.common.component.image
 
 import androidx.compose.runtime.Composable
 import co.touchlab.kermit.Logger
-import com.yagubogu.ui.util.UiText
 import io.github.ismoy.imagepickerkmp.domain.config.CameraCaptureConfig
 import io.github.ismoy.imagepickerkmp.domain.config.CropConfig
 import io.github.ismoy.imagepickerkmp.domain.models.CompressionLevel
 import io.github.ismoy.imagepickerkmp.domain.models.GalleryPhotoResult
 import io.github.ismoy.imagepickerkmp.domain.models.MimeType.Companion.ALL_SUPPORTED_TYPES
 import io.github.ismoy.imagepickerkmp.presentation.ui.components.GalleryPickerLauncher
+import org.jetbrains.compose.resources.StringResource
 import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.image_selection_failed
 
 @Composable
 fun ImagePicker(
+    onPhotosSelected: (List<String>) -> Unit,
+    onError: (message: StringResource) -> Unit,
+    onClosePicker: () -> Unit,
     allowMultiple: Boolean = false,
     selectionLimit: Long = 1,
-    onPhotosSelected: (List<String>) -> Unit,
-    onError: (UiText) -> Unit,
-    onClosePicker: () -> Unit,
 ) {
     val logger: Logger = Logger.withTag("ImagePicker")
     logger.d { "ImagePicker 열림" }
@@ -28,18 +28,16 @@ fun ImagePicker(
         mimeTypes = ALL_SUPPORTED_TYPES,
         onPhotosSelected = { photos: List<GalleryPhotoResult> ->
             logger.d { "onPhotosSelected, 사진 개수: ${photos.size}" }
-            onClosePicker()
-
             if (photos.isEmpty()) {
                 logger.w { "선택된 사진이 없습니다" }
-                return@GalleryPickerLauncher
+            } else {
+                onPhotosSelected(photos.map { it.uri })
             }
-            onPhotosSelected(photos.map { it.uri })
             onClosePicker()
         },
         onError = { exception: Exception ->
             logger.e(exception) { "GalleryPicker 에러 발생" }
-            onError(UiText.StringRes(Res.string.image_selection_failed))
+            onError(Res.string.image_selection_failed)
             onClosePicker()
         },
         onDismiss = {

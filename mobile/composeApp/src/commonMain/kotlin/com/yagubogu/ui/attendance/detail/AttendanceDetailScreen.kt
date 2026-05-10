@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
@@ -16,6 +15,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,16 +37,13 @@ import com.yagubogu.ui.util.showSingleSnackbar
 import com.yagubogu.ui.util.yyyyMMddDayOfWeekFormatter
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.format
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.attendance_detail_delete
-import yagubogu.composeapp.generated.resources.attendance_detail_delete_failed
-import yagubogu.composeapp.generated.resources.attendance_detail_load_failed
-import yagubogu.composeapp.generated.resources.attendance_detail_update_memo_failed
-import yagubogu.composeapp.generated.resources.attendance_detail_upload_image_failed
 import yagubogu.composeapp.generated.resources.ic_trash
 
 @Composable
@@ -61,6 +58,7 @@ fun AttendanceDetailScreen(
     var showDeleteDialog by remember { mutableStateOf(false) }
 
     val snackbarState: SnackbarHostState = LocalSnackbarHostState.current
+    val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState { AttendanceDetailTab.entries.size }
     val attendanceDetailDiaryUiState: AttendanceDetailDiaryUiState by viewModel.attendanceDetailDiaryUiState.collectAsStateWithLifecycle()
 
@@ -68,30 +66,12 @@ fun AttendanceDetailScreen(
         pagerState.currentPage == AttendanceDetailTab.DIARY.ordinal && attendanceDetailDiaryUiState.mode == DiaryMode.WRITE
 
     LaunchedEffect(Unit) {
-        viewModel.uiEvent.collect {
-            when (it) {
-                AttendanceDetailUiEvent.LoadDiaryFailed ->
+        viewModel.uiEvent.collect { event ->
+            when (event) {
+                is AttendanceDetailUiEvent.ShowSnackbar ->
                     snackbarState.showSingleSnackbar(
                         scope = this,
-                        stringResource = Res.string.attendance_detail_load_failed,
-                    )
-
-                AttendanceDetailUiEvent.UpdateMemoFailed ->
-                    snackbarState.showSingleSnackbar(
-                        scope = this,
-                        stringResource = Res.string.attendance_detail_update_memo_failed,
-                    )
-
-                AttendanceDetailUiEvent.UploadImageFailed ->
-                    snackbarState.showSingleSnackbar(
-                        scope = this,
-                        stringResource = Res.string.attendance_detail_upload_image_failed,
-                    )
-
-                AttendanceDetailUiEvent.DeleteDiaryFailed ->
-                    snackbarState.showSingleSnackbar(
-                        scope = this,
-                        stringResource = Res.string.attendance_detail_delete_failed,
+                        stringResource = event.message,
                     )
             }
         }
@@ -113,6 +93,7 @@ fun AttendanceDetailScreen(
         onImageDeleted = viewModel::deleteImage,
         onEditClick = viewModel::editDiary,
         onSaveClick = viewModel::saveDiary,
+        onImagePickerError = { message -> snackbarState.showSingleSnackbar(scope, message) },
         modifier = modifier,
     )
 
@@ -145,6 +126,7 @@ private fun AttendanceDetailScreen(
     onImageDeleted: (index: Int) -> Unit,
     onEditClick: () -> Unit,
     onSaveClick: (comment: String) -> Unit,
+    onImagePickerError: (message: StringResource) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -178,6 +160,7 @@ private fun AttendanceDetailScreen(
                             onImageDeleted = onImageDeleted,
                             onEditClick = onEditClick,
                             onSaveClick = onSaveClick,
+                            onImagePickerError = onImagePickerError,
                         )
                 }
             }
@@ -202,7 +185,6 @@ private fun AttendanceDetailToolbar(
                 Icon(
                     painter = painterResource(Res.drawable.ic_trash),
                     contentDescription = stringResource(Res.string.attendance_detail_delete),
-                    modifier = Modifier.padding(),
                 )
             }
         },
@@ -215,12 +197,13 @@ private fun AttendanceDetailScreenDiaryTabPreview() {
     AttendanceDetailScreen(
         attendanceDetailDiaryUiState = AttendanceDetailDiaryUiState(),
         pagerState = rememberPagerState(AttendanceDetailTab.DIARY.ordinal) { AttendanceDetailTab.entries.size },
-        date = "2025.08.14 (화)",
+        date = "2025.08.14 (목)",
         onBackClick = {},
         onDeleteClick = {},
         onImagesSelected = {},
         onImageDeleted = {},
         onEditClick = {},
         onSaveClick = { _ -> },
+        onImagePickerError = {},
     )
 }

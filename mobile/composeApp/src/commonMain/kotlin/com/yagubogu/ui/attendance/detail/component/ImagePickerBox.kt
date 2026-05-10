@@ -32,6 +32,7 @@ import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import yagubogu.composeapp.generated.resources.Res
+import yagubogu.composeapp.generated.resources.attendance_detail_delete_photo
 import yagubogu.composeapp.generated.resources.attendance_detail_image_picker
 import yagubogu.composeapp.generated.resources.ic_camera
 import yagubogu.composeapp.generated.resources.ic_close
@@ -149,7 +150,7 @@ private fun DeleteIcon(modifier: Modifier = Modifier) {
     ) {
         Icon(
             painter = painterResource(Res.drawable.ic_close),
-            contentDescription = "사진 삭제",
+            contentDescription = stringResource(Res.string.attendance_detail_delete_photo),
             tint = White,
             modifier = Modifier.size(20.dp),
         )

@@ -5,7 +5,7 @@ import com.yagubogu.data.dto.response.checkin.CheckInImageDto
 import com.yagubogu.data.dto.response.checkin.CheckInReviewResponse
 import com.yagubogu.data.dto.response.checkin.FanRateByGameDto
 import com.yagubogu.data.dto.response.checkin.StadiumCheckInCountDto
-import com.yagubogu.ui.attendance.detail.model.CheckInPresignedUrlItem
+import com.yagubogu.data.dto.response.presigned.PresignedUrlStartResponse
 import kotlinx.datetime.LocalDate
 
 interface CheckInRepository {
@@ -42,7 +42,7 @@ interface CheckInRepository {
     suspend fun getImagePresignedUrl(
         contentType: String,
         contentLength: Long,
-    ): Result<CheckInPresignedUrlItem>
+    ): Result<PresignedUrlStartResponse>
 
     suspend fun getImages(checkInId: Long): Result<List<CheckInImageDto>>
 

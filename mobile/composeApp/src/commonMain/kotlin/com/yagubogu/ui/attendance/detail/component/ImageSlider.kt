@@ -20,15 +20,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.dropShadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.yagubogu.ui.theme.Gray500
+import com.yagubogu.ui.theme.Gray300
 import com.yagubogu.ui.theme.Primary500
+import com.yagubogu.ui.theme.White
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.stringResource
@@ -37,12 +37,11 @@ import yagubogu.composeapp.generated.resources.attendance_detail_image_content_d
 
 @Composable
 fun ImageSlider(
-    images: ImmutableList<String?>,
+    images: ImmutableList<String>,
     modifier: Modifier = Modifier,
     onImageClick: ((index: Int) -> Unit)? = null,
 ) {
-    val imageSize = images.count { it != null }
-    val pagerState = rememberPagerState(initialPage = 0, pageCount = { imageSize })
+    val pagerState = rememberPagerState(initialPage = 0, pageCount = { images.size })
 
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -63,22 +62,22 @@ fun ImageSlider(
                 contentScale = ContentScale.Crop,
                 modifier =
                     Modifier
-                        .padding(horizontal = 8.dp)
+                        .padding(horizontal = 4.dp)
                         .aspectRatio(1f)
                         .dropShadow(
-                            shape = RoundedCornerShape(20.dp),
+                            shape = RoundedCornerShape(12.dp),
                             shadow =
                                 Shadow(
                                     radius = 4.dp,
                                     offset = DpOffset(x = 0.dp, 4.dp),
                                     alpha = 0.25f,
                                 ),
-                        ).clip(RoundedCornerShape(20.dp))
-                        .background(color = Color.White)
+                        ).clip(RoundedCornerShape(12.dp))
+                        .background(color = White)
                         .clickable(enabled = onImageClick != null) { onImageClick?.invoke(page) },
             )
         }
-        SliderDots(size = imageSize, selectedIndex = pagerState.currentPage)
+        SliderDots(size = images.size, selectedIndex = pagerState.currentPage)
     }
 }
 
@@ -99,7 +98,7 @@ fun SliderDots(
                         .size(6.dp)
                         .background(
                             shape = CircleShape,
-                            color = if (idx == selectedIndex) Primary500 else Gray500,
+                            color = if (idx == selectedIndex) Primary500 else Gray300,
                         ),
             )
         }

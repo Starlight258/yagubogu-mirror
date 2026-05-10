@@ -1,4 +1,4 @@
-package com.yagubogu.ui.common.component.image
+package com.yagubogu.ui.util
 
 import android.app.Application
 import android.graphics.Bitmap
@@ -36,7 +36,6 @@ actual suspend fun compressImage(
 
     return CompressedImage(
         uri = Uri.fromFile(compressedFile).toString(),
-        mimeType = "image/jpeg",
         fileSize = compressedFile.length(),
     )
 }
@@ -57,6 +56,8 @@ private fun scaledDimensions(
         }
     val originalWidth = options.outWidth
     val originalHeight = options.outHeight
+
+    if (originalWidth <= 0 || originalHeight <= 0) error("이미지 디코딩 실패: ${file.absolutePath}")
 
     if (originalWidth <= maxWidth && originalHeight <= maxHeight) {
         return originalWidth to originalHeight

@@ -1,18 +1,18 @@
 package com.yagubogu.data.service
 
 import com.yagubogu.data.dto.request.checkin.CheckInImageRequest
+import com.yagubogu.data.dto.request.checkin.CheckInMemoRequest
 import com.yagubogu.data.dto.request.checkin.CheckInRequest
-import com.yagubogu.data.dto.request.checkin.MemoRequest
 import com.yagubogu.data.dto.request.checkin.PastCheckInRequest
 import com.yagubogu.data.dto.request.presigned.PresignedUrlStartRequest
 import com.yagubogu.data.dto.response.checkin.CheckInCountsResponse
 import com.yagubogu.data.dto.response.checkin.CheckInHistoryResponse
 import com.yagubogu.data.dto.response.checkin.CheckInImageDto
 import com.yagubogu.data.dto.response.checkin.CheckInImagesResponse
+import com.yagubogu.data.dto.response.checkin.CheckInMemoResponse
 import com.yagubogu.data.dto.response.checkin.CheckInReviewResponse
 import com.yagubogu.data.dto.response.checkin.CheckInStatusResponse
 import com.yagubogu.data.dto.response.checkin.FanRateResponse
-import com.yagubogu.data.dto.response.checkin.MemoResponse
 import com.yagubogu.data.dto.response.checkin.StadiumCheckInCountsResponse
 import com.yagubogu.data.dto.response.presigned.PresignedUrlStartResponse
 import de.jensklingenberg.ktorfit.http.Body
@@ -70,12 +70,12 @@ interface CheckInApiService {
     @GET("/api/v1/check-ins/{checkInId}/memo")
     suspend fun getMemo(
         @Path("checkInId") checkInId: Long,
-    ): MemoResponse
+    ): CheckInMemoResponse
 
     @PUT("/api/v1/check-ins/{checkInId}/memo")
     suspend fun putMemo(
         @Path("checkInId") checkInId: Long,
-        @Body body: MemoRequest,
+        @Body body: CheckInMemoRequest,
     )
 
     @DELETE("/api/v1/check-ins/{checkInId}/memo")

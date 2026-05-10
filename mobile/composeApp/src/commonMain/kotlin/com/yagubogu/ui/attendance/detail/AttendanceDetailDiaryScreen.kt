@@ -49,6 +49,7 @@ import com.yagubogu.ui.theme.Primary500
 import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.util.noRippleClickable
 import kotlinx.collections.immutable.persistentListOf
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import yagubogu.composeapp.generated.resources.Res
@@ -58,8 +59,6 @@ import yagubogu.composeapp.generated.resources.attendance_detail_diary_save
 import yagubogu.composeapp.generated.resources.attendance_detail_tab_diary
 import yagubogu.composeapp.generated.resources.ic_pencil
 
-private const val DIARY_MAX_LENGTH = 500
-
 @Composable
 fun AttendanceDetailDiaryScreen(
     uiState: AttendanceDetailDiaryUiState,
@@ -67,6 +66,7 @@ fun AttendanceDetailDiaryScreen(
     onImageDeleted: (index: Int) -> Unit,
     onEditClick: () -> Unit,
     onSaveClick: (comment: String) -> Unit,
+    onImagePickerError: (message: StringResource) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -87,6 +87,7 @@ fun AttendanceDetailDiaryScreen(
                     onImagesSelected = onImagesSelected,
                     onImageDeleted = onImageDeleted,
                     onSaveClick = onSaveClick,
+                    onImagePickerError = onImagePickerError,
                 )
         }
     }
@@ -132,10 +133,11 @@ private fun WritingDiaryPage(
     onImagesSelected: (images: List<String>) -> Unit,
     onImageDeleted: (index: Int) -> Unit,
     onSaveClick: (comment: String) -> Unit,
+    onImagePickerError: (message: StringResource) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var isGalleryOpen by remember { mutableStateOf(false) }
-    var comment by remember { mutableStateOf(uiState.comment) }
+    var comment by remember(uiState.comment) { mutableStateOf(uiState.comment) }
 
     Column(
         modifier =
@@ -146,14 +148,14 @@ private fun WritingDiaryPage(
         verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
         ImagePickerBoxRow(
-            images = uiState.imageUris,
+            images = uiState.imageSlots,
             onAddClick = { isGalleryOpen = true },
             onDeleteClick = onImageDeleted,
         )
         DiaryTextField(
             readOnly = false,
             value = comment,
-            onValueChange = { if (it.length <= DIARY_MAX_LENGTH) comment = it },
+            onValueChange = { if (it.length <= AttendanceDetailViewModel.DIARY_MAX_LENGTH) comment = it },
             modifier = Modifier.fillMaxWidth().weight(1f),
         )
         DiarySaveButton(onClick = { onSaveClick(comment) })
@@ -166,8 +168,7 @@ private fun WritingDiaryPage(
                     .fillMaxSize()
                     .background(Gray900.copy(alpha = 0.3f))
                     .systemBarsPadding()
-                    .pointerInput(Unit) { detectTapGestures { } },
-            // 배경 터치 차단
+                    .pointerInput(Unit) { detectTapGestures { } }, // 배경 터치 차단
         ) {
             ImagePicker(
                 allowMultiple = true,
@@ -176,7 +177,7 @@ private fun WritingDiaryPage(
                     isGalleryOpen = false
                     onImagesSelected(uris)
                 },
-                onError = { uiText -> },
+                onError = onImagePickerError,
                 onClosePicker = { isGalleryOpen = false },
             )
         }
@@ -245,7 +246,7 @@ private fun DiaryTextField(
                 innerTextField()
                 if (!readOnly) {
                     Text(
-                        text = "${value.length}/$DIARY_MAX_LENGTH",
+                        text = "${value.length}/$AttendanceDetailViewModel.DIARY_MAX_LENGTH",
                         style = PretendardRegular12.copy(color = Gray400),
                         modifier = Modifier.align(Alignment.BottomEnd),
                     )
@@ -290,6 +291,7 @@ private fun AttendanceDetailDiaryScreenWritingPagePreview() {
         onImageDeleted = {},
         onEditClick = {},
         onSaveClick = { _ -> },
+        onImagePickerError = {},
     )
 }
 
@@ -312,5 +314,6 @@ private fun AttendanceDetailDiaryScreenReadingPagePreview() {
         onImageDeleted = {},
         onEditClick = {},
         onSaveClick = { _ -> },
+        onImagePickerError = {},
     )
 }

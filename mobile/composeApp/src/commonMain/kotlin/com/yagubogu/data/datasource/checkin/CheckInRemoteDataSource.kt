@@ -1,18 +1,18 @@
 package com.yagubogu.data.datasource.checkin
 
 import com.yagubogu.data.dto.request.checkin.CheckInImageRequest
+import com.yagubogu.data.dto.request.checkin.CheckInMemoRequest
 import com.yagubogu.data.dto.request.checkin.CheckInRequest
-import com.yagubogu.data.dto.request.checkin.MemoRequest
 import com.yagubogu.data.dto.request.checkin.PastCheckInRequest
 import com.yagubogu.data.dto.request.presigned.PresignedUrlStartRequest
 import com.yagubogu.data.dto.response.checkin.CheckInCountsResponse
 import com.yagubogu.data.dto.response.checkin.CheckInHistoryResponse
 import com.yagubogu.data.dto.response.checkin.CheckInImageDto
 import com.yagubogu.data.dto.response.checkin.CheckInImagesResponse
+import com.yagubogu.data.dto.response.checkin.CheckInMemoResponse
 import com.yagubogu.data.dto.response.checkin.CheckInReviewResponse
 import com.yagubogu.data.dto.response.checkin.CheckInStatusResponse
 import com.yagubogu.data.dto.response.checkin.FanRateResponse
-import com.yagubogu.data.dto.response.checkin.MemoResponse
 import com.yagubogu.data.dto.response.checkin.StadiumCheckInCountsResponse
 import com.yagubogu.data.dto.response.presigned.PresignedUrlStartResponse
 import com.yagubogu.data.service.CheckInApiService
@@ -76,7 +76,7 @@ class CheckInRemoteDataSource(
             checkInApiService.getGameReview(checkInId)
         }
 
-    override suspend fun getMemo(checkInId: Long): Result<MemoResponse> =
+    override suspend fun getMemo(checkInId: Long): Result<CheckInMemoResponse> =
         safeApiCall {
             checkInApiService.getMemo(checkInId)
         }
@@ -86,7 +86,7 @@ class CheckInRemoteDataSource(
         content: String,
     ): Result<Unit> =
         safeApiCall {
-            checkInApiService.putMemo(checkInId, MemoRequest(content))
+            checkInApiService.putMemo(checkInId, CheckInMemoRequest(content))
         }
 
     override suspend fun deleteMemo(checkInId: Long): Result<Unit> =

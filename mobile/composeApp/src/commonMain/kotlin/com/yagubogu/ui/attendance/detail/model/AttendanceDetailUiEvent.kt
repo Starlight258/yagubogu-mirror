@@ -1,11 +1,9 @@
 package com.yagubogu.ui.attendance.detail.model
 
+import org.jetbrains.compose.resources.StringResource
+
 sealed interface AttendanceDetailUiEvent {
-    data object LoadDiaryFailed : AttendanceDetailUiEvent
-
-    data object UpdateMemoFailed : AttendanceDetailUiEvent
-
-    data object UploadImageFailed : AttendanceDetailUiEvent
-
-    data object DeleteDiaryFailed : AttendanceDetailUiEvent
+    data class ShowSnackbar(
+        val message: StringResource,
+    ) : AttendanceDetailUiEvent
 }

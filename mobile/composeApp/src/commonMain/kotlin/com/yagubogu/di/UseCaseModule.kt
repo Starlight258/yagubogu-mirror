@@ -1,7 +1,7 @@
 package com.yagubogu.di
 
-import com.yagubogu.domain.attendance.DeleteDiaryUseCase
-import com.yagubogu.domain.attendance.LoadDiaryUseCase
+import com.yagubogu.domain.usecase.DeleteDiaryUseCase
+import com.yagubogu.domain.usecase.LoadDiaryUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
