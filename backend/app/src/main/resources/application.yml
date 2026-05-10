@@ -85,7 +85,7 @@ app:
     presign-expiration: 5m
     endpoint: ${R2_S3_ENDPOINT}
     region: ${R2_REGION:auto}
-    public-base-url: ${R2_PUBLIC_BASE_URL:${app.s3.endpoint}/${app.s3.bucket}}
+    public-base-url: ${R2_PUBLIC_BASE_URL:https://images.yagubogu.com}
     default-profile-image-url: ${R2_DEFAULT_PROFILE_IMAGE_URL:${app.s3.public-base-url}/images/defaults/profile.png}
 
 ---
