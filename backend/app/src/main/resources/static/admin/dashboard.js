@@ -1,6 +1,10 @@
 const toast = document.querySelector("#toast");
 const logoutButton = document.querySelector("#logout-button");
 const crawlingForm = document.querySelector("#crawling-form");
+const startDateInput = document.querySelector("#start-date");
+const endDateInput = document.querySelector("#end-date");
+const sleepMillisInput = document.querySelector("#sleep-millis");
+const reviewDelayInput = document.querySelector("#review-delay");
 
 const showToast = (message, type = "success") => {
   toast.textContent = message;
@@ -44,8 +48,8 @@ crawlingForm.addEventListener("submit", async (event) => {
 
   const submitButton = crawlingForm.querySelector("button[type='submit']");
   const originalText = submitButton.textContent;
-  const startDate = crawlingForm.startDate.value;
-  const endDate = crawlingForm.endDate.value;
+  const startDate = startDateInput.value;
+  const endDate = endDateInput.value;
 
   if (!startDate || !endDate) {
     showToast("날짜 범위를 입력해주세요", "error");
@@ -69,8 +73,8 @@ crawlingForm.addEventListener("submit", async (event) => {
       body: JSON.stringify({
         startDate,
         endDate,
-        sleepMillis: Number(crawlingForm.sleepMillis.value),
-        reviewRetryDelayMinutes: Number(crawlingForm.reviewRetryDelayMinutes.value),
+        sleepMillis: Number(sleepMillisInput.value),
+        reviewRetryDelayMinutes: Number(reviewDelayInput.value),
       }),
     });
 
@@ -88,6 +92,8 @@ crawlingForm.addEventListener("submit", async (event) => {
     showToast(
       `저장 ${result.saved}, 스킵 ${result.skipped}, 리뷰 ${result.reviewSaved}, 큐 ${result.reviewQueued}, 실패 ${result.failed}`
     );
+  } catch (error) {
+    showToast("요청 중 오류가 발생했습니다", "error");
   } finally {
     submitButton.disabled = false;
     submitButton.textContent = originalText;
