@@ -37,9 +37,9 @@ import com.yagubogu.ui.util.slidePopTransition
 import com.yagubogu.ui.util.slidePredictivePopTransition
 import com.yagubogu.ui.util.slidePushTransition
 import com.yagubogu.ui.util.snackbarPadding
+import kotlinx.datetime.LocalDate
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
-import kotlinx.datetime.LocalDate
 
 /**
  * 앱의 최상위 네비게이션 구조를 정의하는 루트 컴포저블.
@@ -108,8 +108,8 @@ fun NavigationRoot(
                         onFavoriteTeamEditClick = {
                             rootNavigator.navigate(
                                 Route.FavoriteTeam(
-                                    isOnboarding = false
-                                )
+                                    isOnboarding = false,
+                                ),
                             )
                         },
                         onLogout = {
