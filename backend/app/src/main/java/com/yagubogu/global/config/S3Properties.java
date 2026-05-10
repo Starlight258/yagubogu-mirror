@@ -13,15 +13,48 @@ public record S3Properties(
         String defaultProfileImageUrl
 ) {
 
+    public String apiEndpoint() {
+        return removeTrailingBucketPath(endpoint);
+    }
+
     public String objectUrl(final String key) {
         return trimTrailingSlash(resolvePublicBaseUrl()) + "/" + trimLeadingSlash(key);
     }
 
     private String resolvePublicBaseUrl() {
         if (publicBaseUrl != null && !publicBaseUrl.isBlank()) {
-            return publicBaseUrl;
+            return removeDuplicateTrailingBucketPath(publicBaseUrl);
         }
-        return trimTrailingSlash(endpoint) + "/" + trimSlashes(bucket);
+        String trimmedEndpoint = trimTrailingSlash(endpoint);
+        if (hasTrailingBucketPath(trimmedEndpoint)) {
+            return trimmedEndpoint;
+        }
+        return trimmedEndpoint + "/" + trimSlashes(bucket);
+    }
+
+    private String removeTrailingBucketPath(final String value) {
+        String trimmedValue = trimTrailingSlash(value);
+        if (!hasTrailingBucketPath(trimmedValue)) {
+            return trimmedValue;
+        }
+        return trimmedValue.substring(0, trimmedValue.length() - bucketPath().length());
+    }
+
+    private String removeDuplicateTrailingBucketPath(final String value) {
+        String trimmedValue = trimTrailingSlash(value);
+        String duplicateBucketPath = bucketPath() + bucketPath();
+        if (!trimmedValue.endsWith(duplicateBucketPath)) {
+            return trimmedValue;
+        }
+        return trimmedValue.substring(0, trimmedValue.length() - bucketPath().length());
+    }
+
+    private boolean hasTrailingBucketPath(final String value) {
+        return value != null && value.endsWith(bucketPath());
+    }
+
+    private String bucketPath() {
+        return "/" + trimSlashes(bucket);
     }
 
     private static String trimTrailingSlash(final String value) {

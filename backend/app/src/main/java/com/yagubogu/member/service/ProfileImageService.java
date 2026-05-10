@@ -25,7 +25,7 @@ public class ProfileImageService {
 
     private static final long MAX_FILE_SIZE_MB = 5;
     private static final long MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024;
-    private static final String IMAGES_PROFILES_PREFIX = "images/profiles/";
+    private static final String PROFILE_PREFIX = "profile/";
     private static final Set<String> ALLOWED_CONTENT_TYPES = Set.of("image/jpeg");
 
     private final S3Presigner s3Presigner;
@@ -38,7 +38,7 @@ public class ProfileImageService {
         validateContentType(preSignedUrlStartRequest.contentType());
 
         String uniqueFileName = UUID.randomUUID().toString();
-        String key = IMAGES_PROFILES_PREFIX + uniqueFileName;
+        String key = PROFILE_PREFIX + uniqueFileName;
 
         PutObjectRequest putReq = PutObjectRequest.builder()
                 .bucket(s3Properties.bucket())
