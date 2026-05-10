@@ -20,7 +20,7 @@ public class S3Config {
     @Bean
     S3Client s3() {
         return S3Client.builder()
-                .endpointOverride(URI.create(s3Properties.endpoint()))
+                .endpointOverride(URI.create(s3Properties.apiEndpoint()))
                 .region(Region.of(s3Properties.region()))
                 .serviceConfiguration(S3Configuration.builder()
                         .pathStyleAccessEnabled(true)
@@ -31,7 +31,7 @@ public class S3Config {
     @Bean
     S3Presigner presigner() {
         return S3Presigner.builder()
-                .endpointOverride(URI.create(s3Properties.endpoint()))
+                .endpointOverride(URI.create(s3Properties.apiEndpoint()))
                 .region(Region.of(s3Properties.region()))
                 .serviceConfiguration(S3Configuration.builder()
                         .pathStyleAccessEnabled(true)

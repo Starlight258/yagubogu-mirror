@@ -90,7 +90,7 @@ public class ProfileImageE2eTest extends E2eTestBase {
 
         // then
         assertSoftly(softAssertions -> {
-            softAssertions.assertThat(response.key()).startsWith("images/profiles/");
+            softAssertions.assertThat(response.key()).startsWith("profile/");
             softAssertions.assertThat(response.url()).contains(s3Properties.bucket());
             softAssertions.assertThat(response.url()).contains(response.key());
         });
@@ -102,7 +102,7 @@ public class ProfileImageE2eTest extends E2eTestBase {
         // given
         Member member = memberFactory.save(MemberBuilder::build);
         String accessToken = authFactory.getAccessTokenByMemberId(member.getId(), Role.USER);
-        String key = "images/profiles/abc-123";
+        String key = "profile/abc-123";
 
         String expectedUrl = s3Properties.objectUrl(key);
 

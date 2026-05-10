@@ -83,7 +83,7 @@ class ProfileImageServiceTest {
     void issuePreSignedUrl_success() throws MalformedURLException {
         // given
         PreSignedUrlStartRequest request = new PreSignedUrlStartRequest("image/jpeg", 1_000_000L);
-        String fakeKeyPrefix = "images/profiles/";
+        String fakeKeyPrefix = "profile/";
         String fakeUrl = "https://test-bucket.s3.ap-northeast-2.amazonaws.com/" + fakeKeyPrefix + "some-uuid";
         when(presignedPutObjectRequest.url()).thenReturn(new URL(fakeUrl));
         when(s3Presigner.presignPutObject(any(Consumer.class))).thenReturn(
@@ -128,7 +128,7 @@ class ProfileImageServiceTest {
     @Test
     void completeUpload_success() {
         // given
-        String key = "images/profiles/abc-123";
+        String key = "profile/abc-123";
         PreSignedUrlCompleteRequest request = new PreSignedUrlCompleteRequest(key);
         Member member = memberFactory.save(builder -> builder.build());
 
