@@ -97,6 +97,13 @@ jobs:
             -e APPLE_CLIENT_ID="${{ secrets.APPLE_CLIENT_ID }}" \
             -e ACCESS_TOKEN_SECRET_KEY="${{ secrets.ACCESS_TOKEN_SECRET_KEY }}" \
             -e REFRESH_TOKEN_SECRET_KEY="${{ secrets.REFRESH_TOKEN_SECRET_KEY }}" \
+            -e AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
+            -e AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
+            -e R2_S3_ENDPOINT="${{ secrets.R2_S3_ENDPOINT }}" \
+            -e R2_REGION="${{ secrets.R2_REGION }}" \
+            -e R2_S3_BUCKET="${{ secrets.R2_S3_BUCKET }}" \
+            -e R2_PUBLIC_BASE_URL="${{ secrets.R2_PUBLIC_BASE_URL || 'https://images.yagubogu.com' }}" \
+            -e R2_DEFAULT_PROFILE_IMAGE_URL="${{ secrets.R2_DEFAULT_PROFILE_IMAGE_URL || 'https://images.yagubogu.com/images/defaults/profile.png' }}" \
             -l app=yagubogu-backend \
             -l release.version="$VER" \
             -l release.digest="$DIGEST" \

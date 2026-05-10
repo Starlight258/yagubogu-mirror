@@ -90,21 +90,21 @@ public class ProfileImageE2eTest extends E2eTestBase {
 
         // then
         assertSoftly(softAssertions -> {
-            softAssertions.assertThat(response.key()).startsWith("images/profiles/");
+            softAssertions.assertThat(response.key()).startsWith("profile/");
             softAssertions.assertThat(response.url()).contains(s3Properties.bucket());
             softAssertions.assertThat(response.url()).contains(response.key());
         });
     }
 
-    @DisplayName("s3에 업로드된 이미지로 회원의 프로필 이미지 주소를 수정한다")
+    @DisplayName("R2에 업로드된 이미지로 회원의 프로필 이미지 주소를 수정한다")
     @Test
     void completeAndUpdate_success() {
         // given
         Member member = memberFactory.save(MemberBuilder::build);
         String accessToken = authFactory.getAccessTokenByMemberId(member.getId(), Role.USER);
-        String key = "images/profiles/abc-123";
+        String key = "profile/abc-123";
 
-        String expectedUrl = s3Properties.endpoint() + "/" + s3Properties.bucket() + "/" + key;
+        String expectedUrl = s3Properties.objectUrl(key);
 
         // when
         PreSignedUrlCompleteResponse response = RestAssured.given().log().all()

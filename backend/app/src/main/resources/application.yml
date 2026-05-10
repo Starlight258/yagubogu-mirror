@@ -81,11 +81,12 @@ sse:
 
 app:
   s3:
-    bucket: ${OCI_S3_BUCKET}
+    bucket: ${R2_S3_BUCKET}
     presign-expiration: 5m
-    endpoint: ${OCI_S3_ENDPOINT}
-    region: ${OCI_REGION}
-    default-profile-image-url: ${DEFAULT_PROFILE_IMAGE_URL}
+    endpoint: ${R2_S3_ENDPOINT}
+    region: ${R2_REGION:auto}
+    public-base-url: ${R2_PUBLIC_BASE_URL:https://images.yagubogu.com}
+    default-profile-image-url: ${R2_DEFAULT_PROFILE_IMAGE_URL:${app.s3.public-base-url}/images/defaults/profile.png}
 
 ---
 spring:

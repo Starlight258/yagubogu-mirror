@@ -37,7 +37,7 @@ jobs:
 
   build:
     needs: ci
-    runs-on: ubuntu-22.04-arm
+    runs-on: ubuntu-latest
     defaults:
       run:
         shell: bash
@@ -56,7 +56,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_DEPLOY_USERNAME }}
           password: ${{ secrets.DOCKERHUB_DEPLOY_TOKEN }}
 
-      - name: Docker Image Build & Push (arm64-arch)
+      - name: Docker Image Build & Push (amd64)
         run: |
           TAG_LATEST="dev-latest"
           # 빌드 컨텍스트: backend/ (Gradle 루트), Dockerfile: app/Dockerfile
@@ -64,7 +64,7 @@ jobs:
           --cache-to=type=registry,ref=$IMAGE:build-cache,mode=max \
           --cache-from=type=registry,ref=$IMAGE:build-cache \
           -f app/Dockerfile \
-          --platform linux/arm64 \
+          --platform linux/amd64 \
           -t $IMAGE:$TAG_LATEST \
           --push \
           .
@@ -128,6 +128,11 @@ jobs:
             -e OCI_REGION="${{ secrets.OCI_REGION }}" \
             -e OCI_S3_BUCKET="${{ secrets.OCI_S3_BUCKET }}" \
             -e DEFAULT_PROFILE_IMAGE_URL="${{ secrets.DEFAULT_PROFILE_IMAGE_URL }}" \
+            -e R2_S3_ENDPOINT="${{ secrets.R2_S3_ENDPOINT }}" \
+            -e R2_REGION="${{ secrets.R2_REGION }}" \
+            -e R2_S3_BUCKET="${{ secrets.R2_S3_BUCKET }}" \
+            -e R2_PUBLIC_BASE_URL="${{ secrets.R2_PUBLIC_BASE_URL || 'https://images.yagubogu.com' }}" \
+            -e R2_DEFAULT_PROFILE_IMAGE_URL="${{ secrets.R2_DEFAULT_PROFILE_IMAGE_URL || 'https://images.yagubogu.com/images/defaults/profile.png' }}" \
             $IMAGE:$TAG
           
           echo "컨테이너 실행 완료."  

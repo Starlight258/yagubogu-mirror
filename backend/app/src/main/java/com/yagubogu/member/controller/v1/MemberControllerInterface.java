@@ -97,7 +97,7 @@ public interface MemberControllerInterface {
     @Operation(summary = "회원 프로필 이미지 수정", description = "프로필 사진 저장을 완료하고 회원의 프로필 사진으로 저장합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "회원 프로필 이미지 수정성공"),
-            @ApiResponse(responseCode = "404", description = "key로 s3에서 이미지를 찾을 수 없음")
+            @ApiResponse(responseCode = "404", description = "key로 R2에서 이미지를 찾을 수 없음")
     })
     @PostMapping("/me/profile-image/update")
     ResponseEntity<PreSignedUrlCompleteResponse> updateProfileImage(
