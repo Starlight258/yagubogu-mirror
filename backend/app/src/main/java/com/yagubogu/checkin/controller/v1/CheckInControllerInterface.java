@@ -168,7 +168,7 @@ public interface CheckInControllerInterface {
 
     // ── 이미지 CRUD ────────────────────────────────────────────────────────────
 
-    @Operation(summary = "직관 기록 이미지 업로드용 Presigned URL 발급", description = "직관 기록 이미지 업로드를 위한 S3 Presigned URL을 발급합니다.")
+    @Operation(summary = "직관 기록 이미지 업로드용 Presigned URL 발급", description = "직관 기록 이미지 업로드를 위한 R2 Presigned URL을 발급합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Presigned URL 발급 성공")
     })

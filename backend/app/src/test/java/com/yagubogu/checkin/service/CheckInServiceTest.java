@@ -120,6 +120,8 @@ class CheckInServiceTest {
         mockS3Properties = Mockito.mock(S3Properties.class);
         Mockito.when(mockS3Properties.endpoint()).thenReturn("http://s3.test");
         Mockito.when(mockS3Properties.bucket()).thenReturn("test-bucket");
+        Mockito.when(mockS3Properties.objectUrl(Mockito.anyString()))
+                .thenAnswer(invocation -> "http://s3.test/test-bucket/" + invocation.getArgument(0));
 
         locationCheckInRankingRepository = mock(LocationCheckInRankingRepository.class);
         checkInService = new CheckInService(

@@ -43,6 +43,7 @@ class CheckInImageServiceTest {
                 Duration.ofMinutes(10),
                 TEST_ENDPOINT,
                 "ap-chuncheon-1",
+                TEST_ENDPOINT + "/" + TEST_BUCKET,
                 "http://default.img"
         );
         checkInImageService = new CheckInImageService(s3Properties, s3Presigner);

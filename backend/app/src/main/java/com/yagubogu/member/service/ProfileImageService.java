@@ -60,7 +60,7 @@ public class ProfileImageService {
         String key = request.key();
         assertObjectExists(key);
 
-        String objectUrl = s3Properties.endpoint() + "/" + s3Properties.bucket() + "/" + key;
+        String objectUrl = s3Properties.objectUrl(key);
 
         return updateProfileImage(memberId, objectUrl);
     }
