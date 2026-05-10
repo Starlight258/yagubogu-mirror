@@ -35,6 +35,30 @@
             실행
         </button>
     </section>
+
+    <section class="admin-panel wide-panel">
+        <div>
+            <p class="panel-kicker">Crawling</p>
+            <h2>게임 크롤링 수동 실행</h2>
+        </div>
+        <form class="crawling-form" id="crawling-form">
+            <label>
+                <span>게임 코드</span>
+                <textarea id="game-codes" name="gameCodes" rows="5" placeholder="20260412SKLG0"></textarea>
+            </label>
+            <div class="form-row">
+                <label>
+                    <span>Sleep(ms)</span>
+                    <input id="sleep-millis" name="sleepMillis" type="number" min="0" max="60000" value="3000">
+                </label>
+                <label>
+                    <span>리뷰 재시도 지연(분)</span>
+                    <input id="review-delay" name="reviewRetryDelayMinutes" type="number" min="0" max="1440" value="30">
+                </label>
+            </div>
+            <button class="primary-button" type="submit">실행</button>
+        </form>
+    </section>
 </main>
 
 <aside class="toast" id="toast" role="status"></aside>

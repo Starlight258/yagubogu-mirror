@@ -57,6 +57,10 @@ admin:
   oauth:
     google:
       client-id: ${ADMIN_GOOGLE_CLIENT_ID:${GOOGLE_CLIENT_ID}}
+  crawling:
+    base-url: ${CRAWLING_BASE_URL:http://localhost:8081}
+    connect-timeout: 5s
+    read-timeout: 180s
 
 security:
   token:
