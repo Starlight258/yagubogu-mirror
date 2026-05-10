@@ -42,7 +42,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_DEPLOY_USERNAME }}
           password: ${{ secrets.DOCKERHUB_DEPLOY_TOKEN }}
 
-      - name: Build & Push main-latest (multi-arch)
+      - name: Build & Push main-latest (amd64)
         shell: bash
         run: |
           set -euo pipefail
@@ -50,7 +50,7 @@ jobs:
             --cache-to=type=registry,ref=$IMAGE:build-cache,mode=max \
             --cache-from=type=registry,ref=$IMAGE:build-cache \
             -f backend/crawling/Dockerfile.main \
-            --platform linux/amd64,linux/arm64 \
+            --platform linux/amd64 \
             -t $IMAGE:main-latest \
             --push \
             backend

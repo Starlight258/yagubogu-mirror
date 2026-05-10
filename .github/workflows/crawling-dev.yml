@@ -42,7 +42,7 @@ jobs:
 
   build:
     needs: ci
-    runs-on: ubuntu-22.04-arm
+    runs-on: ubuntu-latest
     defaults:
       run:
         shell: bash
@@ -61,14 +61,14 @@ jobs:
           username: ${{ secrets.DOCKERHUB_DEPLOY_USERNAME }}
           password: ${{ secrets.DOCKERHUB_DEPLOY_TOKEN }}
 
-      - name: Docker Image Build & Push (multi-arch)
+      - name: Docker Image Build & Push (amd64)
         run: |
           TAG_LATEST="dev-latest"
           docker buildx build \
           --cache-to=type=registry,ref=$IMAGE:build-cache,mode=max \
           --cache-from=type=registry,ref=$IMAGE:build-cache \
           -f crawling/Dockerfile.dev \
-          --platform linux/amd64,linux/arm64 \
+          --platform linux/amd64 \
           -t $IMAGE:$TAG_LATEST \
           --push \
           .
