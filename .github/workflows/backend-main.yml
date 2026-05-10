@@ -179,6 +179,11 @@ jobs:
             -e OCI_REGION="${{ secrets.OCI_REGION }}" \
             -e OCI_S3_BUCKET="${{ secrets.OCI_S3_BUCKET }}" \
             -e DEFAULT_PROFILE_IMAGE_URL="${{ secrets.DEFAULT_PROFILE_IMAGE_URL }}" \
+            -e R2_S3_ENDPOINT="${{ secrets.R2_S3_ENDPOINT }}" \
+            -e R2_REGION="${{ secrets.R2_REGION }}" \
+            -e R2_S3_BUCKET="${{ secrets.R2_S3_BUCKET }}" \
+            -e R2_PUBLIC_BASE_URL="${{ secrets.R2_PUBLIC_BASE_URL }}" \
+            -e R2_DEFAULT_PROFILE_IMAGE_URL="${{ secrets.R2_DEFAULT_PROFILE_IMAGE_URL }}" \
             -l app=yagubogu-backend \
             -l release.version="${NEXT_VERSION_WITH_V}" \
             -l release.digest="${DIGEST}" \
