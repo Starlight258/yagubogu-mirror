@@ -75,9 +75,8 @@ fun LoginScreen(
     viewModel: LoginViewModel = koinViewModel(),
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
-    val isMaintenance by viewModel.isMaintenance.collectAsStateWithLifecycle()
+    val maintenanceInfo by viewModel.maintenanceInfo.collectAsStateWithLifecycle()
     val isMaintenanceConfirm = remember { mutableStateOf(false) }
-    val maintenanceMessage by viewModel.maintenanceMessage.collectAsStateWithLifecycle()
 
     Box(modifier = modifier) {
         LoginScreen(
@@ -89,10 +88,11 @@ fun LoginScreen(
             modifier = Modifier.align(Alignment.BottomCenter),
         )
 
-        if (isMaintenance && !isMaintenanceConfirm.value) {
+        val info = maintenanceInfo
+        if (info != null && info.shouldShowPopup && !isMaintenanceConfirm.value) {
             MaintenanceDialog(
                 onConfirm = { isMaintenanceConfirm.value = true },
-                maintenanceMessage = maintenanceMessage,
+                maintenanceInfo = info,
                 modifier = Modifier,
             )
         }

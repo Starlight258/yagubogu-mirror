@@ -22,21 +22,13 @@ class YaguBoguViewModel(
     private val _autoLoginState = MutableStateFlow<AutoLoginState>(AutoLoginState.Loading)
     val autoLoginState: StateFlow<AutoLoginState> = _autoLoginState.asStateFlow()
 
-    private val _isMaintenance = MutableStateFlow(false)
-    val isMaintenance: StateFlow<Boolean> = _isMaintenance.asStateFlow()
-
-    private val _maintenanceMessage = MutableStateFlow("")
-    val maintenanceMessage: StateFlow<String> = _maintenanceMessage.asStateFlow()
-
     fun handleAutoLogin(onAppInitialized: () -> Unit) {
         viewModelScope.launch {
             appConfigRepository.fetchConfigs()
 
-            if (appConfigRepository.isMaintenanceMode()) {
-                _isMaintenance.value = true
-                _maintenanceMessage.value = appConfigRepository.getMaintenanceMessage()
+            if (appConfigRepository.getMaintenanceInfo().remoteIsShow) {
                 _autoLoginState.emit(AutoLoginState.Maintenance)
-                logger.i { "점검 상태입니다. 점검 공지:${maintenanceMessage.value}" }
+                logger.i { "점검 상태입니다. 점검 공지:${appConfigRepository.getMaintenanceInfo().message}" }
                 onAppInitialized()
                 return@launch
             }

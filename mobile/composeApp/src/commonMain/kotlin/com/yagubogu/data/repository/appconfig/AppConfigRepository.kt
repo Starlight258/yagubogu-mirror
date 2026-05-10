@@ -1,11 +1,16 @@
 package com.yagubogu.data.repository.appconfig
 
+import com.yagubogu.ui.home.model.MaintenanceInfo
+
 interface AppConfigRepository {
     suspend fun fetchConfigs()
 
-    fun isMaintenanceMode(): Boolean
+    suspend fun getMaintenanceInfo(): MaintenanceInfo
 
-    fun getMaintenanceMessage(): String
+    suspend fun maintenanceDialogMarkAsIgnored(
+        maintenanceId: Int,
+        days: Int,
+    )
 
     fun isPastCheckInAdEnabled(): Boolean
 }

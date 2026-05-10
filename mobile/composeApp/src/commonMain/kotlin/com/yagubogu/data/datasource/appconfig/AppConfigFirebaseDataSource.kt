@@ -1,7 +1,10 @@
 package com.yagubogu.data.datasource.appconfig
 
 import co.touchlab.kermit.Logger
+import com.yagubogu.data.dto.response.appconfig.MaintenanceResponse
 import dev.gitlive.firebase.remoteconfig.FirebaseRemoteConfig
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import kotlin.time.Duration.Companion.minutes
 
 class AppConfigFirebaseDataSource(
@@ -9,14 +12,32 @@ class AppConfigFirebaseDataSource(
 ) : AppConfigRemoteDataSource {
     private var isConfigured = false
 
+    private val json =
+        Json {
+            ignoreUnknownKeys = true
+            coerceInputValues = true
+        }
+
     private suspend fun ensureConfigured() {
         if (isConfigured) return
         remoteConfig.settings {
             minimumFetchInterval = 15.minutes
         }
+
+        val defaultMaintenance =
+            MaintenanceResponse(
+                isShow = false,
+                id = -1,
+                emoji = null,
+                title = null,
+                message = null,
+                skippableDays = null,
+            )
+
         remoteConfig.setDefaults(
             "is_maintenance" to false,
             "maintenance_message" to "",
+            "maintenance" to json.encodeToString(defaultMaintenance),
         )
         isConfigured = true
     }
@@ -34,4 +55,20 @@ class AppConfigFirebaseDataSource(
     override fun getBoolean(key: String): Boolean = remoteConfig.getValue(key).asBoolean()
 
     override fun getString(key: String): String = remoteConfig.getValue(key).asString()
+
+    override fun getMaintenanceResponse(): MaintenanceResponse {
+        val jsonString = remoteConfig.getValue("maintenance").asString()
+        return try {
+            json.decodeFromString<MaintenanceResponse>(jsonString)
+        } catch (e: Exception) {
+            MaintenanceResponse(
+                isShow = false,
+                id = -1,
+                emoji = null,
+                title = null,
+                message = null,
+                skippableDays = null,
+            )
+        }
+    }
 }
