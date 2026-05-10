@@ -36,8 +36,8 @@ fun LiveTalkChatCheeringRateHorizontalBar(
     modifier: Modifier = Modifier,
 ) {
     val totalCount = myTeamCheeringCount + otherTeamCheeringCount
-    val myTeamChartRange = if (totalCount > 0) myTeamCheeringCount.toFloat() / totalCount else 0.5f
-    val otherTeamChartRange = if (totalCount > 0) otherTeamCheeringCount.toFloat() / totalCount else 0.5f
+    val myTeamChartRange = chartRange(totalCount, myTeamCheeringCount)
+    val otherTeamChartRange = chartRange(totalCount, otherTeamCheeringCount)
 
     val barHeight = 8.dp
 
@@ -62,7 +62,11 @@ fun LiveTalkChatCheeringRateHorizontalBar(
 
             Text(
                 text = stringResource(Res.string.livetalk_cheering_count_label),
-                style = EsamanruMedium.copy(fontSize = 14.dpToSp, color = com.yagubogu.ui.theme.Gray600),
+                style =
+                    EsamanruMedium.copy(
+                        fontSize = 14.dpToSp,
+                        color = com.yagubogu.ui.theme.Gray600,
+                    ),
                 modifier = Modifier.align(Alignment.Center),
             )
 
@@ -103,6 +107,15 @@ fun LiveTalkChatCheeringRateHorizontalBar(
             }
         }
     }
+}
+
+private fun chartRange(
+    totalCount: Long,
+    count: Long,
+) = when {
+    totalCount > 0 && count > 0 -> count.toFloat() / totalCount
+    count == 0L -> 0.0001f
+    else -> 0.5f
 }
 
 @Preview
