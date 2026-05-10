@@ -12,4 +12,6 @@ class AppConfigDefaultRepository(
     override fun isMaintenanceMode(): Boolean = dataSource.getBoolean("is_maintenance")
 
     override fun getMaintenanceMessage(): String = dataSource.getString("maintenance_message")
+
+    override fun isInterstitialAdEnabled(): Boolean = dataSource.getBoolean("is_interstitial_ad_enabled")
 }
