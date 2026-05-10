@@ -131,8 +131,8 @@ jobs:
             -e R2_S3_ENDPOINT="${{ secrets.R2_S3_ENDPOINT }}" \
             -e R2_REGION="${{ secrets.R2_REGION }}" \
             -e R2_S3_BUCKET="${{ secrets.R2_S3_BUCKET }}" \
-            -e R2_PUBLIC_BASE_URL="${{ secrets.R2_PUBLIC_BASE_URL }}" \
-            -e R2_DEFAULT_PROFILE_IMAGE_URL="${{ secrets.R2_DEFAULT_PROFILE_IMAGE_URL }}" \
+            -e R2_PUBLIC_BASE_URL="${{ secrets.R2_PUBLIC_BASE_URL || 'https://images.yagubogu.com' }}" \
+            -e R2_DEFAULT_PROFILE_IMAGE_URL="${{ secrets.R2_DEFAULT_PROFILE_IMAGE_URL || 'https://images.yagubogu.com/images/defaults/profile.png' }}" \
             $IMAGE:$TAG
           
           echo "컨테이너 실행 완료."  

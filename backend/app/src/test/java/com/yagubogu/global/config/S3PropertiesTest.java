@@ -16,14 +16,14 @@ class S3PropertiesTest {
                 Duration.ofMinutes(5),
                 "https://test-account.r2.cloudflarestorage.com",
                 "auto",
-                "https://test-account.r2.cloudflarestorage.com/yagubogu/",
-                "https://test-account.r2.cloudflarestorage.com/yagubogu/images/defaults/profile.png"
+                "https://images.yagubogu.com/",
+                "https://images.yagubogu.com/images/defaults/profile.png"
         );
 
         String objectUrl = properties.objectUrl("/profile/abc-123");
 
         assertThat(objectUrl)
-                .isEqualTo("https://test-account.r2.cloudflarestorage.com/yagubogu/profile/abc-123");
+                .isEqualTo("https://images.yagubogu.com/profile/abc-123");
     }
 
     @DisplayName("publicBaseUrl이 없으면 endpoint와 bucket으로 객체 URL을 만든다")

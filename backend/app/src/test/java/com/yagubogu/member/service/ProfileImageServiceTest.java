@@ -53,7 +53,7 @@ class ProfileImageServiceTest {
     private static final Duration TEST_PRESIGN_EXPIRATION = Duration.ofMinutes(10);
     private static final String TEST_ENDPOINT = "https://test-account.r2.cloudflarestorage.com";
     private static final String TEST_REGION = "auto";
-    private static final String TEST_PUBLIC_BASE_URL = TEST_ENDPOINT + "/" + TEST_BUCKET;
+    private static final String TEST_PUBLIC_BASE_URL = "https://images.yagubogu.com";
     private static final String TEST_DEFAULT_PROFILE_IMAGE_URL = TEST_PUBLIC_BASE_URL + "/images/defaults/profile.png";
 
     @Mock

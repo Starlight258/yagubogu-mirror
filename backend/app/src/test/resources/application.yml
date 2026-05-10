@@ -70,8 +70,8 @@ app:
     presign-expiration: 10m
     endpoint: https://test-account.r2.cloudflarestorage.com
     region: auto
-    public-base-url: https://test-account.r2.cloudflarestorage.com/yagubogu
-    default-profile-image-url: https://test-account.r2.cloudflarestorage.com/yagubogu/images/defaults/profile.png
+    public-base-url: https://images.yagubogu.com
+    default-profile-image-url: https://images.yagubogu.com/images/defaults/profile.png
   clock:
     fixed-date: 2024-08-15
 
