@@ -14,6 +14,7 @@ import com.yagubogu.analytics.AnalyticsLogger
 import com.yagubogu.analytics.FirebaseAnalyticsLogger
 import com.yagubogu.di.authModule
 import com.yagubogu.di.commonModule
+import com.yagubogu.di.configModule
 import com.yagubogu.di.datasourceModule
 import com.yagubogu.di.localModule
 import com.yagubogu.di.networkModule
@@ -81,6 +82,7 @@ class YaguBoguApplication : Application() {
                 useCaseModule,
                 viewModelModule,
                 localModule,
+                configModule,
             )
         }
     }
