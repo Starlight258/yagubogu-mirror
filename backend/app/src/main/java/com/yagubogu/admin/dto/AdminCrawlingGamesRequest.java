@@ -2,12 +2,12 @@ package com.yagubogu.admin.dto;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
-import java.util.List;
+import jakarta.validation.constraints.NotNull;
+import java.time.LocalDate;
 
 public record AdminCrawlingGamesRequest(
-        @NotEmpty
-        List<String> gameCodes,
+        @NotNull
+        LocalDate date,
 
         @Min(0)
         @Max(60000)

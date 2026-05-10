@@ -44,13 +44,9 @@ crawlingForm.addEventListener("submit", async (event) => {
 
   const submitButton = crawlingForm.querySelector("button[type='submit']");
   const originalText = submitButton.textContent;
-  const gameCodes = crawlingForm.gameCodes.value
-    .split(/[\s,]+/)
-    .map((gameCode) => gameCode.trim())
-    .filter(Boolean);
 
-  if (gameCodes.length === 0) {
-    showToast("게임 코드를 입력해주세요", "error");
+  if (!crawlingForm.date.value) {
+    showToast("크롤링 날짜를 선택해주세요", "error");
     return;
   }
 
@@ -64,7 +60,7 @@ crawlingForm.addEventListener("submit", async (event) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        gameCodes,
+        date: crawlingForm.date.value,
         sleepMillis: Number(crawlingForm.sleepMillis.value),
         reviewRetryDelayMinutes: Number(crawlingForm.reviewRetryDelayMinutes.value),
       }),

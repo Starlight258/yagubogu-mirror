@@ -13,8 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import yagubogu.crawling.game.dto.GameCodeCrawlRequest;
-import yagubogu.crawling.game.dto.GameCodeCrawlResponse;
+import yagubogu.crawling.game.dto.GameDateCrawlRequest;
+import yagubogu.crawling.game.dto.GameDateCrawlResponse;
 import yagubogu.crawling.game.dto.ReviewData;
 import yagubogu.crawling.game.dto.ScoreboardResponse;
 import yagubogu.crawling.game.service.crawler.KboGameCenterCrawler.GameCenterSyncService;
@@ -50,8 +50,8 @@ public class KboCrawlerController implements KboCrawlerControllerInterface {
     }
 
     @Override
-    public ResponseEntity<GameCodeCrawlResponse> fetchGamesByCodes(@RequestBody final GameCodeCrawlRequest request) {
-        GameCodeCrawlResponse response = kboScoreboardService.fetchGamesByCodes(request.gameCodes());
+    public ResponseEntity<GameDateCrawlResponse> fetchGamesByDate(@RequestBody final GameDateCrawlRequest request) {
+        GameDateCrawlResponse response = kboScoreboardService.fetchGamesByDate(request.date());
         return ResponseEntity.ok(response);
     }
 

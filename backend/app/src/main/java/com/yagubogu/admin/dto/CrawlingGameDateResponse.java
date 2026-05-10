@@ -2,14 +2,13 @@ package com.yagubogu.admin.dto;
 
 import java.util.List;
 
-public record AdminCrawlingGamesResponse(
+public record CrawlingGameDateResponse(
         int requested,
+        int matched,
         int saved,
         int skipped,
-        int reviewSaved,
-        int reviewQueued,
-        int failed,
+        int transformed,
         List<String> savedGameCodes,
-        List<String> failedGameCodes
+        List<String> completedGameCodes
 ) {
 }

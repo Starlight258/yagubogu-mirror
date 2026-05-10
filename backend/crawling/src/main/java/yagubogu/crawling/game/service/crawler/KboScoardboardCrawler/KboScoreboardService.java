@@ -21,7 +21,6 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -37,7 +36,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.StopWatch;
 import yagubogu.crawling.game.dto.BatchResult;
 import yagubogu.crawling.game.dto.FailedGame;
-import yagubogu.crawling.game.dto.GameCodeCrawlResponse;
+import yagubogu.crawling.game.dto.GameDateCrawlResponse;
 import yagubogu.crawling.game.dto.GameUpsertRow;
 import yagubogu.crawling.game.dto.KboScoreboardGame;
 import yagubogu.crawling.game.dto.KboScoreboardTeam;
@@ -108,35 +107,41 @@ public class KboScoreboardService {
         return responses;
     }
 
-    public GameCodeCrawlResponse fetchGamesByCodes(final List<String> gameCodes) {
-        List<String> requestedGameCodes = normalizeGameCodes(gameCodes);
-        if (requestedGameCodes.isEmpty()) {
-            return new GameCodeCrawlResponse(0, 0, 0, 0);
-        }
-
-        List<LocalDate> dates = requestedGameCodes.stream()
-                .map(this::parseDateFromGameCode)
-                .distinct()
-                .sorted()
-                .toList();
-        LocalDate minDate = dates.getFirst();
-
-        Map<LocalDate, List<KboScoreboardGame>> gamesByDate = kboScoreboardCrawler.crawl(dates);
+    public GameDateCrawlResponse fetchGamesByDate(final LocalDate date) {
+        Map<LocalDate, List<KboScoreboardGame>> gamesByDate = kboScoreboardCrawler.crawl(List.of(date));
         Map<String, Team> teamByShort = loadTeams();
         Map<String, Stadium> stadiumByLocation = loadStadiums();
         Map<String, KboScoreboardGame> scoreboardGamesByCode = mapByGameCode(gamesByDate, teamByShort);
 
-        List<KboScoreboardGame> matchedGames = requestedGameCodes.stream()
-                .map(scoreboardGamesByCode::get)
-                .filter(java.util.Objects::nonNull)
+        List<Map.Entry<String, KboScoreboardGame>> newGameEntries = scoreboardGamesByCode.entrySet().stream()
+                .filter(entry -> !gameRepository.existsByGameCode(entry.getKey()))
+                .toList();
+        List<KboScoreboardGame> newGames = newGameEntries.stream()
+                .map(Map.Entry::getValue)
+                .toList();
+        List<String> savedGameCodes = newGameEntries.stream()
+                .map(Map.Entry::getKey)
+                .toList();
+        List<String> completedGameCodes = newGameEntries.stream()
+                .filter(entry -> GameState.fromName(entry.getValue().getStatus()).isCompleted())
+                .map(Map.Entry::getKey)
                 .toList();
 
-        int savedCount = saveToBronzeLayerInChunks(matchedGames, teamByShort, stadiumByLocation);
-        int transformedCount = matchedGames.isEmpty() ? 0 : gameEtlService.transformBronzeToSilver(minDate.atStartOfDay());
+        int savedCount = saveToBronzeLayerInChunks(newGames, teamByShort, stadiumByLocation);
+        int transformedCount = newGames.isEmpty() ? 0 : gameEtlService.transformBronzeToSilver(date.atStartOfDay());
+        int skippedCount = scoreboardGamesByCode.size() - newGameEntries.size();
 
-        log.info("[GAME_CODE_CRAWL] requested={}, matched={}, saved={}, transformed={}",
-                requestedGameCodes.size(), matchedGames.size(), savedCount, transformedCount);
-        return new GameCodeCrawlResponse(requestedGameCodes.size(), matchedGames.size(), savedCount, transformedCount);
+        log.info("[GAME_DATE_CRAWL] date={}, matched={}, saved={}, skipped={}, transformed={}",
+                date, scoreboardGamesByCode.size(), savedCount, skippedCount, transformedCount);
+        return new GameDateCrawlResponse(
+                scoreboardGamesByCode.size(),
+                scoreboardGamesByCode.size(),
+                savedCount,
+                skippedCount,
+                transformedCount,
+                savedGameCodes,
+                completedGameCodes
+        );
     }
 
     /**
@@ -286,24 +291,6 @@ public class KboScoreboardService {
                 stadiumRepository.findAll().stream()
                         .collect(toMap(Stadium::getLocation, Function.identity()))
         );
-    }
-
-    private List<String> normalizeGameCodes(final List<String> gameCodes) {
-        return gameCodes.stream()
-                .map(String::trim)
-                .filter(gameCode -> !gameCode.isBlank())
-                .collect(Collectors.collectingAndThen(
-                        Collectors.toCollection(LinkedHashSet::new),
-                        ArrayList::new
-                ));
-    }
-
-    private LocalDate parseDateFromGameCode(final String gameCode) {
-        if (gameCode.length() < 8) {
-            throw new GameSyncException("Invalid gameCode: " + gameCode);
-        }
-
-        return LocalDate.parse(gameCode.substring(0, 8), BASIC_ISO_DATE);
     }
 
     private Map<String, KboScoreboardGame> mapByGameCode(

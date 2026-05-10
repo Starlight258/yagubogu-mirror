@@ -1,7 +1,8 @@
 package com.yagubogu.admin.client;
 
-import com.yagubogu.admin.dto.CrawlingGameCodesRequest;
-import java.util.List;
+import com.yagubogu.admin.dto.CrawlingGameDateRequest;
+import com.yagubogu.admin.dto.CrawlingGameDateResponse;
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -14,12 +15,12 @@ public class CrawlingAdminClient {
     @Qualifier("crawlingRestClient")
     private final RestClient crawlingRestClient;
 
-    public void fetchGames(final List<String> gameCodes) {
-        crawlingRestClient.post()
-                .uri("/api/kbo/games/by-codes")
-                .body(new CrawlingGameCodesRequest(gameCodes))
+    public CrawlingGameDateResponse fetchGames(final LocalDate date) {
+        return crawlingRestClient.post()
+                .uri("/api/kbo/games/by-date")
+                .body(new CrawlingGameDateRequest(date))
                 .retrieve()
-                .toBodilessEntity();
+                .body(CrawlingGameDateResponse.class);
     }
 
     public void fetchReview(final String gameCode) {

@@ -157,7 +157,6 @@ h2 {
     font-weight: 700;
 }
 
-.crawling-form textarea,
 .crawling-form input {
     width: 100%;
     border: 1px solid var(--line);

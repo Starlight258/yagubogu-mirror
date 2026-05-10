@@ -42,11 +42,11 @@
             <h2>게임 크롤링 수동 실행</h2>
         </div>
         <form class="crawling-form" id="crawling-form">
-            <label>
-                <span>게임 코드</span>
-                <textarea id="game-codes" name="gameCodes" rows="5" placeholder="20260412SKLG0"></textarea>
-            </label>
             <div class="form-row">
+                <label>
+                    <span>크롤링 날짜</span>
+                    <input id="crawling-date" name="date" type="date" required>
+                </label>
                 <label>
                     <span>Sleep(ms)</span>
                     <input id="sleep-millis" name="sleepMillis" type="number" min="0" max="60000" value="3000">
