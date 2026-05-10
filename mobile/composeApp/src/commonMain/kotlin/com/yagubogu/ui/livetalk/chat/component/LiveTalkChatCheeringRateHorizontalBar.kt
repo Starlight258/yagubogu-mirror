@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,6 +23,7 @@ import com.yagubogu.ui.theme.YaguBoguTheme
 import com.yagubogu.ui.theme.dpToSp
 import com.yagubogu.ui.util.color
 import com.yagubogu.ui.util.formatWithComma
+import com.yagubogu.ui.util.shimmerIf
 import org.jetbrains.compose.resources.stringResource
 import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.livetalk_cheering_count_format
@@ -31,13 +33,18 @@ import yagubogu.composeapp.generated.resources.livetalk_cheering_count_label
 fun LiveTalkChatCheeringRateHorizontalBar(
     myTeam: Team,
     otherTeam: Team,
-    myTeamCheeringCount: Long,
-    otherTeamCheeringCount: Long,
+    myTeamCheeringCount: Long?,
+    otherTeamCheeringCount: Long?,
     modifier: Modifier = Modifier,
 ) {
-    val totalCount = myTeamCheeringCount + otherTeamCheeringCount
-    val myTeamChartRange = chartRange(totalCount, myTeamCheeringCount)
-    val otherTeamChartRange = chartRange(totalCount, otherTeamCheeringCount)
+    val isLoading = myTeamCheeringCount == null || otherTeamCheeringCount == null
+
+    val safeMyCount = myTeamCheeringCount ?: 0L
+    val safeOtherCount = otherTeamCheeringCount ?: 0L
+    val totalCount = safeMyCount + safeOtherCount
+
+    val myTeamChartRange = chartRange(totalCount, safeMyCount)
+    val otherTeamChartRange = chartRange(totalCount, safeOtherCount)
 
     val barHeight = 8.dp
 
@@ -51,13 +58,20 @@ fun LiveTalkChatCheeringRateHorizontalBar(
         ) {
             Text(
                 text =
-                    stringResource(
-                        Res.string.livetalk_cheering_count_format,
-                        otherTeam.shortname,
-                        otherTeamCheeringCount.formatWithComma(),
-                    ),
+                    if (isLoading) {
+                        "shimmerTxt"
+                    } else {
+                        stringResource(
+                            Res.string.livetalk_cheering_count_format,
+                            otherTeam.shortname,
+                            safeOtherCount.formatWithComma(),
+                        )
+                    },
                 style = EsamanruMedium.copy(fontSize = 14.dpToSp, color = otherTeam.color),
-                modifier = Modifier.align(Alignment.CenterStart),
+                modifier =
+                    Modifier
+                        .align(Alignment.CenterStart)
+                        .shimmerIf(isLoading),
             )
 
             Text(
@@ -67,18 +81,27 @@ fun LiveTalkChatCheeringRateHorizontalBar(
                         fontSize = 14.dpToSp,
                         color = com.yagubogu.ui.theme.Gray600,
                     ),
-                modifier = Modifier.align(Alignment.Center),
+                modifier =
+                    Modifier
+                        .align(Alignment.Center),
             )
 
             Text(
                 text =
-                    stringResource(
-                        Res.string.livetalk_cheering_count_format,
-                        myTeam.shortname,
-                        myTeamCheeringCount.formatWithComma(),
-                    ),
+                    if (isLoading) {
+                        "shimmerTxt"
+                    } else {
+                        stringResource(
+                            Res.string.livetalk_cheering_count_format,
+                            myTeam.shortname,
+                            safeMyCount.formatWithComma(),
+                        )
+                    },
                 style = EsamanruMedium.copy(fontSize = 14.dpToSp, color = myTeam.color),
-                modifier = Modifier.align(Alignment.CenterEnd),
+                modifier =
+                    Modifier
+                        .align(Alignment.CenterEnd)
+                        .shimmerIf(isLoading),
             )
         }
 
@@ -87,23 +110,27 @@ fun LiveTalkChatCheeringRateHorizontalBar(
                 Modifier
                     .fillMaxWidth()
                     .height(barHeight)
-                    .clip(RoundedCornerShape(12.dp)),
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(com.yagubogu.ui.theme.Gray200)
+                    .shimmerIf(isLoading),
         ) {
-            Row(modifier = Modifier.fillMaxWidth()) {
-                Box(
-                    modifier =
-                        Modifier
-                            .weight(otherTeamChartRange)
-                            .fillMaxHeight()
-                            .background(color = otherTeam.color),
-                )
-                Box(
-                    modifier =
-                        Modifier
-                            .weight(myTeamChartRange)
-                            .fillMaxHeight()
-                            .background(color = myTeam.color),
-                )
+            if (!isLoading) {
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    Box(
+                        modifier =
+                            Modifier
+                                .weight(otherTeamChartRange)
+                                .fillMaxHeight()
+                                .background(color = otherTeam.color),
+                    )
+                    Box(
+                        modifier =
+                            Modifier
+                                .weight(myTeamChartRange)
+                                .fillMaxHeight()
+                                .background(color = myTeam.color),
+                    )
+                }
             }
         }
     }
@@ -118,15 +145,30 @@ private fun chartRange(
     else -> 0.5f
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun LiveTalkChatCheeringRateHorizontalBarPreview() {
     YaguBoguTheme {
-        LiveTalkChatCheeringRateHorizontalBar(
-            myTeam = Team.HH,
-            otherTeam = Team.NC,
-            myTeamCheeringCount = 1000L,
-            otherTeamCheeringCount = 3000L,
-        )
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text("로딩중")
+            LiveTalkChatCheeringRateHorizontalBar(
+                myTeam = Team.HH,
+                otherTeam = Team.NC,
+                myTeamCheeringCount = null,
+                otherTeamCheeringCount = null,
+                modifier = Modifier.padding(vertical = 8.dp),
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Text("로딩됨")
+            LiveTalkChatCheeringRateHorizontalBar(
+                myTeam = Team.HH,
+                otherTeam = Team.NC,
+                myTeamCheeringCount = 1000L,
+                otherTeamCheeringCount = 3000L,
+                modifier = Modifier.padding(vertical = 8.dp),
+            )
+        }
     }
 }

@@ -29,7 +29,7 @@ data class LivetalkChatScreenStates(
 
     data class Cheering(
         val team: Team? = null,
-        val showingCount: Long? = 0L,
+        val showingCount: Long? = null,
     )
 
     data class Dialog(

@@ -54,8 +54,8 @@ fun LivetalkChatCheeringBar(
             LiveTalkChatCheeringRateHorizontalBar(
                 myTeam = myTeam,
                 otherTeam = otherTeam,
-                myTeamCheeringCount = myTeamCheeringCount ?: 0L,
-                otherTeamCheeringCount = otherTeamCheeringCount ?: 0L,
+                myTeamCheeringCount = myTeamCheeringCount,
+                otherTeamCheeringCount = otherTeamCheeringCount,
             )
         }
         Spacer(Modifier.width(8.dp))
