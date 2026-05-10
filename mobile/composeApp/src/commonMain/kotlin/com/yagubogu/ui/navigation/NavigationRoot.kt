@@ -181,7 +181,7 @@ fun NavigationRoot(
                 }
                 entry<Route.AttendanceHistoryDetail> { key: Route.AttendanceHistoryDetail ->
                     AttendanceDetailScreen(
-                        gameId = key.id,
+                        checkInId = key.id,
                         date = key.date,
                         onBackClick = { rootNavigator.goBack() },
                     )

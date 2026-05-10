@@ -1,10 +1,10 @@
 package com.yagubogu.ui.attendance.detail.model
 
 data class PlayerRecordUiModel(
-    val awayTeamHitters: List<HitterRecord>,
-    val awayTeamPitchers: List<PitcherRecord>,
-    val homeTeamHitters: List<HitterRecord>,
-    val homeTeamPitchers: List<PitcherRecord>,
+    val awayTeamHitters: List<HitterRecord> = emptyList(),
+    val awayTeamPitchers: List<PitcherRecord> = emptyList(),
+    val homeTeamHitters: List<HitterRecord> = emptyList(),
+    val homeTeamPitchers: List<PitcherRecord> = emptyList(),
 ) {
     data class HitterRecord(
         val battingOrder: Int, // 타순

@@ -74,7 +74,7 @@ val viewModelModule =
 
         viewModel { (gameId: Long) ->
             AttendanceDetailViewModel(
-                gameId = gameId,
+                checkInId = gameId,
                 checkInRepository = get(),
                 thirdPartyRepository = get(),
                 loadDiaryUseCase = get(),

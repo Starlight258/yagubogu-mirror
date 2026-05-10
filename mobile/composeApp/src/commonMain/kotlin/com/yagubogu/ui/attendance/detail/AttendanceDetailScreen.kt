@@ -29,6 +29,7 @@ import com.yagubogu.ui.attendance.detail.model.AttendanceDetailTab
 import com.yagubogu.ui.attendance.detail.model.AttendanceDetailUiEvent
 import com.yagubogu.ui.attendance.detail.model.DiaryMode
 import com.yagubogu.ui.attendance.detail.model.PLAYER_RECORD
+import com.yagubogu.ui.attendance.detail.model.PlayerRecordUiModel
 import com.yagubogu.ui.common.component.DefaultToolbar
 import com.yagubogu.ui.main.component.LoadingOverlay
 import com.yagubogu.ui.theme.Gray050
@@ -48,11 +49,11 @@ import yagubogu.composeapp.generated.resources.ic_trash
 
 @Composable
 fun AttendanceDetailScreen(
-    gameId: Long,
+    checkInId: Long,
     date: LocalDate,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: AttendanceDetailViewModel = koinViewModel(parameters = { parametersOf(gameId) }),
+    viewModel: AttendanceDetailViewModel = koinViewModel(parameters = { parametersOf(checkInId) }),
 ) {
     var showExitDialog by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
@@ -60,6 +61,8 @@ fun AttendanceDetailScreen(
     val snackbarState: SnackbarHostState = LocalSnackbarHostState.current
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState { AttendanceDetailTab.entries.size }
+
+    val playerRecordUiModel: PlayerRecordUiModel by viewModel.playerRecordUiModel.collectAsStateWithLifecycle()
     val attendanceDetailDiaryUiState: AttendanceDetailDiaryUiState by viewModel.attendanceDetailDiaryUiState.collectAsStateWithLifecycle()
 
     val isWriting =
@@ -78,6 +81,7 @@ fun AttendanceDetailScreen(
     }
 
     AttendanceDetailScreen(
+        playerRecordUiModel = playerRecordUiModel,
         attendanceDetailDiaryUiState = attendanceDetailDiaryUiState,
         date = date.format(yyyyMMddDayOfWeekFormatter),
         pagerState = pagerState,
@@ -117,6 +121,7 @@ fun AttendanceDetailScreen(
 
 @Composable
 private fun AttendanceDetailScreen(
+    playerRecordUiModel: PlayerRecordUiModel,
     attendanceDetailDiaryUiState: AttendanceDetailDiaryUiState,
     pagerState: PagerState,
     date: String,
@@ -150,7 +155,7 @@ private fun AttendanceDetailScreen(
                     AttendanceDetailTab.GAME_RECORD.ordinal ->
                         AttendanceDetailGameRecordScreen(
                             item = ATTENDANCE_HISTORY_ITEM_PLAYED,
-                            playerRecord = PLAYER_RECORD,
+                            playerRecord = playerRecordUiModel,
                         )
 
                     AttendanceDetailTab.DIARY.ordinal ->
@@ -195,6 +200,7 @@ private fun AttendanceDetailToolbar(
 @Composable
 private fun AttendanceDetailScreenDiaryTabPreview() {
     AttendanceDetailScreen(
+        playerRecordUiModel = PLAYER_RECORD,
         attendanceDetailDiaryUiState = AttendanceDetailDiaryUiState(),
         pagerState = rememberPagerState(AttendanceDetailTab.DIARY.ordinal) { AttendanceDetailTab.entries.size },
         date = "2025.08.14 (목)",
