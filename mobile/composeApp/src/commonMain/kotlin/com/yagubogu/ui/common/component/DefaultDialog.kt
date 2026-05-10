@@ -43,6 +43,7 @@ fun DefaultDialog(
     onConfirm: () -> Unit,
     onCancel: () -> Unit,
     modifier: Modifier = Modifier,
+    bottomContent: @Composable (() -> Unit)? = null,
 ) {
     DefaultDialog(
         negativeText = dialogUiModel.negativeText,
@@ -50,6 +51,7 @@ fun DefaultDialog(
         onConfirm = onConfirm,
         onCancel = onCancel,
         modifier = modifier,
+        bottomContent = bottomContent,
     ) {
         dialogUiModel.emoji?.let { emoji: String ->
             Text(
@@ -86,6 +88,7 @@ fun DefaultDialog(
     onConfirm: () -> Unit,
     onCancel: () -> Unit,
     modifier: Modifier = Modifier,
+    bottomContent: @Composable (() -> Unit)? = null,
     content: @Composable () -> Unit,
 ) {
     BasicAlertDialog(
@@ -104,7 +107,7 @@ fun DefaultDialog(
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         ) {
             Column(
-                modifier = Modifier.padding(horizontal = 20.dp, vertical = 30.dp),
+                modifier = Modifier.padding(horizontal = 20.dp, vertical = 20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 content()
@@ -148,6 +151,9 @@ fun DefaultDialog(
                             style = PretendardSemiBold.copy(fontSize = 14.sp),
                         )
                     }
+                }
+                bottomContent?.let {
+                    it()
                 }
             }
         }

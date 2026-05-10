@@ -91,7 +91,12 @@ fun LoginScreen(
         val info = maintenanceInfo
         if (info != null && info.shouldShowPopup && !isMaintenanceConfirm.value) {
             MaintenanceDialog(
-                onConfirm = { isMaintenanceConfirm.value = true },
+                onConfirm = { isChecked ->
+                    isMaintenanceConfirm.value = true
+                    if (isChecked) {
+                        viewModel.maintenanceDialogIgnore(info.id, info.skippableDays ?: 0)
+                    }
+                },
                 maintenanceInfo = info,
                 modifier = Modifier,
             )

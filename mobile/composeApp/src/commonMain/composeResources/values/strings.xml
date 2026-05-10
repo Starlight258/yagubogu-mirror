@@ -54,6 +54,8 @@
     <string name="maintenance_dialog_title">야구보구 점검 중</string>
     <string name="maintenance_dialog_emoji">️🚧</string>
 
+    <string name="dialog_ignore_days_label">%1$d일간 보지 않기</string>
+
     <string name="home_check_in">직관 인증하기</string>
     <string name="home_already_checked_in_message">오늘 이미 인증했어요!</string>
     <string name="home_already_checked_in_emoji">🚨</string>

@@ -1,29 +1,85 @@
 package com.yagubogu.ui.login.model
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.yagubogu.ui.common.component.DefaultDialog
 import com.yagubogu.ui.common.model.DefaultDialogUiModel
 import com.yagubogu.ui.home.model.MaintenanceInfo
+import com.yagubogu.ui.theme.Gray200
+import com.yagubogu.ui.theme.Gray700
+import com.yagubogu.ui.theme.PretendardMedium
+import com.yagubogu.ui.theme.Primary500
+import com.yagubogu.ui.util.noRippleClickable
+import org.jetbrains.compose.resources.stringResource
+import yagubogu.composeapp.generated.resources.Res
+import yagubogu.composeapp.generated.resources.dialog_ignore_days_label
 
 @Composable
 fun MaintenanceDialog(
-    onConfirm: () -> Unit,
+    onConfirm: (Boolean) -> Unit,
     maintenanceInfo: MaintenanceInfo,
     modifier: Modifier = Modifier,
 ) {
+    var isChecked by remember { mutableStateOf(false) }
+
     val dialogUiModel =
         DefaultDialogUiModel(
             title = maintenanceInfo.title ?: "",
             emoji = maintenanceInfo.emoji,
             message = maintenanceInfo.message,
         )
+
     DefaultDialog(
         dialogUiModel = dialogUiModel,
-        onConfirm = onConfirm,
+        onConfirm = { onConfirm(isChecked) },
         onCancel = {},
         modifier = modifier,
+        bottomContent =
+            maintenanceInfo.skippableDays?.takeIf { it > 0 }?.let { days ->
+                {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .height(40.dp)
+                                .noRippleClickable { isChecked = !isChecked },
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
+                    ) {
+                        Checkbox(
+                            checked = isChecked,
+                            onCheckedChange = { isChecked = it },
+                            colors =
+                                CheckboxDefaults.colors(
+                                    checkedColor = Primary500,
+                                    uncheckedColor = Gray200,
+                                ),
+                        )
+                        Text(
+                            text = stringResource(Res.string.dialog_ignore_days_label, days),
+                            style = PretendardMedium.copy(fontSize = 14.sp),
+                            color = Gray700,
+                        )
+                    }
+                }
+            },
     )
 }
 

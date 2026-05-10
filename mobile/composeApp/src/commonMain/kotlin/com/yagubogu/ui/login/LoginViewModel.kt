@@ -57,6 +57,15 @@ class LoginViewModel(
         }
     }
 
+    fun maintenanceDialogIgnore(
+        maintenanceId: Int,
+        days: Int,
+    ) {
+        viewModelScope.launch {
+            appConfigRepository.maintenanceDialogMarkAsIgnored(maintenanceId, days)
+        }
+    }
+
     private suspend fun signIn(
         credentialManager: OAuthCredentialManager,
         provider: OAuthProvider,
