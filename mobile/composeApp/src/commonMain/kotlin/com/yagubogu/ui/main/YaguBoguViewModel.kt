@@ -26,11 +26,13 @@ class YaguBoguViewModel(
         viewModelScope.launch {
             appConfigRepository.fetchConfigs()
 
-            if (appConfigRepository.getMaintenanceInfo().remoteIsShow) {
-                _autoLoginState.emit(AutoLoginState.Maintenance)
-                logger.i { "점검 상태입니다. 점검 공지:${appConfigRepository.getMaintenanceInfo().message}" }
-                onAppInitialized()
-                return@launch
+            with(appConfigRepository.getMaintenanceInfo()) {
+                if (this.remoteIsShow) {
+                    _autoLoginState.emit(AutoLoginState.Maintenance)
+                    logger.i { "점검 상태입니다. 점검 공지:${this.message}" }
+                    onAppInitialized()
+                    return@launch
+                }
             }
 
             val isTokenValid: Boolean = authRepository.refreshToken().isSuccess
