@@ -4,7 +4,6 @@ import com.yagubogu.data.datasource.appconfig.AppConfigLocalDataSource
 import com.yagubogu.data.datasource.appconfig.AppConfigRemoteDataSource
 import com.yagubogu.data.datasource.appconfig.IgnoreInfo
 import com.yagubogu.data.dto.response.appconfig.AppConfigPopupDialogResponse
-import com.yagubogu.data.dto.response.appconfig.MaintenanceResponse
 import com.yagubogu.ui.home.model.HomeNoticeInfo
 import com.yagubogu.ui.home.model.MaintenanceInfo
 import kotlinx.coroutines.flow.Flow
@@ -20,40 +19,40 @@ class AppConfigDefaultRepository(
         remoteDataSource.fetchAndActivate()
     }
 
-    override suspend fun getMaintenanceInfo(): MaintenanceInfo =
-        getNoticeInfoInternal(
-            remoteCall = { remoteDataSource.getMaintenanceResponse() },
-            localFlow = localDataSource.maintenanceIgnoreInfo,
-            mapper = { res: AppConfigPopupDialogResponse, shouldShow: Boolean ->
-                MaintenanceInfo(
-                    id = res.id,
-                    remoteIsShow = res.isShow,
-                    shouldShowPopup = shouldShow,
-                    emoji = res.emoji,
-                    title = res.title,
-                    message = res.message,
-                    skippableDays = res.skippableDays,
-                    isLoginBlock = (res as? MaintenanceResponse)?.isLoginBlock ?: false,
-                )
-            },
+    override suspend fun getMaintenanceInfo(): MaintenanceInfo {
+        val response = remoteDataSource.getMaintenanceResponse()
+        val ignoreInfo = localDataSource.maintenanceIgnoreInfo.first()
+        val shouldShow =
+            response.isShow &&
+                ignoreInfo.shouldShow(response.id, clock.now().toEpochMilliseconds())
+        return MaintenanceInfo(
+            id = response.id,
+            remoteIsShow = response.isShow,
+            shouldShowPopup = shouldShow,
+            emoji = response.emoji,
+            title = response.title,
+            message = response.message,
+            skippableDays = response.skippableDays,
+            isLoginBlock = response.isLoginBlock,
         )
+    }
 
-    override suspend fun getHomeNoticeInfo(): HomeNoticeInfo =
-        getNoticeInfoInternal(
-            remoteCall = { remoteDataSource.getHomeNoticeResponse() },
-            localFlow = localDataSource.homeNoticeIgnoreInfo,
-            mapper = { res: AppConfigPopupDialogResponse, shouldShow: Boolean ->
-                HomeNoticeInfo(
-                    id = res.id,
-                    remoteIsShow = res.isShow,
-                    shouldShowPopup = shouldShow,
-                    emoji = res.emoji,
-                    title = res.title,
-                    message = res.message,
-                    skippableDays = res.skippableDays,
-                )
-            },
+    override suspend fun getHomeNoticeInfo(): HomeNoticeInfo {
+        val response = remoteDataSource.getHomeNoticeResponse()
+        val ignoreInfo = localDataSource.homeNoticeIgnoreInfo.first()
+        val shouldShow =
+            response.isShow &&
+                ignoreInfo.shouldShow(response.id, clock.now().toEpochMilliseconds())
+        return HomeNoticeInfo(
+            id = response.id,
+            remoteIsShow = response.isShow,
+            shouldShowPopup = shouldShow,
+            emoji = response.emoji,
+            title = response.title,
+            message = response.message,
+            skippableDays = response.skippableDays,
         )
+    }
 
     override suspend fun markMaintenanceDialogAsIgnored(
         maintenanceId: Int,
