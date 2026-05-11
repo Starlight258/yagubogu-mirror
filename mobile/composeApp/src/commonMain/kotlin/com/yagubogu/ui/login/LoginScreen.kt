@@ -90,16 +90,18 @@ fun LoginScreen(
         )
 
         maintenanceInfo?.let { info ->
-            PopupNoticeDialog(
-                onConfirm = { isChecked ->
-                    isMaintenanceConfirm.value = true
-                    if (isChecked) {
-                        viewModel.ignoreMaintenanceDialog(info.id, info.skippableDays ?: 0)
-                    }
-                },
-                popupNoticeInfo = info,
-                modifier = Modifier,
-            )
+            if (info.shouldShowPopup && !isMaintenanceConfirm.value) {
+                PopupNoticeDialog(
+                    onConfirm = { isChecked ->
+                        isMaintenanceConfirm.value = true
+                        if (isChecked) {
+                            viewModel.ignoreMaintenanceDialog(info.id, info.skippableDays ?: 0)
+                        }
+                    },
+                    popupNoticeInfo = info,
+                    modifier = Modifier,
+                )
+            }
         }
     }
     LoginResultHandler(
