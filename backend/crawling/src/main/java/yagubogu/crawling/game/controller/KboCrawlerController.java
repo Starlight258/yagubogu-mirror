@@ -10,12 +10,16 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import yagubogu.crawling.game.dto.GameDateCrawlRequest;
+import yagubogu.crawling.game.dto.GameDateCrawlResponse;
 import yagubogu.crawling.game.dto.ReviewData;
 import yagubogu.crawling.game.dto.ScoreboardResponse;
 import yagubogu.crawling.game.service.crawler.KboGameCenterCrawler.GameCenterSyncService;
 import yagubogu.crawling.game.service.crawler.KboReviewCrawler.KboReviewCrawler;
+import yagubogu.crawling.game.service.crawler.KboReviewCrawler.ReviewRetryQueueService;
 import yagubogu.crawling.game.service.crawler.KboScoardboardCrawler.KboScoreboardService;
 
 @RequiredArgsConstructor
@@ -26,6 +30,7 @@ public class KboCrawlerController implements KboCrawlerControllerInterface {
     private final GameCenterSyncService gameCenterSyncService;
     private final KboReviewCrawler kboReviewCrawler;
     private final GameReviewService gameReviewService;
+    private final ReviewRetryQueueService reviewRetryQueueService;
 
     @Override
     public ResponseEntity<List<ScoreboardResponse>> fetchScoreboardRange(
@@ -42,6 +47,12 @@ public class KboCrawlerController implements KboCrawlerControllerInterface {
     ) {
         int savedCount = gameCenterSyncService.fetchGameCenter(date);
         return ResponseEntity.ok(savedCount);
+    }
+
+    @Override
+    public ResponseEntity<GameDateCrawlResponse> fetchGamesByDate(@RequestBody final GameDateCrawlRequest request) {
+        GameDateCrawlResponse response = kboScoreboardService.fetchGamesByDate(request.date());
+        return ResponseEntity.ok(response);
     }
 
     @Override
@@ -72,6 +83,13 @@ public class KboCrawlerController implements KboCrawlerControllerInterface {
         gameReviewService.saveReviewData(reviewData.gameCode(),
                 awayHitters, homeHitters, awayPitchers, homePitchers);
 
+        return ResponseEntity.ok().build();
+    }
+
+    @Override
+    public ResponseEntity<Void> enqueueReviewRetry(@RequestParam final String gameCode,
+                                                   @RequestParam(defaultValue = "30") final long delayMinutes) {
+        reviewRetryQueueService.enqueue(gameCode, delayMinutes);
         return ResponseEntity.ok().build();
     }
 }

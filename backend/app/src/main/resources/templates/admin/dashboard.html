@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>야구보구 Admin</title>
-    <link rel="stylesheet" th:href="@{/admin/admin.css}">
+    <link rel="stylesheet" href="../../static/admin/admin.css?v=20260510-2" th:href="@{/admin/admin.css(v='20260510-2')}">
 </head>
 <body class="admin-shell">
 <header class="topbar">
@@ -35,9 +35,37 @@
             실행
         </button>
     </section>
+
+    <section class="admin-panel wide-panel">
+        <div>
+            <p class="panel-kicker">Crawling</p>
+            <h2>게임 크롤링 수동 실행</h2>
+        </div>
+        <form class="crawling-form" id="crawling-form">
+            <div class="form-row">
+                <label>
+                    <span>시작 날짜</span>
+                    <input id="start-date" name="startDate" type="date" required>
+                </label>
+                <label>
+                    <span>종료 날짜</span>
+                    <input id="end-date" name="endDate" type="date" required>
+                </label>
+                <label>
+                    <span>Sleep(ms)</span>
+                    <input id="sleep-millis" name="sleepMillis" type="number" min="0" max="60000" value="3000">
+                </label>
+                <label>
+                    <span>리뷰 재시도 지연(분)</span>
+                    <input id="review-delay" name="reviewRetryDelayMinutes" type="number" min="0" max="1440" value="30">
+                </label>
+            </div>
+            <button class="primary-button" type="submit">실행</button>
+        </form>
+    </section>
 </main>
 
 <aside class="toast" id="toast" role="status"></aside>
-<script th:src="@{/admin/dashboard.js}"></script>
+<script src="../../static/admin/dashboard.js?v=20260510-2" th:src="@{/admin/dashboard.js(v='20260510-2')}"></script>
 </body>
 </html>

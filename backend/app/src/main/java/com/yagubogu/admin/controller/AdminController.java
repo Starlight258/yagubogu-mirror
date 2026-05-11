@@ -1,14 +1,19 @@
 package com.yagubogu.admin.controller;
 
+import com.yagubogu.admin.dto.AdminCrawlingGamesRequest;
+import com.yagubogu.admin.dto.AdminCrawlingGamesResponse;
+import com.yagubogu.admin.service.AdminCrawlingService;
 import com.yagubogu.auth.annotation.RequireRole;
 import com.yagubogu.member.domain.Role;
 import com.yagubogu.stat.service.LocationCheckInRankingSyncService;
 import com.yagubogu.stat.service.StatSyncService;
 import io.swagger.v3.oas.annotations.Hidden;
+import jakarta.validation.Valid;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,6 +25,7 @@ public class AdminController {
 
     private final StatSyncService statSyncService;
     private final LocationCheckInRankingSyncService locationCheckInRankingSyncService;
+    private final AdminCrawlingService adminCrawlingService;
 
     @PostMapping("/victory-fairy-rankings/sync")
     public ResponseEntity<Void> syncVictoryRankings() {
@@ -38,5 +44,14 @@ public class AdminController {
         int syncedCount = locationCheckInRankingSyncService.rebuildAll();
 
         return ResponseEntity.ok(syncedCount);
+    }
+
+    @PostMapping("/crawling/games")
+    public ResponseEntity<AdminCrawlingGamesResponse> crawlGames(
+            @Valid @RequestBody final AdminCrawlingGamesRequest request
+    ) {
+        AdminCrawlingGamesResponse response = adminCrawlingService.crawlGames(request);
+
+        return ResponseEntity.ok(response);
     }
 }

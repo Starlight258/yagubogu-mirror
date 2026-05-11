@@ -9,4 +9,6 @@ import yagubogu.crawling.game.domain.ReviewRetryStatus;
 public interface ReviewCrawlRetryRepository extends JpaRepository<ReviewCrawlRetry, Long> {
 
     List<ReviewCrawlRetry> findByStatusAndNextRetryAtLessThanEqual(ReviewRetryStatus status, LocalDateTime now);
+
+    boolean existsByGameCodeAndStatus(String gameCode, ReviewRetryStatus status);
 }

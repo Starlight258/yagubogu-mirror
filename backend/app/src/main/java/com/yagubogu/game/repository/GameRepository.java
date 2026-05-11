@@ -21,6 +21,8 @@ public interface GameRepository extends JpaRepository<Game, Long> {
 
     Optional<Game> findByGameCode(String gameCode);
 
+    boolean existsByGameCode(String gameCode);
+
     Optional<Game> findByDateAndStadiumAndHomeTeamAndAwayTeamAndStartAt(
             LocalDate date,
             Stadium stadium,

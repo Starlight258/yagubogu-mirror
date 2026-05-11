@@ -10,6 +10,7 @@ import com.yagubogu.game.event.GameFinalizedEvent;
 import com.yagubogu.game.exception.GameSyncException;
 import com.yagubogu.game.repository.GameRepository;
 import com.yagubogu.game.service.BronzeGameService;
+import com.yagubogu.game.service.GameEtlService;
 import com.yagubogu.stadium.domain.Stadium;
 import com.yagubogu.stadium.repository.StadiumRepository;
 import com.yagubogu.team.domain.Team;
@@ -18,6 +19,8 @@ import jakarta.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,6 +36,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.StopWatch;
 import yagubogu.crawling.game.dto.BatchResult;
 import yagubogu.crawling.game.dto.FailedGame;
+import yagubogu.crawling.game.dto.GameDateCrawlResponse;
 import yagubogu.crawling.game.dto.GameUpsertRow;
 import yagubogu.crawling.game.dto.KboScoreboardGame;
 import yagubogu.crawling.game.dto.KboScoreboardTeam;
@@ -56,6 +60,7 @@ public class KboScoreboardService {
     private final TransactionTemplate readOnlyTransactionTemplate;
     private final GameRepository gameRepository;
     private final BronzeGameService bronzeGameService;
+    private final GameEtlService gameEtlService;
     private final ObjectMapper objectMapper;
     private final ApplicationEventPublisher applicationEventPublisher;
 
@@ -100,6 +105,43 @@ public class KboScoreboardService {
         log.info("[SCOREBOARD_RANGE] {}~{} total={}ms, Bronze saved={}",
                 startDate, endDate, total.getTotalTimeMillis(), savedCount);
         return responses;
+    }
+
+    public GameDateCrawlResponse fetchGamesByDate(final LocalDate date) {
+        Map<LocalDate, List<KboScoreboardGame>> gamesByDate = kboScoreboardCrawler.crawl(List.of(date));
+        Map<String, Team> teamByShort = loadTeams();
+        Map<String, Stadium> stadiumByLocation = loadStadiums();
+        Map<String, KboScoreboardGame> scoreboardGamesByCode = mapByGameCode(gamesByDate, teamByShort);
+
+        List<Map.Entry<String, KboScoreboardGame>> newGameEntries = scoreboardGamesByCode.entrySet().stream()
+                .filter(entry -> !gameRepository.existsByGameCode(entry.getKey()))
+                .toList();
+        List<KboScoreboardGame> newGames = newGameEntries.stream()
+                .map(Map.Entry::getValue)
+                .toList();
+        List<String> savedGameCodes = newGameEntries.stream()
+                .map(Map.Entry::getKey)
+                .toList();
+        List<String> completedGameCodes = newGameEntries.stream()
+                .filter(entry -> GameState.fromName(entry.getValue().getStatus()).isCompleted())
+                .map(Map.Entry::getKey)
+                .toList();
+
+        int savedCount = saveToBronzeLayerInChunks(newGames, teamByShort, stadiumByLocation);
+        int transformedCount = newGames.isEmpty() ? 0 : gameEtlService.transformBronzeToSilver(date.atStartOfDay());
+        int skippedCount = scoreboardGamesByCode.size() - newGameEntries.size();
+
+        log.info("[GAME_DATE_CRAWL] date={}, matched={}, saved={}, skipped={}, transformed={}",
+                date, scoreboardGamesByCode.size(), savedCount, skippedCount, transformedCount);
+        return new GameDateCrawlResponse(
+                scoreboardGamesByCode.size(),
+                scoreboardGamesByCode.size(),
+                savedCount,
+                skippedCount,
+                transformedCount,
+                savedGameCodes,
+                completedGameCodes
+        );
     }
 
     /**
@@ -249,6 +291,36 @@ public class KboScoreboardService {
                 stadiumRepository.findAll().stream()
                         .collect(toMap(Stadium::getLocation, Function.identity()))
         );
+    }
+
+    private Map<String, KboScoreboardGame> mapByGameCode(
+            final Map<LocalDate, List<KboScoreboardGame>> gamesByDate,
+            final Map<String, Team> teamByShort
+    ) {
+        Map<String, KboScoreboardGame> result = new LinkedHashMap<>();
+
+        gamesByDate.forEach((date, games) -> games.stream()
+                .collect(Collectors.groupingBy(game -> game.getHomeTeamScoreboard().name()))
+                .values()
+                .forEach(homeTeamGames -> {
+                    homeTeamGames.sort(Comparator.comparing(
+                            KboScoreboardGame::getStartTime,
+                            Comparator.nullsLast(Comparator.naturalOrder())
+                    ));
+
+                    for (int order = 0; order < homeTeamGames.size(); order++) {
+                        KboScoreboardGame game = homeTeamGames.get(order);
+                        Team awayTeam = teamByShort.get(game.getAwayTeamScoreboard().name());
+                        Team homeTeam = teamByShort.get(game.getHomeTeamScoreboard().name());
+                        if (awayTeam == null || homeTeam == null) {
+                            continue;
+                        }
+
+                        result.put(generateGameCode(date, homeTeam, awayTeam, order), game);
+                    }
+                }));
+
+        return result;
     }
 
     /**
