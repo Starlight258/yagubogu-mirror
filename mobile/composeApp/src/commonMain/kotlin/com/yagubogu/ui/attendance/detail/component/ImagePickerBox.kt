@@ -146,13 +146,13 @@ private fun ImageBox(
 private fun DeleteIcon(modifier: Modifier = Modifier) {
     Box(
         contentAlignment = Alignment.Center,
-        modifier = modifier.background(Gray400, CircleShape).size(24.dp),
+        modifier = modifier.background(Gray400, CircleShape).size(20.dp),
     ) {
         Icon(
             painter = painterResource(Res.drawable.ic_close),
             contentDescription = stringResource(Res.string.attendance_detail_delete_photo),
             tint = White,
-            modifier = Modifier.size(20.dp),
+            modifier = Modifier.size(16.dp),
         )
     }
 }
