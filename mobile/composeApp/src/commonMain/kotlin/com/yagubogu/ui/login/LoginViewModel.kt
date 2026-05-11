@@ -57,7 +57,7 @@ class LoginViewModel(
         }
     }
 
-    fun maintenanceDialogIgnore(
+    fun ignoreMaintenanceDialog(
         maintenanceId: Int,
         days: Int,
     ) {
