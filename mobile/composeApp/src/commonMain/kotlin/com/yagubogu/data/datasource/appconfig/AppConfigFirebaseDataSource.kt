@@ -24,32 +24,11 @@ class AppConfigFirebaseDataSource(
             minimumFetchInterval = 15.minutes
         }
 
-        val defaultHomeNotice =
-            HomeNoticeResponse(
-                isShow = false,
-                id = -1,
-                emoji = null,
-                title = null,
-                message = null,
-                skippableDays = null,
-            )
-
-        val defaultMaintenance =
-            MaintenanceResponse(
-                isShow = false,
-                id = -1,
-                emoji = null,
-                title = null,
-                message = null,
-                skippableDays = null,
-                isLoginBlock = true,
-            )
-
         remoteConfig.setDefaults(
             "is_maintenance" to false,
             "maintenance_message" to "",
-            "maintenance" to json.encodeToString(defaultMaintenance),
-            "home_notice" to json.encodeToString(defaultHomeNotice),
+            "maintenance" to json.encodeToString(MaintenanceResponse()),
+            "home_notice" to json.encodeToString(HomeNoticeResponse()),
         )
         isConfigured = true
     }
@@ -73,15 +52,7 @@ class AppConfigFirebaseDataSource(
         return try {
             json.decodeFromString<MaintenanceResponse>(jsonString)
         } catch (e: Exception) {
-            MaintenanceResponse(
-                isShow = false,
-                id = -1,
-                emoji = null,
-                title = null,
-                message = null,
-                skippableDays = null,
-                isLoginBlock = true,
-            )
+            MaintenanceResponse()
         }
     }
 
@@ -90,14 +61,7 @@ class AppConfigFirebaseDataSource(
         return try {
             json.decodeFromString<HomeNoticeResponse>(jsonString)
         } catch (e: Exception) {
-            HomeNoticeResponse(
-                isShow = false,
-                id = -1,
-                emoji = null,
-                title = null,
-                message = null,
-                skippableDays = null,
-            )
+            HomeNoticeResponse()
         }
     }
 }
