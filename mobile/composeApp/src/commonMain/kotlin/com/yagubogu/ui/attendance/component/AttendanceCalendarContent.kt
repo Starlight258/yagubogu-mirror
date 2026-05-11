@@ -131,20 +131,25 @@ fun AttendanceCalendarContent(
                     }
                 }
 
+                // 오늘인 경우
+                isToday ->
+                    BannerAd(
+                        adUnitId = AdUnitIds.attendanceCalendarBanner,
+                        bannerAdType = BannerAdType.BANNER,
+                    )
+
                 // 경기가 없는 날인 경우
                 selectedDate !in gameDates -> NoGameDayView()
 
                 // 직관 내역이 없는 경우
                 else -> {
-                    if (!isToday) {
-                        AttendanceAdditionButton(
-                            onClick = {
-                                onPastGamesRequest(selectedDate)
-                                showBottomSheet = true
-                            },
-                            modifier = Modifier.padding(top = 10.dp),
-                        )
-                    }
+                    AttendanceAdditionButton(
+                        onClick = {
+                            onPastGamesRequest(selectedDate)
+                            showBottomSheet = true
+                        },
+                        modifier = Modifier.padding(vertical = 10.dp),
+                    )
 
                     BannerAd(
                         adUnitId = AdUnitIds.attendanceCalendarBanner,
