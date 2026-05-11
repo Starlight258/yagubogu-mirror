@@ -15,9 +15,7 @@ import com.yagubogu.domain.model.Team
 import com.yagubogu.ui.attendance.detail.model.DiaryImageItem
 import com.yagubogu.ui.attendance.detail.model.PlayerRecordUiModel
 import com.yagubogu.ui.attendance.model.AttendanceHistoryItem
-import com.yagubogu.ui.attendance.model.GameScoreBoard
 import com.yagubogu.ui.attendance.model.GameState
-import com.yagubogu.ui.attendance.model.GameTeam
 import com.yagubogu.ui.attendance.model.TeamType
 import com.yagubogu.ui.home.model.StadiumFanRateItem
 import com.yagubogu.ui.home.model.TeamFanRate
@@ -53,8 +51,8 @@ fun CheckInGameDto.toUiModel(): AttendanceHistoryItem =
 fun CheckInGameTeamDto.toUiModel(
     opponent: CheckInGameTeamDto,
     type: TeamType,
-): GameTeam =
-    GameTeam(
+): AttendanceHistoryItem.GameTeam =
+    AttendanceHistoryItem.GameTeam(
         team = Team.getByCode(code),
         name = name,
         score = score?.toString() ?: "-",
@@ -68,8 +66,8 @@ fun CheckInGameTeamDto.toUiModel(
         type = type,
     )
 
-fun ScoreBoardDto.toUiModel(): GameScoreBoard =
-    GameScoreBoard(
+fun ScoreBoardDto.toUiModel(): AttendanceHistoryItem.GameScoreBoard =
+    AttendanceHistoryItem.GameScoreBoard(
         runs = runs,
         hits = hits,
         errors = errors,

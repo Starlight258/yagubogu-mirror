@@ -83,7 +83,7 @@ import yagubogu.composeapp.generated.resources.ic_list
 @Composable
 fun AttendanceHistoryScreen(
     scrollToTopEvent: SharedFlow<Unit>,
-    onAttendanceHistoryItemClick: (id: Long, date: LocalDate) -> Unit,
+    onAttendanceHistoryItemClick: (item: AttendanceHistoryItem) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: AttendanceHistoryViewModel = koinViewModel(),
 ) {
@@ -197,7 +197,7 @@ private fun AttendanceHistoryScreen(
     pastGameUiState: PastGameUiState,
     onPastGamesRequest: (LocalDate) -> Unit,
     onPastCheckIn: (Long) -> Unit,
-    onAttendanceHistoryItemClick: (id: Long, date: LocalDate) -> Unit,
+    onAttendanceHistoryItemClick: (item: AttendanceHistoryItem) -> Unit,
     modifier: Modifier = Modifier,
     scrollToTopEvent: SharedFlow<Unit> = MutableSharedFlow(),
 ) {
@@ -418,7 +418,7 @@ private fun AttendanceCalenderScreenPreview() {
         pastGameUiState = PastGameUiState.Loading,
         onPastGamesRequest = {},
         onPastCheckIn = {},
-        onAttendanceHistoryItemClick = { _, _ -> },
+        onAttendanceHistoryItemClick = {},
     )
 }
 
@@ -444,6 +444,6 @@ private fun AttendanceListScreenPreview() {
         pastGameUiState = PastGameUiState.Loading,
         onPastGamesRequest = {},
         onPastCheckIn = {},
-        onAttendanceHistoryItemClick = { _, _ -> },
+        onAttendanceHistoryItemClick = {},
     )
 }

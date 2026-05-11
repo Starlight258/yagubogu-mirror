@@ -48,7 +48,7 @@ class AttendanceDetailViewModel(
 ) : ViewModel() {
     private val logger = Logger.withTag("AttendanceDetailViewModel")
 
-    private val _playerRecordUiModel = MutableStateFlow<PlayerRecordUiModel>(PlayerRecordUiModel())
+    private val _playerRecordUiModel = MutableStateFlow(PlayerRecordUiModel())
     val playerRecordUiModel: StateFlow<PlayerRecordUiModel> = _playerRecordUiModel.asStateFlow()
 
     private val _attendanceDetailDiaryUiState = MutableStateFlow(AttendanceDetailDiaryUiState())

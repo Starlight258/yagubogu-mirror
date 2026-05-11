@@ -36,7 +36,6 @@ import com.yagubogu.ui.util.noRippleClickable
 import com.yagubogu.ui.util.now
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.YearMonth
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -60,7 +59,7 @@ fun AttendanceListContent(
     onYearlyFilterToggle: () -> Unit,
     sort: AttendanceHistorySort,
     updateSort: (AttendanceHistorySort) -> Unit,
-    onItemClick: (id: Long, date: LocalDate) -> Unit,
+    onItemClick: (item: AttendanceHistoryItem) -> Unit,
     modifier: Modifier = Modifier,
     scrollToTopEvent: SharedFlow<Unit> = MutableSharedFlow(),
 ) {
@@ -79,7 +78,7 @@ fun AttendanceListContent(
                 AttendanceList(
                     items = items,
                     onItemClick = { item: AttendanceHistoryItem ->
-                        onItemClick(item.id, item.dateTime.date)
+                        onItemClick(item)
                     },
                     modifier = modifier,
                     scrollToTopEvent = scrollToTopEvent,
@@ -268,7 +267,7 @@ private fun AttendanceListContentPreview() {
         onYearlyFilterToggle = {},
         sort = AttendanceHistorySort.LATEST,
         updateSort = {},
-        onItemClick = { _, _ -> },
+        onItemClick = {},
     )
 }
 
@@ -282,6 +281,6 @@ private fun EmptyAttendanceListContentPreview() {
         onYearlyFilterToggle = {},
         sort = AttendanceHistorySort.LATEST,
         updateSort = {},
-        onItemClick = { _, _ -> },
+        onItemClick = {},
     )
 }
