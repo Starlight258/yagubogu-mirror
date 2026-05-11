@@ -244,7 +244,7 @@ class HomeViewModel(
         }
     }
 
-    fun homeNoticeDialogIgnore(
+    fun ignoreHomeNoticeDialog(
         homeDialogId: Int,
         days: Int,
     ) {

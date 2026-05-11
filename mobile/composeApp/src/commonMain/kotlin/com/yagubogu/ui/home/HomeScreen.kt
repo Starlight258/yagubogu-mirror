@@ -200,7 +200,7 @@ fun HomeScreen(
                 onConfirm = { isChecked ->
                     isHomeNoticeConfirm.value = true
                     if (isChecked) {
-                        viewModel.homeNoticeDialogIgnore(info.id, info.skippableDays ?: 0)
+                        viewModel.ignoreHomeNoticeDialog(info.id, info.skippableDays ?: 0)
                     }
                 },
                 popupNoticeInfo = info,
