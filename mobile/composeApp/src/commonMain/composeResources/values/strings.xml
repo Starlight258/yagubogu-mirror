@@ -143,6 +143,7 @@
     <string name="attendance_detail_tab_game_record">경기 기록</string>
     <string name="attendance_detail_tab_diary">직관 기록</string>
     <string name="attendance_detail_game_result">경기 결과</string>
+    <string name="attendance_detail_game_record_update">경기 종료 후 기록이 업데이트돼요.</string>
     <string name="attendance_detail_diary_save">저장하기</string>
     <string name="attendance_detail_delete">삭제</string>
     <string name="attendance_detail_diary_edit">수정하기</string>

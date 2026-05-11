@@ -18,14 +18,19 @@ import androidx.compose.ui.unit.dp
 import com.yagubogu.ui.attendance.detail.model.HITTER_RECORDS
 import com.yagubogu.ui.attendance.detail.model.PlayerRecordUiModel
 import com.yagubogu.ui.theme.Gray300
+import com.yagubogu.ui.theme.Gray400
 import com.yagubogu.ui.theme.Gray500
 import com.yagubogu.ui.theme.PretendardMedium
+import com.yagubogu.ui.theme.PretendardMedium16
 import com.yagubogu.ui.theme.PretendardRegular
 import com.yagubogu.ui.theme.PretendardSemiBold
 import com.yagubogu.ui.theme.Primary050
 import com.yagubogu.ui.theme.Primary900
 import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.theme.dpToSp
+import org.jetbrains.compose.resources.stringResource
+import yagubogu.composeapp.generated.resources.Res
+import yagubogu.composeapp.generated.resources.attendance_detail_game_record_update
 
 @Composable
 fun HitterRecordTable(
@@ -39,9 +44,24 @@ fun HitterRecordTable(
         HitterRecordHeader()
         HorizontalDivider(color = Gray300, thickness = 0.4.dp)
 
-        hitters.forEach {
-            HitterRecordRow(hitter = it)
-            HorizontalDivider(color = Gray300, thickness = 0.4.dp)
+        when (hitters.isEmpty()) {
+            true ->
+                Text(
+                    text = stringResource(Res.string.attendance_detail_game_record_update),
+                    style = PretendardMedium16.copy(color = Gray400),
+                    textAlign = TextAlign.Center,
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 40.dp),
+                )
+
+            false -> {
+                hitters.forEach {
+                    HitterRecordRow(hitter = it)
+                    HorizontalDivider(color = Gray300, thickness = 0.4.dp)
+                }
+            }
         }
     }
 }
@@ -150,4 +170,10 @@ private fun HitterRecordText(
 @Composable
 private fun HitterRecordTablePreview() {
     HitterRecordTable(hitters = HITTER_RECORDS)
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun EmptyHitterRecordTablePreview() {
+    HitterRecordTable(hitters = emptyList())
 }
