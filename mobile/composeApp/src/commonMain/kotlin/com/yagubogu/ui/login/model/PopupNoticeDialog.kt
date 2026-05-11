@@ -84,7 +84,7 @@ fun PopupNoticeDialog(
     )
 }
 
-val MAINTENANCE_INFO =
+private val MAINTENANCE_INFO =
     MaintenanceInfo(
         id = 1,
         remoteIsShow = true,
