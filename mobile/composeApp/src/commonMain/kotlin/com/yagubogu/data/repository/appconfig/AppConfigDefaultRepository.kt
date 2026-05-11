@@ -58,15 +58,17 @@ class AppConfigDefaultRepository(
     override suspend fun markMaintenanceDialogAsIgnored(
         maintenanceId: Int,
         days: Int,
-    ) = markAsIgnoredInternal(maintenanceId, days) { id, expiry ->
-        localDataSource.saveMaintenanceIgnoreInfo(id, expiry)
+    ) {
+        val expiryTime = days.toExpiryMillis()
+        localDataSource.saveMaintenanceIgnoreInfo(maintenanceId, expiryTime)
     }
 
     override suspend fun markHomeNoticeDialogAsIgnored(
         homeNoticeId: Int,
         days: Int,
-    ) = markAsIgnoredInternal(homeNoticeId, days) { id, expiry ->
-        localDataSource.saveHomeNoticeIgnoreInfo(id, expiry)
+    ) {
+        val expiryTime = days.toExpiryMillis()
+        localDataSource.saveHomeNoticeIgnoreInfo(homeNoticeId, expiryTime)
     }
 
     override fun isPastCheckInAdEnabled(): Boolean = remoteDataSource.getBoolean("is_past_check_in_ad_enabled")
@@ -91,12 +93,5 @@ class AppConfigDefaultRepository(
         return mapper(remoteResponse, shouldShow)
     }
 
-    private suspend fun markAsIgnoredInternal(
-        id: Int,
-        days: Int,
-        saveAction: suspend (Int, Long) -> Unit,
-    ) {
-        val expiryTime = clock.now().toEpochMilliseconds() + (days * 24 * 60 * 60 * 1000L)
-        saveAction(id, expiryTime)
-    }
+    private fun Int.toExpiryMillis(): Long = clock.now().toEpochMilliseconds() + (this * 86400_000L)
 }
