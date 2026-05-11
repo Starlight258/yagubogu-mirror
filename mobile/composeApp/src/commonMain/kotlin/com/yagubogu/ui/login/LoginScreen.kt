@@ -89,8 +89,7 @@ fun LoginScreen(
             modifier = Modifier.align(Alignment.BottomCenter),
         )
 
-        val info = maintenanceInfo
-        if (info != null && info.shouldShowPopup && !isMaintenanceConfirm.value) {
+        maintenanceInfo?.let { info ->
             PopupNoticeDialog(
                 onConfirm = { isChecked ->
                     isMaintenanceConfirm.value = true

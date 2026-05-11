@@ -194,18 +194,19 @@ fun HomeScreen(
 
     HomeDialog(viewModel)
 
-    val info = homeNoticeInfo
-    if (info != null && info.shouldShowPopup && !isHomeNoticeConfirm.value) {
-        PopupNoticeDialog(
-            onConfirm = { isChecked ->
-                isHomeNoticeConfirm.value = true
-                if (isChecked) {
-                    viewModel.homeNoticeDialogIgnore(info.id, info.skippableDays ?: 0)
-                }
-            },
-            popupNoticeInfo = info,
-            modifier = Modifier,
-        )
+    homeNoticeInfo?.let { info ->
+        if (info.shouldShowPopup && !isHomeNoticeConfirm.value) {
+            PopupNoticeDialog(
+                onConfirm = { isChecked ->
+                    isHomeNoticeConfirm.value = true
+                    if (isChecked) {
+                        viewModel.homeNoticeDialogIgnore(info.id, info.skippableDays ?: 0)
+                    }
+                },
+                popupNoticeInfo = info,
+                modifier = Modifier,
+            )
+        }
     }
 
     if (permissionState == PermissionState.DENIED) {
