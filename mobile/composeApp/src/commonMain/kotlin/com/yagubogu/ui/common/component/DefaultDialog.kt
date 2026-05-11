@@ -152,9 +152,7 @@ fun DefaultDialog(
                         )
                     }
                 }
-                bottomContent?.let {
-                    it()
-                }
+                bottomContent?.invoke()
             }
         }
     }
