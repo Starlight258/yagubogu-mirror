@@ -145,9 +145,7 @@ class HomeViewModel(
     val homeNoticeInfo: StateFlow<HomeNoticeInfo?> = _homeNoticeInfo.asStateFlow()
 
     init {
-        viewModelScope.launch {
-            _homeNoticeInfo.value = appConfigRepository.getHomeNoticeInfo()
-        }
+        setupHomeNoticeInfo()
         startOpeningCountdown()
     }
 
@@ -252,6 +250,12 @@ class HomeViewModel(
     ) {
         viewModelScope.launch {
             appConfigRepository.markHomeNoticeDialogAsIgnored(homeDialogId, days)
+        }
+    }
+
+    private fun setupHomeNoticeInfo() {
+        viewModelScope.launch {
+            _homeNoticeInfo.value = appConfigRepository.getHomeNoticeInfo()
         }
     }
 
