@@ -251,7 +251,7 @@ class HomeViewModel(
         days: Int,
     ) {
         viewModelScope.launch {
-            appConfigRepository.homeNoticeDialogMarkAsIgnored(homeDialogId, days)
+            appConfigRepository.markHomeNoticeDialogAsIgnored(homeDialogId, days)
         }
     }
 

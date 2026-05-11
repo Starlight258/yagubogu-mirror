@@ -10,12 +10,12 @@ interface AppConfigRepository {
 
     suspend fun getHomeNoticeInfo(): HomeNoticeInfo
 
-    suspend fun maintenanceDialogMarkAsIgnored(
+    suspend fun markMaintenanceDialogAsIgnored(
         maintenanceId: Int,
         days: Int,
     )
 
-    suspend fun homeNoticeDialogMarkAsIgnored(
+    suspend fun markHomeNoticeDialogAsIgnored(
         homeNoticeId: Int,
         days: Int,
     )

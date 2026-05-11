@@ -62,7 +62,7 @@ class LoginViewModel(
         days: Int,
     ) {
         viewModelScope.launch {
-            appConfigRepository.maintenanceDialogMarkAsIgnored(maintenanceId, days)
+            appConfigRepository.markMaintenanceDialogAsIgnored(maintenanceId, days)
         }
     }
 

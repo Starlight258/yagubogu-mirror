@@ -55,14 +55,14 @@ class AppConfigDefaultRepository(
             },
         )
 
-    override suspend fun maintenanceDialogMarkAsIgnored(
+    override suspend fun markMaintenanceDialogAsIgnored(
         maintenanceId: Int,
         days: Int,
     ) = markAsIgnoredInternal(maintenanceId, days) { id, expiry ->
         localDataSource.saveMaintenanceIgnoreInfo(id, expiry)
     }
 
-    override suspend fun homeNoticeDialogMarkAsIgnored(
+    override suspend fun markHomeNoticeDialogAsIgnored(
         homeNoticeId: Int,
         days: Int,
     ) = markAsIgnoredInternal(homeNoticeId, days) { id, expiry ->
