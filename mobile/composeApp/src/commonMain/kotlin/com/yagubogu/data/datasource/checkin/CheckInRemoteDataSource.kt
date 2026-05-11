@@ -29,6 +29,11 @@ class CheckInRemoteDataSource(
         }
     }
 
+    override suspend fun deleteCheckIn(checkInId: Long): Result<Unit> =
+        safeApiCall {
+            checkInApiService.deleteCheckIn(checkInId)
+        }
+
     override suspend fun getCheckInCounts(year: Int): Result<CheckInCountsResponse> =
         safeApiCall {
             checkInApiService.getCheckInCounts(year)

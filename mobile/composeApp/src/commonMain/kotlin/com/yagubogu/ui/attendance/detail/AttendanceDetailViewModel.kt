@@ -7,7 +7,7 @@ import com.yagubogu.analytics.AnalyticsLogger
 import com.yagubogu.data.repository.checkin.CheckInRepository
 import com.yagubogu.data.repository.thirdparty.ThirdPartyRepository
 import com.yagubogu.domain.model.AttendanceDiary
-import com.yagubogu.domain.usecase.DeleteDiaryUseCase
+import com.yagubogu.domain.usecase.DeleteCheckInUseCase
 import com.yagubogu.domain.usecase.LoadDiaryUseCase
 import com.yagubogu.ui.attendance.detail.AttendanceDetailViewModel.Companion.DIARY_MAX_IMAGE_SIZE
 import com.yagubogu.ui.attendance.detail.model.AttendanceDetailDiaryUiState
@@ -44,7 +44,7 @@ class AttendanceDetailViewModel(
     private val checkInRepository: CheckInRepository,
     private val thirdPartyRepository: ThirdPartyRepository,
     private val loadDiaryUseCase: LoadDiaryUseCase,
-    private val deleteDiaryUseCase: DeleteDiaryUseCase,
+    private val deleteCheckInUseCase: DeleteCheckInUseCase,
 ) : ViewModel() {
     private val logger = Logger.withTag("AttendanceDetailViewModel")
 
@@ -95,14 +95,19 @@ class AttendanceDetailViewModel(
         }
     }
 
-    fun deleteDiary() {
+    fun deleteCheckIn() {
         _attendanceDetailDiaryUiState.update { it.copy(isLoading = true) }
+
         viewModelScope.launch {
-            val imageIds = attendanceDetailDiaryUiState.value.images.mapNotNull { it?.id }
-            deleteDiaryUseCase(checkInId = checkInId, imageIds = imageIds)
-                .onSuccess { _attendanceDetailDiaryUiState.value = AttendanceDetailDiaryUiState() }
-                .onFailure { e ->
-                    logger.e(e) { "직관 기록 삭제 실패" }
+            val imageIds: List<Long> =
+                attendanceDetailDiaryUiState.value.images.mapNotNull { it?.id }
+
+            deleteCheckInUseCase(checkInId = checkInId, imageIds = imageIds)
+                .onSuccess {
+                    _attendanceDetailDiaryUiState.value = AttendanceDetailDiaryUiState()
+                    _uiEvent.emit(AttendanceDetailUiEvent.DeleteSuccess)
+                }.onFailure { e ->
+                    logger.e(e) { "직관 기록 및 직관 내역 전체 삭제 실패" }
                     _attendanceDetailDiaryUiState.update { it.copy(isLoading = false) }
                     _uiEvent.emit(AttendanceDetailUiEvent.ShowSnackbar(Res.string.attendance_detail_delete_failed))
                 }

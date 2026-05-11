@@ -156,7 +156,7 @@
     <string name="attendance_detail_delete_diary_title">직관 기록을 삭제할까요?</string>
     <string name="attendance_detail_delete_diary_message">삭제된 기록은 복구할 수 없어요.</string>
     <string name="attendance_detail_load_failed">직관 기록을 불러오지 못했어요.</string>
-    <string name="attendance_detail_delete_failed">직관 기록 삭제에 실패했어요. 다시 시도해 주세요.</string>
+    <string name="attendance_detail_delete_failed">직관 내역 삭제에 실패했어요. 다시 시도해 주세요.</string>
     <string name="attendance_detail_exit_diary_title">저장하지 않고 나갈까요?</string>
     <string name="attendance_detail_exit_diary_message">변경사항이 저장되지 않아요.</string>
     <string name="attendance_detail_exit_diary_positive">나가기</string>

@@ -78,7 +78,7 @@ val viewModelModule =
                 checkInRepository = get(),
                 thirdPartyRepository = get(),
                 loadDiaryUseCase = get(),
-                deleteDiaryUseCase = get(),
+                deleteCheckInUseCase = get(),
             )
         }
     }

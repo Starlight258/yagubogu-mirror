@@ -29,6 +29,11 @@ interface CheckInApiService {
         @Body body: CheckInRequest,
     )
 
+    @DELETE("/api/v1/check-ins/{checkInId}")
+    suspend fun deleteCheckIn(
+        @Path("checkInId") checkInId: Long,
+    )
+
     @GET("/api/v1/check-ins/counts")
     suspend fun getCheckInCounts(
         @Query("year") year: Int,

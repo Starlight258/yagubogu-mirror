@@ -21,6 +21,8 @@ class CheckInDefaultRepository(
 ) : CheckInRepository {
     override suspend fun addCheckIn(gameId: Long): Result<Unit> = checkInDataSource.addCheckIn(gameId)
 
+    override suspend fun deleteCheckIn(checkInId: Long): Result<Unit> = checkInDataSource.deleteCheckIn(checkInId)
+
     override suspend fun getCheckInCounts(year: Int): Result<Int> =
         checkInDataSource
             .getCheckInCounts(year)

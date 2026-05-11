@@ -75,6 +75,8 @@ fun AttendanceDetailScreen(
                         scope = this,
                         stringResource = event.message,
                     )
+
+                AttendanceDetailUiEvent.DeleteSuccess -> onBackClick()
             }
         }
     }
@@ -112,7 +114,7 @@ fun AttendanceDetailScreen(
         DeleteDiaryDialog(
             onConfirm = {
                 showDeleteDialog = false
-                viewModel.deleteDiary()
+                viewModel.deleteCheckIn()
             },
             onCancel = { showDeleteDialog = false },
         )

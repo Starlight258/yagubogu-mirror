@@ -11,6 +11,8 @@ import kotlinx.datetime.LocalDate
 interface CheckInRepository {
     suspend fun addCheckIn(gameId: Long): Result<Unit>
 
+    suspend fun deleteCheckIn(checkInId: Long): Result<Unit>
+
     suspend fun getCheckInCounts(year: Int): Result<Int>
 
     suspend fun getStadiumFanRates(date: LocalDate): Result<List<FanRateByGameDto>>
