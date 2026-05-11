@@ -73,6 +73,7 @@ fun AttendanceCalendarContent(
     pastGameUiState: PastGameUiState,
     onPastGamesRequest: (LocalDate) -> Unit,
     onPastCheckIn: (Long) -> Unit,
+    onItemClick: (item: AttendanceHistoryItem) -> Unit,
     modifier: Modifier = Modifier,
     scrollToTopEvent: SharedFlow<Unit> = MutableSharedFlow(),
 ) {
@@ -126,8 +127,7 @@ fun AttendanceCalendarContent(
                 // 직관 내역이 있는 경우
                 currentItems != null -> {
                     currentItems.forEach { item: AttendanceHistoryItem ->
-                        // TODO
-                        AttendanceItem(item = item, onItemClick = {})
+                        AttendanceItem(item = item, onItemClick = onItemClick)
                     }
                 }
 
@@ -244,6 +244,7 @@ private fun AttendanceCalendarContentPreview() {
         pastGameUiState = PastGameUiState.Loading,
         onPastGamesRequest = {},
         onPastCheckIn = {},
+        onItemClick = {},
     )
 }
 
@@ -262,6 +263,7 @@ private fun AttendanceCalendarContentHasAttendancePreview() {
         pastGameUiState = PastGameUiState.Loading,
         onPastGamesRequest = {},
         onPastCheckIn = {},
+        onItemClick = {},
     )
 }
 
@@ -280,5 +282,6 @@ private fun AttendanceCalendarContentNoGamePreview() {
         pastGameUiState = PastGameUiState.Loading,
         onPastGamesRequest = {},
         onPastCheckIn = {},
+        onItemClick = {},
     )
 }

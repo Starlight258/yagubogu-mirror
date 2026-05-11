@@ -232,6 +232,7 @@ private fun AttendanceHistoryScreen(
                     pastGameUiState = pastGameUiState,
                     onPastGamesRequest = onPastGamesRequest,
                     onPastCheckIn = onPastCheckIn,
+                    onItemClick = onAttendanceHistoryItemClick,
                     scrollToTopEvent = scrollToTopEvent,
                 )
 
