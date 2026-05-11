@@ -155,7 +155,9 @@ private fun WritingDiaryPage(
         DiaryTextField(
             readOnly = false,
             value = comment,
-            onValueChange = { if (it.length <= AttendanceDetailViewModel.DIARY_MAX_LENGTH) comment = it },
+            onValueChange = {
+                if (it.length <= AttendanceDetailViewModel.DIARY_MAX_LENGTH) comment = it
+            },
             modifier = Modifier.fillMaxWidth().weight(1f),
         )
         DiarySaveButton(onClick = { onSaveClick(comment) })
@@ -246,7 +248,7 @@ private fun DiaryTextField(
                 innerTextField()
                 if (!readOnly) {
                     Text(
-                        text = "${value.length}/$AttendanceDetailViewModel.DIARY_MAX_LENGTH",
+                        text = "${value.length}/${AttendanceDetailViewModel.DIARY_MAX_LENGTH}",
                         style = PretendardRegular12.copy(color = Gray400),
                         modifier = Modifier.align(Alignment.BottomEnd),
                     )
