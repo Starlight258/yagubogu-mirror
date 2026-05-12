@@ -25,7 +25,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,8 +51,6 @@ import com.yagubogu.ui.util.crop
 import com.yagubogu.ui.util.formatToAmPm
 import com.yagubogu.ui.util.noRippleClickable
 import com.yagubogu.ui.util.now
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDateTime
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -70,8 +67,6 @@ import yagubogu.composeapp.generated.resources.livetalk_user_report_btn
 import yagubogu.composeapp.generated.resources.livetalk_user_report_icon_description
 import yagubogu.composeapp.generated.resources.time_am
 import yagubogu.composeapp.generated.resources.time_pm
-
-private const val THROTTLE_MS = 1000L
 
 @Composable
 fun LivetalkOtherChatBubble(
@@ -241,22 +236,12 @@ private fun LivetalkLikeButton(
 ) {
     val tintColor = if (isLiked) Red else Gray400
     val heartIcon = if (isLiked) Res.drawable.ic_heart else Res.drawable.ic_heart_outline
-    val scope = rememberCoroutineScope()
-    var isThrottled by remember { mutableStateOf(false) }
-
     Row(
         modifier =
             modifier
                 .clip(RoundedCornerShape(12.dp))
-                .clickable {
-                    if (isThrottled) return@clickable
-                    isThrottled = true
-                    onClick()
-                    scope.launch {
-                        delay(THROTTLE_MS)
-                        isThrottled = false
-                    }
-                }.padding(horizontal = 4.dp, vertical = 4.dp),
+                .clickable { onClick() }
+                .padding(horizontal = 4.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
     ) {
