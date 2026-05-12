@@ -21,6 +21,7 @@ import com.yagubogu.ui.home.model.StadiumFanRateItem
 import com.yagubogu.ui.home.model.TeamFanRate
 import com.yagubogu.ui.stats.detail.model.StadiumVisitCount
 import kotlinx.datetime.LocalDateTime
+import kotlin.math.roundToInt
 
 fun FanRateByGameDto.toUiModel(): StadiumFanRateItem =
     StadiumFanRateItem(
@@ -98,7 +99,7 @@ fun PitcherRecordDto.toUiModel(): PlayerRecordUiModel.PitcherRecord =
     PlayerRecordUiModel.PitcherRecord(
         playerName = playerName,
         result = result,
-        innings = innings.toString(),
+        innings = innings.toInningString(),
         pitchCount = pitchCount,
         hitsAllowed = hitsAllowed,
         walksAndHbp = walksAndHbp,
@@ -118,3 +119,24 @@ fun CheckInImageDto.toUiModel(): DiaryImageItem =
         id = imageId,
         uri = imageUrl,
     )
+
+/**
+ * 소수점으로 표현된 이닝(Double)을 야구 표기법(⅓, ⅔) 문자열로 변환합니다.
+ * 예: 5.0 -> "5", 5.1 -> "5 ⅓", 5.2 -> "5 ⅔", 0.1 -> "0 ⅓"
+ */
+fun Double.toInningString(): String {
+    val fullInnings: Int = this.toInt()
+    val outs: Int = (this * 10).roundToInt() % 10
+
+    val fraction: String =
+        when (outs) {
+            1 -> "⅓"
+            2 -> "⅔"
+            else -> ""
+        }
+
+    return when {
+        fraction.isEmpty() -> fullInnings.toString() // (예: "5")
+        else -> "$fullInnings $fraction" // (예: "5 ⅓")
+    }
+}

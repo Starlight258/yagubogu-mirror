@@ -10,7 +10,7 @@ data class PitcherRecordDto(
     @SerialName("result")
     val result: String, // 등판 결과
     @SerialName("innings")
-    val innings: Int, // 투구 이닝 (예: 6.2 = 6 2/3이닝)
+    val innings: Double, // 투구 이닝 (예: 6.2 = 6 2/3이닝)
     @SerialName("pitchCount")
     val pitchCount: Int, // 총 투구 수
     @SerialName("hitsAllowed")
