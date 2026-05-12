@@ -28,7 +28,15 @@ import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.theme.dpToSp
 import org.jetbrains.compose.resources.stringResource
 import yagubogu.composeapp.generated.resources.Res
+import yagubogu.composeapp.generated.resources.attendance_detail_earned_runs
 import yagubogu.composeapp.generated.resources.attendance_detail_game_record_update
+import yagubogu.composeapp.generated.resources.attendance_detail_hits_allowed
+import yagubogu.composeapp.generated.resources.attendance_detail_innings
+import yagubogu.composeapp.generated.resources.attendance_detail_pitch_count
+import yagubogu.composeapp.generated.resources.attendance_detail_pitcher_name
+import yagubogu.composeapp.generated.resources.attendance_detail_runs_allowed
+import yagubogu.composeapp.generated.resources.attendance_detail_strikeouts
+import yagubogu.composeapp.generated.resources.attendance_detail_walks_and_hbp
 
 @Composable
 fun PitcherRecordTable(
@@ -75,43 +83,43 @@ private fun PitcherRecordHeader(modifier: Modifier = Modifier) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = "투수명",
+            text = stringResource(Res.string.attendance_detail_pitcher_name),
             style = PretendardSemiBold.copy(fontSize = 14.dpToSp, color = Primary900),
             modifier = Modifier.weight(2.4f).padding(start = 8.dp),
         )
 
         PitcherRecordText(
-            text = "이닝",
+            text = stringResource(Res.string.attendance_detail_innings),
             modifier = Modifier.weight(1f),
             isHeader = true,
         )
         PitcherRecordText(
-            text = "피안타",
+            text = stringResource(Res.string.attendance_detail_hits_allowed),
             modifier = Modifier.weight(1f),
             isHeader = true,
         )
         PitcherRecordText(
-            text = "실점",
+            text = stringResource(Res.string.attendance_detail_runs_allowed),
             modifier = Modifier.weight(1f),
             isHeader = true,
         )
         PitcherRecordText(
-            text = "자책",
+            text = stringResource(Res.string.attendance_detail_earned_runs),
             modifier = Modifier.weight(1f),
             isHeader = true,
         )
         PitcherRecordText(
-            text = "삼진",
+            text = stringResource(Res.string.attendance_detail_strikeouts),
             modifier = Modifier.weight(1f),
             isHeader = true,
         )
         PitcherRecordText(
-            text = "4사구",
+            text = stringResource(Res.string.attendance_detail_walks_and_hbp),
             modifier = Modifier.weight(1f),
             isHeader = true,
         )
         PitcherRecordText(
-            text = "투구수",
+            text = stringResource(Res.string.attendance_detail_pitch_count),
             modifier = Modifier.weight(1f),
             isHeader = true,
         )

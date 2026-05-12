@@ -30,7 +30,12 @@ import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.theme.dpToSp
 import org.jetbrains.compose.resources.stringResource
 import yagubogu.composeapp.generated.resources.Res
+import yagubogu.composeapp.generated.resources.attendance_detail_at_bats
 import yagubogu.composeapp.generated.resources.attendance_detail_game_record_update
+import yagubogu.composeapp.generated.resources.attendance_detail_hits
+import yagubogu.composeapp.generated.resources.attendance_detail_hitter_name
+import yagubogu.composeapp.generated.resources.attendance_detail_rbi
+import yagubogu.composeapp.generated.resources.attendance_detail_runs
 
 @Composable
 fun HitterRecordTable(
@@ -77,25 +82,25 @@ private fun HitterRecordHeader(modifier: Modifier = Modifier) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = "타자명",
+            text = stringResource(Res.string.attendance_detail_hitter_name),
             style = PretendardSemiBold.copy(fontSize = 14.dpToSp, color = Primary900),
             modifier = Modifier.weight(2.8f).padding(start = 8.dp),
         )
 
         HitterRecordText(
-            text = "타수",
+            text = stringResource(Res.string.attendance_detail_at_bats),
             modifier = Modifier.weight(1f),
         )
         HitterRecordText(
-            text = "안타",
+            text = stringResource(Res.string.attendance_detail_hits),
             modifier = Modifier.weight(1f),
         )
         HitterRecordText(
-            text = "타점",
+            text = stringResource(Res.string.attendance_detail_rbi),
             modifier = Modifier.weight(1f),
         )
         HitterRecordText(
-            text = "득점",
+            text = stringResource(Res.string.attendance_detail_runs),
             modifier = Modifier.weight(1f),
         )
     }

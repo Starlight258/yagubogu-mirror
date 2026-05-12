@@ -143,7 +143,21 @@
     <string name="attendance_detail_tab_game_record">경기 기록</string>
     <string name="attendance_detail_tab_diary">직관 기록</string>
     <string name="attendance_detail_game_result">경기 결과</string>
+    <string name="attendance_detail_hitter_name">타자명</string>
+    <string name="attendance_detail_at_bats">타수</string>
+    <string name="attendance_detail_hits">안타</string>
+    <string name="attendance_detail_rbi">타점</string>
+    <string name="attendance_detail_runs">득점</string>
+    <string name="attendance_detail_pitcher_name">투수명</string>
+    <string name="attendance_detail_innings">이닝</string>
+    <string name="attendance_detail_hits_allowed">피안타</string>
+    <string name="attendance_detail_runs_allowed">실점</string>
+    <string name="attendance_detail_earned_runs">자책</string>
+    <string name="attendance_detail_strikeouts">삼진</string>
+    <string name="attendance_detail_walks_and_hbp">4사구</string>
+    <string name="attendance_detail_pitch_count">투구수</string>
     <string name="attendance_detail_game_record_update">경기 종료 후 기록이 업데이트돼요.</string>
+
     <string name="attendance_detail_diary_save">저장하기</string>
     <string name="attendance_detail_delete">삭제</string>
     <string name="attendance_detail_diary_edit">수정하기</string>
