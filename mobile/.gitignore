@@ -18,7 +18,6 @@ captures
 **/xcshareddata/WorkspaceSettings.xcsettings
 node_modules/
 composeApp/release/
-composeApp/src/commonMain/composeResources/files/aboutlibraries.json
 iosApp/Pods/
 iosApp/Configuration/Config.xcconfig
 **/google-services.json
