@@ -23,8 +23,13 @@ class AppConfigDefaultRepository(
         val response = remoteDataSource.getMaintenanceResponse()
         val ignoreInfo = localDataSource.maintenanceIgnoreInfo.first()
         val shouldShow =
-            response.isShow &&
-                ignoreInfo.shouldShow(response.id, clock.now().toEpochMilliseconds())
+            when {
+                response.id == DEFAULT_CONFIG_ID -> true
+                else ->
+                    response.isShow &&
+                        ignoreInfo.shouldShow(response.id, clock.now().toEpochMilliseconds())
+            }
+
         return MaintenanceInfo(
             id = response.id,
             remoteIsShow = response.isShow,
@@ -93,4 +98,8 @@ class AppConfigDefaultRepository(
     }
 
     private fun Int.toExpiryMillis(): Long = clock.now().toEpochMilliseconds() + (this * 86400_000L)
+
+    companion object {
+        private const val DEFAULT_CONFIG_ID = -1
+    }
 }
