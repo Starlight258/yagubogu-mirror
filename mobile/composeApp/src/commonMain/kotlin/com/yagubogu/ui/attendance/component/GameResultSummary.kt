@@ -60,7 +60,7 @@ fun GameResultSummary(
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(
                     text = item.awayTeam.score,

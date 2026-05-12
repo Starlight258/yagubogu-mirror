@@ -64,10 +64,8 @@ class AttendanceDetailViewModel(
     val uiEvent: SharedFlow<AttendanceDetailUiEvent> = _uiEvent.asSharedFlow()
 
     init {
-        viewModelScope.launch {
-            loadGameReview()
-            loadDiary()
-        }
+        loadGameReview()
+        loadDiary()
     }
 
     fun addImages(uris: List<String>) {
@@ -136,25 +134,29 @@ class AttendanceDetailViewModel(
         }
     }
 
-    private suspend fun loadGameReview() {
-        checkInRepository
-            .getGameReview(checkInId)
-            .map { it.toUiModel() }
-            .onSuccess { playerRecord: PlayerRecordUiModel ->
-                _playerRecordUiModel.value = playerRecord
-            }.onFailure { exception: Throwable ->
-                logger.w(exception) { "API 호출 실패 (경기 기록 조회)" }
-            }
+    private fun loadGameReview() {
+        viewModelScope.launch {
+            checkInRepository
+                .getGameReview(checkInId)
+                .map { it.toUiModel() }
+                .onSuccess { playerRecord: PlayerRecordUiModel ->
+                    _playerRecordUiModel.value = playerRecord
+                }.onFailure { exception: Throwable ->
+                    logger.w(exception) { "API 호출 실패 (경기 기록 조회)" }
+                }
+        }
     }
 
-    private suspend fun loadDiary() {
-        loadDiaryUseCase(checkInId)
-            .onSuccess { diary -> applyLoadedDiary(diary) }
-            .onFailure { e ->
-                logger.e(e) { "직관 기록 조회 실패" }
-                _attendanceDetailDiaryUiState.update { it.copy(isLoading = false) }
-                _uiEvent.emit(AttendanceDetailUiEvent.ShowSnackbar(Res.string.attendance_detail_load_failed))
-            }
+    private fun loadDiary() {
+        viewModelScope.launch {
+            loadDiaryUseCase(checkInId)
+                .onSuccess { diary -> applyLoadedDiary(diary) }
+                .onFailure { e ->
+                    logger.e(e) { "직관 기록 조회 실패" }
+                    _attendanceDetailDiaryUiState.update { it.copy(isLoading = false) }
+                    _uiEvent.emit(AttendanceDetailUiEvent.ShowSnackbar(Res.string.attendance_detail_load_failed))
+                }
+        }
     }
 
     private fun applyLoadedDiary(diary: AttendanceDiary) {
