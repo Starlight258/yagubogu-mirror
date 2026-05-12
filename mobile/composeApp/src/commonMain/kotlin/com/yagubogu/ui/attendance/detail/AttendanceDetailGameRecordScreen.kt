@@ -20,7 +20,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -145,7 +145,7 @@ private fun PlayerRecord(
     playerRecord: PlayerRecordUiModel,
     modifier: Modifier = Modifier,
 ) {
-    var selectedTabIndex: Int by remember { mutableIntStateOf(TeamType.AWAY.ordinal) }
+    var selectedTeamType: TeamType by remember { mutableStateOf(TeamType.AWAY) }
 
     Column(
         verticalArrangement = Arrangement.spacedBy(10.dp),
@@ -169,8 +169,8 @@ private fun PlayerRecord(
 
             Spacer(modifier = Modifier.weight(1f))
             PlayerRecordTeamTabRow(
-                selectedIndex = selectedTabIndex,
-                onTabSelect = { newIndex: Int -> selectedTabIndex = newIndex },
+                selectedTeamType = selectedTeamType,
+                onTabSelect = { newTab: TeamType -> selectedTeamType = newTab },
                 awayTeamName = awayTeamName,
                 homeTeamName = homeTeamName,
             )
@@ -183,7 +183,7 @@ private fun PlayerRecord(
                     .background(color = White, shape = RoundedCornerShape(12.dp))
                     .padding(20.dp),
         ) {
-            when (TeamType.entries[selectedTabIndex]) {
+            when (selectedTeamType) {
                 TeamType.AWAY -> {
                     HitterRecordTable(hitters = playerRecord.awayTeamHitters)
                     PitcherRecordTable(pitchers = playerRecord.awayTeamPitchers)
@@ -200,8 +200,8 @@ private fun PlayerRecord(
 
 @Composable
 private fun PlayerRecordTeamTabRow(
-    selectedIndex: Int,
-    onTabSelect: (Int) -> Unit,
+    selectedTeamType: TeamType,
+    onTabSelect: (TeamType) -> Unit,
     awayTeamName: String,
     homeTeamName: String,
     modifier: Modifier = Modifier,
@@ -215,14 +215,14 @@ private fun PlayerRecordTeamTabRow(
                 .background(Primary050),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        TeamType.entries.forEachIndexed { index: Int, teamType: TeamType ->
-            val isSelected: Boolean = selectedIndex == index
+        TeamType.entries.forEach { teamType: TeamType ->
+            val isSelected: Boolean = selectedTeamType == teamType
             Box(
                 modifier =
                     Modifier
                         .weight(1f)
                         .fillMaxHeight()
-                        .noRippleClickable { onTabSelect(index) },
+                        .noRippleClickable { onTabSelect(teamType) },
                 contentAlignment = Alignment.Center,
             ) {
                 if (isSelected) {
