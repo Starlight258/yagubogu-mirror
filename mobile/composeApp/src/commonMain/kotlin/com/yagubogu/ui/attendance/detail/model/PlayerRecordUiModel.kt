@@ -18,7 +18,7 @@ data class PlayerRecordUiModel(
 
     data class PitcherRecord(
         val playerName: String, // 선수 이름
-        val result: String, // 등판 결과
+        val result: PitcherResult?, // 등판 결과
         val innings: String, // 투구 이닝
         val hitsAllowed: Int, // 피안타 수
         val runsAllowed: Int, // 실점

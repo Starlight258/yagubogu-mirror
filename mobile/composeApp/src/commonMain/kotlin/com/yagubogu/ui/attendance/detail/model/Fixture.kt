@@ -53,7 +53,7 @@ val PITCHER_RECORDS: List<PlayerRecordUiModel.PitcherRecord> =
     listOf(
         PlayerRecordUiModel.PitcherRecord(
             playerName = "양현종",
-            result = "승",
+            result = PitcherResult.WIN,
             innings = "5 ⅓",
             hitsAllowed = 8,
             runsAllowed = 3,
@@ -64,7 +64,7 @@ val PITCHER_RECORDS: List<PlayerRecordUiModel.PitcherRecord> =
         ),
         PlayerRecordUiModel.PitcherRecord(
             playerName = "성영탁",
-            result = "홀",
+            result = PitcherResult.HOLD,
             innings = "0 ⅔",
             hitsAllowed = 2,
             runsAllowed = 1,
@@ -75,7 +75,7 @@ val PITCHER_RECORDS: List<PlayerRecordUiModel.PitcherRecord> =
         ),
         PlayerRecordUiModel.PitcherRecord(
             playerName = "전상현",
-            result = "",
+            result = null,
             innings = "1",
             hitsAllowed = 0,
             runsAllowed = 0,

@@ -13,6 +13,7 @@ import com.yagubogu.data.dto.response.checkin.TeamFanRateDto
 import com.yagubogu.domain.model.GameResult
 import com.yagubogu.domain.model.Team
 import com.yagubogu.ui.attendance.detail.model.DiaryImageItem
+import com.yagubogu.ui.attendance.detail.model.PitcherResult
 import com.yagubogu.ui.attendance.detail.model.PlayerRecordUiModel
 import com.yagubogu.ui.attendance.model.AttendanceHistoryItem
 import com.yagubogu.ui.attendance.model.GameState
@@ -98,7 +99,7 @@ fun HitterRecordDto.toUiModel(): PlayerRecordUiModel.HitterRecord =
 fun PitcherRecordDto.toUiModel(): PlayerRecordUiModel.PitcherRecord =
     PlayerRecordUiModel.PitcherRecord(
         playerName = playerName,
-        result = result,
+        result = result.toPitcherResult(),
         innings = innings.toInningString(),
         pitchCount = pitchCount,
         hitsAllowed = hitsAllowed,
@@ -140,3 +141,17 @@ fun Double.toInningString(): String {
         else -> "$fullInnings $fraction" // (예: "5 ⅓")
     }
 }
+
+/**
+ * 문자열의 첫 글자를 확인하여 PitcherResult Enum으로 변환합니다.
+ * 예: "승리" -> WIN, "패" -> LOSE, "세이브" -> SAVE, "홀드" -> HOLD
+ * 해당하는 문자가 없거나 빈 문자열이면 null을 반환합니다.
+ */
+fun String?.toPitcherResult(): PitcherResult? =
+    when (this?.firstOrNull()) {
+        '승' -> PitcherResult.WIN
+        '패' -> PitcherResult.LOSE
+        '홀' -> PitcherResult.HOLD
+        '세' -> PitcherResult.SAVE
+        else -> null
+    }

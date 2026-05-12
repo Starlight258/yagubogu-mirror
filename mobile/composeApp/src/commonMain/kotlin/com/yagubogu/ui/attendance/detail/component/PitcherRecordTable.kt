@@ -6,23 +6,29 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.yagubogu.ui.attendance.detail.model.PITCHER_RECORDS
+import com.yagubogu.ui.attendance.detail.model.PitcherResult
 import com.yagubogu.ui.attendance.detail.model.PlayerRecordUiModel
 import com.yagubogu.ui.theme.Gray300
 import com.yagubogu.ui.theme.Gray400
+import com.yagubogu.ui.theme.Gray500
 import com.yagubogu.ui.theme.PretendardMedium
 import com.yagubogu.ui.theme.PretendardMedium16
 import com.yagubogu.ui.theme.PretendardRegular
 import com.yagubogu.ui.theme.PretendardSemiBold
 import com.yagubogu.ui.theme.Primary050
+import com.yagubogu.ui.theme.Primary600
 import com.yagubogu.ui.theme.Primary900
 import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.theme.dpToSp
@@ -33,7 +39,11 @@ import yagubogu.composeapp.generated.resources.attendance_detail_game_record_upd
 import yagubogu.composeapp.generated.resources.attendance_detail_hits_allowed
 import yagubogu.composeapp.generated.resources.attendance_detail_innings
 import yagubogu.composeapp.generated.resources.attendance_detail_pitch_count
+import yagubogu.composeapp.generated.resources.attendance_detail_pitcher_hold
+import yagubogu.composeapp.generated.resources.attendance_detail_pitcher_lose
 import yagubogu.composeapp.generated.resources.attendance_detail_pitcher_name
+import yagubogu.composeapp.generated.resources.attendance_detail_pitcher_save
+import yagubogu.composeapp.generated.resources.attendance_detail_pitcher_win
 import yagubogu.composeapp.generated.resources.attendance_detail_runs_allowed
 import yagubogu.composeapp.generated.resources.attendance_detail_strikeouts
 import yagubogu.composeapp.generated.resources.attendance_detail_walks_and_hbp
@@ -148,6 +158,33 @@ private fun PitcherRecordRow(
                 text = pitcher.playerName,
                 style = PretendardMedium.copy(fontSize = 14.dpToSp),
             )
+
+            if (pitcher.result != null) {
+                Text(
+                    text =
+                        stringResource(
+                            when (pitcher.result) {
+                                PitcherResult.WIN -> Res.string.attendance_detail_pitcher_win
+                                PitcherResult.LOSE -> Res.string.attendance_detail_pitcher_lose
+                                PitcherResult.HOLD -> Res.string.attendance_detail_pitcher_hold
+                                PitcherResult.SAVE -> Res.string.attendance_detail_pitcher_save
+                            },
+                        ),
+                    style =
+                        PretendardMedium.copy(
+                            fontSize = 10.dpToSp,
+                            color = White,
+                            textAlign = TextAlign.Center,
+                        ),
+                    modifier =
+                        Modifier.size(12.dp).clip(CircleShape).background(
+                            when (pitcher.result) {
+                                PitcherResult.WIN -> Primary600
+                                else -> Gray500
+                            },
+                        ),
+                )
+            }
         }
 
         PitcherRecordText(

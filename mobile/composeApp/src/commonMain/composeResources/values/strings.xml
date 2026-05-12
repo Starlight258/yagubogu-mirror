@@ -156,6 +156,10 @@
     <string name="attendance_detail_strikeouts">삼진</string>
     <string name="attendance_detail_walks_and_hbp">4사구</string>
     <string name="attendance_detail_pitch_count">투구수</string>
+    <string name="attendance_detail_pitcher_win">승</string>
+    <string name="attendance_detail_pitcher_lose">패</string>
+    <string name="attendance_detail_pitcher_hold">홀</string>
+    <string name="attendance_detail_pitcher_save">세</string>
     <string name="attendance_detail_game_record_update">경기 종료 후 기록이 업데이트돼요.</string>
 
     <string name="attendance_detail_diary_save">저장하기</string>
