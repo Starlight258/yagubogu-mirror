@@ -5,6 +5,7 @@ import com.yagubogu.data.dto.response.checkin.CheckInHistoryResponse
 import com.yagubogu.data.dto.response.checkin.CheckInImageDto
 import com.yagubogu.data.dto.response.checkin.CheckInImagesResponse
 import com.yagubogu.data.dto.response.checkin.CheckInMemoResponse
+import com.yagubogu.data.dto.response.checkin.CheckInReviewResponse
 import com.yagubogu.data.dto.response.checkin.CheckInStatusResponse
 import com.yagubogu.data.dto.response.checkin.FanRateResponse
 import com.yagubogu.data.dto.response.checkin.StadiumCheckInCountsResponse
@@ -13,6 +14,8 @@ import kotlinx.datetime.LocalDate
 
 interface CheckInDataSource {
     suspend fun addCheckIn(gameId: Long): Result<Unit>
+
+    suspend fun deleteCheckIn(checkInId: Long): Result<Unit>
 
     suspend fun getCheckInCounts(year: Int): Result<CheckInCountsResponse>
 
@@ -30,6 +33,8 @@ interface CheckInDataSource {
     suspend fun getStadiumCheckInCounts(year: Int?): Result<StadiumCheckInCountsResponse>
 
     suspend fun addPastCheckIn(gameId: Long): Result<Unit>
+
+    suspend fun getGameReview(checkInId: Long): Result<CheckInReviewResponse>
 
     suspend fun getMemo(checkInId: Long): Result<CheckInMemoResponse>
 

@@ -22,6 +22,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import com.yagubogu.analytics.AnalyticsLogger
 import com.yagubogu.ui.attendance.AttendanceHistoryScreen
+import com.yagubogu.ui.attendance.model.AttendanceHistoryItem
 import com.yagubogu.ui.home.HomeScreen
 import com.yagubogu.ui.livetalk.LivetalkScreen
 import com.yagubogu.ui.main.component.LoadingOverlay
@@ -36,7 +37,6 @@ import com.yagubogu.ui.theme.Gray050
 import com.yagubogu.ui.theme.White
 import com.yagubogu.ui.util.fadeTransition
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import yagubogu.composeapp.generated.resources.Res
@@ -51,7 +51,7 @@ fun MainScreen(
     onBadgeClick: () -> Unit,
     onRankingShowMoreClick: (RankingType) -> Unit,
     onLivetalkItemClick: (Long, Boolean) -> Unit,
-    onAttendanceHistoryItemClick: (id: Long, date: LocalDate) -> Unit,
+    onAttendanceHistoryItemClick: (item: AttendanceHistoryItem) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: MainViewModel = koinViewModel(),
 ) {

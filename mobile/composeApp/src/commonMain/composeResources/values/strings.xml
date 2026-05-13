@@ -125,7 +125,7 @@
     <string name="attendance_history_add_attendance">직관 내역 추가하기</string>
     <string name="attendance_history_add_attendance_description">직관 내역에 추가할 경기를 선택해 주세요</string>
     <string name="attendance_history_add_attendance_confirm">%1$s\n직관 내역에 추가할까요?</string>
-    <string name="attendance_history_add_attendance_message">추가된 직관 내역은 삭제할 수 없어요.</string>
+    <string name="attendance_history_add_attendance_message">추가된 직관 내역은 통계에 반영돼요.</string>
     <string name="attendance_history_check_in_success_message">직관 내역이 추가되었습니다!</string>
     <string name="attendance_history_no_game_description">경기가 없는 날이에요</string>
     <string name="attendance_history_empty_description">직관 내역이 없어요</string>
@@ -134,9 +134,6 @@
     <string name="attendance_history_yearly">%1$d년 전체</string>
     <string name="attendance_history_latest">최신순</string>
     <string name="attendance_history_oldest">오래된순</string>
-    <string name="attendance_history_winning_pitcher">승 - %1$s</string>
-    <string name="attendance_history_draw_pitcher">무 - %1$s</string>
-    <string name="attendance_history_losing_pitcher">패 - %1$s</string>
     <string name="attendance_history_team_name">팀명</string>
     <string name="attendance_history_team_record">팀 기록</string>
     <string name="attendance_history_hits">안타</string>
@@ -145,6 +142,26 @@
 
     <string name="attendance_detail_tab_game_record">경기 기록</string>
     <string name="attendance_detail_tab_diary">직관 기록</string>
+    <string name="attendance_detail_game_result">경기 결과</string>
+    <string name="attendance_detail_hitter_name">타자명</string>
+    <string name="attendance_detail_at_bats">타수</string>
+    <string name="attendance_detail_hits">안타</string>
+    <string name="attendance_detail_rbi">타점</string>
+    <string name="attendance_detail_runs">득점</string>
+    <string name="attendance_detail_pitcher_name">투수명</string>
+    <string name="attendance_detail_innings">이닝</string>
+    <string name="attendance_detail_hits_allowed">피안타</string>
+    <string name="attendance_detail_runs_allowed">실점</string>
+    <string name="attendance_detail_earned_runs">자책</string>
+    <string name="attendance_detail_strikeouts">삼진</string>
+    <string name="attendance_detail_walks_and_hbp">4사구</string>
+    <string name="attendance_detail_pitch_count">투구수</string>
+    <string name="attendance_detail_pitcher_win">승</string>
+    <string name="attendance_detail_pitcher_lose">패</string>
+    <string name="attendance_detail_pitcher_hold">홀</string>
+    <string name="attendance_detail_pitcher_save">세</string>
+    <string name="attendance_detail_game_record_update">경기 종료 후 기록이 업데이트돼요.</string>
+
     <string name="attendance_detail_diary_save">저장하기</string>
     <string name="attendance_detail_delete">삭제</string>
     <string name="attendance_detail_diary_edit">수정하기</string>
@@ -157,7 +174,7 @@
     <string name="attendance_detail_delete_diary_title">직관 기록을 삭제할까요?</string>
     <string name="attendance_detail_delete_diary_message">삭제된 기록은 복구할 수 없어요.</string>
     <string name="attendance_detail_load_failed">직관 기록을 불러오지 못했어요.</string>
-    <string name="attendance_detail_delete_failed">직관 기록 삭제에 실패했어요. 다시 시도해 주세요.</string>
+    <string name="attendance_detail_delete_failed">직관 내역 삭제에 실패했어요. 다시 시도해 주세요.</string>
     <string name="attendance_detail_exit_diary_title">저장하지 않고 나갈까요?</string>
     <string name="attendance_detail_exit_diary_message">변경사항이 저장되지 않아요.</string>
     <string name="attendance_detail_exit_diary_positive">나가기</string>

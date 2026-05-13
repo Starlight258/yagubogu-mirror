@@ -7,6 +7,7 @@ import com.yagubogu.data.dto.response.checkin.CheckInHistoryResponse
 import com.yagubogu.data.dto.response.checkin.CheckInImageDto
 import com.yagubogu.data.dto.response.checkin.CheckInImagesResponse
 import com.yagubogu.data.dto.response.checkin.CheckInMemoResponse
+import com.yagubogu.data.dto.response.checkin.CheckInReviewResponse
 import com.yagubogu.data.dto.response.checkin.CheckInStatusResponse
 import com.yagubogu.data.dto.response.checkin.FanRateByGameDto
 import com.yagubogu.data.dto.response.checkin.FanRateResponse
@@ -19,6 +20,8 @@ class CheckInDefaultRepository(
     private val checkInDataSource: CheckInDataSource,
 ) : CheckInRepository {
     override suspend fun addCheckIn(gameId: Long): Result<Unit> = checkInDataSource.addCheckIn(gameId)
+
+    override suspend fun deleteCheckIn(checkInId: Long): Result<Unit> = checkInDataSource.deleteCheckIn(checkInId)
 
     override suspend fun getCheckInCounts(year: Int): Result<Int> =
         checkInDataSource
@@ -61,6 +64,8 @@ class CheckInDefaultRepository(
             }
 
     override suspend fun addPastCheckIn(gameId: Long): Result<Unit> = checkInDataSource.addPastCheckIn(gameId)
+
+    override suspend fun getGameReview(checkInId: Long): Result<CheckInReviewResponse> = checkInDataSource.getGameReview(checkInId)
 
     override suspend fun getMemo(checkInId: Long): Result<String?> =
         checkInDataSource
