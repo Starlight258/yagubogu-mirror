@@ -70,8 +70,8 @@ fun SettingScreen(
                             onSettingAccountClick = { onSettingItemClick(SettingNavKey.SettingAccount) },
                             onFavoriteTeamEditClick = { onFavoriteTeamEditClick() },
                             onProfileImagePickerOpen = { isGalleryOpen = true },
-                            onClickNotice = { onSettingItemClick(SettingNavKey.SettingNotice) },
-                            onClickFaq = { onSettingItemClick(SettingNavKey.SettingFaq) },
+                            onNoticeClick = { onSettingItemClick(SettingNavKey.SettingNotice) },
+                            onFaqClick = { onSettingItemClick(SettingNavKey.SettingFaq) },
                             onOssLicenseClick = { onSettingItemClick(SettingNavKey.OssLicense) },
                         )
                     }
