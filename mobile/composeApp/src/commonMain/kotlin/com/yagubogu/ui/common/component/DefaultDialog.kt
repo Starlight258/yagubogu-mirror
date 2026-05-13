@@ -73,7 +73,7 @@ fun DefaultDialog(
             Text(
                 text = message,
                 style = PretendardMedium.copy(fontSize = 14.sp),
-                textAlign = TextAlign.Center,
+                textAlign = dialogUiModel.textAlign.toTextAlign(),
                 color = Gray700,
             )
         }
@@ -157,6 +157,14 @@ fun DefaultDialog(
         }
     }
 }
+
+private fun String?.toTextAlign(): TextAlign =
+    when {
+        this == "Start" -> TextAlign.Start
+        this == "End" -> TextAlign.End
+        this == "Justify" -> TextAlign.Justify
+        else -> TextAlign.Center
+    }
 
 @Preview
 @Composable

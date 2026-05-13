@@ -44,6 +44,7 @@ fun PopupNoticeDialog(
             title = popupNoticeInfo.title ?: "",
             emoji = popupNoticeInfo.emoji,
             message = popupNoticeInfo.message,
+            textAlign = popupNoticeInfo.textAlign,
         )
 
     DefaultDialog(
@@ -92,6 +93,7 @@ private val MAINTENANCE_INFO =
         emoji = "🚧",
         title = "야구보구 점검중 테스트",
         message = "점검중입니다. 잠시만 기다려주세요.",
+        textAlign = null,
         skippableDays = 3,
         isLoginBlock = false,
     )

@@ -34,6 +34,7 @@ class AppConfigDefaultRepository(
             emoji = response.emoji,
             title = response.title,
             message = response.message,
+            textAlign = response.textAlign,
             skippableDays = response.skippableDays,
             isLoginBlock = response.isLoginBlock,
         )
@@ -52,6 +53,7 @@ class AppConfigDefaultRepository(
             emoji = response.emoji,
             title = response.title,
             message = response.message,
+            textAlign = response.textAlign,
             skippableDays = response.skippableDays,
         )
     }

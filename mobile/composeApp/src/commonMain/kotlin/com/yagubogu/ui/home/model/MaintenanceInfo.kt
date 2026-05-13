@@ -7,6 +7,7 @@ data class MaintenanceInfo(
     override val emoji: String?,
     override val title: String?,
     override val message: String?,
+    override val textAlign: String?,
     override val skippableDays: Int?,
     val isLoginBlock: Boolean,
 ) : PopupNoticeInfo

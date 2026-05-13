@@ -15,6 +15,8 @@ data class HomeNoticeResponse(
     override val title: String? = null, // 다이얼로그 제목
     @SerialName("message")
     override val message: String? = null, // 다이얼로그 메시지
+    @SerialName("text_align")
+    override val textAlign: String? = "Center", // 메시지의 정렬 (Start, End, Justify, Center)
     @SerialName("skippable_days")
     override val skippableDays: Int? = null, // 스킵 가능한 일 수
 ) : AppConfigPopupDialogResponse
