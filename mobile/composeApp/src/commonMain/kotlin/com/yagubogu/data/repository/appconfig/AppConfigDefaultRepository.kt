@@ -2,11 +2,8 @@ package com.yagubogu.data.repository.appconfig
 
 import com.yagubogu.data.datasource.appconfig.AppConfigLocalDataSource
 import com.yagubogu.data.datasource.appconfig.AppConfigRemoteDataSource
-import com.yagubogu.data.datasource.appconfig.IgnoreInfo
-import com.yagubogu.data.dto.response.appconfig.AppConfigPopupDialogResponse
 import com.yagubogu.ui.home.model.HomeNoticeInfo
 import com.yagubogu.ui.home.model.MaintenanceInfo
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlin.time.Clock
 
@@ -76,26 +73,6 @@ class AppConfigDefaultRepository(
     }
 
     override fun isPastCheckInAdEnabled(): Boolean = remoteDataSource.getBoolean("is_past_check_in_ad_enabled")
-
-    private suspend fun <T> getNoticeInfoInternal(
-        remoteCall: suspend () -> AppConfigPopupDialogResponse,
-        localFlow: Flow<IgnoreInfo>,
-        mapper: (AppConfigPopupDialogResponse, Boolean) -> T,
-    ): T {
-        val remoteResponse = remoteCall()
-        val localIgnoreInfo = localFlow.first()
-        val currentTime = clock.now().toEpochMilliseconds()
-
-        val shouldShow =
-            when {
-                !remoteResponse.isShow -> false
-                remoteResponse.id > localIgnoreInfo.lastIgnoredId -> true
-                currentTime > localIgnoreInfo.ignoreUntil -> true
-                else -> false
-            }
-
-        return mapper(remoteResponse, shouldShow)
-    }
 
     private fun Int.toExpiryMillis(): Long = clock.now().toEpochMilliseconds() + (this * 86400_000L)
 
