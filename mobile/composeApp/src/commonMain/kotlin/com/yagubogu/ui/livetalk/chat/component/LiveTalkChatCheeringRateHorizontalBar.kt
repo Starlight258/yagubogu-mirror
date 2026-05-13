@@ -19,6 +19,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.yagubogu.domain.model.Team
 import com.yagubogu.ui.theme.EsamanruMedium
+import com.yagubogu.ui.theme.Gray200
+import com.yagubogu.ui.theme.Gray600
 import com.yagubogu.ui.theme.YaguBoguTheme
 import com.yagubogu.ui.theme.dpToSp
 import com.yagubogu.ui.util.color
@@ -79,7 +81,7 @@ fun LiveTalkChatCheeringRateHorizontalBar(
                 style =
                     EsamanruMedium.copy(
                         fontSize = 14.dpToSp,
-                        color = com.yagubogu.ui.theme.Gray600,
+                        color = Gray600,
                     ),
                 modifier =
                     Modifier
@@ -111,7 +113,7 @@ fun LiveTalkChatCheeringRateHorizontalBar(
                     .fillMaxWidth()
                     .height(barHeight)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(com.yagubogu.ui.theme.Gray200)
+                    .background(Gray200)
                     .shimmerIf(isLoading),
         ) {
             if (!isLoading) {
