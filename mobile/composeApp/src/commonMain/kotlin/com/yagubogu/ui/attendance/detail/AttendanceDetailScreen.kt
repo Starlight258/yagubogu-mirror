@@ -149,6 +149,7 @@ private fun AttendanceDetailScreen(
             }
             HorizontalPager(
                 state = pagerState,
+                beyondViewportPageCount = AttendanceDetailTab.entries.size,
                 modifier = Modifier.fillMaxSize(),
             ) { page ->
                 when (page) {
