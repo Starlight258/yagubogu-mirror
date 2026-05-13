@@ -12,6 +12,7 @@
     <string name="all_count">%1$d회</string>
     <string name="all_null_nick_name">(알 수 없음)</string>
     <string name="all_back_button_content_description">뒤로가기</string>
+    <string name="all_close">닫기</string>
     <string name="all_ranking">%1$d등</string>
     <string name="all_score">%1$d점</string>
     <string name="all_score_first_float">%1$s점</string>
@@ -141,6 +142,25 @@
     <string name="attendance_history_errors">실책</string>
     <string name="attendance_history_balls">사사구</string>
 
+    <string name="attendance_detail_tab_game_record">경기 기록</string>
+    <string name="attendance_detail_tab_diary">직관 기록</string>
+    <string name="attendance_detail_diary_save">저장하기</string>
+    <string name="attendance_detail_delete">삭제</string>
+    <string name="attendance_detail_diary_edit">수정하기</string>
+    <string name="attendance_detail_diary_placeholder">뜨거웠던 직관의 순간을 기록해 보세요!</string>
+    <string name="attendance_detail_image_picker">사진</string>
+    <string name="attendance_detail_image_content_description">%1$d번 사진</string>
+    <string name="attendance_detail_delete_photo">사진 삭제</string>
+    <string name="attendance_detail_update_memo_failed">기록을 서버에 업로드하는 데 실패했어요. 다시 시도해 주세요.</string>
+    <string name="attendance_detail_upload_image_failed">이미지를 서버에 업로드하는 데 실패했어요. 다시 시도해 주세요.</string>
+    <string name="attendance_detail_delete_diary_title">직관 기록을 삭제할까요?</string>
+    <string name="attendance_detail_delete_diary_message">삭제된 기록은 복구할 수 없어요.</string>
+    <string name="attendance_detail_load_failed">직관 기록을 불러오지 못했어요.</string>
+    <string name="attendance_detail_delete_failed">직관 기록 삭제에 실패했어요. 다시 시도해 주세요.</string>
+    <string name="attendance_detail_exit_diary_title">저장하지 않고 나갈까요?</string>
+    <string name="attendance_detail_exit_diary_message">변경사항이 저장되지 않아요.</string>
+    <string name="attendance_detail_exit_diary_positive">나가기</string>
+
     <string name="login_failed_message">로그인에 실패했습니다.</string>
 
     <string name="favorite_team_selection">응원하는 팀을\n선택해 주세요!</string>
@@ -196,15 +216,16 @@
     <string name="badge_achieved_date">획득한 날: %1$s</string>
     <string name="badge_progress_rate">달성률: %1$s%</string>
 
+    <string name="image_crop_failed">이미지 자르기에 실패했습니다\n다른 이미지를 선택해보세요</string>
+    <string name="image_processing_failed">이미지 처리에 실패했습니다\n다른 이미지를 선택해보세요</string>
+    <string name="image_upload_failed">이미지 업로드에 실패했습니다\n나중에 다시 시도하세요</string>
+    <string name="image_size_failed">이미지 파일 크기를 확인할 수 없습니다</string>
+    <string name="image_selection_failed">이미지 선택 중 오류가 발생했습니다</string>
+
     <string name="setting_main_title">설정</string>
     <string name="setting_main_sign_up_date">가입한 날 : %1$s</string>
     <string name="setting_icon_description">설정 아이콘</string>
     <string name="setting_edit_profile_image">프로필 사진 수정</string>
-    <string name="setting_edit_profile_image_crop_failed">이미지 자르기에 실패했습니다\n다른 이미지를 선택해보세요</string>
-    <string name="setting_edit_profile_image_processing_failed">이미지 처리에 실패했습니다\n다른 이미지를 선택해보세요</string>
-    <string name="setting_edit_profile_image_upload_failed">이미지 업로드에 실패했습니다\n나중에 다시 시도하세요</string>
-    <string name="setting_edit_profile_get_image_size_failed">이미지 파일 크기를 확인할 수 없습니다</string>
-    <string name="setting_edit_profile_image_selection_failed">이미지 선택 중 오류가 발생했습니다</string>
     <string name="setting_edit_nickname">닉네임 수정</string>
     <string name="setting_edit_nickname_dialog_hint">새 닉네임을 입력해 주세요</string>
     <string name="setting_edited_nickname_alert">닉네임이 '%1$s'(으)로 변경되었습니다.</string>

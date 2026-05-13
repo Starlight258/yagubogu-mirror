@@ -21,6 +21,7 @@ import com.yagubogu.di.networkModule
 import com.yagubogu.di.repositoryModule
 import com.yagubogu.di.serviceModule
 import com.yagubogu.di.timeModule
+import com.yagubogu.di.useCaseModule
 import com.yagubogu.di.viewModelModule
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -78,6 +79,7 @@ class YaguBoguApplication : Application() {
                 repositoryModule,
                 serviceModule,
                 timeModule,
+                useCaseModule,
                 viewModelModule,
                 localModule,
                 configModule,
