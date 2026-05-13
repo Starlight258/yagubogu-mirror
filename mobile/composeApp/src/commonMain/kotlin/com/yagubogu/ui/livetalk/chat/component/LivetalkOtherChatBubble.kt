@@ -56,6 +56,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import yagubogu.composeapp.generated.resources.Res
 import yagubogu.composeapp.generated.resources.all_fan
+import yagubogu.composeapp.generated.resources.all_null_nick_name
 import yagubogu.composeapp.generated.resources.ic_flag
 import yagubogu.composeapp.generated.resources.ic_heart
 import yagubogu.composeapp.generated.resources.ic_heart_outline
@@ -105,7 +106,9 @@ fun LivetalkOtherChatBubble(
                 )
                 Spacer(Modifier.width(8.dp))
                 Text(
-                    text = livetalkChatItem.nickname ?: "알 수 없음",
+                    text =
+                        livetalkChatItem.nickname
+                            ?: stringResource(Res.string.all_null_nick_name),
                     style = PretendardBold16,
                     color = Black,
                 )
