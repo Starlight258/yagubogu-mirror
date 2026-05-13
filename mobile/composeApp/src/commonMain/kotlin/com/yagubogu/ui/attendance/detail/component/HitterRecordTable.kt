@@ -62,8 +62,16 @@ fun HitterRecordTable(
                 )
 
             false -> {
-                hitters.forEach {
-                    HitterRecordRow(hitter = it)
+                hitters.forEachIndexed { index: Int, hitter: PlayerRecordUiModel.HitterRecord ->
+                    val isSameAsPrevious =
+                        index > 0 && hitters[index - 1].battingOrder == hitter.battingOrder
+                    val displayBattingOrder =
+                        if (isSameAsPrevious) "" else hitter.battingOrder.toString()
+
+                    HitterRecordRow(
+                        hitter = hitter,
+                        battingOrder = displayBattingOrder,
+                    )
                     HorizontalDivider(color = Gray300, thickness = 0.4.dp)
                 }
             }
@@ -109,6 +117,7 @@ private fun HitterRecordHeader(modifier: Modifier = Modifier) {
 @Composable
 private fun HitterRecordRow(
     hitter: PlayerRecordUiModel.HitterRecord,
+    battingOrder: String,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -125,7 +134,7 @@ private fun HitterRecordRow(
             modifier = Modifier.weight(2.8f),
         ) {
             Text(
-                text = hitter.battingOrder.toString(),
+                text = battingOrder,
                 style = PretendardRegular.copy(fontSize = 12.dpToSp, textAlign = TextAlign.Center),
                 modifier = Modifier.width(20.dp),
             )
