@@ -175,6 +175,7 @@ private fun WritingDiaryPage(
             ImagePicker(
                 allowMultiple = true,
                 selectionLimit = uiState.emptyImageCount,
+                enableCrop = false,
                 onPhotosSelected = { uris: List<String> ->
                     isGalleryOpen = false
                     onImagesSelected(uris)
