@@ -1,10 +1,10 @@
 package com.yagubogu.ui.login.model
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Text
@@ -16,7 +16,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yagubogu.ui.common.component.DefaultDialog
 import com.yagubogu.ui.common.model.DefaultDialogUiModel
@@ -55,12 +54,10 @@ fun PopupNoticeDialog(
         bottomContent =
             popupNoticeInfo.skippableDays?.takeIf { it > 0 }?.let { days ->
                 {
-                    Spacer(modifier = Modifier.height(8.dp))
                     Row(
                         modifier =
                             Modifier
                                 .fillMaxWidth()
-                                .height(40.dp)
                                 .noRippleClickable { isChecked = !isChecked },
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center,
@@ -92,7 +89,7 @@ private val MAINTENANCE_INFO =
         shouldShowPopup = true,
         emoji = "🚧",
         title = "야구보구 점검중 테스트",
-        message = "점검중입니다. 잠시만 기다려주세요.",
+        message = "점검중입니다. 잠시만 기다려주세요.\n점검중입니다. 잠시만 기다려주세요.",
         textAlign = null,
         skippableDays = 3,
         isLoginBlock = false,
@@ -101,9 +98,23 @@ private val MAINTENANCE_INFO =
 @Preview
 @Composable
 private fun PopupNoticeDialogPreview() {
-    PopupNoticeDialog(
-        onConfirm = {},
-        popupNoticeInfo = MAINTENANCE_INFO,
-        modifier = Modifier,
-    )
+    Box(modifier = Modifier.fillMaxSize()) {
+        PopupNoticeDialog(
+            onConfirm = {},
+            popupNoticeInfo = MAINTENANCE_INFO,
+            modifier = Modifier,
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun PopupNoticeDialogPreviewNoSkippableDays() {
+    Box(modifier = Modifier.fillMaxSize()) {
+        PopupNoticeDialog(
+            onConfirm = {},
+            popupNoticeInfo = MAINTENANCE_INFO.copy(skippableDays = null),
+            modifier = Modifier,
+        )
+    }
 }
