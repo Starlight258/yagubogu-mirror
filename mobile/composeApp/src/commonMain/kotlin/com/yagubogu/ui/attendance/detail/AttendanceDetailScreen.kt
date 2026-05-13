@@ -3,7 +3,9 @@ package com.yagubogu.ui.attendance.detail
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
@@ -18,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yagubogu.ui.attendance.detail.component.AttendanceDetailTabRow
@@ -127,6 +130,8 @@ private fun AttendanceDetailScreen(
     onImagePickerError: (message: StringResource) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val isKeyboardVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
+
     Box(modifier = modifier.fillMaxSize()) {
         Column(
             modifier =
@@ -139,7 +144,9 @@ private fun AttendanceDetailScreen(
                 onBackClick = onBackClick,
                 onDeleteClick = onDeleteClick,
             )
-            AttendanceDetailTabRow(pagerState)
+            if (!isKeyboardVisible) {
+                AttendanceDetailTabRow(pagerState)
+            }
             HorizontalPager(
                 state = pagerState,
                 modifier = Modifier.fillMaxSize(),
