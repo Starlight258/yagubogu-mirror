@@ -243,6 +243,9 @@ kotlin {
             // UI Components
             implementation(libs.calendar.compose.multiplatform)
 
+            // WebView
+            implementation(libs.compose.webview)
+
             // Logging
             implementation(libs.kermit)
             implementation(libs.kermit.crashlytics)
