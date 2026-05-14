@@ -9,15 +9,9 @@ import kotlin.time.Duration.Companion.minutes
 
 class AppConfigFirebaseDataSource(
     private val remoteConfig: FirebaseRemoteConfig,
+    private val json: Json,
 ) : AppConfigRemoteDataSource {
     private var isConfigured = false
-
-    private val json =
-        Json {
-            ignoreUnknownKeys = true
-            coerceInputValues = true
-        }
-
     private suspend fun ensureConfigured() {
         if (isConfigured) return
         remoteConfig.settings {
