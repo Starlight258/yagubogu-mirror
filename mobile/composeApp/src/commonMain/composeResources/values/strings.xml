@@ -195,9 +195,20 @@
     <string name="nickname_next">다음</string>
 
     <string name="livetalk_user_icon_description">직관 인증 수 사람 아이콘</string>
+    <string name="livetalk_weather_icon_description">%1$s 아이콘</string>
     <string name="livetalk_stadium_select_arrow_description">현장톡 구장 선택 진입 아이콘</string>
     <string name="livetalk_empty_game_description">오늘은 경기가 없어요</string>
     <string name="livetalk_empty_game_illustration_description">야구공을 놓치는 일러스트</string>
+    <string name="livetalk_weather_type_clear">맑음</string>
+    <string name="livetalk_weather_type_cloudy">흐림</string>
+    <string name="livetalk_weather_type_heavy_rain">강한 비</string>
+    <string name="livetalk_weather_type_light_rain">약한 비</string>
+    <string name="livetalk_weather_type_partly_cloudy">구름 많음</string>
+    <string name="livetalk_weather_type_rain_snow">진눈깨비</string>
+    <string name="livetalk_weather_type_snow">눈</string>
+    <string name="livetalk_weather_type_strong_wind">강풍</string>
+    <string name="livetalk_weather_type_thunderstorm">뇌우</string>
+    <string name="livetalk_weather_source_info_text">날씨 정보 제공: 기상청</string>
 
     <string name="livetalk_send_btn_description">메시지 전송</string>
     <string name="livetalk_send_btn_locked_description">잠긴 메시지 전송</string>
