@@ -7,13 +7,14 @@ import com.yagubogu.analytics.AnalyticsLogger
 import com.yagubogu.data.repository.checkin.CheckInRepository
 import com.yagubogu.data.repository.thirdparty.ThirdPartyRepository
 import com.yagubogu.domain.model.AttendanceDiary
-import com.yagubogu.domain.usecase.DeleteDiaryUseCase
+import com.yagubogu.domain.usecase.DeleteCheckInUseCase
 import com.yagubogu.domain.usecase.LoadDiaryUseCase
 import com.yagubogu.ui.attendance.detail.AttendanceDetailViewModel.Companion.DIARY_MAX_IMAGE_SIZE
 import com.yagubogu.ui.attendance.detail.model.AttendanceDetailDiaryUiState
 import com.yagubogu.ui.attendance.detail.model.AttendanceDetailUiEvent
 import com.yagubogu.ui.attendance.detail.model.DiaryImageItem
 import com.yagubogu.ui.attendance.detail.model.DiaryMode
+import com.yagubogu.ui.attendance.detail.model.PlayerRecordUiModel
 import com.yagubogu.ui.common.model.PresignedUrlItem
 import com.yagubogu.ui.mapper.toUiModel
 import com.yagubogu.ui.util.ImageCompressionSpec
@@ -39,13 +40,16 @@ import yagubogu.composeapp.generated.resources.attendance_detail_update_memo_fai
 import yagubogu.composeapp.generated.resources.attendance_detail_upload_image_failed
 
 class AttendanceDetailViewModel(
-    private val gameId: Long,
+    private val checkInId: Long,
     private val checkInRepository: CheckInRepository,
     private val thirdPartyRepository: ThirdPartyRepository,
     private val loadDiaryUseCase: LoadDiaryUseCase,
-    private val deleteDiaryUseCase: DeleteDiaryUseCase,
+    private val deleteCheckInUseCase: DeleteCheckInUseCase,
 ) : ViewModel() {
     private val logger = Logger.withTag("AttendanceDetailViewModel")
+
+    private val _playerRecordUiModel = MutableStateFlow(PlayerRecordUiModel())
+    val playerRecordUiModel: StateFlow<PlayerRecordUiModel> = _playerRecordUiModel.asStateFlow()
 
     private val _attendanceDetailDiaryUiState = MutableStateFlow(AttendanceDetailDiaryUiState())
     val attendanceDetailDiaryUiState: StateFlow<AttendanceDetailDiaryUiState> =
@@ -60,7 +64,8 @@ class AttendanceDetailViewModel(
     val uiEvent: SharedFlow<AttendanceDetailUiEvent> = _uiEvent.asSharedFlow()
 
     init {
-        viewModelScope.launch { loadDiary() }
+        loadGameReview()
+        loadDiary()
     }
 
     fun addImages(uris: List<String>) {
@@ -83,19 +88,24 @@ class AttendanceDetailViewModel(
 
         viewModelScope.launch {
             checkInRepository
-                .deleteImage(checkInId = gameId, imageId = targetId)
+                .deleteImage(checkInId = checkInId, imageId = targetId)
                 .onFailure { e -> logger.e(e) { "이미지 삭제 실패: $targetId" } }
         }
     }
 
-    fun deleteDiary() {
+    fun deleteCheckIn() {
         _attendanceDetailDiaryUiState.update { it.copy(isLoading = true) }
+
         viewModelScope.launch {
-            val imageIds = attendanceDetailDiaryUiState.value.images.mapNotNull { it?.id }
-            deleteDiaryUseCase(checkInId = gameId, imageIds = imageIds)
-                .onSuccess { _attendanceDetailDiaryUiState.value = AttendanceDetailDiaryUiState() }
-                .onFailure { e ->
-                    logger.e(e) { "직관 기록 삭제 실패" }
+            val imageIds: List<Long> =
+                attendanceDetailDiaryUiState.value.images.mapNotNull { it?.id }
+
+            deleteCheckInUseCase(checkInId = checkInId, imageIds = imageIds)
+                .onSuccess {
+                    _attendanceDetailDiaryUiState.value = AttendanceDetailDiaryUiState()
+                    _uiEvent.emit(AttendanceDetailUiEvent.DeleteSuccess)
+                }.onFailure { e ->
+                    logger.e(e) { "직관 기록 및 직관 내역 전체 삭제 실패" }
                     _attendanceDetailDiaryUiState.update { it.copy(isLoading = false) }
                     _uiEvent.emit(AttendanceDetailUiEvent.ShowSnackbar(Res.string.attendance_detail_delete_failed))
                 }
@@ -110,7 +120,7 @@ class AttendanceDetailViewModel(
         viewModelScope.launch {
             val (memoSuccess, imagesSuccess) =
                 coroutineScope {
-                    val memo = async { updateMemo(checkInId = gameId, comment = comment) }
+                    val memo = async { updateMemo(checkInId = checkInId, comment = comment) }
                     val images = async { uploadDiaryImages() }
                     memo.await() to images.await()
                 }
@@ -124,14 +134,29 @@ class AttendanceDetailViewModel(
         }
     }
 
-    private suspend fun loadDiary() {
-        loadDiaryUseCase(gameId)
-            .onSuccess { diary -> applyLoadedDiary(diary) }
-            .onFailure { e ->
-                logger.e(e) { "직관 기록 조회 실패" }
-                _attendanceDetailDiaryUiState.update { it.copy(isLoading = false) }
-                _uiEvent.emit(AttendanceDetailUiEvent.ShowSnackbar(Res.string.attendance_detail_load_failed))
-            }
+    private fun loadGameReview() {
+        viewModelScope.launch {
+            checkInRepository
+                .getGameReview(checkInId)
+                .map { it.toUiModel() }
+                .onSuccess { playerRecord: PlayerRecordUiModel ->
+                    _playerRecordUiModel.value = playerRecord
+                }.onFailure { exception: Throwable ->
+                    logger.w(exception) { "API 호출 실패 (경기 기록 조회)" }
+                }
+        }
+    }
+
+    private fun loadDiary() {
+        viewModelScope.launch {
+            loadDiaryUseCase(checkInId)
+                .onSuccess { diary -> applyLoadedDiary(diary) }
+                .onFailure { e ->
+                    logger.e(e) { "직관 기록 조회 실패" }
+                    _attendanceDetailDiaryUiState.update { it.copy(isLoading = false) }
+                    _uiEvent.emit(AttendanceDetailUiEvent.ShowSnackbar(Res.string.attendance_detail_load_failed))
+                }
+        }
     }
 
     private fun applyLoadedDiary(diary: AttendanceDiary) {
@@ -174,7 +199,7 @@ class AttendanceDetailViewModel(
                     .map { item: DiaryImageItem ->
                         async {
                             val uri = item.uri ?: return@async true
-                            uploadDiaryImage(checkInId = gameId, sourceUri = uri)
+                            uploadDiaryImage(checkInId = checkInId, sourceUri = uri)
                                 .onSuccess { imageDto ->
                                     handleUploadDiaryImageSuccess(
                                         item,

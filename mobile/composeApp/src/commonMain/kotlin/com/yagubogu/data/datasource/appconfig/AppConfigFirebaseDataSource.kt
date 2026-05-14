@@ -12,6 +12,7 @@ class AppConfigFirebaseDataSource(
     private val json: Json,
 ) : AppConfigRemoteDataSource {
     private var isConfigured = false
+
     private suspend fun ensureConfigured() {
         if (isConfigured) return
         remoteConfig.settings {
