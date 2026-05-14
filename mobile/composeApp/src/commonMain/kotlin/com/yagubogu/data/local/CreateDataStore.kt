@@ -11,3 +11,5 @@ fun createDataStore(producePath: () -> String): DataStore<Preferences> =
     )
 
 const val AUTH_PREFS = "auth_prefs"
+
+const val APP_CONFIG_PREFS = "app_config_prefs"

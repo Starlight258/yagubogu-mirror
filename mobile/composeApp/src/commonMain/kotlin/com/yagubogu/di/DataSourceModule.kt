@@ -1,6 +1,8 @@
 package com.yagubogu.di
 
+import com.yagubogu.data.datasource.appconfig.AppConfigDataStoreLocalDataSource
 import com.yagubogu.data.datasource.appconfig.AppConfigFirebaseDataSource
+import com.yagubogu.data.datasource.appconfig.AppConfigLocalDataSource
 import com.yagubogu.data.datasource.appconfig.AppConfigRemoteDataSource
 import com.yagubogu.data.datasource.auth.AuthDataSource
 import com.yagubogu.data.datasource.auth.AuthRemoteDataSource
@@ -18,9 +20,11 @@ import com.yagubogu.data.datasource.stream.StreamDataSource
 import com.yagubogu.data.datasource.stream.StreamRemoteDataSource
 import com.yagubogu.data.datasource.talk.TalkDataSource
 import com.yagubogu.data.datasource.talk.TalkRemoteDataSource
+import com.yagubogu.data.local.APP_CONFIG_PREFS
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 expect fun Module.registerPlatformDataSources()
@@ -44,5 +48,10 @@ val datasourceModule =
         singleOf(::TalkRemoteDataSource) { bind<TalkDataSource>() }
 
         singleOf(::AppConfigFirebaseDataSource) { bind<AppConfigRemoteDataSource>() }
+
+        single<AppConfigLocalDataSource> {
+            AppConfigDataStoreLocalDataSource(dataStore = get(named(APP_CONFIG_PREFS)))
+        }
+
         registerPlatformDataSources()
     }
