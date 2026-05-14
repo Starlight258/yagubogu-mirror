@@ -19,6 +19,7 @@ fun ImagePicker(
     onClosePicker: () -> Unit,
     allowMultiple: Boolean = false,
     selectionLimit: Long = 1,
+    enableCrop: Boolean = true,
 ) {
     val logger: Logger = Logger.withTag("ImagePicker")
     logger.d { "ImagePicker 열림" }
@@ -44,7 +45,7 @@ fun ImagePicker(
             logger.d { "GalleryPicker 닫힘" }
             onClosePicker()
         },
-        enableCrop = true,
+        enableCrop = enableCrop,
         cameraCaptureConfig =
             CameraCaptureConfig(
                 compressionLevel = CompressionLevel.HIGH,

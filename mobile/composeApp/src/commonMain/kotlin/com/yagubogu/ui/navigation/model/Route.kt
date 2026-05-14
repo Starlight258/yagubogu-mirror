@@ -1,8 +1,8 @@
 package com.yagubogu.ui.navigation.model
 
 import androidx.navigation3.runtime.NavKey
+import com.yagubogu.ui.attendance.model.AttendanceHistoryItem
 import com.yagubogu.ui.ranking.model.RankingType
-import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -42,7 +42,6 @@ sealed interface Route : NavKey {
 
     @Serializable
     data class AttendanceHistoryDetail(
-        val id: Long,
-        val date: LocalDate,
+        val attendanceItem: AttendanceHistoryItem,
     ) : Route
 }

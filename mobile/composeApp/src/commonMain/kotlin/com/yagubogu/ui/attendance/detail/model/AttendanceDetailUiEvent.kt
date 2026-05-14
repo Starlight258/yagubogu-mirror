@@ -6,4 +6,6 @@ sealed interface AttendanceDetailUiEvent {
     data class ShowSnackbar(
         val message: StringResource,
     ) : AttendanceDetailUiEvent
+
+    data object DeleteSuccess : AttendanceDetailUiEvent
 }

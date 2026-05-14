@@ -10,6 +10,7 @@ import com.yagubogu.data.dto.response.checkin.CheckInHistoryResponse
 import com.yagubogu.data.dto.response.checkin.CheckInImageDto
 import com.yagubogu.data.dto.response.checkin.CheckInImagesResponse
 import com.yagubogu.data.dto.response.checkin.CheckInMemoResponse
+import com.yagubogu.data.dto.response.checkin.CheckInReviewResponse
 import com.yagubogu.data.dto.response.checkin.CheckInStatusResponse
 import com.yagubogu.data.dto.response.checkin.FanRateResponse
 import com.yagubogu.data.dto.response.checkin.StadiumCheckInCountsResponse
@@ -27,6 +28,11 @@ class CheckInRemoteDataSource(
             checkInApiService.postCheckIn(checkInRequest)
         }
     }
+
+    override suspend fun deleteCheckIn(checkInId: Long): Result<Unit> =
+        safeApiCall {
+            checkInApiService.deleteCheckIn(checkInId)
+        }
 
     override suspend fun getCheckInCounts(year: Int): Result<CheckInCountsResponse> =
         safeApiCall {
@@ -70,6 +76,11 @@ class CheckInRemoteDataSource(
         }
     }
 
+    override suspend fun getGameReview(checkInId: Long): Result<CheckInReviewResponse> =
+        safeApiCall {
+            checkInApiService.getGameReview(checkInId)
+        }
+
     override suspend fun getMemo(checkInId: Long): Result<CheckInMemoResponse> =
         safeApiCall {
             checkInApiService.getMemo(checkInId)
@@ -93,7 +104,12 @@ class CheckInRemoteDataSource(
         contentLength: Long,
     ): Result<PresignedUrlStartResponse> =
         safeApiCall {
-            checkInApiService.postImagePresignedUrl(PresignedUrlStartRequest(contentType, contentLength))
+            checkInApiService.postImagePresignedUrl(
+                PresignedUrlStartRequest(
+                    contentType,
+                    contentLength,
+                ),
+            )
         }
 
     override suspend fun getImages(checkInId: Long): Result<CheckInImagesResponse> =

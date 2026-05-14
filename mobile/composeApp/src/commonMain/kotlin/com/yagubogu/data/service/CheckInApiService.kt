@@ -10,6 +10,7 @@ import com.yagubogu.data.dto.response.checkin.CheckInHistoryResponse
 import com.yagubogu.data.dto.response.checkin.CheckInImageDto
 import com.yagubogu.data.dto.response.checkin.CheckInImagesResponse
 import com.yagubogu.data.dto.response.checkin.CheckInMemoResponse
+import com.yagubogu.data.dto.response.checkin.CheckInReviewResponse
 import com.yagubogu.data.dto.response.checkin.CheckInStatusResponse
 import com.yagubogu.data.dto.response.checkin.FanRateResponse
 import com.yagubogu.data.dto.response.checkin.StadiumCheckInCountsResponse
@@ -26,6 +27,11 @@ interface CheckInApiService {
     @POST("/api/v1/check-ins")
     suspend fun postCheckIn(
         @Body body: CheckInRequest,
+    )
+
+    @DELETE("/api/v1/check-ins/{checkInId}")
+    suspend fun deleteCheckIn(
+        @Path("checkInId") checkInId: Long,
     )
 
     @GET("/api/v1/check-ins/counts")
@@ -60,6 +66,11 @@ interface CheckInApiService {
     suspend fun postPastCheckIn(
         @Body body: PastCheckInRequest,
     )
+
+    @GET("/api/v1/check-ins/{checkInId}/review")
+    suspend fun getGameReview(
+        @Path("checkInId") checkInId: Long,
+    ): CheckInReviewResponse
 
     @GET("/api/v1/check-ins/{checkInId}/memo")
     suspend fun getMemo(
