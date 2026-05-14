@@ -118,8 +118,8 @@ fun SettingMainScreen(
         onFavoriteTeamEditClick = onFavoriteTeamEditClick,
         onNicknameEdit = { showNicknameEditDialog = true },
         onProfileImageUpload = onProfileImagePickerOpen,
-        onClickNotice = onNoticeClick,
-        onClickFaq = onFaqClick,
+        onNoticeClick = onNoticeClick,
+        onFaqClick = onFaqClick,
         onOssLicenseClick = onOssLicenseClick,
         memberInfoItem = memberInfoItem.value,
         appVersion = getAppVersion(),
@@ -147,8 +147,8 @@ private fun SettingMainScreen(
     onNicknameEdit: () -> Unit,
     onProfileImageUpload: () -> Unit,
     onFavoriteTeamEditClick: () -> Unit,
-    onClickNotice: () -> Unit,
-    onClickFaq: () -> Unit,
+    onNoticeClick: () -> Unit,
+    onFaqClick: () -> Unit,
     onOssLicenseClick: () -> Unit,
     memberInfoItem: MemberInfoItem,
     appVersion: String,
@@ -189,11 +189,11 @@ private fun SettingMainScreen(
         SettingButtonGroup {
             SettingButton(
                 text = stringResource(Res.string.setting_notice),
-                onClick = onClickNotice,
+                onClick = onNoticeClick,
             )
             SettingButton(
                 text = stringResource(Res.string.setting_faq),
-                onClick = onClickFaq,
+                onClick = onFaqClick,
             )
             SettingButton(
                 text = stringResource(Res.string.setting_contact_us),
@@ -271,8 +271,8 @@ private fun SettingMainScreenPreview() {
         onNicknameEdit = {},
         onProfileImageUpload = {},
         onFavoriteTeamEditClick = {},
-        onClickNotice = {},
-        onClickFaq = {},
+        onNoticeClick = {},
+        onFaqClick = {},
         onOssLicenseClick = {},
         memberInfoItem = MemberInfoItem(nickName = "야구보구"),
         appVersion = "1.0.0",
