@@ -1,0 +1,36 @@
+backend/crawling/src/main/resources/application.yml
+  s_f3f635eae9a1a7::t_aff6e40809fb6b 97,103,108
+backend/crawling/src/test/resources/application.yml
+  s_f3f635eae9a1a7::t_039d00874b50b3 101,107,112
+backend/crawling/src/main/java/yagubogu/crawling/game/service/crawler/page/KboScoreboardPage.java
+  s_f3f635eae9a1a7::t_11a102ddfde84b 184
+  s_f3f635eae9a1a7::t_5fa639bb3a9e6b 28,34
+  s_f3f635eae9a1a7::t_025f8a969d1088 146,148,176-183,185-192
+backend/crawling/src/test/java/yagubogu/crawling/game/service/crawler/page/KboScoreboardPageTest.java
+  s_f3f635eae9a1a7::t_a74e3e18eb2d60 350-393
+  s_f3f635eae9a1a7::t_84298313a5d0e5 129
+  s_f3f635eae9a1a7::t_2b003059b46604 137
+backend/crawling/src/test/java/yagubogu/crawling/game/service/crawler/KboScoreboardCrawlerTest.java
+  s_f3f635eae9a1a7::t_93e5bf595a892a 134
+  s_f3f635eae9a1a7::t_65a73c6cc61005 113
+backend/crawling/src/main/java/yagubogu/crawling/game/config/KboCrawlerProperties.java
+  s_f3f635eae9a1a7::t_9012a36859cfa5 118,127
+backend/crawling/src/main/java/yagubogu/crawling/game/dto/KboScoreboardGame.java
+  s_f3f635eae9a1a7::t_dbba8ddaed3ac8 30-34
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "ea0e577127268f91873f15d596e645a4feb97332",
+  "prompts": {},
+  "sessions": {
+    "s_f3f635eae9a1a7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "538b295b-0421-4521-b322-3b4c00b9cfbe",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    }
+  }
+}

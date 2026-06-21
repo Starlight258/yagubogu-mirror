@@ -1,0 +1,19 @@
+backend/crawling/src/test/java/yagubogu/crawling/game/service/crawler/KboGameCenterCrawlerTest.java
+  s_f3f635eae9a1a7::t_96ca2be3024b8b 305
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "058270e886f284e8f9049eaefd281cf1b7edea09",
+  "prompts": {},
+  "sessions": {
+    "s_f3f635eae9a1a7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "538b295b-0421-4521-b322-3b4c00b9cfbe",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    }
+  }
+}
