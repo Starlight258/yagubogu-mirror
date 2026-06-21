@@ -1,0 +1,25 @@
+backend/app/src/main/java/com/yagubogu/game/domain/Game.java
+  s_f3f635eae9a1a7::t_6aa0ef7e8e188c 174-209
+  s_f3f635eae9a1a7::t_72639352398c00 82-112
+backend/app/src/main/resources/db/migration/mysql/V17__add_game_live_state.sql
+  s_f3f635eae9a1a7::t_13d6b0a47a0961 1-13
+backend/app/src/test/java/com/yagubogu/game/domain/GameTest.java
+  s_f3f635eae9a1a7::t_498107a9129400 1-62,64-73
+  s_f3f635eae9a1a7::t_d02f15fecc659c 63
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "3f11a8fceda16ae965156a2f939338db74b4114d",
+  "prompts": {},
+  "sessions": {
+    "s_f3f635eae9a1a7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "538b295b-0421-4521-b322-3b4c00b9cfbe",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    }
+  }
+}

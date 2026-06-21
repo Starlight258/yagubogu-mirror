@@ -1,0 +1,32 @@
+backend/app/src/main/java/com/yagubogu/game/dto/GameResultParam.java
+  s_f3f635eae9a1a7::t_a867465fa3f0ef 11-12,20-21,25-51
+backend/app/src/test/java/com/yagubogu/game/GameE2eTest.java
+  s_f3f635eae9a1a7::t_214df380ee4376 166-194
+  s_f3f635eae9a1a7::t_804e4a1e25d35f 59-60
+  s_f3f635eae9a1a7::t_f300158e9e10e2 7,13
+backend/app/src/test/java/com/yagubogu/game/service/GameServiceTest.java
+  s_f3f635eae9a1a7::t_c5e8a00b4d4006 153-154
+  s_f3f635eae9a1a7::t_81b59c6d089006 164-185
+backend/app/src/main/java/com/yagubogu/game/controller/v1/GameController.java
+  s_f3f635eae9a1a7::t_d7b76c59dee857 5,14
+  s_f3f635eae9a1a7::t_81454b8edb51ec 43-52
+backend/app/src/main/java/com/yagubogu/game/controller/v1/GameControllerInterface.java
+  s_f3f635eae9a1a7::t_a585648c316228 4,17
+  s_f3f635eae9a1a7::t_6a8fd5d7b4c200 47-57
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "614c5be561a3835ea746a5efb09d1185c5b906fb",
+  "prompts": {},
+  "sessions": {
+    "s_f3f635eae9a1a7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "538b295b-0421-4521-b322-3b4c00b9cfbe",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    }
+  }
+}

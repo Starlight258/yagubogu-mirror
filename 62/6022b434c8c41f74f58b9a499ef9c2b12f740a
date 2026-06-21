@@ -1,0 +1,25 @@
+backend/crawling/src/test/java/yagubogu/crawling/game/service/crawler/KboScoardboardCrawler/KboScoreboardServiceTest.java
+  s_f3f635eae9a1a7::t_b769656d8068e7 8
+  s_f3f635eae9a1a7::t_472947bc290321 95-100
+  s_f3f635eae9a1a7::t_9440eb67dab94e 49,87
+  s_f3f635eae9a1a7::t_017888498ec366 1-7,9-48,50-86,88-94,101-120
+backend/crawling/src/main/java/yagubogu/crawling/game/service/crawler/KboScoardboardCrawler/KboScoreboardService.java
+  s_f3f635eae9a1a7::t_5696da86ab169a 174-176
+  s_f3f635eae9a1a7::t_2e57b307f83510 271-286
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "626022b434c8c41f74f58b9a499ef9c2b12f740a",
+  "prompts": {},
+  "sessions": {
+    "s_f3f635eae9a1a7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "538b295b-0421-4521-b322-3b4c00b9cfbe",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    }
+  }
+}
