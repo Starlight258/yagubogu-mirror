@@ -1,0 +1,21 @@
+backend/app/src/main/resources/db/migration/mysql/V17__add_victory_fairy_ranking_index.sql
+  s_0a037f565baeee::t_5c4735e0b1ba69 1-2
+backend/app/src/main/resources/db/schema.sql
+  s_0a037f565baeee::t_5c4735e0b1ba69 117
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "57d8814880a55182200401a7ede5cec0dd372a04",
+  "prompts": {},
+  "sessions": {
+    "s_0a037f565baeee": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019ee96d-8d9e-74a0-96ab-8c99158d670a",
+        "model": "gpt-5.4-mini"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    }
+  }
+}
