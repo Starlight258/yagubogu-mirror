@@ -1,0 +1,21 @@
+backend/crawling/src/main/java/yagubogu/crawling/game/service/crawler/page/KboGameCenterPage.java
+  s_f3f635eae9a1a7::t_cd7cbe38bdcf40 174-176,179-188,205-215,218,235-245,248,251,254-255
+backend/crawling/src/main/java/yagubogu/crawling/game/dto/GameCenterDetail.java
+  s_f3f635eae9a1a7::t_679b595ac71423 36-41
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "bb9941d6df6fb9b6bbc99b4acff7f087f57ed457",
+  "prompts": {},
+  "sessions": {
+    "s_f3f635eae9a1a7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "538b295b-0421-4521-b322-3b4c00b9cfbe",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    }
+  }
+}
