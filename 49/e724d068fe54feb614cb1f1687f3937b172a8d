@@ -1,0 +1,26 @@
+CLAUDE.md
+  s_710981eeee20c4::t_7027cd7d95ab64 1-8
+AGENTS.md
+  s_710981eeee20c4::t_7027cd7d95ab64 1-8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "49e724d068fe54feb614cb1f1687f3937b172a8d",
+  "prompts": {},
+  "humans": {
+    "h_3dcfd613e97439": {
+      "author": "Mint <audwl03071@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_710981eeee20c4": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f3690-8f19-7cb2-a9e0-2f255747a3e2",
+        "model": "gpt-5.4-mini"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    }
+  }
+}
