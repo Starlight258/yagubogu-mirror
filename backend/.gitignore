@@ -89,7 +89,7 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-/src/main/generated
+/app/src/main/generated
 
 # Log directory
 log/
