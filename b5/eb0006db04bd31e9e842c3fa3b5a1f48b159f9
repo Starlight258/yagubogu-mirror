@@ -1,0 +1,24 @@
+.gitignore
+  s_710981eeee20c4::t_08697df7fbc3e8 1-4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "b5eb0006db04bd31e9e842c3fa3b5a1f48b159f9",
+  "prompts": {},
+  "humans": {
+    "h_3dcfd613e97439": {
+      "author": "Mint <audwl03071@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_710981eeee20c4": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f3690-8f19-7cb2-a9e0-2f255747a3e2",
+        "model": "gpt-5.4-mini"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    }
+  }
+}
