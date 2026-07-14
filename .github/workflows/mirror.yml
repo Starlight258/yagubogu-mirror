@@ -21,12 +21,13 @@ jobs:
           MIRROR_TOKEN: ${{ secrets.MIRROR_TOKEN }}
         run: |
           set -e
-          # 이 워크플로가 도는 레포(= fork)의 모든 브랜치/태그를 가져온다
-          git fetch --prune origin "+refs/heads/*:refs/heads/*"
+          # origin의 모든 원격 브랜치를 가져온다 (체크아웃된 브랜치는 건드리지 않음)
+          git fetch origin '+refs/heads/*:refs/remotes/origin/*'
+          git fetch origin --tags
 
           # 미러 레포를 리모트로 추가 (토큰 포함 URL)
           git remote add mirror "https://x-access-token:${MIRROR_TOKEN}@github.com/Starlight258/yagubogu-mirror.git"
 
-          # 모든 브랜치를 미러 레포로 push (--force로 항상 최신 상태 유지)
-          git push --force --all mirror
+          # origin의 모든 브랜치를 미러 레포의 같은 이름 브랜치로 push
+          git push --force mirror 'refs/remotes/origin/*:refs/heads/*'
           git push --force --tags mirror
