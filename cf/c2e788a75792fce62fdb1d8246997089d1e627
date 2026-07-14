@@ -1,0 +1,36 @@
+backend/.gitignore
+  s_4134d92509f475::t_be6feee66f9b20 7
+backend/crawling/.env.example
+  s_4134d92509f475::t_065e4b985ef858 1-16
+backend/app/.env.example
+  s_bd3ea6647ae7d6::t_880b82d33c0421 1-22
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.13",
+  "base_commit_sha": "cfc2e788a75792fce62fdb1d8246997089d1e627",
+  "prompts": {},
+  "humans": {
+    "h_3dcfd613e97439": {
+      "author": "Mint <audwl03071@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_4134d92509f475": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f5f0e-7e1e-7cd1-ae47-86d4b4ca030d",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    },
+    "s_bd3ea6647ae7d6": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f3720-5121-75e1-aa1e-3f88b1f99d84",
+        "model": "unknown"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    }
+  }
+}
