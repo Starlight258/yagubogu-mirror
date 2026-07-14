@@ -1,0 +1,26 @@
+backend/app/src/main/resources/application-local.yml
+  s_a4aa0d2c50ac2d::t_3d21949a8b0f36 10,18,21
+backend/crawling/src/main/resources/application-local.yml
+  s_a4aa0d2c50ac2d::t_3d21949a8b0f36 10,18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.13",
+  "base_commit_sha": "8b4da77241601f504f13134588cea7253592deb8",
+  "prompts": {},
+  "humans": {
+    "h_3dcfd613e97439": {
+      "author": "Mint <audwl03071@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_a4aa0d2c50ac2d": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f5fab-3936-7383-992f-7318cd67c3b3",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    }
+  }
+}
