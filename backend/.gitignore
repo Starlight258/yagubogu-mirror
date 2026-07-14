@@ -4,6 +4,7 @@
 *.class
 
 .env
+**/.env
 build
 bin
 .gradle
