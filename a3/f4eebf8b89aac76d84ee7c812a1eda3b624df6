@@ -1,0 +1,19 @@
+backend/crawling/src/main/java/yagubogu/crawling/game/config/CrawlerSchedulerProperties.java
+  s_a8c8e8b3cd19d3::t_fe3f20f0ddc0a7 12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.13",
+  "base_commit_sha": "a3f4eebf8b89aac76d84ee7c812a1eda3b624df6",
+  "prompts": {},
+  "sessions": {
+    "s_a8c8e8b3cd19d3": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f5f82-ae5e-71a2-846b-8299038d4e02",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    }
+  }
+}
