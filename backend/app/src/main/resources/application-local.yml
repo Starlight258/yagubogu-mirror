@@ -7,20 +7,18 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: validate
     show-sql: false
     properties:
       hibernate:
         format_sql: true
-    defer-datasource-initialization: true
 
   sql:
     init:
-      mode: always
-      data-locations: classpath:data.sql
+      mode: never
 
   flyway:
-    enabled: false
+    enabled: true
 
 logging:
   level:
