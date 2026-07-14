@@ -25,9 +25,14 @@ jobs:
           git fetch origin '+refs/heads/*:refs/remotes/origin/*'
           git fetch origin --tags
 
-          # 미러 레포를 리모트로 추가 (토큰 포함 URL)
-          git remote add mirror "https://x-access-token:${MIRROR_TOKEN}@github.com/Starlight258/yagubogu-mirror.git"
+          # 미러 레포를 리모트로 추가 (토큰 없이 순수 URL)
+          git remote add mirror "https://github.com/Starlight258/yagubogu-mirror.git"
+
+          # 토큰을 URL이 아니라 http.extraheader로 주입 (checkout이 심은 봇 자격증명 무시)
+          AUTH=$(printf "x-access-token:%s" "${MIRROR_TOKEN}" | base64 -w0)
 
           # origin의 모든 브랜치를 미러 레포의 같은 이름 브랜치로 push
-          git push --force mirror 'refs/remotes/origin/*:refs/heads/*'
-          git push --force --tags mirror
+          git -c http.extraheader="Authorization: Basic ${AUTH}" \
+            push --force mirror 'refs/remotes/origin/*:refs/heads/*'
+          git -c http.extraheader="Authorization: Basic ${AUTH}" \
+            push --force --tags mirror
