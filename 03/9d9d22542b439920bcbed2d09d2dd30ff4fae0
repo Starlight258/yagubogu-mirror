@@ -1,0 +1,34 @@
+backend/app/src/main/java/com/yagubogu/outbox/domain/OutboxEvent.java
+  s_70af0db903f330::t_80e2ad938c8ae9 1-73
+backend/app/src/main/java/com/yagubogu/outbox/domain/OutboxEventStatus.java
+  s_70af0db903f330::t_ef1014288fe4ee 1-8
+backend/app/src/main/java/com/yagubogu/outbox/dto/GameFinalizedOutboxPayload.java
+  s_70af0db903f330::t_02178390ba60ab 1-6
+backend/app/src/main/java/com/yagubogu/outbox/repository/OutboxEventRepository.java
+  s_70af0db903f330::t_62c6ce7ad0459e 1-9
+backend/app/src/main/java/com/yagubogu/outbox/service/OutboxEventService.java
+  s_70af0db903f330::t_40293c7f32f5aa 1-41
+backend/app/src/main/resources/db/migration/mysql/V17__create_outbox_events.sql
+  s_70af0db903f330::t_36c48c22631c63 1-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "039d9d22542b439920bcbed2d09d2dd30ff4fae0",
+  "prompts": {},
+  "humans": {
+    "h_3dcfd613e97439": {
+      "author": "Mint <audwl03071@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_70af0db903f330": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "730fb246-06e8-44c0-bdc6-0d7852051d32",
+        "model": "unknown"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    }
+  }
+}
