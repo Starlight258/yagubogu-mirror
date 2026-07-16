@@ -1,0 +1,14 @@
+.coderabbit.yaml
+  h_3dcfd613e97439 1-125
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "d945a74b31ce99a3551b92226d180a8d76a716e4",
+  "prompts": {},
+  "humans": {
+    "h_3dcfd613e97439": {
+      "author": "Mint <audwl03071@gmail.com>"
+    }
+  }
+}
