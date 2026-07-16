@@ -1,0 +1,50 @@
+backend/app/src/main/java/com/yagubogu/outbox/exception/OutboxEventNotFoundException.java
+  s_099f6cf78df7b5::t_fbc6292aaeb5df 1-10
+backend/app/src/test/java/com/yagubogu/outbox/schedule/OutboxEventProcessorTest.java
+  s_099f6cf78df7b5::t_69fbe813712d2c 1-2,6-13,16-24,26-49,51-53,55-60,62-63,65-67,69-78,95,97,99-100,112-117
+  s_099f6cf78df7b5::t_f6b35859c72ef4 3-5,15,25,61,79-93,101-111
+  s_099f6cf78df7b5::t_549fbc62c31372 14,50,54,64,68,94,96,98
+backend/app/src/main/java/com/yagubogu/outbox/exception/UnsupportedOutboxEventTypeException.java
+  s_099f6cf78df7b5::t_fbc6292aaeb5df 1-10
+backend/app/src/main/java/com/yagubogu/outbox/schedule/OutboxEventProcessor.java
+  s_099f6cf78df7b5::t_fbc6292aaeb5df 7,51
+  s_099f6cf78df7b5::t_a8e3992a199bf9 1-5,8-49,52-53,55-63,66-67
+  s_099f6cf78df7b5::t_b38d540d7951d9 6
+  s_099f6cf78df7b5::t_05488ca462fec7 50
+  s_099f6cf78df7b5::t_63f42bd2ea8593 54
+  s_099f6cf78df7b5::t_e76810302adb9f 64-65
+backend/app/src/main/java/com/yagubogu/outbox/exception/OutboxPayloadSerializationException.java
+  s_099f6cf78df7b5::t_fbc6292aaeb5df 1-10
+backend/app/src/main/resources/db/migration/mysql/V17__create_outbox_events.sql
+  s_099f6cf78df7b5::t_ce30c685988955 16
+backend/app/src/main/java/com/yagubogu/outbox/service/OutboxEventService.java
+  s_099f6cf78df7b5::t_fbc6292aaeb5df 7-8,13,25-27,43,46-67
+  s_099f6cf78df7b5::t_61ea7c7d362907 6
+  s_099f6cf78df7b5::t_ed110eb6da62cd 68-70
+  s_099f6cf78df7b5::t_90f3b960473193 71-91
+backend/app/src/main/java/com/yagubogu/outbox/domain/OutboxEvent.java
+  s_099f6cf78df7b5::t_67cc38b333bcff 73-100
+backend/app/src/main/java/com/yagubogu/outbox/repository/OutboxEventRepository.java
+  s_099f6cf78df7b5::t_2fd18ee6f1066e 5,20-30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "205210fbecf6bfa325881d6d414a5447577cb1f6",
+  "prompts": {},
+  "humans": {
+    "h_3dcfd613e97439": {
+      "author": "Mint <audwl03071@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_099f6cf78df7b5": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f6119-66df-79f1-a32d-c5e514e6aa3b",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    }
+  }
+}

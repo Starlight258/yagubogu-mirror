@@ -1,0 +1,28 @@
+backend/app/src/main/java/com/yagubogu/outbox/dto/GameCompletedOutboxPayload.java
+  s_099f6cf78df7b5::t_720c890a44fad9 5
+backend/crawling/src/main/java/yagubogu/crawling/game/service/crawler/KboScoardboardCrawler/KboScoreboardService.java
+  s_099f6cf78df7b5::t_f062412ce25cd7 179,181
+backend/app/src/main/java/com/yagubogu/outbox/service/OutboxEventService.java
+  s_099f6cf78df7b5::t_720c890a44fad9 5,20,27,29,31
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "0d95ca4a9509ca452a44c8d69fa634124a78ad5b",
+  "prompts": {},
+  "humans": {
+    "h_3dcfd613e97439": {
+      "author": "Mint <audwl03071@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_099f6cf78df7b5": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f6119-66df-79f1-a32d-c5e514e6aa3b",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    }
+  }
+}

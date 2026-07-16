@@ -1,0 +1,24 @@
+backend/crawling/src/main/java/yagubogu/crawling/game/service/crawler/KboScoardboardCrawler/KboScoreboardService.java
+  s_099f6cf78df7b5::t_1c064d974ce1ba 13,36,54-55,67-68,178-181
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "0478eba775286f7d9e961de7a00acc1d0a37b054",
+  "prompts": {},
+  "humans": {
+    "h_3dcfd613e97439": {
+      "author": "Mint <audwl03071@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_099f6cf78df7b5": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f6119-66df-79f1-a32d-c5e514e6aa3b",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    }
+  }
+}

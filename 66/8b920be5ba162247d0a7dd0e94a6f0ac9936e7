@@ -1,0 +1,42 @@
+backend/app/src/test/java/com/yagubogu/outbox/schedule/OutboxEventProcessorTest.java
+  s_099f6cf78df7b5::t_d9acbb9fba9fbe 36
+  s_099f6cf78df7b5::t_3feb10935d2a15 18,35,50-57,104-112
+  s_099f6cf78df7b5::t_a6616476853f9b 113-114
+backend/app/src/main/java/com/yagubogu/outbox/repository/OutboxEventRepository.java
+  s_099f6cf78df7b5::t_47431d76bf07c9 31-41
+backend/app/src/test/java/com/yagubogu/outbox/service/OutboxEventServiceTest.java
+  s_099f6cf78df7b5::t_8d55ad64bf52ef 1-3,5-16,18-79,129,136-146
+  s_099f6cf78df7b5::t_6e6b34cfbfc71f 4,17,80-128,130-135
+backend/app/src/main/java/com/yagubogu/outbox/service/OutboxEventService.java
+  s_099f6cf78df7b5::t_47431d76bf07c9 9,12,71-83
+backend/app/src/main/java/com/yagubogu/outbox/exception/OutboxProcessingTimeoutException.java
+  s_099f6cf78df7b5::t_47431d76bf07c9 1-11
+backend/app/src/main/java/com/yagubogu/outbox/schedule/OutboxEventProcessor.java
+  s_099f6cf78df7b5::t_cc6326b3e6c2c0 34,56-57
+  s_099f6cf78df7b5::t_a4c49f48e9b9d3 45-46
+  s_099f6cf78df7b5::t_47431d76bf07c9 10,25-26,32-33,40-41,55,58-62
+  s_099f6cf78df7b5::t_fc6bd85cbb875f 63-65
+backend/app/src/main/resources/db/migration/mysql/V17__create_outbox_events.sql
+  s_099f6cf78df7b5::t_47431d76bf07c9 16-17
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "668b920be5ba162247d0a7dd0e94a6f0ac9936e7",
+  "prompts": {},
+  "humans": {
+    "h_3dcfd613e97439": {
+      "author": "Mint <audwl03071@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_099f6cf78df7b5": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f6119-66df-79f1-a32d-c5e514e6aa3b",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    }
+  }
+}
