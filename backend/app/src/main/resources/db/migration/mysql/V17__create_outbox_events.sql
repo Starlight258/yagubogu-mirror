@@ -13,6 +13,7 @@ CREATE TABLE outbox_events
     updated_at    DATETIME(6)  NOT NULL COMMENT '마지막 상태 변경 시각',
 
     UNIQUE KEY uk_outbox_event (event_type, aggregate_id),
-    INDEX idx_outbox_polling (status, next_retry_at, id)
+    INDEX idx_outbox_polling (status, next_retry_at, id),
+    INDEX idx_outbox_recovery (status, updated_at)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;

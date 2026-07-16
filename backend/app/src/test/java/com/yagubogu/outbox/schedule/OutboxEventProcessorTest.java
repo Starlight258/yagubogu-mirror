@@ -15,6 +15,7 @@ import com.yagubogu.outbox.dto.GameCompletedOutboxPayload;
 import com.yagubogu.outbox.exception.UnsupportedOutboxEventTypeException;
 import com.yagubogu.outbox.service.OutboxEventService;
 import com.yagubogu.stat.service.StatSyncService;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,6 +32,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 class OutboxEventProcessorTest {
 
     private static final int BATCH_SIZE = 10;
+    private static final int RECOVERY_BATCH_SIZE = 20;
+    private static final long PROCESSING_TIMEOUT_MINUTES = 30;
 
     @Mock
     private OutboxEventService outboxEventService;
@@ -44,7 +47,14 @@ class OutboxEventProcessorTest {
     @BeforeEach
     void setUp() {
         objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
-        outboxEventProcessor = new OutboxEventProcessor(outboxEventService, objectMapper, statSyncService, BATCH_SIZE);
+        outboxEventProcessor = new OutboxEventProcessor(
+                outboxEventService,
+                objectMapper,
+                statSyncService,
+                BATCH_SIZE,
+                RECOVERY_BATCH_SIZE,
+                PROCESSING_TIMEOUT_MINUTES
+        );
     }
 
     @DisplayName("GAME_COMPLETED outbox를 처리하면 랭킹을 갱신하고 처리 완료로 표시한다")
@@ -89,6 +99,17 @@ class OutboxEventProcessorTest {
         assertThat(exceptionCaptor.getValue()).isExactlyInstanceOf(UnsupportedOutboxEventTypeException.class);
         verify(statSyncService, never()).updateRankings(any());
         verify(outboxEventService, never()).markProcessed(1L);
+    }
+
+    @DisplayName("timeout된 PROCESSING outbox를 복구한다")
+    @Test
+    void recoverTimedOutProcessingEvents() {
+        outboxEventProcessor.recoverTimedOutProcessingEvents();
+
+        verify(outboxEventService).recoverTimedOutProcessingEvents(
+                Duration.ofMinutes(PROCESSING_TIMEOUT_MINUTES),
+                RECOVERY_BATCH_SIZE
+        );
     }
 
     private OutboxEvent gameCompletedEvent(final Long id, final String gameCode, final LocalDate date)
