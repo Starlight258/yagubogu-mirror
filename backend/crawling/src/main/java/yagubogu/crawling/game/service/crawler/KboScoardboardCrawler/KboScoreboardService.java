@@ -176,9 +176,9 @@ public class KboScoreboardService {
 
             GameState state = GameState.fromName(data.getStatus());
             if (state == GameState.COMPLETED) {
-                outboxEventService.saveGameFinalizedEvent(gameCode, date);
+                outboxEventService.saveGameCompletedEvent(gameCode, date);
                 reviewRetryQueueService.enqueue(gameCode, REVIEW_INITIAL_DELAY_MINUTES);
-                log.info("[OUTBOX] Saved GameFinalizedEvent and queued review crawl: gameCode={}", gameCode);
+                log.info("[OUTBOX] Saved GAME_COMPLETED event and queued review crawl: gameCode={}", gameCode);
             }
         } catch (Exception e) {
             log.error("[BRONZE] Failed to save gameCode={}", gameCode, e);
