@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import yagubogu.crawling.game.domain.ReviewCrawlRetry;
-import yagubogu.crawling.game.domain.ReviewRetryStatus;
 import yagubogu.crawling.game.repository.ReviewCrawlRetryRepository;
 
 @Slf4j
@@ -20,7 +19,7 @@ public class ReviewRetryQueueService {
 
     @Transactional
     public boolean enqueue(final String gameCode, final long delayMinutes) {
-        if (retryRepository.existsByGameCodeAndStatus(gameCode, ReviewRetryStatus.PENDING)) {
+        if (retryRepository.existsByGameCode(gameCode)) {
             log.info("[REVIEW] 이미 예약된 리뷰 크롤링 스킵: gameCode={}", gameCode);
             return false;
         }

@@ -10,5 +10,5 @@ public interface ReviewCrawlRetryRepository extends JpaRepository<ReviewCrawlRet
 
     List<ReviewCrawlRetry> findByStatusAndNextRetryAtLessThanEqual(ReviewRetryStatus status, LocalDateTime now);
 
-    boolean existsByGameCodeAndStatus(String gameCode, ReviewRetryStatus status);
+    boolean existsByGameCode(String gameCode);
 }

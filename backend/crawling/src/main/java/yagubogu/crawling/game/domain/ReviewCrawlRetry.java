@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -15,7 +16,10 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "review_crawl_retries")
+@Table(
+        name = "review_crawl_retries",
+        uniqueConstraints = @UniqueConstraint(name = "uk_review_retry_game", columnNames = "game_code")
+)
 @Entity
 public class ReviewCrawlRetry {
 
