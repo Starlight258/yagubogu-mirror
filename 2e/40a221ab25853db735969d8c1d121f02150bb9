@@ -1,0 +1,30 @@
+backend/crawling/src/main/java/yagubogu/crawling/game/domain/ReviewCrawlRetry.java
+  s_099f6cf78df7b5::t_794b6031cc6d80 11,19-22
+backend/crawling/src/main/java/yagubogu/crawling/game/service/crawler/KboReviewCrawler/ReviewRetryQueueService.java
+  s_099f6cf78df7b5::t_794b6031cc6d80 22
+backend/crawling/src/main/java/yagubogu/crawling/game/repository/ReviewCrawlRetryRepository.java
+  s_099f6cf78df7b5::t_794b6031cc6d80 13
+backend/app/src/main/resources/db/migration/mysql/V18__add_unique_review_retry_game_code.sql
+  s_099f6cf78df7b5::t_794b6031cc6d80 1-2
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "2e40a221ab25853db735969d8c1d121f02150bb9",
+  "prompts": {},
+  "humans": {
+    "h_3dcfd613e97439": {
+      "author": "Mint <audwl03071@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_099f6cf78df7b5": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f6119-66df-79f1-a32d-c5e514e6aa3b",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    }
+  }
+}
