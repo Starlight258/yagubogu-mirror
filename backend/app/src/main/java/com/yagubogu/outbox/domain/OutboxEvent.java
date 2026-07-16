@@ -70,4 +70,32 @@ public class OutboxEvent {
         outboxEvent.updatedAt = now;
         return outboxEvent;
     }
+
+    public void markProcessing(final LocalDateTime now) {
+        this.status = OutboxEventStatus.PROCESSING;
+        this.updatedAt = now;
+    }
+
+    public void markProcessed(final LocalDateTime now) {
+        this.status = OutboxEventStatus.PROCESSED;
+        this.processedAt = now;
+        this.lastError = null;
+        this.updatedAt = now;
+    }
+
+    public void markFailed(final int nextRetryCount, final LocalDateTime nextRetryAt, final String lastError,
+                           final LocalDateTime now) {
+        this.status = OutboxEventStatus.PENDING;
+        this.retryCount = nextRetryCount;
+        this.nextRetryAt = nextRetryAt;
+        this.lastError = lastError;
+        this.updatedAt = now;
+    }
+
+    public void markFailedPermanently(final int nextRetryCount, final String lastError, final LocalDateTime now) {
+        this.status = OutboxEventStatus.FAILED;
+        this.retryCount = nextRetryCount;
+        this.lastError = lastError;
+        this.updatedAt = now;
+    }
 }
