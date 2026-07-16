@@ -6,11 +6,11 @@ import static java.util.stream.Collectors.toMap;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yagubogu.game.domain.GameState;
 import com.yagubogu.game.domain.ScoreBoard;
-import com.yagubogu.game.event.GameFinalizedEvent;
 import com.yagubogu.game.exception.GameSyncException;
 import com.yagubogu.game.repository.GameRepository;
 import com.yagubogu.game.service.BronzeGameService;
 import com.yagubogu.game.service.GameEtlService;
+import com.yagubogu.outbox.service.OutboxEventService;
 import com.yagubogu.stadium.domain.Stadium;
 import com.yagubogu.stadium.repository.StadiumRepository;
 import com.yagubogu.team.domain.Team;
@@ -29,11 +29,11 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.StopWatch;
+import yagubogu.crawling.game.service.crawler.KboReviewCrawler.ReviewRetryQueueService;
 import yagubogu.crawling.game.dto.BatchResult;
 import yagubogu.crawling.game.dto.FailedGame;
 import yagubogu.crawling.game.dto.GameDateCrawlResponse;
@@ -51,6 +51,8 @@ import yagubogu.crawling.game.repository.GameJdbcBatchUpsertRepository;
 @Service
 public class KboScoreboardService {
 
+    private static final long REVIEW_INITIAL_DELAY_MINUTES = 30;
+
     private final KboScoreboardCrawler kboScoreboardCrawler;
     private final KboScoreboardMapper mapper;
     private final GameJdbcBatchUpsertRepository batchUpsertRepository;
@@ -62,7 +64,8 @@ public class KboScoreboardService {
     private final BronzeGameService bronzeGameService;
     private final GameEtlService gameEtlService;
     private final ObjectMapper objectMapper;
-    private final ApplicationEventPublisher applicationEventPublisher;
+    private final OutboxEventService outboxEventService;
+    private final ReviewRetryQueueService reviewRetryQueueService;
 
     private Map<String, Stadium> stadiumCache = new ConcurrentHashMap<>();
     private Map<String, Team> teamCache = new ConcurrentHashMap<>();
@@ -171,12 +174,11 @@ public class KboScoreboardService {
             bronzeGameService.upsertByNaturalKey(date, stadium, homeTeamName, awayTeamName, startTime, payload);
             log.debug("[BRONZE] Saved gameCode={}, state={}", gameCode, data.getStatus());
 
-            // 경기 종료 시 이벤트 발행 (ETL 트리거)
             GameState state = GameState.fromName(data.getStatus());
-            if (state == GameState.COMPLETED || state == GameState.CANCELED) {
-                applicationEventPublisher.publishEvent(new GameFinalizedEvent(gameCode, date, stadium, homeTeamName,
-                        awayTeamName, startTime, state));
-                log.info("[EVENT] Published GameFinalizedEvent: gameCode={}, state={}", gameCode, state);
+            if (state == GameState.COMPLETED) {
+                outboxEventService.saveGameFinalizedEvent(gameCode, date);
+                reviewRetryQueueService.enqueue(gameCode, REVIEW_INITIAL_DELAY_MINUTES);
+                log.info("[OUTBOX] Saved GameFinalizedEvent and queued review crawl: gameCode={}", gameCode);
             }
         } catch (Exception e) {
             log.error("[BRONZE] Failed to save gameCode={}", gameCode, e);
