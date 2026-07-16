@@ -1,0 +1,24 @@
+.coderabbit.yaml
+  s_8125fe89876104::t_89f3581341e937 44-45,47
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "270dd03d34cdc30eaa97445ae264c26c7000466e",
+  "prompts": {},
+  "humans": {
+    "h_3dcfd613e97439": {
+      "author": "Mint <audwl03071@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_8125fe89876104": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "2847b6ee-8130-451d-ac3e-6e5c2bf0e786",
+        "model": "unknown"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    }
+  }
+}
