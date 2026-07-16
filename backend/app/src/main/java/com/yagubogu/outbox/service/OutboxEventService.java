@@ -2,7 +2,6 @@ package com.yagubogu.outbox.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.yagubogu.outbox.domain.OutboxEvent;
 import com.yagubogu.outbox.dto.GameFinalizedOutboxPayload;
 import com.yagubogu.outbox.repository.OutboxEventRepository;
 import java.time.Clock;
@@ -26,14 +25,13 @@ public class OutboxEventService {
 
     @Transactional
     public void saveGameFinalizedEvent(final String gameCode, final LocalDate date) {
-        if (outboxEventRepository.existsByEventTypeAndAggregateId(GAME_FINALIZED_EVENT_TYPE, gameCode)) {
-            log.info("[OUTBOX] 이미 저장된 이벤트 스킵: gameCode={}", gameCode);
-            return;
-        }
         try {
             String payload = objectMapper.writeValueAsString(new GameFinalizedOutboxPayload(gameCode, date));
             LocalDateTime now = LocalDateTime.now(clock);
-            outboxEventRepository.save(OutboxEvent.of(GAME_FINALIZED_EVENT_TYPE, gameCode, payload, now));
+            int inserted = outboxEventRepository.insertIgnore(GAME_FINALIZED_EVENT_TYPE, gameCode, payload, now);
+            if (inserted == 0) {
+                log.info("[OUTBOX] 이미 저장된 이벤트 스킵: gameCode={}", gameCode);
+            }
         } catch (JsonProcessingException e) {
             throw new IllegalStateException("Failed to serialize outbox payload: gameCode=" + gameCode, e);
         }
