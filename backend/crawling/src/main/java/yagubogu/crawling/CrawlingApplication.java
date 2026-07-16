@@ -5,6 +5,7 @@ import com.yagubogu.global.config.ClockConfig;
 import com.yagubogu.global.config.PipelineConfig;
 import com.yagubogu.global.config.QueryDslConfig;
 import com.yagubogu.global.config.ScheduleConfig;
+import com.yagubogu.outbox.service.OutboxEventService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -16,7 +17,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
         QueryDslConfig.class,
         ScheduleConfig.class,
         PipelineConfig.class,
-        GameEtlScheduler.class
+        GameEtlScheduler.class,
+        OutboxEventService.class
 })
 @EntityScan(basePackages = {"com.yagubogu", "yagubogu.crawling.game.domain"})
 @EnableJpaRepositories(basePackages = {"com.yagubogu", "yagubogu.crawling.game.repository"})
