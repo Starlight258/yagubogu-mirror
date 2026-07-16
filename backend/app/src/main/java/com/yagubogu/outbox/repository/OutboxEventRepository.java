@@ -28,4 +28,15 @@ public interface OutboxEventRepository extends JpaRepository<OutboxEvent, Long> 
             FOR UPDATE SKIP LOCKED
             """, nativeQuery = true)
     List<OutboxEvent> findPendingForUpdate(LocalDateTime now, int limit);
+
+    @Query(value = """
+            SELECT *
+            FROM outbox_events
+            WHERE status = 'PROCESSING'
+              AND updated_at < :timedOutBefore
+            ORDER BY updated_at
+            LIMIT :limit
+            FOR UPDATE SKIP LOCKED
+            """, nativeQuery = true)
+    List<OutboxEvent> findTimedOutProcessingForUpdate(LocalDateTime timedOutBefore, int limit);
 }

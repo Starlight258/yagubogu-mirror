@@ -6,8 +6,10 @@ import com.yagubogu.outbox.dto.GameCompletedOutboxPayload;
 import com.yagubogu.outbox.domain.OutboxEvent;
 import com.yagubogu.outbox.exception.OutboxEventNotFoundException;
 import com.yagubogu.outbox.exception.OutboxPayloadSerializationException;
+import com.yagubogu.outbox.exception.OutboxProcessingTimeoutException;
 import com.yagubogu.outbox.repository.OutboxEventRepository;
 import java.time.Clock;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -66,6 +68,19 @@ public class OutboxEventService {
         OutboxEvent event = outboxEventRepository.findById(eventId)
                 .orElseThrow(() -> new OutboxEventNotFoundException(eventId));
 
+        markFailed(event, exception, now);
+    }
+
+    @Transactional
+    public int recoverTimedOutProcessingEvents(final Duration timeout, final int limit) {
+        LocalDateTime now = LocalDateTime.now(clock);
+        LocalDateTime timedOutBefore = now.minus(timeout);
+        List<OutboxEvent> events = outboxEventRepository.findTimedOutProcessingForUpdate(timedOutBefore, limit);
+        events.forEach(event -> markFailed(event, new OutboxProcessingTimeoutException(event.getId(), timeout), now));
+        return events.size();
+    }
+
+    private void markFailed(final OutboxEvent event, final Exception exception, final LocalDateTime now) {
         int nextRetryCount = event.getRetryCount() + 1;
         String lastError = formatLastError(exception);
         if (nextRetryCount >= MAX_RETRY_COUNT) {
