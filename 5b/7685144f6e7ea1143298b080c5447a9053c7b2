@@ -1,0 +1,52 @@
+backend/app/src/main/java/com/yagubogu/prediction/controller/v1/GamePredictionController.java
+  s_dd7964ee9ddbac::t_eb13900832bfab 13,32,43-50
+  s_dd7964ee9ddbac::t_74eae94030de7a 51
+  s_dd7964ee9ddbac::t_848120f28871b4 7,33-40
+  s_dd7964ee9ddbac::t_05553dd50455ee 41-42
+backend/app/src/test/java/com/yagubogu/prediction/GamePredictionE2eTest.java
+  s_dd7964ee9ddbac::t_41ee7841a9d75d 12,14,90-123,129-153
+  s_dd7964ee9ddbac::t_5322178c2b435d 154
+  s_dd7964ee9ddbac::t_41823a661ffb15 15,155-216,218
+  s_dd7964ee9ddbac::t_8515b5a5a294d0 217
+  s_dd7964ee9ddbac::t_a68cc466175db9 219
+backend/app/src/main/java/com/yagubogu/prediction/controller/v1/GamePredictionControllerInterface.java
+  s_dd7964ee9ddbac::t_1fa0a5908f3252 14,19,35,47-55
+  s_dd7964ee9ddbac::t_a0b1271f621c41 56
+  s_dd7964ee9ddbac::t_9a647064c36d32 6,16,36-44
+  s_dd7964ee9ddbac::t_c945a5a2ff10e2 45-46
+backend/app/src/main/java/com/yagubogu/prediction/repository/GamePredictionRepository.java
+  s_dd7964ee9ddbac::t_743c6100a4a5c2 3-4,6,12-13
+backend/app/src/main/java/com/yagubogu/prediction/service/GamePredictionService.java
+  s_dd7964ee9ddbac::t_2ac63dbf528837 50-59
+  s_dd7964ee9ddbac::t_c63ca15eef9c2e 11,38-45
+  s_dd7964ee9ddbac::t_af4ef33decc58c 46-48
+  s_dd7964ee9ddbac::t_fb390d73e997ba 49
+backend/app/src/main/java/com/yagubogu/prediction/domain/GamePrediction.java
+  s_dd7964ee9ddbac::t_fcd4edf1f84353 53-56
+backend/app/src/main/java/com/yagubogu/prediction/dto/v1/UpdateGamePredictionRequest.java
+  s_d680f1e461cbf0::t_af32bf071539b7 1-9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "5b7685144f6e7ea1143298b080c5447a9053c7b2",
+  "prompts": {},
+  "sessions": {
+    "s_d680f1e461cbf0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "8eee6c47-b04f-42a1-a600-2c961c8fc40d",
+        "model": "unknown"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    },
+    "s_dd7964ee9ddbac": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4a3281d4-b5bd-47f5-af1e-cc5063b0a226",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    }
+  }
+}

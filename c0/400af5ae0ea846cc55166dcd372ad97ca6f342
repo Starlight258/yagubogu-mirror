@@ -1,0 +1,33 @@
+backend/crawling/src/main/java/yagubogu/crawling/game/controller/DebugOutboxController.java
+  s_942b67e18978eb::t_6bdbacefe23a75 3-4,26-27,29-33,37,40
+  s_942b67e18978eb::t_b745723fbc600c 1-2,5-25,34-36,38,41-43,51-55
+  s_942b67e18978eb::t_2415c6e503a773 28
+  s_942b67e18978eb::t_dd8e0698baf320 39,44-50
+backend/app/src/test/java/com/yagubogu/prediction/GamePredictionE2eTest.java
+  s_dd7964ee9ddbac::t_6a4b0863a45329 3
+  s_dd7964ee9ddbac::t_b8061a4de8ac27 124-128
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "c0400af5ae0ea846cc55166dcd372ad97ca6f342",
+  "prompts": {},
+  "sessions": {
+    "s_942b67e18978eb": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f6ee2-c986-7b23-b279-d86c99a8d9d9",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    },
+    "s_dd7964ee9ddbac": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4a3281d4-b5bd-47f5-af1e-cc5063b0a226",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    }
+  }
+}
