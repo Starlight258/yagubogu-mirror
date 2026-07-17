@@ -57,6 +57,7 @@ public abstract class ServiceUsingMysqlTestBase {
             em.createNativeQuery("SET FOREIGN_KEY_CHECKS = 0").executeUpdate();
 
             // Keep lookup tables (teams, stadiums) seeded by Flyway
+            em.createNativeQuery("TRUNCATE TABLE game_predictions").executeUpdate();
             em.createNativeQuery("TRUNCATE TABLE members").executeUpdate();
             em.createNativeQuery("TRUNCATE TABLE games").executeUpdate();
             em.createNativeQuery("TRUNCATE TABLE refresh_tokens").executeUpdate();
