@@ -1,0 +1,70 @@
+backend/app/src/main/java/com/yagubogu/prediction/dto/v1/CreateGamePredictionRequest.java
+  s_87ad76911a1222::t_88cacdde858376 1-9
+backend/app/src/main/java/com/yagubogu/prediction/domain/GamePrediction.java
+  s_d680f1e461cbf0::t_181003c5e5c586 1-53
+backend/app/src/main/java/com/yagubogu/prediction/domain/PredictionStatus.java
+  s_87ad76911a1222::t_44f85ed454d81c 1-8
+backend/app/src/main/java/com/yagubogu/prediction/service/GamePredictionService.java
+  s_dd7964ee9ddbac::t_bef06c0658a73d 30-32
+  s_dd7964ee9ddbac::t_31dc76838d8bab 45
+  s_d680f1e461cbf0::t_6d3104b3124040 1-29,33-44,46
+backend/app/src/main/resources/db/migration/mysql/V19__create_game_predictions.sql
+  s_dd7964ee9ddbac::t_e24d897c55bdf6 1-12,14-16
+  s_dd7964ee9ddbac::t_0352eff9cdd2eb 13
+backend/app/src/main/java/com/yagubogu/prediction/repository/GamePredictionRepository.java
+  s_87ad76911a1222::t_e9a7fd15f62dc1 1-9
+backend/app/src/main/java/com/yagubogu/prediction/dto/v1/GamePredictionResponse.java
+  s_87ad76911a1222::t_047c0a6f8315f3 1-22
+backend/app/src/main/java/com/yagubogu/prediction/controller/v1/GamePredictionControllerInterface.java
+  s_dd7964ee9ddbac::t_a0b1271f621c41 30
+  s_d680f1e461cbf0::t_363ad77234e18f 1-23,25-29,31
+  s_dd7964ee9ddbac::t_bef06c0658a73d 24
+backend/app/src/test/java/com/yagubogu/prediction/GamePredictionE2eTest.java
+  s_d680f1e461cbf0::t_6472674dba8937 1-83,86-107
+  s_dd7964ee9ddbac::t_41823a661ffb15 84
+  s_dd7964ee9ddbac::t_a68cc466175db9 85
+backend/app/src/test/java/com/yagubogu/support/base/E2eTestBase.java
+  s_dd7964ee9ddbac::t_7c4bbdd45e8e72 60
+backend/app/src/main/java/com/yagubogu/prediction/controller/v1/GamePredictionController.java
+  s_d680f1e461cbf0::t_63fdf2b51f53d6 1-28,30
+  s_dd7964ee9ddbac::t_74eae94030de7a 29
+backend/app/src/main/java/com/yagubogu/prediction/domain/PredictionPick.java
+  s_87ad76911a1222::t_b85571433890ec 1-6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "32e533f7501f976565501d16cf38a9128b5b902c",
+  "prompts": {},
+  "humans": {
+    "h_3dcfd613e97439": {
+      "author": "Mint <audwl03071@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_87ad76911a1222": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ac0765bb-2516-4203-87ce-e960378b2448",
+        "model": "unknown"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    },
+    "s_d680f1e461cbf0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "8eee6c47-b04f-42a1-a600-2c961c8fc40d",
+        "model": "unknown"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    },
+    "s_dd7964ee9ddbac": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4a3281d4-b5bd-47f5-af1e-cc5063b0a226",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": null
+    }
+  }
+}
