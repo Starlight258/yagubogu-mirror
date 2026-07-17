@@ -34,6 +34,16 @@ public class GamePredictionService {
         return GamePredictionResponse.from(gamePrediction);
     }
 
+    public GamePredictionResponse findPrediction(final Long memberId, final Long gameId) {
+        Member member = getMember(memberId);
+        Game game = getGame(gameId);
+
+        GamePrediction gamePrediction = gamePredictionRepository.findByMemberAndGame(member, game)
+                .orElseThrow(() -> new NotFoundException("GamePrediction is not found"));
+
+        return GamePredictionResponse.from(gamePrediction);
+    }
+
     private Member getMember(final Long memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundException("Member is not found"));

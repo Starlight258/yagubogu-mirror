@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -26,5 +27,15 @@ public class GamePredictionController implements GamePredictionControllerInterfa
         GamePredictionResponse response = gamePredictionService.submitPrediction(memberClaims.id(), request);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @Override
+    public ResponseEntity<GamePredictionResponse> findPrediction(
+            final MemberClaims memberClaims,
+            @RequestParam final Long gameId
+    ) {
+        GamePredictionResponse response = gamePredictionService.findPrediction(memberClaims.id(), gameId);
+
+        return ResponseEntity.ok(response);
     }
 }
