@@ -1,0 +1,28 @@
+backend/app/src/main/java/com/yagubogu/prediction/dto/WeeklyScoreParam.java
+  s_dd7964ee9ddbac::t_779458e180f5d8 1-7
+backend/app/src/main/java/com/yagubogu/prediction/repository/GamePredictionRepository.java
+  s_dd7964ee9ddbac::t_6c8d9176cff2ff 8-9
+  s_dd7964ee9ddbac::t_392c802b25409c 33-42
+backend/app/src/main/java/com/yagubogu/prediction/service/PredictionScoringService.java
+  s_dd7964ee9ddbac::t_6200193fbebcd3 7,9
+  s_dd7964ee9ddbac::t_53ea8587691aa5 35-38
+backend/app/src/test/java/com/yagubogu/prediction/service/PredictionScoringServiceUsingMysqlTest.java
+  s_dd7964ee9ddbac::t_ec9c0fecd42ddf 14,24
+  s_dd7964ee9ddbac::t_72d65f2e7e06ba 157-206
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "d5c994c436eb0ed69a45add91377abbdf2d48ce3",
+  "prompts": {},
+  "sessions": {
+    "s_dd7964ee9ddbac": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4a3281d4-b5bd-47f5-af1e-cc5063b0a226",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    }
+  }
+}
