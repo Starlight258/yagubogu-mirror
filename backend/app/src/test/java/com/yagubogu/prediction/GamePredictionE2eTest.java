@@ -87,6 +87,39 @@ public class GamePredictionE2eTest extends E2eTestBase {
                 .body("status", is("SUBMITTED"));
     }
 
+    @DisplayName("예외: 이미 해당 경기에 예측을 제출했으면 409를 반환한다")
+    @Test
+    void submitPrediction_alreadyExists() {
+        // given
+        Stadium stadium = stadiumRepository.findByShortName("사직구장").orElseThrow();
+        Team homeTeam = teamRepository.findByTeamCode("LT").orElseThrow();
+        Team awayTeam = teamRepository.findByTeamCode("HH").orElseThrow();
+        Game game = gameFactory.save(builder -> builder
+                .homeTeam(homeTeam)
+                .awayTeam(awayTeam)
+                .stadium(stadium));
+        Member member = memberFactory.save(b -> b.team(homeTeam));
+        String accessToken = authFactory.getAccessTokenByMemberId(member.getId(), Role.USER);
+
+        CreateGamePredictionRequest request = new CreateGamePredictionRequest(game.getId(), PredictionPick.HOME);
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .body(request)
+                .when()
+                .post("/api/v1/predictions");
+
+        // when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .body(request)
+                .when()
+                .post("/api/v1/predictions")
+                .then().log().all()
+                .statusCode(409);
+    }
+
     @DisplayName("본인의 승부 예측을 조회한다")
     @Test
     void findPrediction() {

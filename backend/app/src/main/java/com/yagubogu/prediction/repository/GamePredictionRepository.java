@@ -11,4 +11,6 @@ import org.springframework.stereotype.Repository;
 public interface GamePredictionRepository extends JpaRepository<GamePrediction, Long> {
 
     Optional<GamePrediction> findByMemberAndGame(Member member, Game game);
+
+    boolean existsByMemberAndGame(Member member, Game game);
 }

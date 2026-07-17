@@ -25,7 +25,8 @@ public interface GamePredictionControllerInterface {
     @Operation(summary = "승부 예측 제출", description = "지정한 경기의 승/패를 예측합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "예측 제출 성공"),
-            @ApiResponse(responseCode = "404", description = "회원 또는 경기를 찾을 수 없음")
+            @ApiResponse(responseCode = "404", description = "회원 또는 경기를 찾을 수 없음"),
+            @ApiResponse(responseCode = "409", description = "이미 해당 경기에 예측을 제출함")
     })
     @PostMapping
     ResponseEntity<GamePredictionResponse> submitPrediction(
