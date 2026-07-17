@@ -91,6 +91,7 @@ $RECYCLE.BIN/
 *.lnk
 
 /app/src/main/generated
+/crawling/src/main/generated
 
 # Log directory
 log/
