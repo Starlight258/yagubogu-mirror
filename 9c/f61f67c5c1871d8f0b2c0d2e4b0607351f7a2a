@@ -1,0 +1,23 @@
+backend/app/src/main/java/com/yagubogu/outbox/exception/InvalidOutboxPayloadException.java
+  s_942b67e18978eb::t_9160839282e77c 1-10
+backend/app/src/test/java/com/yagubogu/outbox/dto/GameCompletedOutboxPayloadTest.java
+  s_942b67e18978eb::t_eebbfb756adcf5 1-44
+backend/app/src/main/java/com/yagubogu/outbox/dto/GameCompletedOutboxPayload.java
+  s_942b67e18978eb::t_9160839282e77c 3,7-15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "9cf61f67c5c1871d8f0b2c0d2e4b0607351f7a2a",
+  "prompts": {},
+  "sessions": {
+    "s_942b67e18978eb": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f6ee2-c986-7b23-b279-d86c99a8d9d9",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    }
+  }
+}
