@@ -72,6 +72,8 @@ public class OutboxEventProcessor {
             GameCompletedOutboxPayload payload = readPayload(event);
             statSyncService.updateRankings(payload.date());
             outboxEventService.markProcessed(event.getId());
+            log.info("[OUTBOX] Processed event: id={}, type={}, aggregateId={}",
+                    event.getId(), event.getEventType(), event.getAggregateId());
         } catch (RuntimeException | JsonProcessingException e) {
             log.error("[OUTBOX] Failed to process event: id={}, type={}, aggregateId={}",
                     event.getId(), event.getEventType(), event.getAggregateId(), e);
