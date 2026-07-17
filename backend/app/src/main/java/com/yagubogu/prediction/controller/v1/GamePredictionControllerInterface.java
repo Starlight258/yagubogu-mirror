@@ -3,6 +3,7 @@ package com.yagubogu.prediction.controller.v1;
 import com.yagubogu.auth.dto.MemberClaims;
 import com.yagubogu.prediction.dto.v1.CreateGamePredictionRequest;
 import com.yagubogu.prediction.dto.v1.GamePredictionResponse;
+import com.yagubogu.prediction.dto.v1.UpdateGamePredictionRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -12,6 +13,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,6 +31,17 @@ public interface GamePredictionControllerInterface {
     ResponseEntity<GamePredictionResponse> submitPrediction(
             @Parameter(hidden = true) MemberClaims memberClaims,
             @Valid @RequestBody CreateGamePredictionRequest request
+    );
+
+    @Operation(summary = "승부 예측 수정", description = "마감 전인 경기의 예측을 수정합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "예측 수정 성공"),
+            @ApiResponse(responseCode = "404", description = "회원, 경기 또는 예측을 찾을 수 없음")
+    })
+    @PutMapping
+    ResponseEntity<GamePredictionResponse> updatePrediction(
+            @Parameter(hidden = true) MemberClaims memberClaims,
+            @Valid @RequestBody UpdateGamePredictionRequest request
     );
 
     @Operation(summary = "내 승부 예측 조회", description = "지정한 경기에 대한 본인의 예측을 조회합니다.")

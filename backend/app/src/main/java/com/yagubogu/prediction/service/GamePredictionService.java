@@ -8,6 +8,7 @@ import com.yagubogu.member.repository.MemberRepository;
 import com.yagubogu.prediction.domain.GamePrediction;
 import com.yagubogu.prediction.dto.v1.CreateGamePredictionRequest;
 import com.yagubogu.prediction.dto.v1.GamePredictionResponse;
+import com.yagubogu.prediction.dto.v1.UpdateGamePredictionRequest;
 import com.yagubogu.prediction.repository.GamePredictionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,18 @@ public class GamePredictionService {
         GamePrediction gamePrediction = gamePredictionRepository.save(
                 new GamePrediction(member, game, request.pick())
         );
+
+        return GamePredictionResponse.from(gamePrediction);
+    }
+
+    @Transactional
+    public GamePredictionResponse updatePrediction(final Long memberId, final UpdateGamePredictionRequest request) {
+        Member member = getMember(memberId);
+        Game game = getGame(request.gameId());
+
+        GamePrediction gamePrediction = gamePredictionRepository.findByMemberAndGame(member, game)
+                .orElseThrow(() -> new NotFoundException("GamePrediction is not found"));
+        gamePrediction.updatePick(request.pick());
 
         return GamePredictionResponse.from(gamePrediction);
     }

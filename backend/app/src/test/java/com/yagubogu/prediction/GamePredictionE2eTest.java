@@ -12,6 +12,7 @@ import com.yagubogu.prediction.domain.PredictionPick;
 import com.yagubogu.prediction.domain.PredictionStatus;
 import com.yagubogu.prediction.dto.v1.CreateGamePredictionRequest;
 import com.yagubogu.prediction.dto.v1.GamePredictionResponse;
+import com.yagubogu.prediction.dto.v1.UpdateGamePredictionRequest;
 import com.yagubogu.stadium.domain.Stadium;
 import com.yagubogu.stadium.repository.StadiumRepository;
 import com.yagubogu.support.auth.AuthFactory;
@@ -147,6 +148,71 @@ public class GamePredictionE2eTest extends E2eTestBase {
                 .queryParam("gameId", game.getId())
                 .when()
                 .get("/api/v1/predictions")
+                .then().log().all()
+                .statusCode(404);
+    }
+
+    @DisplayName("승부 예측을 수정한다")
+    @Test
+    void updatePrediction() {
+        // given
+        Stadium stadium = stadiumRepository.findByShortName("사직구장").orElseThrow();
+        Team homeTeam = teamRepository.findByTeamCode("LT").orElseThrow();
+        Team awayTeam = teamRepository.findByTeamCode("HH").orElseThrow();
+        Game game = gameFactory.save(builder -> builder
+                .homeTeam(homeTeam)
+                .awayTeam(awayTeam)
+                .stadium(stadium));
+        Member member = memberFactory.save(b -> b.team(homeTeam));
+        String accessToken = authFactory.getAccessTokenByMemberId(member.getId(), Role.USER);
+
+        CreateGamePredictionRequest createRequest = new CreateGamePredictionRequest(game.getId(), PredictionPick.HOME);
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .body(createRequest)
+                .when()
+                .post("/api/v1/predictions");
+
+        UpdateGamePredictionRequest updateRequest = new UpdateGamePredictionRequest(game.getId(), PredictionPick.AWAY);
+
+        // when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .body(updateRequest)
+                .when()
+                .put("/api/v1/predictions")
+                .then().log().all()
+                .statusCode(200)
+                .body("gameId", is(game.getId().intValue()))
+                .body("pick", is("AWAY"))
+                .body("status", is("SUBMITTED"));
+    }
+
+    @DisplayName("예외: 예측이 없으면 수정 시 404를 반환한다")
+    @Test
+    void updatePrediction_notFound() {
+        // given
+        Stadium stadium = stadiumRepository.findByShortName("사직구장").orElseThrow();
+        Team homeTeam = teamRepository.findByTeamCode("LT").orElseThrow();
+        Team awayTeam = teamRepository.findByTeamCode("HH").orElseThrow();
+        Game game = gameFactory.save(builder -> builder
+                .homeTeam(homeTeam)
+                .awayTeam(awayTeam)
+                .stadium(stadium));
+        Member member = memberFactory.save(b -> b.team(homeTeam));
+        String accessToken = authFactory.getAccessTokenByMemberId(member.getId(), Role.USER);
+
+        UpdateGamePredictionRequest updateRequest = new UpdateGamePredictionRequest(game.getId(), PredictionPick.AWAY);
+
+        // when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .body(updateRequest)
+                .when()
+                .put("/api/v1/predictions")
                 .then().log().all()
                 .statusCode(404);
     }

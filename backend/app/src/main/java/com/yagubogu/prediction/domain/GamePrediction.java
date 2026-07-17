@@ -50,4 +50,8 @@ public class GamePrediction extends BaseEntity {
         this.pick = pick;
         this.status = PredictionStatus.SUBMITTED;
     }
+
+    public void updatePick(final PredictionPick pick) {
+        this.pick = pick;
+    }
 }

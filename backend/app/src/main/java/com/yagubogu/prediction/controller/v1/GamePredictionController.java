@@ -4,6 +4,7 @@ import com.yagubogu.auth.annotation.RequireRole;
 import com.yagubogu.auth.dto.MemberClaims;
 import com.yagubogu.prediction.dto.v1.CreateGamePredictionRequest;
 import com.yagubogu.prediction.dto.v1.GamePredictionResponse;
+import com.yagubogu.prediction.dto.v1.UpdateGamePredictionRequest;
 import com.yagubogu.prediction.service.GamePredictionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -27,6 +28,16 @@ public class GamePredictionController implements GamePredictionControllerInterfa
         GamePredictionResponse response = gamePredictionService.submitPrediction(memberClaims.id(), request);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @Override
+    public ResponseEntity<GamePredictionResponse> updatePrediction(
+            final MemberClaims memberClaims,
+            @RequestBody final UpdateGamePredictionRequest request
+    ) {
+        GamePredictionResponse response = gamePredictionService.updatePrediction(memberClaims.id(), request);
+
+        return ResponseEntity.ok(response);
     }
 
     @Override
