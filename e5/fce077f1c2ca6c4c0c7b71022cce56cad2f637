@@ -1,0 +1,45 @@
+backend/app/src/test/java/com/yagubogu/outbox/schedule/OutboxEventProcessorTest.java
+  s_942b67e18978eb::t_560ffc1d416516 11,105-121
+  s_942b67e18978eb::t_8f53c0cb6d8228 122-124
+  s_942b67e18978eb::t_ea3bc9c200594b 125
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "e5fce077f1c2ca6c4c0c7b71022cce56cad2f637",
+  "prompts": {},
+  "sessions": {
+    "s_099f6cf78df7b5": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f6119-66df-79f1-a32d-c5e514e6aa3b",
+        "model": "unknown"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    },
+    "s_4134d92509f475": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f5f0e-7e1e-7cd1-ae47-86d4b4ca030d",
+        "model": "unknown"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    },
+    "s_8125fe89876104": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "2847b6ee-8130-451d-ac3e-6e5c2bf0e786",
+        "model": "unknown"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    },
+    "s_942b67e18978eb": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f6ee2-c986-7b23-b279-d86c99a8d9d9",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    }
+  }
+}

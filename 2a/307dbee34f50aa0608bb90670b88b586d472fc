@@ -1,0 +1,19 @@
+backend/app/src/main/java/com/yagubogu/outbox/schedule/OutboxEventProcessor.java
+  s_942b67e18978eb::t_fc16e0127b4ef8 75-76
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "2a307dbee34f50aa0608bb90670b88b586d472fc",
+  "prompts": {},
+  "sessions": {
+    "s_942b67e18978eb": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f6ee2-c986-7b23-b279-d86c99a8d9d9",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    }
+  }
+}
