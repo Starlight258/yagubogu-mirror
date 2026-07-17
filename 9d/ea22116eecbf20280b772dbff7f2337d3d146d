@@ -1,0 +1,24 @@
+backend/.gitignore
+  s_87ad76911a1222::t_82f9e744ceb022 94
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "9dea22116eecbf20280b772dbff7f2337d3d146d",
+  "prompts": {},
+  "humans": {
+    "h_3dcfd613e97439": {
+      "author": "Mint <audwl03071@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_87ad76911a1222": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ac0765bb-2516-4203-87ce-e960378b2448",
+        "model": "unknown"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    }
+  }
+}
