@@ -26,7 +26,8 @@ public interface GamePredictionControllerInterface {
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "예측 제출 성공"),
             @ApiResponse(responseCode = "404", description = "회원 또는 경기를 찾을 수 없음"),
-            @ApiResponse(responseCode = "409", description = "이미 해당 경기에 예측을 제출함")
+            @ApiResponse(responseCode = "409", description = "이미 해당 경기에 예측을 제출함"),
+            @ApiResponse(responseCode = "422", description = "경기가 이미 시작해 예측을 제출할 수 없음")
     })
     @PostMapping
     ResponseEntity<GamePredictionResponse> submitPrediction(
@@ -37,7 +38,8 @@ public interface GamePredictionControllerInterface {
     @Operation(summary = "승부 예측 수정", description = "마감 전인 경기의 예측을 수정합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "예측 수정 성공"),
-            @ApiResponse(responseCode = "404", description = "회원, 경기 또는 예측을 찾을 수 없음")
+            @ApiResponse(responseCode = "404", description = "회원, 경기 또는 예측을 찾을 수 없음"),
+            @ApiResponse(responseCode = "422", description = "경기가 이미 시작해 예측을 수정할 수 없음")
     })
     @PutMapping
     ResponseEntity<GamePredictionResponse> updatePrediction(

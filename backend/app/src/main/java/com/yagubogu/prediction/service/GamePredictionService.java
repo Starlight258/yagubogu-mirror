@@ -4,6 +4,7 @@ import com.yagubogu.game.domain.Game;
 import com.yagubogu.game.repository.GameRepository;
 import com.yagubogu.global.exception.ConflictException;
 import com.yagubogu.global.exception.NotFoundException;
+import com.yagubogu.global.exception.UnprocessableEntityException;
 import com.yagubogu.member.domain.Member;
 import com.yagubogu.member.repository.MemberRepository;
 import com.yagubogu.prediction.domain.GamePrediction;
@@ -12,6 +13,8 @@ import com.yagubogu.prediction.dto.v1.CreateGamePredictionRequest;
 import com.yagubogu.prediction.dto.v1.GamePredictionResponse;
 import com.yagubogu.prediction.dto.v1.UpdateGamePredictionRequest;
 import com.yagubogu.prediction.repository.GamePredictionRepository;
+import java.time.Clock;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -25,12 +28,14 @@ public class GamePredictionService {
     private final GamePredictionRepository gamePredictionRepository;
     private final GameRepository gameRepository;
     private final MemberRepository memberRepository;
+    private final Clock clock;
 
     @Transactional
     public GamePredictionResponse submitPrediction(final Long memberId, final CreateGamePredictionRequest request) {
         Member member = getMember(memberId);
         Game game = getGame(request.gameId());
 
+        validateBeforeClose(game);
         validateNotExists(member, game);
         GamePrediction gamePrediction = savePredictionSafely(member, game, request.pick());
 
@@ -42,6 +47,7 @@ public class GamePredictionService {
         Member member = getMember(memberId);
         Game game = getGame(request.gameId());
 
+        validateBeforeClose(game);
         GamePrediction gamePrediction = gamePredictionRepository.findByMemberAndGame(member, game)
                 .orElseThrow(() -> new NotFoundException("GamePrediction is not found"));
         gamePrediction.updatePick(request.pick());
@@ -67,6 +73,13 @@ public class GamePredictionService {
     private Game getGame(final Long gameId) {
         return gameRepository.findById(gameId)
                 .orElseThrow(() -> new NotFoundException("Game is not found"));
+    }
+
+    private void validateBeforeClose(final Game game) {
+        LocalDateTime closesAt = game.getDate().atTime(game.getStartAt());
+        if (!LocalDateTime.now(clock).isBefore(closesAt)) {
+            throw new UnprocessableEntityException("Prediction is closed after game start");
+        }
     }
 
     private void validateNotExists(final Member member, final Game game) {
