@@ -8,6 +8,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.yagubogu.outbox.domain.OutboxEvent;
@@ -97,6 +98,27 @@ class OutboxEventProcessorTest {
         ArgumentCaptor<Exception> exceptionCaptor = ArgumentCaptor.forClass(Exception.class);
         verify(outboxEventService).markFailed(eq(1L), exceptionCaptor.capture());
         assertThat(exceptionCaptor.getValue()).isExactlyInstanceOf(UnsupportedOutboxEventTypeException.class);
+        verify(statSyncService, never()).updateRankings(any());
+        verify(outboxEventService, never()).markProcessed(1L);
+    }
+
+    @DisplayName("payload가 올바른 JSON이 아니면 실패로 표시한다")
+    @Test
+    void processPendingEvents_invalidPayload() {
+        OutboxEvent event = OutboxEvent.of(
+                OutboxEventService.GAME_COMPLETED_EVENT_TYPE,
+                "20250721HTLT0",
+                "{",
+                LocalDateTime.of(2025, 7, 21, 23, 0)
+        );
+        ReflectionTestUtils.setField(event, "id", 1L);
+        when(outboxEventService.claimPendingEvents(BATCH_SIZE)).thenReturn(List.of(event));
+
+        outboxEventProcessor.processPendingEvents();
+
+        ArgumentCaptor<Exception> exceptionCaptor = ArgumentCaptor.forClass(Exception.class);
+        verify(outboxEventService).markFailed(eq(1L), exceptionCaptor.capture());
+        assertThat(exceptionCaptor.getValue()).isInstanceOf(JsonProcessingException.class);
         verify(statSyncService, never()).updateRankings(any());
         verify(outboxEventService, never()).markProcessed(1L);
     }
