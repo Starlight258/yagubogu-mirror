@@ -32,34 +32,30 @@ public class StatSyncService {
         int totalUpdated = 0;
         int totalInserted = 0;
 
-        try {
-            Slice<Long> slice;
-            do {
-                Pageable pageable = PageRequest.of(page, CHUNK_SIZE);
-                slice = checkInRepository.findDistinctMemberIdsByYear(currentYear, pageable);
+        Slice<Long> slice;
+        do {
+            Pageable pageable = PageRequest.of(page, CHUNK_SIZE);
+            slice = checkInRepository.findDistinctMemberIdsByYear(currentYear, pageable);
 
-                if (slice.hasContent()) {
-                    List<Long> memberIds = slice.getContent();
+            if (slice.hasContent()) {
+                List<Long> memberIds = slice.getContent();
 
-                    VictoryFairyChunkResult result = victoryFairyRankingSyncService.processChunk(memberIds,
-                            currentYear);
+                VictoryFairyChunkResult result = victoryFairyRankingSyncService.processChunk(memberIds,
+                        currentYear);
 
-                    totalProcessed += memberIds.size();
-                    totalUpdated += result.updatedCount();
-                    totalInserted += result.insertedCount();
+                totalProcessed += memberIds.size();
+                totalUpdated += result.updatedCount();
+                totalInserted += result.insertedCount();
 
-                    log.info("Progress: page {}, {} members processed (updated: {}, inserted: {})",
-                            page, totalProcessed, totalUpdated, totalInserted);
-                }
-                page++;
+                log.info("Progress: page {}, {} members processed (updated: {}, inserted: {})",
+                        page, totalProcessed, totalUpdated, totalInserted);
+            }
+            page++;
 
-            } while (slice.hasNext());
+        } while (slice.hasNext());
 
-            log.info("=== Batch Completed === total: {}, updated: {}, inserted: {}, skipped: {}",
-                    totalProcessed, totalUpdated, totalInserted,
-                    totalProcessed - totalUpdated - totalInserted);
-        } catch (RuntimeException e) {
-            log.error("Batch failed", e);
-        }
+        log.info("=== Batch Completed === total: {}, updated: {}, inserted: {}, skipped: {}",
+                totalProcessed, totalUpdated, totalInserted,
+                totalProcessed - totalUpdated - totalInserted);
     }
 }
