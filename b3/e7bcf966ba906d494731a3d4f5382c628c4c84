@@ -1,0 +1,19 @@
+backend/app/src/main/java/com/yagubogu/stat/service/StatSyncService.java
+  s_942b67e18978eb::t_6e36d0423ccbcb 35-38,40-41,43-44,46-48,50-53,55,57-59
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "b3e7bcf966ba906d494731a3d4f5382c628c4c84",
+  "prompts": {},
+  "sessions": {
+    "s_942b67e18978eb": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f6ee2-c986-7b23-b279-d86c99a8d9d9",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    }
+  }
+}
