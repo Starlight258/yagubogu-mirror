@@ -1,0 +1,21 @@
+backend/app/src/main/java/com/yagubogu/game/domain/GameState.java
+  s_a5ed20c41bd095::t_de6432960709ec 43-46
+backend/app/src/main/java/com/yagubogu/prediction/service/PredictionSettlementService.java
+  s_a5ed20c41bd095::t_de6432960709ec 25
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "a7e509b4f8be100ee325180535af3fb2ab1811ed",
+  "prompts": {},
+  "sessions": {
+    "s_a5ed20c41bd095": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f741a-d4d9-7a41-bf61-7ebdb395f094",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    }
+  }
+}
