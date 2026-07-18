@@ -1,5 +1,6 @@
 package com.yagubogu.game.domain;
 
+import com.yagubogu.game.exception.InvalidGameStateException;
 import com.yagubogu.stadium.domain.Stadium;
 import com.yagubogu.team.domain.Team;
 import jakarta.persistence.CascadeType;
@@ -100,11 +101,7 @@ public class Game {
     }
 
     public void updateGameState(final GameState newState) {
-        if (newState == GameState.CANCELED) {
-            this.gameState = GameState.CANCELED;
-            log.info("Game canceled: gameCode={}", this.gameCode);
-            return;
-        }
+        validateCompletedGame(newState);
 
         if (this.gameState != null && !this.gameState.canTransitionTo(newState)) {
             log.warn("Invalid state transition blocked in game center update: " +
@@ -112,7 +109,14 @@ public class Game {
                     this.gameCode, this.gameState, newState);
             return;
         }
+
         this.gameState = newState;
+    }
+
+    private void validateCompletedGame(final GameState newState) {
+        if (newState == GameState.COMPLETED && (homeScore == null || awayScore == null)) {
+            throw new InvalidGameStateException("Completed game requires both scores: gameCode=" + this.gameCode);
+        }
     }
 
     public void update(
@@ -139,5 +143,13 @@ public class Game {
 
     public boolean hasTeam(final Team team) {
         return homeTeam.equals(team) || awayTeam.equals(team);
+    }
+
+    public GameResult getResult() {
+        if (gameState != GameState.COMPLETED) {
+            throw new InvalidGameStateException(
+                    "Game result is only available for COMPLETED games: gameCode=" + gameCode);
+        }
+        return GameResult.of(homeScore, awayScore);
     }
 }

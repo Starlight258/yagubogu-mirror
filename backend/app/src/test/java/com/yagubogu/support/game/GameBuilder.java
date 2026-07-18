@@ -104,6 +104,11 @@ public class GameBuilder {
     }
 
     public Game build() {
+        if (gameState == GameState.COMPLETED) {
+            homeScore = homeScore == null ? 0 : homeScore;
+            awayScore = awayScore == null ? 0 : awayScore;
+        }
+
         return new Game(
                 stadium,
                 homeTeam,

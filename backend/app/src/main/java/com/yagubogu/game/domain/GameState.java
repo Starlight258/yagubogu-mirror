@@ -1,6 +1,6 @@
 package com.yagubogu.game.domain;
 
-import com.yagubogu.game.exception.GameSyncException;
+import com.yagubogu.game.exception.InvalidGameStateException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -26,7 +26,7 @@ public enum GameState {
         return Arrays.stream(values())
                 .filter(status -> status.stateNumber.equals(gameState))
                 .findFirst()
-                .orElseThrow(() -> new GameSyncException("Unknown game status: " + gameState));
+                .orElseThrow(() -> new InvalidGameStateException("Unknown game status: " + gameState));
     }
 
     public static GameState fromName(final String state) {
@@ -38,6 +38,10 @@ public enum GameState {
                 .filter(status -> state.contains(status.statusName))
                 .findFirst()
                 .orElse(LIVE);
+    }
+
+    public static List<GameState> finalizedStates() {
+        return FINALIZED_GAME_STATES;
     }
 
     public boolean canTransitionTo(GameState newState) {
