@@ -1,5 +1,6 @@
 package com.yagubogu.game.domain;
 
+import com.yagubogu.game.exception.InvalidGameStateException;
 import com.yagubogu.stadium.domain.Stadium;
 import com.yagubogu.team.domain.Team;
 import jakarta.persistence.CascadeType;
@@ -100,6 +101,8 @@ public class Game {
     }
 
     public void updateGameState(final GameState newState) {
+        validateCompletedGame(newState);
+
         if (newState == GameState.CANCELED) {
             this.gameState = GameState.CANCELED;
             log.info("Game canceled: gameCode={}", this.gameCode);
@@ -113,6 +116,12 @@ public class Game {
             return;
         }
         this.gameState = newState;
+    }
+
+    private void validateCompletedGame(final GameState newState) {
+        if (newState == GameState.COMPLETED && (homeScore == null || awayScore == null)) {
+            throw new InvalidGameStateException("Completed game requires both scores: gameCode=" + this.gameCode);
+        }
     }
 
     public void update(

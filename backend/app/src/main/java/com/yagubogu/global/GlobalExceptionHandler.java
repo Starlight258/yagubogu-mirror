@@ -2,12 +2,12 @@ package com.yagubogu.global;
 
 import com.sun.jdi.request.DuplicateRequestException;
 import com.yagubogu.game.exception.GameSyncException;
+import com.yagubogu.game.exception.InvalidGameStateException;
 import com.yagubogu.global.exception.BadGatewayException;
 import com.yagubogu.global.exception.BadRequestException;
 import com.yagubogu.global.exception.ConflictException;
 import com.yagubogu.global.exception.ForbiddenException;
 import com.yagubogu.global.exception.NotFoundException;
-import com.yagubogu.global.exception.PayloadTooLargeException;
 import com.yagubogu.global.exception.RateLimitExceededException;
 import com.yagubogu.global.exception.UnAuthorizedException;
 import com.yagubogu.global.exception.UnprocessableEntityException;
@@ -20,7 +20,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConversionException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -163,6 +162,17 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ExceptionResponse handleGameSyncException(final GameSyncException e) {
         log.warn("[GameSyncException]- {}", e.getMessage());
+
+        return new ExceptionResponse(e.getMessage());
+    }
+
+    /**
+     * 500 InvalidGameStateException
+     */
+    @ExceptionHandler(InvalidGameStateException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ExceptionResponse handleInvalidGameStateException(final InvalidGameStateException e) {
+        log.warn("[InvalidGameStateException]- {}", e.getMessage());
 
         return new ExceptionResponse(e.getMessage());
     }
