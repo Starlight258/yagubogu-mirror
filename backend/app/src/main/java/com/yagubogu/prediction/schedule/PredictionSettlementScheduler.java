@@ -13,7 +13,7 @@ public class PredictionSettlementScheduler {
 
     private final PredictionSettlementService predictionSettlementService;
 
-    @Scheduled(cron = "0 0 23 * * SUN")
+    @Scheduled(cron = "0 0 23 * * SUN", zone = "Asia/Seoul")
     public void settleWeeklyGames() {
         try {
             log.info("[PREDICTION] Weekly prediction settlement triggered by scheduler");
