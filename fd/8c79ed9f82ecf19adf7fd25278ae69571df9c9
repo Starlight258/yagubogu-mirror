@@ -1,0 +1,21 @@
+backend/app/src/test/java/com/yagubogu/prediction/service/PredictionSettlementServiceUsingMysqlTest.java
+  s_8999687b2eba6a::t_a019a81b62b71e 114-135
+backend/app/src/test/java/com/yagubogu/prediction/domain/GamePredictionTest.java
+  s_8999687b2eba6a::t_9b56cd443b6c95 56-69
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "fd8c79ed9f82ecf19adf7fd25278ae69571df9c9",
+  "prompts": {},
+  "sessions": {
+    "s_8999687b2eba6a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "79e50b1d-7179-4acf-a243-6155d88110fe",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    }
+  }
+}
