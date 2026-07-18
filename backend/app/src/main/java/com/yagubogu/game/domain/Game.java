@@ -103,18 +103,13 @@ public class Game {
     public void updateGameState(final GameState newState) {
         validateCompletedGame(newState);
 
-        if (newState == GameState.CANCELED) {
-            this.gameState = GameState.CANCELED;
-            log.info("Game canceled: gameCode={}", this.gameCode);
-            return;
-        }
-
         if (this.gameState != null && !this.gameState.canTransitionTo(newState)) {
             log.warn("Invalid state transition blocked in game center update: " +
                             "gameCode={}, current={}, attempted={}",
                     this.gameCode, this.gameState, newState);
             return;
         }
+
         this.gameState = newState;
     }
 

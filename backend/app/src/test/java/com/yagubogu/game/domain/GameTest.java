@@ -39,6 +39,19 @@ class GameTest {
         assertThat(game.getGameState()).isEqualTo(GameState.CANCELED);
     }
 
+    @DisplayName("이미 COMPLETED된 경기는 CANCELED로 전환되지 않는다.")
+    @Test
+    void updateGameState_blocksCancel_whenAlreadyCompleted() {
+        // given
+        Game game = newGame(5, 3, GameState.COMPLETED);
+
+        // when
+        game.updateGameState(GameState.CANCELED);
+
+        // then
+        assertThat(game.getGameState()).isEqualTo(GameState.COMPLETED);
+    }
+
     @DisplayName("홈팀 점수가 높으면 HOME_WIN을 반환한다.")
     @Test
     void getResult_returnsHomeWin_whenHomeScoreIsHigher() {
