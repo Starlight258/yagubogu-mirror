@@ -1,0 +1,40 @@
+backend/app/src/main/java/com/yagubogu/game/domain/Game.java
+  s_8999687b2eba6a::t_e624ae4b4d9ab1 3
+  s_8999687b2eba6a::t_62fcdd4ed73e1a 121-122,124
+  s_8999687b2eba6a::t_4f1073b13b2c13 104-105
+  s_8999687b2eba6a::t_4ae981ea6b0e5c 123
+  s_8999687b2eba6a::t_924d22f8d5bbaf 125-126
+backend/app/src/main/java/com/yagubogu/game/exception/InvalidGameStateException.java
+  s_8999687b2eba6a::t_ba6bf87650636d 1-10
+backend/app/src/test/java/com/yagubogu/support/game/GameBuilder.java
+  s_8999687b2eba6a::t_79b4c33404de34 107-111
+backend/app/src/main/java/com/yagubogu/global/GlobalExceptionHandler.java
+  s_8999687b2eba6a::t_5038ec4a092552 170-179
+  s_8999687b2eba6a::t_464a23e634e5b5 5
+  s_8999687b2eba6a::t_97fd55932de57b 169
+backend/app/src/test/java/com/yagubogu/game/domain/GameTest.java
+  s_8999687b2eba6a::t_9553c5e8a1e973 3
+  s_8999687b2eba6a::t_b0bf5bd4c40a37 1-2,4-18,20-50
+  s_8999687b2eba6a::t_85406e2442fba4 19
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "8385ca9734ec7fd9defda7c11e1952231ffd7b09",
+  "prompts": {},
+  "humans": {
+    "h_3dcfd613e97439": {
+      "author": "Mint <audwl03071@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_8999687b2eba6a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "79e50b1d-7179-4acf-a243-6155d88110fe",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    }
+  }
+}
