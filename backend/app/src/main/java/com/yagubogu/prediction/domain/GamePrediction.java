@@ -1,6 +1,7 @@
 package com.yagubogu.prediction.domain;
 
 import com.yagubogu.game.domain.Game;
+import com.yagubogu.game.domain.GameResult;
 import com.yagubogu.game.domain.GameState;
 import com.yagubogu.global.domain.BaseEntity;
 import com.yagubogu.member.domain.Member;
@@ -64,17 +65,19 @@ public class GamePrediction extends BaseEntity {
             this.status = PredictionStatus.VOID;
             return;
         }
-        if (isWinningPick(game)) {
-            this.status = PredictionStatus.WON;
+
+        final GameResult result = game.getResult();
+        if (result == GameResult.DRAW) {
+            this.status = PredictionStatus.VOID;
             return;
         }
-        this.status = PredictionStatus.LOST;
+        this.status = matchesPick(result) ? PredictionStatus.WON : PredictionStatus.LOST;
     }
 
-    private boolean isWinningPick(final Game game) {
+    private boolean matchesPick(final GameResult result) {
         if (pick == PredictionPick.HOME) {
-            return game.isHomeWin();
+            return result == GameResult.HOME_WIN;
         }
-        return game.isAwayWin();
+        return result == GameResult.AWAY_WIN;
     }
 }

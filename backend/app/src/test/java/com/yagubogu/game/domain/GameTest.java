@@ -39,6 +39,36 @@ class GameTest {
         assertThat(game.getGameState()).isEqualTo(GameState.CANCELED);
     }
 
+    @DisplayName("홈팀 점수가 높으면 HOME_WIN을 반환한다.")
+    @Test
+    void getResult_returnsHomeWin_whenHomeScoreIsHigher() {
+        // when
+        Game game = newGame(5, 3, GameState.COMPLETED);
+
+        // then
+        assertThat(game.getResult()).isEqualTo(GameResult.HOME_WIN);
+    }
+
+    @DisplayName("원정팀 점수가 높으면 AWAY_WIN을 반환한다.")
+    @Test
+    void getResult_returnsAwayWin_whenAwayScoreIsHigher() {
+        // when
+        Game game = newGame(3, 5, GameState.COMPLETED);
+
+        // then
+        assertThat(game.getResult()).isEqualTo(GameResult.AWAY_WIN);
+    }
+
+    @DisplayName("점수가 같으면 DRAW를 반환한다.")
+    @Test
+    void getResult_returnsDraw_whenScoresAreEqual() {
+        // when
+        Game game = newGame(3, 3, GameState.COMPLETED);
+
+        // then
+        assertThat(game.getResult()).isEqualTo(GameResult.DRAW);
+    }
+
     private Game newGame(final Integer homeScore, final Integer awayScore, final GameState gameState) {
         return new Game(
                 null, null, null,
