@@ -5,13 +5,14 @@ import com.yagubogu.admin.dto.AdminCrawlingGamesResponse;
 import com.yagubogu.admin.service.AdminCrawlingService;
 import com.yagubogu.auth.annotation.RequireRole;
 import com.yagubogu.member.domain.Role;
+import com.yagubogu.prediction.service.PredictionSettlementService;
 import com.yagubogu.stat.service.LocationCheckInRankingSyncService;
 import com.yagubogu.stat.service.StatSyncService;
-import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +27,7 @@ public class AdminController {
     private final StatSyncService statSyncService;
     private final LocationCheckInRankingSyncService locationCheckInRankingSyncService;
     private final AdminCrawlingService adminCrawlingService;
+    private final PredictionSettlementService predictionSettlementService;
 
     @PostMapping("/victory-fairy-rankings/sync")
     public ResponseEntity<Void> syncVictoryRankings() {
@@ -53,5 +55,12 @@ public class AdminController {
         AdminCrawlingGamesResponse response = adminCrawlingService.crawlGames(request);
 
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/predictions/{gameCode}/resettlement")
+    public ResponseEntity<Void> resettlePrediction(@PathVariable final String gameCode) {
+        predictionSettlementService.resettleGame(gameCode);
+
+        return ResponseEntity.ok().build();
     }
 }

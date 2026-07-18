@@ -1,12 +1,16 @@
 package com.yagubogu.prediction.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import com.yagubogu.auth.config.AuthTestConfig;
 import com.yagubogu.game.domain.Game;
 import com.yagubogu.game.domain.GameState;
+import com.yagubogu.game.repository.GameRepository;
 import com.yagubogu.global.config.JpaAuditingConfig;
+import com.yagubogu.global.exception.NotFoundException;
+import com.yagubogu.global.exception.UnprocessableEntityException;
 import com.yagubogu.member.domain.Member;
 import com.yagubogu.prediction.domain.GamePrediction;
 import com.yagubogu.prediction.domain.PredictionPick;
@@ -42,6 +46,9 @@ class PredictionSettlementServiceUsingMysqlTest extends ServiceUsingMysqlTestBas
 
     @Autowired
     private GamePredictionRepository gamePredictionRepository;
+
+    @Autowired
+    private GameRepository gameRepository;
 
     @Autowired
     private TeamRepository teamRepository;
@@ -225,5 +232,69 @@ class PredictionSettlementServiceUsingMysqlTest extends ServiceUsingMysqlTestBas
             softAssertions.assertThat(twoWinsResult.score()).isEqualTo(2L);
             softAssertions.assertThat(oneWinResult.score()).isEqualTo(1L);
         });
+    }
+
+    @DisplayName("경기 결과가 정정되면 이미 WON/LOST로 확정된 예측도 gameCode로 재정산된다")
+    @Test
+    void resettleGame_recalculatesAlreadySettledPredictions() {
+        // given
+        Game game = gameFactory.save(b -> b.stadium(stadium)
+                .homeTeam(homeTeam).awayTeam(awayTeam)
+                .date(LocalDate.of(2025, 7, 21))
+                .gameCode("resettle-game")
+                .homeScore(5).awayScore(3)
+                .gameState(GameState.COMPLETED));
+
+        Member homePicker = memberFactory.save(b -> b.team(homeTeam));
+        Member awayPicker = memberFactory.save(b -> b.team(awayTeam));
+
+        GamePrediction homePrediction = gamePredictionRepository.save(
+                new GamePrediction(homePicker, game, PredictionPick.HOME));
+        GamePrediction awayPrediction = gamePredictionRepository.save(
+                new GamePrediction(awayPicker, game, PredictionPick.AWAY));
+
+        predictionSettlementService.settlePendingGames();
+
+        // when: 결과 정정 (홈 5:3 승 -> 원정 2:5 승으로 스코어보드 재수집)
+        game.update(
+                game.getStadium(), game.getHomeTeam(), game.getAwayTeam(),
+                game.getDate(), game.getStartAt(), game.getGameCode(),
+                2, 5, game.getHomeScoreBoard(), game.getAwayScoreBoard(),
+                game.getHomePitcher(), game.getAwayPitcher(), GameState.COMPLETED
+        );
+        gameRepository.save(game);
+
+        predictionSettlementService.resettleGame("resettle-game");
+
+        // then
+        GamePrediction actualHome = gamePredictionRepository.findById(homePrediction.getId()).orElseThrow();
+        GamePrediction actualAway = gamePredictionRepository.findById(awayPrediction.getId()).orElseThrow();
+
+        assertSoftly(softAssertions -> {
+            softAssertions.assertThat(actualHome.getStatus()).isEqualTo(PredictionStatus.LOST);
+            softAssertions.assertThat(actualAway.getStatus()).isEqualTo(PredictionStatus.WON);
+        });
+    }
+
+    @DisplayName("존재하지 않는 gameCode로 재정산하면 예외가 발생한다")
+    @Test
+    void resettleGame_throwsException_whenGameNotFound() {
+        assertThatThrownBy(() -> predictionSettlementService.resettleGame("not-exists"))
+                .isInstanceOf(NotFoundException.class);
+    }
+
+    @DisplayName("아직 종료되지 않은 경기를 재정산하면 예외가 발생한다")
+    @Test
+    void resettleGame_throwsException_whenGameNotFinalized() {
+        // given
+        gameFactory.save(b -> b.stadium(stadium)
+                .homeTeam(homeTeam).awayTeam(awayTeam)
+                .date(LocalDate.of(2025, 7, 21))
+                .gameCode("not-finalized-game")
+                .gameState(GameState.LIVE));
+
+        // when & then
+        assertThatThrownBy(() -> predictionSettlementService.resettleGame("not-finalized-game"))
+                .isInstanceOf(UnprocessableEntityException.class);
     }
 }
