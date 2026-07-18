@@ -16,6 +16,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -49,12 +50,12 @@ public class GamePrediction extends BaseEntity {
     public GamePrediction(final Member member, final Game game, final PredictionPick pick) {
         this.member = member;
         this.game = game;
-        this.pick = pick;
+        this.pick = Objects.requireNonNull(pick, "pick must not be null");
         this.status = PredictionStatus.SUBMITTED;
     }
 
     public void updatePick(final PredictionPick pick) {
-        this.pick = pick;
+        this.pick = Objects.requireNonNull(pick, "pick must not be null");
     }
 
     /**

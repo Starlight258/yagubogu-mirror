@@ -320,6 +320,64 @@ public class GamePredictionE2eTest extends E2eTestBase {
                 .statusCode(422);
     }
 
+    @DisplayName("예외: pick이 없으면 예측 제출 시 400을 반환한다")
+    @Test
+    void submitPrediction_missingPick() {
+        // given
+        Stadium stadium = stadiumRepository.findByShortName("사직구장").orElseThrow();
+        Team homeTeam = teamRepository.findByTeamCode("LT").orElseThrow();
+        Team awayTeam = teamRepository.findByTeamCode("HH").orElseThrow();
+        Game game = gameFactory.save(builder -> builder
+                .homeTeam(homeTeam)
+                .awayTeam(awayTeam)
+                .stadium(stadium)
+                .date(LocalDate.now().plusDays(1)));
+        Member member = memberFactory.save(b -> b.team(homeTeam));
+        String accessToken = authFactory.getAccessTokenByMemberId(member.getId(), Role.USER);
+
+        CreateGamePredictionRequest request = new CreateGamePredictionRequest(game.getId(), null);
+
+        // when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .body(request)
+                .when()
+                .post("/api/v1/predictions")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @DisplayName("예외: pick이 없으면 예측 수정 시 400을 반환한다")
+    @Test
+    void updatePrediction_missingPick() {
+        // given
+        Stadium stadium = stadiumRepository.findByShortName("사직구장").orElseThrow();
+        Team homeTeam = teamRepository.findByTeamCode("LT").orElseThrow();
+        Team awayTeam = teamRepository.findByTeamCode("HH").orElseThrow();
+        Game game = gameFactory.save(builder -> builder
+                .homeTeam(homeTeam)
+                .awayTeam(awayTeam)
+                .stadium(stadium)
+                .date(LocalDate.now().plusDays(1)));
+        Member member = memberFactory.save(b -> b.team(homeTeam));
+        String accessToken = authFactory.getAccessTokenByMemberId(member.getId(), Role.USER);
+
+        gamePredictionRepository.save(new GamePrediction(member, game, PredictionPick.HOME));
+
+        UpdateGamePredictionRequest updateRequest = new UpdateGamePredictionRequest(game.getId(), null);
+
+        // when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .body(updateRequest)
+                .when()
+                .put("/api/v1/predictions")
+                .then().log().all()
+                .statusCode(400);
+    }
+
     @DisplayName("예외: 존재하지 않는 경기를 예측하면 404를 반환한다")
     @Test
     void submitPrediction_notFoundGame() {
