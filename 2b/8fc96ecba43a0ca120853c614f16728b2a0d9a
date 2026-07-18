@@ -1,0 +1,40 @@
+backend/app/src/main/java/com/yagubogu/prediction/service/PredictionSettlementService.java
+  s_a5ed20c41bd095::t_22bb22a6d91840 1-39
+backend/app/src/main/java/com/yagubogu/prediction/domain/GamePrediction.java
+  s_dd7964ee9ddbac::t_4d965fac619738 4
+  s_a5ed20c41bd095::t_22bb22a6d91840 59
+  s_dd7964ee9ddbac::t_9726f760c055dd 58,60-76
+backend/app/src/test/java/com/yagubogu/prediction/service/PredictionSettlementServiceUsingMysqlTest.java
+  s_a5ed20c41bd095::t_22bb22a6d91840 1-155
+backend/app/src/main/java/com/yagubogu/prediction/schedule/PredictionSettlementScheduler.java
+  s_a5ed20c41bd095::t_22bb22a6d91840 1-25
+backend/app/src/main/java/com/yagubogu/game/domain/Game.java
+  s_dd7964ee9ddbac::t_00a75f34227122 143-150
+backend/app/src/main/java/com/yagubogu/prediction/repository/GamePredictionRepository.java
+  s_a5ed20c41bd095::t_22bb22a6d91840 27
+  s_dd7964ee9ddbac::t_cad6d23f531846 4,7-9,12-13,22-26,28-30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "2b8fc96ecba43a0ca120853c614f16728b2a0d9a",
+  "prompts": {},
+  "sessions": {
+    "s_a5ed20c41bd095": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f741a-d4d9-7a41-bf61-7ebdb395f094",
+        "model": "gpt-5.5"
+      },
+      "human_author": null
+    },
+    "s_dd7964ee9ddbac": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4a3281d4-b5bd-47f5-af1e-cc5063b0a226",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    }
+  }
+}
