@@ -9,6 +9,7 @@ backend/app/src/main/java/com/yagubogu/prediction/service/PredictionSettlementSe
 backend/app/src/test/java/com/yagubogu/prediction/service/PredictionSettlementServiceUsingMysqlTest.java
   s_dd7964ee9ddbac::t_ec9c0fecd42ddf 14,24
   s_dd7964ee9ddbac::t_72d65f2e7e06ba 157-188,190-191,193-206
+  s_a5ed20c41bd095::t_3b75f31ae24117 189,192
 ---
 {
   "schema_version": "authorship/3.0.0",
@@ -16,6 +17,14 @@ backend/app/src/test/java/com/yagubogu/prediction/service/PredictionSettlementSe
   "base_commit_sha": "65c72bb6336bd1bb47dbd813c51519a7af9ac128",
   "prompts": {},
   "sessions": {
+    "s_a5ed20c41bd095": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f741a-d4d9-7a41-bf61-7ebdb395f094",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    },
     "s_dd7964ee9ddbac": {
       "agent_id": {
         "tool": "claude",
