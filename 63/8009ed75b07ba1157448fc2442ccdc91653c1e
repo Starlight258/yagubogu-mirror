@@ -1,0 +1,19 @@
+backend/app/src/main/java/com/yagubogu/prediction/schedule/PredictionSettlementScheduler.java
+  s_a5ed20c41bd095::t_dec2ef0a1642e9 22-23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "638009ed75b07ba1157448fc2442ccdc91653c1e",
+  "prompts": {},
+  "sessions": {
+    "s_a5ed20c41bd095": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f741a-d4d9-7a41-bf61-7ebdb395f094",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    }
+  }
+}
