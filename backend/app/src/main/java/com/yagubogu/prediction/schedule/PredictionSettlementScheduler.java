@@ -19,7 +19,8 @@ public class PredictionSettlementScheduler {
             log.info("[PREDICTION] Weekly prediction settlement triggered by scheduler");
             predictionSettlementService.settlePendingGames();
         } catch (RuntimeException e) {
-            log.error("[{}]- {}", e.getClass().getSimpleName(), e.getMessage());
+            log.error("[PREDICTION] Weekly prediction settlement failed", e);
+            throw e;
         }
     }
 }
