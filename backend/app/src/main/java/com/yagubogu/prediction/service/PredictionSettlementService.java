@@ -17,14 +17,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class PredictionSettlementService {
 
-    private static final List<GameState> FINALIZED_GAME_STATES = List.of(GameState.COMPLETED, GameState.CANCELED);
-
     private final GamePredictionRepository gamePredictionRepository;
 
     @Transactional
     public void settlePendingGames() {
         List<Game> pendingGames = gamePredictionRepository.findPendingSettlementGames(
-                PredictionStatus.SUBMITTED, FINALIZED_GAME_STATES
+                PredictionStatus.SUBMITTED, GameState.finalizedStates()
         );
 
         for (Game game : pendingGames) {

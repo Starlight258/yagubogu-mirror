@@ -40,6 +40,10 @@ public enum GameState {
                 .orElse(LIVE);
     }
 
+    public static List<GameState> finalizedStates() {
+        return FINALIZED_GAME_STATES;
+    }
+
     public boolean canTransitionTo(GameState newState) {
         if (this.isFinalized()) {
             return false;
