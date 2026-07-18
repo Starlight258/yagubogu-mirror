@@ -1,6 +1,7 @@
 package yagubogu.crawling.game.scheduler;
 
 import com.yagubogu.game.exception.GameSyncException;
+import com.yagubogu.game.exception.InvalidGameStateException;
 import com.yagubogu.game.service.GameEtlService;
 import java.time.Clock;
 import java.time.LocalDate;
@@ -48,7 +49,7 @@ public class GameScheduler {
             adaptivePoller.initializeTodaySchedule(today);
             log.info("[DAILY_SCHEDULE] Successfully completed for {}", today);
 
-        } catch (GameSyncException e) {
+        } catch (GameSyncException | InvalidGameStateException e) {
             log.error("[DAILY_SCHEDULE] Failed for {}: {}", today, e.getMessage(), e);
         } catch (Exception e) {
             log.error("[DAILY_SCHEDULE] Unexpected error for {}: {}", today, e.getMessage(), e);
