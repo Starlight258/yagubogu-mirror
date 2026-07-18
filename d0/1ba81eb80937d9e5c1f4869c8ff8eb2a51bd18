@@ -1,0 +1,19 @@
+backend/app/src/main/java/com/yagubogu/game/scheduler/GameEtlScheduler.java
+  s_46ae295755028e::t_c79d303ecaf6b8 17,30,32-33,36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "d01ba81eb80937d9e5c1f4869c8ff8eb2a51bd18",
+  "prompts": {},
+  "sessions": {
+    "s_46ae295755028e": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f7525-b17d-7dc3-8bb0-43744c6cac33",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    }
+  }
+}
