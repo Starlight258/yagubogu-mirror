@@ -111,6 +111,28 @@ class PredictionSettlementServiceUsingMysqlTest extends ServiceUsingMysqlTestBas
         assertThat(actual.getStatus()).isEqualTo(PredictionStatus.VOID);
     }
 
+    @DisplayName("경기가 무승부로 종료되면 예측은 VOID로 확정된다")
+    @Test
+    void settlePendingGames_marksVoid_whenDraw() {
+        // given
+        Game game = gameFactory.save(b -> b.stadium(stadium)
+                .homeTeam(homeTeam).awayTeam(awayTeam)
+                .date(LocalDate.of(2025, 7, 21))
+                .homeScore(3).awayScore(3)
+                .gameState(GameState.COMPLETED));
+
+        Member member = memberFactory.save(b -> b.team(homeTeam));
+        GamePrediction prediction = gamePredictionRepository.save(
+                new GamePrediction(member, game, PredictionPick.HOME));
+
+        // when
+        predictionSettlementService.settlePendingGames();
+
+        // then
+        GamePrediction actual = gamePredictionRepository.findById(prediction.getId()).orElseThrow();
+        assertThat(actual.getStatus()).isEqualTo(PredictionStatus.VOID);
+    }
+
     @DisplayName("아직 종료되지 않은 경기의 예측은 확정하지 않는다")
     @Test
     void settlePendingGames_ignoresScheduledGames() {

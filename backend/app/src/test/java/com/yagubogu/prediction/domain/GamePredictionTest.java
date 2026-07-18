@@ -53,6 +53,20 @@ class GamePredictionTest {
         assertThat(prediction.getStatus()).isEqualTo(PredictionStatus.LOST);
     }
 
+    @DisplayName("원정팀 승리를 맞춘 예측은 WON으로 확정한다")
+    @Test
+    void settle_marksWon_whenAwayPickMatchesAwayWin() {
+        // given
+        Game game = newCompletedGame(3, 5);
+        GamePrediction prediction = new GamePrediction(null, game, PredictionPick.AWAY);
+
+        // when
+        prediction.settle(game);
+
+        // then
+        assertThat(prediction.getStatus()).isEqualTo(PredictionStatus.WON);
+    }
+
     @DisplayName("경기가 취소되면 예측을 VOID로 확정한다")
     @Test
     void settle_marksVoid_whenCanceled() {
