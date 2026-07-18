@@ -82,6 +82,17 @@ class GameTest {
         assertThat(game.getResult()).isEqualTo(GameResult.DRAW);
     }
 
+    @DisplayName("COMPLETED가 아닌 경기의 결과를 조회하면 예외가 발생한다.")
+    @Test
+    void getResult_throwsException_whenNotCompleted() {
+        // given
+        Game game = newGame(null, null, GameState.SCHEDULED);
+
+        // when & then
+        assertThatThrownBy(game::getResult)
+                .isInstanceOf(InvalidGameStateException.class);
+    }
+
     private Game newGame(final Integer homeScore, final Integer awayScore, final GameState gameState) {
         return new Game(
                 null, null, null,

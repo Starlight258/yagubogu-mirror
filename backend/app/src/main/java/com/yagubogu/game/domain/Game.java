@@ -146,6 +146,10 @@ public class Game {
     }
 
     public GameResult getResult() {
+        if (gameState != GameState.COMPLETED) {
+            throw new InvalidGameStateException(
+                    "Game result is only available for COMPLETED games: gameCode=" + gameCode);
+        }
         return GameResult.of(homeScore, awayScore);
     }
 }
