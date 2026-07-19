@@ -5,7 +5,7 @@ import com.yagubogu.admin.dto.AdminCrawlingGamesResponse;
 import com.yagubogu.admin.service.AdminCrawlingService;
 import com.yagubogu.auth.annotation.RequireRole;
 import com.yagubogu.member.domain.Role;
-import com.yagubogu.prediction.service.PredictionSettlementService;
+import com.yagubogu.prediction.service.PredictionResultService;
 import com.yagubogu.stat.service.LocationCheckInRankingSyncService;
 import com.yagubogu.stat.service.StatSyncService;
 import jakarta.validation.Valid;
@@ -27,7 +27,7 @@ public class AdminController {
     private final StatSyncService statSyncService;
     private final LocationCheckInRankingSyncService locationCheckInRankingSyncService;
     private final AdminCrawlingService adminCrawlingService;
-    private final PredictionSettlementService predictionSettlementService;
+    private final PredictionResultService predictionResultService;
 
     @PostMapping("/victory-fairy-rankings/sync")
     public ResponseEntity<Void> syncVictoryRankings() {
@@ -57,9 +57,9 @@ public class AdminController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/predictions/{gameCode}/resettlement")
-    public ResponseEntity<Void> resettlePrediction(@PathVariable final String gameCode) {
-        predictionSettlementService.resettleGame(gameCode);
+    @PostMapping("/predictions/{gameCode}/result-recalculation")
+    public ResponseEntity<Void> recalculatePredictionResults(@PathVariable final String gameCode) {
+        predictionResultService.recalculateGamePredictionResults(gameCode);
 
         return ResponseEntity.ok().build();
     }

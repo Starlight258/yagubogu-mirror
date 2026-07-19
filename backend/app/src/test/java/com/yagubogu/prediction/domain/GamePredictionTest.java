@@ -13,13 +13,13 @@ class GamePredictionTest {
 
     @DisplayName("무승부 경기는 예측을 VOID로 확정한다")
     @Test
-    void settle_marksVoid_whenDraw() {
+    void updateResult_marksVoid_whenDraw() {
         // given
         Game game = newCompletedGame(3, 3);
         GamePrediction prediction = new GamePrediction(null, game, PredictionPick.HOME);
 
         // when
-        prediction.settle(game);
+        prediction.updateResult(game);
 
         // then
         assertThat(prediction.getStatus()).isEqualTo(PredictionStatus.VOID);
@@ -27,13 +27,13 @@ class GamePredictionTest {
 
     @DisplayName("승리 팀을 맞춘 예측은 WON으로 확정한다")
     @Test
-    void settle_marksWon_whenPickMatchesWinner() {
+    void updateResult_marksWon_whenPickMatchesWinner() {
         // given
         Game game = newCompletedGame(5, 3);
         GamePrediction prediction = new GamePrediction(null, game, PredictionPick.HOME);
 
         // when
-        prediction.settle(game);
+        prediction.updateResult(game);
 
         // then
         assertThat(prediction.getStatus()).isEqualTo(PredictionStatus.WON);
@@ -41,13 +41,13 @@ class GamePredictionTest {
 
     @DisplayName("패배 팀을 고른 예측은 LOST로 확정한다")
     @Test
-    void settle_marksLost_whenPickMismatchesWinner() {
+    void updateResult_marksLost_whenPickMismatchesWinner() {
         // given
         Game game = newCompletedGame(5, 3);
         GamePrediction prediction = new GamePrediction(null, game, PredictionPick.AWAY);
 
         // when
-        prediction.settle(game);
+        prediction.updateResult(game);
 
         // then
         assertThat(prediction.getStatus()).isEqualTo(PredictionStatus.LOST);
@@ -55,13 +55,13 @@ class GamePredictionTest {
 
     @DisplayName("원정팀 승리를 맞춘 예측은 WON으로 확정한다")
     @Test
-    void settle_marksWon_whenAwayPickMatchesAwayWin() {
+    void updateResult_marksWon_whenAwayPickMatchesAwayWin() {
         // given
         Game game = newCompletedGame(3, 5);
         GamePrediction prediction = new GamePrediction(null, game, PredictionPick.AWAY);
 
         // when
-        prediction.settle(game);
+        prediction.updateResult(game);
 
         // then
         assertThat(prediction.getStatus()).isEqualTo(PredictionStatus.WON);
@@ -69,13 +69,13 @@ class GamePredictionTest {
 
     @DisplayName("경기가 취소되면 예측을 VOID로 확정한다")
     @Test
-    void settle_marksVoid_whenCanceled() {
+    void updateResult_marksVoid_whenCanceled() {
         // given
         Game game = newCanceledGame();
         GamePrediction prediction = new GamePrediction(null, game, PredictionPick.HOME);
 
         // when
-        prediction.settle(game);
+        prediction.updateResult(game);
 
         // then
         assertThat(prediction.getStatus()).isEqualTo(PredictionStatus.VOID);

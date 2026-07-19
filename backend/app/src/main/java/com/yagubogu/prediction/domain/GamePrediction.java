@@ -59,9 +59,9 @@ public class GamePrediction extends BaseEntity {
     }
 
     /**
-     * 경기 결과를 기준으로 예측을 정산해 WON, LOST, VOID 중 하나로 확정한다.
+     * 경기 결과를 반영해 예측 상태를 WON, LOST, VOID 중 하나로 갱신한다.
      */
-    public void settle(final Game game) {
+    public void updateResult(final Game game) {
         if (game.getGameState() == GameState.CANCELED) {
             this.status = PredictionStatus.VOID;
             return;

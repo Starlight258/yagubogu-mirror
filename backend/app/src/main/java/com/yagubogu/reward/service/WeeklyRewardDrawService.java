@@ -4,7 +4,7 @@ import com.yagubogu.global.exception.NotFoundException;
 import com.yagubogu.member.domain.Member;
 import com.yagubogu.member.repository.MemberRepository;
 import com.yagubogu.prediction.dto.WeeklyScoreParam;
-import com.yagubogu.prediction.service.PredictionSettlementService;
+import com.yagubogu.prediction.service.PredictionResultService;
 import com.yagubogu.reward.domain.GifticonIssuance;
 import com.yagubogu.reward.domain.WeeklyTopScore;
 import com.yagubogu.reward.repository.GifticonIssuanceRepository;
@@ -24,26 +24,26 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service
-public class RewardDrawService {
+public class WeeklyRewardDrawService {
 
     private static final int WINNER_COUNT = 3;
     private static final SecureRandom RANDOM = new SecureRandom();
 
     private final WeeklyTopScoreRepository weeklyTopScoreRepository;
     private final GifticonIssuanceRepository gifticonIssuanceRepository;
-    private final PredictionSettlementService predictionSettlementService;
+    private final PredictionResultService predictionResultService;
     private final MemberRepository memberRepository;
     private final Clock clock;
 
     @Transactional
-    public void drawWeeklyReward() {
+    public void drawWinners() {
         LocalDate weekStart = currentWeekStart();
         if (weeklyTopScoreRepository.existsByWeekStart(weekStart)) {
             return;
         }
 
         LocalDate weekEnd = weekStart.plusDays(6);
-        List<WeeklyScoreParam> weeklyScores = predictionSettlementService.findWeeklyScores(weekStart, weekEnd);
+        List<WeeklyScoreParam> weeklyScores = predictionResultService.findWeeklyScores(weekStart, weekEnd);
         if (weeklyScores.isEmpty()) {
             return;
         }

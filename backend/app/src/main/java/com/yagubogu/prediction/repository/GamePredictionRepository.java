@@ -27,7 +27,7 @@ public interface GamePredictionRepository extends JpaRepository<GamePrediction, 
 
     @Query("SELECT DISTINCT p.game FROM GamePrediction p "
             + "WHERE p.status = :status AND p.game.gameState IN :gameStates")
-    List<Game> findPendingSettlementGames(
+    List<Game> findFinalizedGamesWithPendingPredictions(
             @Param("status") PredictionStatus status,
             @Param("gameStates") Collection<GameState> gameStates
     );

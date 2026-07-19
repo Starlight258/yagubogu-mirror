@@ -33,10 +33,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 
 @Import({AuthTestConfig.class, JpaAuditingConfig.class})
-class PredictionSettlementServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
+class PredictionResultServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
 
     @Autowired
-    private PredictionSettlementService predictionSettlementService;
+    private PredictionResultService predictionResultService;
 
     @Autowired
     private MemberFactory memberFactory;
@@ -68,7 +68,7 @@ class PredictionSettlementServiceUsingMysqlTest extends ServiceUsingMysqlTestBas
 
     @DisplayName("경기가 종료되면 승리 예측은 WON, 패배 예측은 LOST로 확정된다")
     @Test
-    void settlePendingGames_marksWonAndLost() {
+    void finalizePendingPredictions_marksWonAndLost() {
         // given
         Game game = gameFactory.save(b -> b.stadium(stadium)
                 .homeTeam(homeTeam).awayTeam(awayTeam)
@@ -85,7 +85,7 @@ class PredictionSettlementServiceUsingMysqlTest extends ServiceUsingMysqlTestBas
                 new GamePrediction(awayPicker, game, PredictionPick.AWAY));
 
         // when
-        predictionSettlementService.settlePendingGames();
+        predictionResultService.finalizePendingPredictions();
 
         // then
         GamePrediction actualWon = gamePredictionRepository.findById(wonPrediction.getId()).orElseThrow();
@@ -99,7 +99,7 @@ class PredictionSettlementServiceUsingMysqlTest extends ServiceUsingMysqlTestBas
 
     @DisplayName("경기가 취소되면 예측은 VOID로 확정된다")
     @Test
-    void settlePendingGames_marksVoid() {
+    void finalizePendingPredictions_marksVoid() {
         // given
         Game game = gameFactory.save(b -> b.stadium(stadium)
                 .homeTeam(homeTeam).awayTeam(awayTeam)
@@ -111,7 +111,7 @@ class PredictionSettlementServiceUsingMysqlTest extends ServiceUsingMysqlTestBas
                 new GamePrediction(member, game, PredictionPick.HOME));
 
         // when
-        predictionSettlementService.settlePendingGames();
+        predictionResultService.finalizePendingPredictions();
 
         // then
         GamePrediction actual = gamePredictionRepository.findById(prediction.getId()).orElseThrow();
@@ -120,7 +120,7 @@ class PredictionSettlementServiceUsingMysqlTest extends ServiceUsingMysqlTestBas
 
     @DisplayName("경기가 무승부로 종료되면 예측은 VOID로 확정된다")
     @Test
-    void settlePendingGames_marksVoid_whenDraw() {
+    void finalizePendingPredictions_marksVoid_whenDraw() {
         // given
         Game game = gameFactory.save(b -> b.stadium(stadium)
                 .homeTeam(homeTeam).awayTeam(awayTeam)
@@ -133,7 +133,7 @@ class PredictionSettlementServiceUsingMysqlTest extends ServiceUsingMysqlTestBas
                 new GamePrediction(member, game, PredictionPick.HOME));
 
         // when
-        predictionSettlementService.settlePendingGames();
+        predictionResultService.finalizePendingPredictions();
 
         // then
         GamePrediction actual = gamePredictionRepository.findById(prediction.getId()).orElseThrow();
@@ -142,7 +142,7 @@ class PredictionSettlementServiceUsingMysqlTest extends ServiceUsingMysqlTestBas
 
     @DisplayName("아직 종료되지 않은 경기의 예측은 확정하지 않는다")
     @Test
-    void settlePendingGames_ignoresScheduledGames() {
+    void finalizePendingPredictions_ignoresScheduledGames() {
         // given
         Game game = gameFactory.save(b -> b.stadium(stadium)
                 .homeTeam(homeTeam).awayTeam(awayTeam)
@@ -154,7 +154,7 @@ class PredictionSettlementServiceUsingMysqlTest extends ServiceUsingMysqlTestBas
                 new GamePrediction(member, game, PredictionPick.HOME));
 
         // when
-        predictionSettlementService.settlePendingGames();
+        predictionResultService.finalizePendingPredictions();
 
         // then
         GamePrediction actual = gamePredictionRepository.findById(prediction.getId()).orElseThrow();
@@ -163,7 +163,7 @@ class PredictionSettlementServiceUsingMysqlTest extends ServiceUsingMysqlTestBas
 
     @DisplayName("두 번 실행해도 확정 결과는 그대로 유지된다")
     @Test
-    void settlePendingGames_idempotent() {
+    void finalizePendingPredictions_idempotent() {
         // given
         Game game = gameFactory.save(b -> b.stadium(stadium)
                 .homeTeam(homeTeam).awayTeam(awayTeam)
@@ -176,8 +176,8 @@ class PredictionSettlementServiceUsingMysqlTest extends ServiceUsingMysqlTestBas
                 new GamePrediction(member, game, PredictionPick.HOME));
 
         // when
-        predictionSettlementService.settlePendingGames();
-        predictionSettlementService.settlePendingGames();
+        predictionResultService.finalizePendingPredictions();
+        predictionResultService.finalizePendingPredictions();
 
         // then
         GamePrediction actual = gamePredictionRepository.findById(prediction.getId()).orElseThrow();
@@ -215,10 +215,10 @@ class PredictionSettlementServiceUsingMysqlTest extends ServiceUsingMysqlTestBas
         gamePredictionRepository.save(new GamePrediction(oneWin, game1, PredictionPick.HOME));
         gamePredictionRepository.save(new GamePrediction(oneWin, gameOutsideWeek, PredictionPick.HOME));
 
-        predictionSettlementService.settlePendingGames();
+        predictionResultService.finalizePendingPredictions();
 
         // when
-        List<WeeklyScoreParam> results = predictionSettlementService.findWeeklyScores(monday, sunday);
+        List<WeeklyScoreParam> results = predictionResultService.findWeeklyScores(monday, sunday);
 
         // then
         WeeklyScoreParam twoWinsResult = results.stream()
@@ -234,14 +234,14 @@ class PredictionSettlementServiceUsingMysqlTest extends ServiceUsingMysqlTestBas
         });
     }
 
-    @DisplayName("경기 결과가 정정되면 이미 WON/LOST로 확정된 예측도 gameCode로 재정산된다")
+    @DisplayName("경기 결과가 정정되면 이미 WON/LOST로 확정된 예측 결과도 다시 계산한다")
     @Test
-    void resettleGame_recalculatesAlreadySettledPredictions() {
+    void recalculateGamePredictionResults_recalculatesFinalizedPredictions() {
         // given
         Game game = gameFactory.save(b -> b.stadium(stadium)
                 .homeTeam(homeTeam).awayTeam(awayTeam)
                 .date(LocalDate.of(2025, 7, 21))
-                .gameCode("resettle-game")
+                .gameCode("recalculate-game")
                 .homeScore(5).awayScore(3)
                 .gameState(GameState.COMPLETED));
 
@@ -253,7 +253,7 @@ class PredictionSettlementServiceUsingMysqlTest extends ServiceUsingMysqlTestBas
         GamePrediction awayPrediction = gamePredictionRepository.save(
                 new GamePrediction(awayPicker, game, PredictionPick.AWAY));
 
-        predictionSettlementService.settlePendingGames();
+        predictionResultService.finalizePendingPredictions();
 
         // when: 결과 정정 (홈 5:3 승 -> 원정 2:5 승으로 스코어보드 재수집)
         game.update(
@@ -264,7 +264,7 @@ class PredictionSettlementServiceUsingMysqlTest extends ServiceUsingMysqlTestBas
         );
         gameRepository.save(game);
 
-        predictionSettlementService.resettleGame("resettle-game");
+        predictionResultService.recalculateGamePredictionResults("recalculate-game");
 
         // then
         GamePrediction actualHome = gamePredictionRepository.findById(homePrediction.getId()).orElseThrow();
@@ -276,16 +276,16 @@ class PredictionSettlementServiceUsingMysqlTest extends ServiceUsingMysqlTestBas
         });
     }
 
-    @DisplayName("존재하지 않는 gameCode로 재정산하면 예외가 발생한다")
+    @DisplayName("존재하지 않는 gameCode의 예측 결과를 다시 계산하면 예외가 발생한다")
     @Test
-    void resettleGame_throwsException_whenGameNotFound() {
-        assertThatThrownBy(() -> predictionSettlementService.resettleGame("not-exists"))
+    void recalculateGamePredictionResults_throwsException_whenGameNotFound() {
+        assertThatThrownBy(() -> predictionResultService.recalculateGamePredictionResults("not-exists"))
                 .isInstanceOf(NotFoundException.class);
     }
 
-    @DisplayName("아직 종료되지 않은 경기를 재정산하면 예외가 발생한다")
+    @DisplayName("아직 종료되지 않은 경기의 예측 결과를 다시 계산하면 예외가 발생한다")
     @Test
-    void resettleGame_throwsException_whenGameNotFinalized() {
+    void recalculateGamePredictionResults_throwsException_whenGameNotFinalized() {
         // given
         gameFactory.save(b -> b.stadium(stadium)
                 .homeTeam(homeTeam).awayTeam(awayTeam)
@@ -294,7 +294,7 @@ class PredictionSettlementServiceUsingMysqlTest extends ServiceUsingMysqlTestBas
                 .gameState(GameState.LIVE));
 
         // when & then
-        assertThatThrownBy(() -> predictionSettlementService.resettleGame("not-finalized-game"))
+        assertThatThrownBy(() -> predictionResultService.recalculateGamePredictionResults("not-finalized-game"))
                 .isInstanceOf(UnprocessableEntityException.class);
     }
 }
