@@ -1,0 +1,40 @@
+backend/app/src/test/java/com/yagubogu/prediction/service/GamePredictionConcurrencyTest.java
+  s_7299accccc56d1::t_c7a7d7f7dad850 1-15,17-75,77-93
+  s_7299accccc56d1::t_4b7c46fbab4825 16
+  s_7299accccc56d1::t_1aa18a1e1e5e68 76
+backend/app/src/test/java/com/yagubogu/prediction/service/GamePredictionCloseBoundaryConcurrencyTest.java
+  s_7299accccc56d1::t_d2c57e26e6c16b 1-37,40-155,157-160
+  s_15bcacd3ddd575::t_6818c9657ea231 38-39
+  s_7299accccc56d1::t_e35a69dd14e900 156
+backend/app/src/test/java/com/yagubogu/support/concurrency/ConcurrencyTestRunner.java
+  s_7299accccc56d1::t_e93560344dab27 1-51
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "0bd725c483bc6137bb6c10de80bfcda64069e792",
+  "prompts": {},
+  "humans": {
+    "h_3dcfd613e97439": {
+      "author": "Mint <audwl03071@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_15bcacd3ddd575": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f748b-ca5d-76a0-b54f-9e2d5c7cb37f",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    },
+    "s_7299accccc56d1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "66ab1141-335e-4e92-a959-03b9421a3ecc",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    }
+  }
+}

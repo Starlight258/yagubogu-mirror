@@ -1,0 +1,36 @@
+backend/app/src/main/java/com/yagubogu/outbox/schedule/OutboxEventProcessor.java
+  s_15bcacd3ddd575::t_1093e1e34901cc 9,25,34,42,78
+backend/app/src/test/java/com/yagubogu/outbox/schedule/OutboxEventProcessorTest.java
+  s_15bcacd3ddd575::t_1093e1e34901cc 18,47,59,77,95,106-109,126,148
+  s_15bcacd3ddd575::t_c8b2656cad8de9 66,98,100
+  s_6588fb3d8e9ab3::t_300b58ca2eb771 46,48,70-71,93-94,96-97,99,101-105
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "0e86be1ff6d2dc6af7714ef0cf44c8dee4497bd8",
+  "prompts": {},
+  "humans": {
+    "h_3dcfd613e97439": {
+      "author": "Mint <audwl03071@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_15bcacd3ddd575": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f748b-ca5d-76a0-b54f-9e2d5c7cb37f",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    },
+    "s_6588fb3d8e9ab3": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "8808b768-4e8c-49aa-85bc-8631f2145785",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    }
+  }
+}

@@ -1,0 +1,49 @@
+backend/app/src/main/java/com/yagubogu/reward/service/WeeklyRewardDrawService.java
+  s_15bcacd3ddd575::t_c8b2656cad8de9 58,65,79
+  s_15bcacd3ddd575::t_1093e1e34901cc 3,5,8,10,13,41,46,50-57,59-64,66-78,80-86,88,128-141
+backend/app/src/main/java/com/yagubogu/reward/schedule/WeeklyRewardDrawScheduler.java
+  s_15bcacd3ddd575::t_c8b2656cad8de9 17-18
+  s_15bcacd3ddd575::t_1093e1e34901cc 16,19-21
+backend/app/src/test/java/com/yagubogu/reward/service/WeeklyRewardDrawServiceUsingMysqlTest.java
+  s_15bcacd3ddd575::t_1093e1e34901cc 4,11-12,40,83,215-219,222-229,231-233,235-240,242-246,249-256,258-283,285-295
+  s_15bcacd3ddd575::t_c8b2656cad8de9 214,220-221,230,234,241,247-248,257,284
+  s_15bcacd3ddd575::t_674368744ecfa3 84
+  s_15bcacd3ddd575::t_86bfff76b21f5d 296
+backend/app/src/main/java/com/yagubogu/prediction/repository/GamePredictionRepository.java
+  s_6588fb3d8e9ab3::t_5d19b2e8254c82 28-29
+backend/app/src/main/java/com/yagubogu/admin/controller/AdminController.java
+  s_6588fb3d8e9ab3::t_6a135c8f9a4c70 69-70
+  s_15bcacd3ddd575::t_b0e2218bb69e8f 71
+  s_6588fb3d8e9ab3::t_0fefeebdcfdd92 20
+  s_15bcacd3ddd575::t_1093e1e34901cc 9,33,72
+  s_15bcacd3ddd575::t_de516fe671aaac 73-75
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "7c6c550ae6664a2f7742a1416ee5ab2b3ab4a23a",
+  "prompts": {},
+  "humans": {
+    "h_3dcfd613e97439": {
+      "author": "Mint <audwl03071@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_15bcacd3ddd575": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f748b-ca5d-76a0-b54f-9e2d5c7cb37f",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    },
+    "s_6588fb3d8e9ab3": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "8808b768-4e8c-49aa-85bc-8631f2145785",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    }
+  }
+}

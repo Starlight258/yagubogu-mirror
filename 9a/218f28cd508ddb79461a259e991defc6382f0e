@@ -1,0 +1,63 @@
+backend/app/src/main/java/com/yagubogu/reward/service/RewardDrawService.java
+  s_7299accccc56d1::t_cb709d0952cfcc 1-8,10,13-18,20-29,31,33-40,42-54,56,58-62,75,82,88-89
+  s_7299accccc56d1::t_17aaf1ff5f3300 9,11,32,41,76,80
+  s_7299accccc56d1::t_2c3e3270d760c5 19
+  s_7299accccc56d1::t_16afdb1df9c055 55,63-71
+  s_7299accccc56d1::t_c704f589ff16ca 30
+  s_7299accccc56d1::t_d0ddb0bfd59ace 78,83-87
+  h_3dcfd613e97439 72-73
+  s_7299accccc56d1::t_5e7c9636f33d80 57,74,77,79,81
+  s_7299accccc56d1::t_784878ded50520 12
+backend/app/src/main/java/com/yagubogu/reward/domain/WeeklyTopScore.java
+  h_3dcfd613e97439 17
+  s_7299accccc56d1::t_e69a8406ddc732 33,38
+  s_7299accccc56d1::t_40b58d1d31fdba 1-16,18-32,34-37,39-43
+backend/app/src/test/java/com/yagubogu/support/base/ServiceUsingMysqlTestBase.java
+  s_7299accccc56d1::t_ecab88b179461e 60
+  s_7299accccc56d1::t_4a270d6a4c3c19 61
+backend/app/src/main/java/com/yagubogu/reward/domain/GifticonIssuanceStatus.java
+  s_7299accccc56d1::t_dfbb29f10da186 1-9
+backend/app/src/test/java/com/yagubogu/reward/service/RewardDrawServiceUsingMysqlTest.java
+  s_7299accccc56d1::t_f6d3eb7b16dc4c 138-140,142-155,157-159,161-170,173-176
+  h_3dcfd613e97439 141
+  s_7299accccc56d1::t_887187ca2b40dc 30-31
+  s_7299accccc56d1::t_bb60294a3d5ec9 17,19,48,94-95,98,126-127,130,156,160,171-172,190-191,194-195,205-206
+  s_7299accccc56d1::t_8e720c1839556e 1-16,18,20-29,32-47,49-93,96-97,99-125,128-129,131-137,177-189,192-193,196-204,207-227
+backend/app/src/main/resources/db/migration/mysql/V20__create_weekly_top_score_and_gifticon_issuances.sql
+  h_3dcfd613e97439 15,17-18
+  s_7299accccc56d1::t_c8d6d8668b2677 1-14,16,19-27
+backend/app/src/main/java/com/yagubogu/reward/repository/WeeklyTopScoreRepository.java
+  s_7299accccc56d1::t_34ada8ebcf5dfe 1-15
+backend/app/src/main/java/com/yagubogu/reward/schedule/RewardDrawScheduler.java
+  s_7299accccc56d1::t_1233b0640e4807 1-26
+backend/app/src/main/java/com/yagubogu/reward/domain/GifticonIssuance.java
+  h_3dcfd613e97439 21
+  s_7299accccc56d1::t_f12a0f864cb8e0 20,22
+  s_7299accccc56d1::t_45c6b903878f68 55
+  s_7299accccc56d1::t_c9057b4d8233eb 34-35,54,56
+  s_7299accccc56d1::t_b01c3fc390e811 1-19,23-33,36-53,57-63
+backend/app/src/main/java/com/yagubogu/reward/repository/GifticonIssuanceRepository.java
+  s_7299accccc56d1::t_9cab466ac4ae63 4,12
+  s_7299accccc56d1::t_6ec6856c6e8eb0 1-3,5-11,13
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "9a218f28cd508ddb79461a259e991defc6382f0e",
+  "prompts": {},
+  "humans": {
+    "h_3dcfd613e97439": {
+      "author": "Mint <audwl03071@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_7299accccc56d1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "66ab1141-335e-4e92-a959-03b9421a3ecc",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    }
+  }
+}

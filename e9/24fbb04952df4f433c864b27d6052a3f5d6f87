@@ -1,0 +1,33 @@
+backend/app/src/main/java/com/yagubogu/prediction/service/PredictionSettlementService.java
+  s_7299accccc56d1::t_14a69a8b39f875 5-7,24,37-43,45-48,56-63
+  s_7299accccc56d1::t_68d68d830382b8 64
+  s_7299accccc56d1::t_bfae216421abfb 44,53-55
+backend/app/src/test/java/com/yagubogu/prediction/service/PredictionSettlementServiceUsingMysqlTest.java
+  s_7299accccc56d1::t_8adbb2fb9fd691 4,10,12-13,50-51
+  s_7299accccc56d1::t_fda7256666d02c 52
+  s_7299accccc56d1::t_086a215be69440 236-299
+backend/app/src/main/java/com/yagubogu/admin/controller/AdminController.java
+  s_7299accccc56d1::t_3ce61dbe67a60d 59-65
+  s_7299accccc56d1::t_fbcf3be1b9fcb7 8,15,30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "e924fbb04952df4f433c864b27d6052a3f5d6f87",
+  "prompts": {},
+  "humans": {
+    "h_3dcfd613e97439": {
+      "author": "Mint <audwl03071@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_7299accccc56d1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "66ab1141-335e-4e92-a959-03b9421a3ecc",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    }
+  }
+}
