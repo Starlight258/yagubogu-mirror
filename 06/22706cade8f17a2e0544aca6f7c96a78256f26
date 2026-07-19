@@ -1,0 +1,46 @@
+backend/app/src/main/java/com/yagubogu/prediction/schedule/PredictionResultScheduler.java
+  s_15bcacd3ddd575::t_1093e1e34901cc 3,12,14,17,19-20,22
+backend/app/src/main/java/com/yagubogu/reward/service/WeeklyRewardDrawService.java
+  s_15bcacd3ddd575::t_1093e1e34901cc 7,27,34,39,46
+backend/app/src/test/java/com/yagubogu/reward/service/WeeklyRewardDrawServiceUsingMysqlTest.java
+  s_15bcacd3ddd575::t_1093e1e34901cc 14,39,42,45,84,91,108,120,123,140,152,155,159,179,186-187,200,202,225
+  s_15bcacd3ddd575::t_c8b2656cad8de9 88,183,209
+backend/app/src/main/java/com/yagubogu/prediction/domain/GamePrediction.java
+  s_15bcacd3ddd575::t_b0e2218bb69e8f 62,64
+backend/app/src/main/java/com/yagubogu/reward/schedule/WeeklyRewardDrawScheduler.java
+  s_15bcacd3ddd575::t_1093e1e34901cc 3,12,14,17,20
+backend/app/src/test/java/com/yagubogu/prediction/service/PredictionResultServiceUsingMysqlTest.java
+  s_15bcacd3ddd575::t_1093e1e34901cc 36,39,71,88,102,114,123,136,145,157,166,179-180,218,221,239,256,281-282,288,297
+  s_15bcacd3ddd575::t_c8b2656cad8de9 237,244,267,279,286
+backend/app/src/main/java/com/yagubogu/admin/controller/AdminController.java
+  s_15bcacd3ddd575::t_2eb42087f780b4 60
+  s_15bcacd3ddd575::t_1093e1e34901cc 8,30,61-62
+backend/app/src/main/java/com/yagubogu/prediction/repository/GamePredictionRepository.java
+  s_15bcacd3ddd575::t_1093e1e34901cc 30
+backend/app/src/main/java/com/yagubogu/prediction/service/PredictionResultService.java
+  s_15bcacd3ddd575::t_b0e2218bb69e8f 68
+  s_15bcacd3ddd575::t_1093e1e34901cc 21,27-28,33,39-40,43,46,65
+backend/app/src/test/java/com/yagubogu/prediction/domain/GamePredictionTest.java
+  s_15bcacd3ddd575::t_b0e2218bb69e8f 16,22,30,36,44,50,58,64,72,78
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "0622706cade8f17a2e0544aca6f7c96a78256f26",
+  "prompts": {},
+  "humans": {
+    "h_3dcfd613e97439": {
+      "author": "Mint <audwl03071@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_15bcacd3ddd575": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f748b-ca5d-76a0-b54f-9e2d5c7cb37f",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    }
+  }
+}
