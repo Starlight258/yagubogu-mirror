@@ -5,6 +5,7 @@ import com.yagubogu.game.domain.GameState;
 import com.yagubogu.member.domain.Member;
 import com.yagubogu.prediction.domain.GamePrediction;
 import com.yagubogu.prediction.domain.PredictionStatus;
+import com.yagubogu.prediction.dto.GameWithPredictionCountsParam;
 import com.yagubogu.prediction.dto.WeeklyScoreParam;
 import java.time.LocalDate;
 import java.util.Collection;
@@ -40,4 +41,18 @@ public interface GamePredictionRepository extends JpaRepository<GamePrediction, 
             @Param("weekStart") LocalDate weekStart,
             @Param("weekEnd") LocalDate weekEnd
     );
+
+    @Query("""
+            SELECT new com.yagubogu.prediction.dto.GameWithPredictionCountsParam(
+                g,
+                COUNT(p.id),
+                SUM(CASE WHEN p.pick = com.yagubogu.prediction.domain.PredictionPick.HOME THEN 1L ELSE 0L END),
+                SUM(CASE WHEN p.pick = com.yagubogu.prediction.domain.PredictionPick.AWAY THEN 1L ELSE 0L END)
+            )
+            FROM Game g
+            LEFT JOIN GamePrediction p ON p.game = g
+            WHERE g.date = :date
+            GROUP BY g
+            """)
+    List<GameWithPredictionCountsParam> findGamesWithPredictionCountsByDate(@Param("date") LocalDate date);
 }
