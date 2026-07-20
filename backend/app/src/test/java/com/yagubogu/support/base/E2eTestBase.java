@@ -57,6 +57,8 @@ public abstract class E2eTestBase {
             em.createNativeQuery("SET FOREIGN_KEY_CHECKS = 0").executeUpdate();
 
             // Keep lookup tables (teams, stadiums) seeded by Flyway
+            em.createNativeQuery("TRUNCATE TABLE gifticon_issuances").executeUpdate();
+            em.createNativeQuery("TRUNCATE TABLE weekly_top_scores").executeUpdate();
             em.createNativeQuery("TRUNCATE TABLE game_predictions").executeUpdate();
             em.createNativeQuery("TRUNCATE TABLE members").executeUpdate();
             em.createNativeQuery("TRUNCATE TABLE games").executeUpdate();
