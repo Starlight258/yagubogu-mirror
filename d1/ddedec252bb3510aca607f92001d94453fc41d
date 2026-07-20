@@ -1,0 +1,23 @@
+backend/app/src/test/java/com/yagubogu/support/concurrency/ConcurrencyTestRunner.java
+  s_ea3b23cfa1365b::t_2390510d8265dc 3-4,7,10,17-18,32-39,45,47-61,63,68-70,72,74-91
+  s_ea3b23cfa1365b::t_97aa0cf9c6f0ed 62,64-67
+backend/app/src/test/java/com/yagubogu/support/concurrency/ConcurrencyTestRunnerTest.java
+  s_ea3b23cfa1365b::t_97aa0cf9c6f0ed 9,33,36,45,53
+  s_ea3b23cfa1365b::t_2390510d8265dc 1-8,10-32,34-35,37-44,46-52,54-55
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "d1ddedec252bb3510aca607f92001d94453fc41d",
+  "prompts": {},
+  "sessions": {
+    "s_ea3b23cfa1365b": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f7e74-f1cc-7613-adfd-5f4e2b2f2715",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    }
+  }
+}
