@@ -18,6 +18,7 @@ import com.yagubogu.support.game.GameFactory;
 import com.yagubogu.support.member.MemberFactory;
 import com.yagubogu.team.domain.Team;
 import com.yagubogu.team.repository.TeamRepository;
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,11 +48,16 @@ class GamePredictionServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
     @Autowired
     private StadiumRepository stadiumRepository;
 
+    @Autowired
+    private Clock clock;
+
     private Team homeTeam, awayTeam;
     private Stadium stadium;
+    private LocalDate today;
 
     @BeforeEach
     void setUp() {
+        today = LocalDate.now(clock);
         homeTeam = teamRepository.findByTeamCode("HT").orElseThrow();
         awayTeam = teamRepository.findByTeamCode("LT").orElseThrow();
         stadium = stadiumRepository.findByShortName("챔피언스필드").orElseThrow();
@@ -63,7 +69,7 @@ class GamePredictionServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
         // given
         Game game = gameFactory.save(b -> b.stadium(stadium)
                 .homeTeam(homeTeam).awayTeam(awayTeam)
-                .date(LocalDate.now()));
+                .date(today));
 
         Member homePicker1 = memberFactory.save(b -> b.team(homeTeam));
         Member homePicker2 = memberFactory.save(b -> b.team(homeTeam));
@@ -95,7 +101,7 @@ class GamePredictionServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
         // given
         Game game = gameFactory.save(b -> b.stadium(stadium)
                 .homeTeam(homeTeam).awayTeam(awayTeam)
-                .date(LocalDate.now()));
+                .date(today));
 
         // when
         List<GameWithPredictionRateParam> results = gamePredictionService.buildPredictionEventData();
@@ -117,7 +123,7 @@ class GamePredictionServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
         // given
         Game game = gameFactory.save(b -> b.stadium(stadium)
                 .homeTeam(homeTeam).awayTeam(awayTeam)
-                .date(LocalDate.now().minusDays(1)));
+                .date(today.minusDays(1)));
 
         // when
         List<GameWithPredictionRateParam> results = gamePredictionService.buildPredictionEventData();
