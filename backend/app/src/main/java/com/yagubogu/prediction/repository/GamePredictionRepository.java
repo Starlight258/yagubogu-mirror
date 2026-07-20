@@ -25,6 +25,8 @@ public interface GamePredictionRepository extends JpaRepository<GamePrediction, 
 
     List<GamePrediction> findAllByGame(Game game);
 
+    boolean existsByStatusAndGame_DateBetween(PredictionStatus status, LocalDate start, LocalDate end);
+
     @Query("SELECT DISTINCT p.game FROM GamePrediction p "
             + "WHERE p.status = :status AND p.game.gameState IN :gameStates")
     List<Game> findFinalizedGamesWithUngradedPredictions(

@@ -1,12 +1,15 @@
 package com.yagubogu.reward.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import com.yagubogu.auth.config.AuthTestConfig;
 import com.yagubogu.game.domain.Game;
 import com.yagubogu.game.domain.GameState;
 import com.yagubogu.global.config.JpaAuditingConfig;
+import com.yagubogu.global.exception.ConflictException;
+import com.yagubogu.global.exception.UnprocessableEntityException;
 import com.yagubogu.member.domain.Member;
 import com.yagubogu.prediction.domain.GamePrediction;
 import com.yagubogu.prediction.domain.PredictionPick;
@@ -67,7 +70,7 @@ class WeeklyRewardDrawServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
 
     private Team homeTeam, awayTeam;
     private Stadium stadium;
-    private LocalDate weekStart;
+    private LocalDate monday;
 
     @BeforeEach
     void setUp() {
@@ -76,7 +79,8 @@ class WeeklyRewardDrawServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
         stadium = stadiumRepository.findByShortName("챔피언스필드").orElseThrow();
 
         LocalDate today = LocalDate.now();
-        weekStart = today.minusDays(today.getDayOfWeek().getValue() - 1L);
+        LocalDate mostRecentSunday = today.minusDays(today.getDayOfWeek().getValue() % 7);
+        monday = mostRecentSunday.minusDays(6);
     }
 
     @DisplayName("이번 주 최고 점수 달성자 중 3명을 추첨해 READY 상태로 발급한다")
@@ -85,16 +89,17 @@ class WeeklyRewardDrawServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
         // given: twoWins가 최고점(2), oneWin은 1점
         Member twoWins = memberFactory.save(b -> b.team(homeTeam));
         Member oneWin = memberFactory.save(b -> b.team(homeTeam));
-        finalizeTwoWinsAndOneWin(twoWins, oneWin);
+        saveResolvedPredictions(twoWins, oneWin);
 
         // when
-        weeklyRewardDrawService.drawWinners();
+        WeeklyRewardDrawResult result = weeklyRewardDrawService.drawWinnersForLastCompletedWeek();
 
         // then
-        WeeklyTopScore weeklyTopScore = weeklyTopScoreRepository.findByWeekStart(weekStart).orElseThrow();
+        WeeklyTopScore weeklyTopScore = weeklyTopScoreRepository.findByWeekStart(monday).orElseThrow();
         List<GifticonIssuance> issuances = gifticonIssuanceRepository.findAllByWeeklyTopScore(weeklyTopScore);
 
         assertSoftly(softAssertions -> {
+            softAssertions.assertThat(result).isEqualTo(WeeklyRewardDrawResult.DRAWN);
             softAssertions.assertThat(weeklyTopScore.getTopScore()).isEqualTo(2);
             softAssertions.assertThat(issuances).hasSize(1);
             softAssertions.assertThat(issuances.get(0).getMember().getId()).isEqualTo(twoWins.getId());
@@ -109,7 +114,7 @@ class WeeklyRewardDrawServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
         // given: 4명 모두 1승씩(동점 최고점)
         Game game = gameFactory.save(b -> b.stadium(stadium)
                 .homeTeam(homeTeam).awayTeam(awayTeam)
-                .date(weekStart)
+                .date(monday)
                 .homeScore(5).awayScore(3)
                 .gameState(GameState.COMPLETED));
 
@@ -120,10 +125,10 @@ class WeeklyRewardDrawServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
         predictionResultService.reconcileUngradedPredictions();
 
         // when
-        weeklyRewardDrawService.drawWinners();
+        weeklyRewardDrawService.drawWinnersForLastCompletedWeek();
 
         // then
-        WeeklyTopScore weeklyTopScore = weeklyTopScoreRepository.findByWeekStart(weekStart).orElseThrow();
+        WeeklyTopScore weeklyTopScore = weeklyTopScoreRepository.findByWeekStart(monday).orElseThrow();
         List<GifticonIssuance> issuances = gifticonIssuanceRepository.findAllByWeeklyTopScore(weeklyTopScore);
 
         assertSoftly(softAssertions -> {
@@ -141,7 +146,7 @@ class WeeklyRewardDrawServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
         // given: 5명 모두 1승씩
         Game game = gameFactory.save(b -> b.stadium(stadium)
                 .homeTeam(homeTeam).awayTeam(awayTeam)
-                .date(weekStart)
+                .date(monday)
                 .homeScore(5).awayScore(3)
                 .gameState(GameState.COMPLETED));
 
@@ -152,12 +157,12 @@ class WeeklyRewardDrawServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
         predictionResultService.reconcileUngradedPredictions();
 
         // when
-        weeklyRewardDrawService.drawWinners();
-        WeeklyTopScore firstDraw = weeklyTopScoreRepository.findByWeekStart(weekStart).orElseThrow();
+        weeklyRewardDrawService.drawWinnersForLastCompletedWeek();
+        WeeklyTopScore firstDraw = weeklyTopScoreRepository.findByWeekStart(monday).orElseThrow();
         Set<Long> firstWinnerIds = winnerMemberIds(firstDraw);
 
-        weeklyRewardDrawService.drawWinners();
-        WeeklyTopScore secondDraw = weeklyTopScoreRepository.findByWeekStart(weekStart).orElseThrow();
+        weeklyRewardDrawService.drawWinnersForLastCompletedWeek();
+        WeeklyTopScore secondDraw = weeklyTopScoreRepository.findByWeekStart(monday).orElseThrow();
         Set<Long> secondWinnerIds = winnerMemberIds(secondDraw);
 
         // then
@@ -180,48 +185,142 @@ class WeeklyRewardDrawServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
         // given
         Member twoWins = memberFactory.save(b -> b.team(homeTeam));
         Member oneWin = memberFactory.save(b -> b.team(homeTeam));
-        finalizeTwoWinsAndOneWin(twoWins, oneWin);
+        saveResolvedPredictions(twoWins, oneWin);
 
         // when
-        weeklyRewardDrawService.drawWinners();
-        weeklyRewardDrawService.drawWinners();
+        WeeklyRewardDrawResult firstResult = weeklyRewardDrawService.drawWinnersForLastCompletedWeek();
+        WeeklyRewardDrawResult secondResult = weeklyRewardDrawService.drawWinnersForLastCompletedWeek();
 
         // then
-        assertThat(weeklyTopScoreRepository.findAll())
-                .filteredOn(score -> score.getWeekStart().equals(weekStart))
-                .hasSize(1);
-
-        WeeklyTopScore weeklyTopScore = weeklyTopScoreRepository.findByWeekStart(weekStart).orElseThrow();
-        assertThat(gifticonIssuanceRepository.findAllByWeeklyTopScore(weeklyTopScore)).hasSize(1);
+        WeeklyTopScore weeklyTopScore = weeklyTopScoreRepository.findByWeekStart(monday).orElseThrow();
+        assertSoftly(softAssertions -> {
+            softAssertions.assertThat(firstResult).isEqualTo(WeeklyRewardDrawResult.DRAWN);
+            softAssertions.assertThat(secondResult).isEqualTo(WeeklyRewardDrawResult.ALREADY_DRAWN);
+            softAssertions.assertThat(weeklyTopScoreRepository.findAll())
+                    .filteredOn(score -> score.getWeekStart().equals(monday))
+                    .hasSize(1);
+            softAssertions.assertThat(gifticonIssuanceRepository.findAllByWeeklyTopScore(weeklyTopScore)).hasSize(1);
+        });
     }
 
     @DisplayName("이번 주에 확정된 예측이 하나도 없으면 추첨하지 않는다")
     @Test
     void drawWinners_noParticipants_noDraw() {
         // when
-        weeklyRewardDrawService.drawWinners();
+        WeeklyRewardDrawResult result = weeklyRewardDrawService.drawWinnersForLastCompletedWeek();
 
         // then
-        Optional<WeeklyTopScore> weeklyTopScore = weeklyTopScoreRepository.findByWeekStart(weekStart);
-        assertThat(weeklyTopScore).isEmpty();
+        Optional<WeeklyTopScore> weeklyTopScore = weeklyTopScoreRepository.findByWeekStart(monday);
+        assertSoftly(softAssertions -> {
+            softAssertions.assertThat(result).isEqualTo(WeeklyRewardDrawResult.NO_PARTICIPANTS);
+            softAssertions.assertThat(weeklyTopScore).isEmpty();
+        });
     }
 
-    private void finalizeTwoWinsAndOneWin(final Member twoWins, final Member oneWin) {
+    @DisplayName("그 주에 아직 채점되지 않은(SUBMITTED) 예측이 남아있으면 추첨을 건너뛴다")
+    @Test
+    void drawWinners_skipsWhenUngradedPredictionsExist() {
+        // given
+        Member twoWins = memberFactory.save(b -> b.team(homeTeam));
+        Member oneWin = memberFactory.save(b -> b.team(homeTeam));
+        saveResolvedPredictions(twoWins, oneWin);
+        saveUngradedPrediction();
+
+        // when
+        WeeklyRewardDrawResult result = weeklyRewardDrawService.drawWinnersForLastCompletedWeek();
+
+        // then
+        assertSoftly(softAssertions -> {
+            softAssertions.assertThat(result).isEqualTo(WeeklyRewardDrawResult.UNGRADED_PREDICTIONS_EXIST);
+            softAssertions.assertThat(weeklyTopScoreRepository.findByWeekStart(monday)).isEmpty();
+        });
+    }
+
+    @DisplayName("그 주에 아직 채점되지 않은(SUBMITTED) 예측이 남아있으면 수동 추첨도 거부한다")
+    @Test
+    void drawWinnersForWeek_throwsWhenUngradedPredictionsExist() {
+        // given
+        saveUngradedPrediction();
+
+        // when & then
+        assertThatThrownBy(() -> weeklyRewardDrawService.drawWinnersForWeek(monday))
+                .isInstanceOf(UnprocessableEntityException.class);
+    }
+
+    private void saveUngradedPrediction() {
+        Game game = gameFactory.save(b -> b.stadium(stadium)
+                .homeTeam(homeTeam).awayTeam(awayTeam)
+                .date(monday.plusDays(2))
+                .homeScore(5).awayScore(3)
+                .gameState(GameState.COMPLETED));
+        Member submitter = memberFactory.save(b -> b.team(homeTeam));
+        gamePredictionRepository.save(new GamePrediction(submitter, game, PredictionPick.HOME));
+    }
+
+    @DisplayName("정기 추첨을 건너뛴 주는 채점 완료 후 수동으로 추첨할 수 있다")
+    @Test
+    void drawWinnersForWeek_drawsSkippedWeek() {
+        // given
+        Member twoWins = memberFactory.save(b -> b.team(homeTeam));
+        Member oneWin = memberFactory.save(b -> b.team(homeTeam));
+        saveSubmittedPredictions(twoWins, oneWin);
+        weeklyRewardDrawService.drawWinnersForLastCompletedWeek();
+        assertThat(weeklyTopScoreRepository.findByWeekStart(monday)).isEmpty();
+        predictionResultService.reconcileUngradedPredictions();
+
+        // when
+        weeklyRewardDrawService.drawWinnersForWeek(monday);
+
+        // then
+        WeeklyTopScore weeklyTopScore = weeklyTopScoreRepository.findByWeekStart(monday).orElseThrow();
+        List<GifticonIssuance> issuances = gifticonIssuanceRepository.findAllByWeeklyTopScore(weeklyTopScore);
+
+        assertSoftly(softAssertions -> {
+            softAssertions.assertThat(weeklyTopScore.getTopScore()).isEqualTo(2);
+            softAssertions.assertThat(issuances).hasSize(1);
+            softAssertions.assertThat(issuances.get(0).getMember().getId()).isEqualTo(twoWins.getId());
+        });
+    }
+
+    @DisplayName("이미 당첨자를 뽑은 주는 수동 추첨을 거부하고 기존 기록을 유지한다")
+    @Test
+    void drawWinnersForWeek_rejectsAlreadyDrawnWeek() {
+        // given
+        Member twoWins = memberFactory.save(b -> b.team(homeTeam));
+        Member oneWin = memberFactory.save(b -> b.team(homeTeam));
+        saveResolvedPredictions(twoWins, oneWin);
+        weeklyRewardDrawService.drawWinnersForLastCompletedWeek();
+        WeeklyTopScore existingDraw = weeklyTopScoreRepository.findByWeekStart(monday).orElseThrow();
+        Set<Long> existingWinnerIds = winnerMemberIds(existingDraw);
+
+        // when & then
+        assertThatThrownBy(() -> weeklyRewardDrawService.drawWinnersForWeek(monday))
+                .isInstanceOf(ConflictException.class);
+        assertSoftly(softAssertions -> {
+            softAssertions.assertThat(weeklyTopScoreRepository.findById(existingDraw.getId())).isPresent();
+            softAssertions.assertThat(winnerMemberIds(existingDraw)).isEqualTo(existingWinnerIds);
+        });
+    }
+
+    private void saveResolvedPredictions(final Member twoWins, final Member oneWin) {
+        saveSubmittedPredictions(twoWins, oneWin);
+        predictionResultService.reconcileUngradedPredictions();
+    }
+
+    private void saveSubmittedPredictions(final Member twoWins, final Member oneWin) {
         Game game1 = gameFactory.save(b -> b.stadium(stadium)
                 .homeTeam(homeTeam).awayTeam(awayTeam)
-                .date(weekStart)
+                .date(monday)
                 .homeScore(5).awayScore(3)
                 .gameState(GameState.COMPLETED));
         Game game2 = gameFactory.save(b -> b.stadium(stadium)
                 .homeTeam(homeTeam).awayTeam(awayTeam)
-                .date(weekStart.plusDays(1))
+                .date(monday.plusDays(1))
                 .homeScore(4).awayScore(1)
                 .gameState(GameState.COMPLETED));
 
         gamePredictionRepository.save(new GamePrediction(twoWins, game1, PredictionPick.HOME));
         gamePredictionRepository.save(new GamePrediction(twoWins, game2, PredictionPick.HOME));
         gamePredictionRepository.save(new GamePrediction(oneWin, game1, PredictionPick.HOME));
-
-        predictionResultService.reconcileUngradedPredictions();
     }
 }

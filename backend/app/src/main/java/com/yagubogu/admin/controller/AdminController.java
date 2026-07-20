@@ -6,6 +6,7 @@ import com.yagubogu.admin.service.AdminCrawlingService;
 import com.yagubogu.auth.annotation.RequireRole;
 import com.yagubogu.member.domain.Role;
 import com.yagubogu.prediction.service.PredictionResultService;
+import com.yagubogu.reward.service.WeeklyRewardDrawService;
 import com.yagubogu.stat.service.LocationCheckInRankingSyncService;
 import com.yagubogu.stat.service.StatSyncService;
 import jakarta.validation.Valid;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -28,6 +30,7 @@ public class AdminController {
     private final LocationCheckInRankingSyncService locationCheckInRankingSyncService;
     private final AdminCrawlingService adminCrawlingService;
     private final PredictionResultService predictionResultService;
+    private final WeeklyRewardDrawService weeklyRewardDrawService;
 
     @PostMapping("/victory-fairy-rankings/sync")
     public ResponseEntity<Void> syncVictoryRankings() {
@@ -60,6 +63,13 @@ public class AdminController {
     @PostMapping("/predictions/{gameCode}/grading")
     public ResponseEntity<Void> gradePredictionsForGame(@PathVariable final String gameCode) {
         predictionResultService.gradePredictionsForGame(gameCode);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/rewards/weekly-draws")
+    public ResponseEntity<Void> drawWeeklyRewardWinners(@RequestParam final LocalDate monday) {
+        weeklyRewardDrawService.drawWinnersForWeek(monday);
 
         return ResponseEntity.ok().build();
     }
