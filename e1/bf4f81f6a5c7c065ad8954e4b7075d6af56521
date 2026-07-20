@@ -1,0 +1,28 @@
+backend/app/src/test/java/com/yagubogu/support/base/E2eTestBase.java
+  s_95c1727e2bc9ee::t_21ad68c3632c33 60-61
+backend/app/src/test/java/com/yagubogu/admin/AdminControllerE2eTest.java
+  s_95c1727e2bc9ee::t_21ad68c3632c33 1-2,5,7-12,14,17-57,61-71,102-129,131-141,143-146,179-200
+  s_95c1727e2bc9ee::t_be0ed7a13031de 6,130,142
+  s_95c1727e2bc9ee::t_3b2681fe79a2bf 3-4,13,15-16,58-60,72-101,147-178
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "e1bf4f81f6a5c7c065ad8954e4b7075d6af56521",
+  "prompts": {},
+  "humans": {
+    "h_3dcfd613e97439": {
+      "author": "Mint <audwl03071@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_95c1727e2bc9ee": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f7e4c-5528-7cb3-b7f9-11067b026c46",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    }
+  }
+}
