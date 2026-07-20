@@ -31,6 +31,11 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -204,6 +209,58 @@ class WeeklyRewardDrawServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
                     .hasSize(1);
             softAssertions.assertThat(gifticonIssuanceRepository.findAllByWeeklyTopScore(weeklyTopScore)).hasSize(1);
         });
+    }
+
+    @DisplayName("같은 주의 추첨이 동시에 실행되어도 한 번만 확정한다")
+    @Test
+    void drawWinners_absorbsConcurrentDuplicateDraw() throws Exception {
+        // given
+        Member twoWins = memberFactory.save(b -> b.team(homeTeam));
+        Member oneWin = memberFactory.save(b -> b.team(homeTeam));
+        saveResolvedPredictions(twoWins, oneWin);
+
+        ExecutorService executorService = Executors.newFixedThreadPool(2);
+        CountDownLatch readyLatch = new CountDownLatch(2);
+        CountDownLatch startLatch = new CountDownLatch(1);
+
+        try {
+            Future<WeeklyRewardDrawResult> first = executorService.submit(
+                    () -> drawAfterSignal(readyLatch, startLatch));
+            Future<WeeklyRewardDrawResult> second = executorService.submit(
+                    () -> drawAfterSignal(readyLatch, startLatch));
+
+            assertThat(readyLatch.await(10, TimeUnit.SECONDS)).isTrue();
+            startLatch.countDown();
+
+            List<WeeklyRewardDrawResult> results = List.of(
+                    first.get(10, TimeUnit.SECONDS),
+                    second.get(10, TimeUnit.SECONDS)
+            );
+
+            WeeklyTopScore weeklyTopScore = weeklyTopScoreRepository.findByWeekStart(monday).orElseThrow();
+            assertSoftly(softAssertions -> {
+                softAssertions.assertThat(results)
+                        .containsExactlyInAnyOrder(
+                                WeeklyRewardDrawResult.DRAWN,
+                                WeeklyRewardDrawResult.ALREADY_DRAWN);
+                softAssertions.assertThat(weeklyTopScoreRepository.findAll())
+                        .filteredOn(score -> score.getWeekStart().equals(monday))
+                        .hasSize(1);
+                softAssertions.assertThat(gifticonIssuanceRepository.findAllByWeeklyTopScore(weeklyTopScore))
+                        .hasSize(1);
+            });
+        } finally {
+            executorService.shutdownNow();
+        }
+    }
+
+    private WeeklyRewardDrawResult drawAfterSignal(
+            final CountDownLatch readyLatch,
+            final CountDownLatch startLatch
+    ) throws InterruptedException {
+        readyLatch.countDown();
+        startLatch.await();
+        return weeklyRewardDrawService.drawWinnersForLastCompletedWeek();
     }
 
     @DisplayName("이번 주에 확정된 예측이 하나도 없으면 추첨하지 않는다")

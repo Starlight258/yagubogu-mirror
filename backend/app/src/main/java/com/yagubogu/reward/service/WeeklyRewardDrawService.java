@@ -22,11 +22,11 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 @Service
 public class WeeklyRewardDrawService {
 
@@ -39,22 +39,32 @@ public class WeeklyRewardDrawService {
     private final MemberRepository memberRepository;
     private final GamePredictionRepository gamePredictionRepository;
     private final Clock clock;
+    private final TransactionTemplate transactionTemplate;
 
-    @Transactional
     public WeeklyRewardDrawResult drawWinnersForLastCompletedWeek() {
         LocalDate monday = lastCompletedWeekMonday();
-        return attemptToDrawWinnersForWeek(monday);
+        return attemptToDrawWinnersForWeekSafely(monday);
     }
 
-    @Transactional
     public void drawWinnersForWeek(final LocalDate monday) {
-        WeeklyRewardDrawResult result = attemptToDrawWinnersForWeek(monday);
+        WeeklyRewardDrawResult result = attemptToDrawWinnersForWeekSafely(monday);
         switch (result) {
             case ALREADY_DRAWN -> throw new ConflictException("Winners have already been drawn: monday=" + monday);
             case UNGRADED_PREDICTIONS_EXIST ->
                     throw new UnprocessableEntityException("Ungraded predictions remain: monday=" + monday);
             case DRAWN, NO_PARTICIPANTS -> {
             }
+        }
+    }
+
+    private WeeklyRewardDrawResult attemptToDrawWinnersForWeekSafely(final LocalDate monday) {
+        try {
+            return transactionTemplate.execute(status -> attemptToDrawWinnersForWeek(monday));
+        } catch (DataIntegrityViolationException e) {
+            if (hasAlreadyDrawnWinners(monday)) {
+                return WeeklyRewardDrawResult.ALREADY_DRAWN;
+            }
+            throw e;
         }
     }
 
