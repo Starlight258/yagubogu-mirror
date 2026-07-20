@@ -1,0 +1,25 @@
+backend/app/src/test/java/com/yagubogu/reward/service/WeeklyRewardDrawServiceUsingMysqlTest.java
+  s_ea3b23cfa1365b::t_516f67a7f54730 34-38,214-264
+  s_ea3b23cfa1365b::t_1d746528bae4f7 265
+backend/app/src/test/java/com/yagubogu/reward/service/WeeklyRewardDrawServiceTest.java
+  s_ea3b23cfa1365b::t_516f67a7f54730 1-93
+backend/app/src/main/java/com/yagubogu/reward/service/WeeklyRewardDrawService.java
+  s_ea3b23cfa1365b::t_47854acaa83e7b 25,27,42,46,50,60-67
+  s_ea3b23cfa1365b::t_7e2ae75446f2f8 68-70
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "fc80e2503dcd5886d10e9320977a874b10eaa33c",
+  "prompts": {},
+  "sessions": {
+    "s_ea3b23cfa1365b": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f7e74-f1cc-7613-adfd-5f4e2b2f2715",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    }
+  }
+}
