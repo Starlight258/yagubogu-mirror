@@ -1,0 +1,71 @@
+backend/app/src/test/java/com/yagubogu/reward/service/GifticonRecipientServiceTest.java
+  s_c6ec3fd67f5b20::t_9920ca82f81590 1-56
+backend/app/src/main/java/com/yagubogu/reward/controller/v1/GifticonControllerInterface.java
+  s_c6ec3fd67f5b20::t_8ca3e0cc2e569a 1-45
+backend/app/src/main/java/com/yagubogu/reward/config/KakaoGiftProperties.java
+  s_c6ec3fd67f5b20::t_f52e9b9a41ce7a 1-26
+backend/app/src/main/java/com/yagubogu/reward/client/KakaoGiftOrderRequest.java
+  s_c6ec3fd67f5b20::t_f52e9b9a41ce7a 1-27
+backend/app/src/main/java/com/yagubogu/reward/controller/v1/GifticonController.java
+  s_c6ec3fd67f5b20::t_8ca3e0cc2e569a 1-41
+backend/app/src/main/java/com/yagubogu/reward/dto/v1/GifticonIssuanceResponse.java
+  s_c6ec3fd67f5b20::t_f52e9b9a41ce7a 1-25
+backend/app/src/main/java/com/yagubogu/reward/client/KakaoGiftRequestUncertainException.java
+  s_c6ec3fd67f5b20::t_f52e9b9a41ce7a 1-8
+backend/app/src/main/java/com/yagubogu/reward/service/GifticonRecipientService.java
+  s_c6ec3fd67f5b20::t_1ac2d0cee11763 12,37,40-41
+  s_c6ec3fd67f5b20::t_8ca3e0cc2e569a 1-11,13-36,38-39,42-49
+backend/app/src/main/java/com/yagubogu/reward/dto/v1/GifticonRecipientRequest.java
+  s_c6ec3fd67f5b20::t_f52e9b9a41ce7a 1-8
+backend/app/src/test/java/com/yagubogu/reward/service/GifticonIssuanceRequestServiceTest.java
+  s_c6ec3fd67f5b20::t_ca6174b651043c 6,113
+  s_c6ec3fd67f5b20::t_765da3e7617d61 1-5,7-112,114-119
+backend/app/src/main/java/com/yagubogu/reward/dto/v1/GifticonIssuancesResponse.java
+  s_c6ec3fd67f5b20::t_f52e9b9a41ce7a 1-17
+backend/app/src/main/java/com/yagubogu/reward/client/KakaoGiftRequestRejectedException.java
+  s_c6ec3fd67f5b20::t_f52e9b9a41ce7a 1-8
+backend/app/src/main/java/com/yagubogu/reward/client/GiftOrderResult.java
+  s_c6ec3fd67f5b20::t_f52e9b9a41ce7a 1-6
+backend/app/src/main/java/com/yagubogu/reward/client/KakaoGiftOrderClient.java
+  s_c6ec3fd67f5b20::t_f52e9b9a41ce7a 1-16,25-54
+  s_c6ec3fd67f5b20::t_17377429b163e9 17-24
+backend/app/src/main/java/com/yagubogu/reward/client/KakaoGiftOrderResponse.java
+  s_c6ec3fd67f5b20::t_f52e9b9a41ce7a 1-8
+backend/app/src/main/java/com/yagubogu/reward/client/GiftOrderRequest.java
+  s_c6ec3fd67f5b20::t_f52e9b9a41ce7a 1-7
+backend/app/src/main/resources/application.yml
+  s_c6ec3fd67f5b20::t_8ca3e0cc2e569a 65-72
+backend/app/src/main/java/com/yagubogu/reward/client/GiftOrderClient.java
+  s_c6ec3fd67f5b20::t_f52e9b9a41ce7a 1-6
+backend/app/src/main/java/com/yagubogu/reward/config/KakaoGiftClientConfig.java
+  s_c6ec3fd67f5b20::t_f52e9b9a41ce7a 1-33
+backend/app/src/main/java/com/yagubogu/reward/service/GifticonIssuanceRequestService.java
+  s_c6ec3fd67f5b20::t_8ca3e0cc2e569a 1-86
+backend/app/src/test/java/com/yagubogu/reward/client/KakaoGiftOrderClientTest.java
+  s_c6ec3fd67f5b20::t_9920ca82f81590 1-73
+backend/app/.env.example
+  s_c6ec3fd67f5b20::t_e334d9f2cd0f32 16-19
+backend/app/src/main/java/com/yagubogu/reward/repository/GifticonIssuanceRepository.java
+  s_c6ec3fd67f5b20::t_d1f11815bff3e6 6,14-17
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "415a9a9a7e4e5c5c2fe64cbc12227ff8a0c31dd6",
+  "prompts": {},
+  "humans": {
+    "h_3dcfd613e97439": {
+      "author": "Mint <audwl03071@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_c6ec3fd67f5b20": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f7de7-66d1-79c3-bfdb-14cf429769a7",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    }
+  }
+}
