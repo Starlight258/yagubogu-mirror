@@ -1,8 +1,11 @@
 package com.yagubogu.sse;
 
 import com.yagubogu.checkin.service.CheckInService;
+import com.yagubogu.prediction.service.GamePredictionService;
 import com.yagubogu.sse.dto.GameWithFanRateParam;
+import com.yagubogu.sse.dto.GameWithPredictionRateParam;
 import com.yagubogu.sse.dto.event.CheckInCreatedEvent;
+import com.yagubogu.sse.dto.event.PredictionCreatedEvent;
 import com.yagubogu.sse.repository.SseEmitterRegistry;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -21,6 +24,7 @@ public class SseEventHandler {
 
     private final SseEmitterRegistry sseEmitterRegistry;
     private final CheckInService checkInService;
+    private final GamePredictionService gamePredictionService;
 
     @Async
     @TransactionalEventListener
@@ -30,6 +34,21 @@ public class SseEventHandler {
             try {
                 emitter.send(SseEmitter.event()
                         .name("check-in-created")
+                        .data(eventData));
+            } catch (IOException e) {
+                sseEmitterRegistry.removeWithError(emitter, e);
+            }
+        });
+    }
+
+    @Async
+    @TransactionalEventListener
+    public void onPredictionCreated(final PredictionCreatedEvent event) {
+        List<GameWithPredictionRateParam> eventData = gamePredictionService.buildPredictionEventData();
+        sseEmitterRegistry.all().forEach(emitter -> {
+            try {
+                emitter.send(SseEmitter.event()
+                        .name("prediction-created")
                         .data(eventData));
             } catch (IOException e) {
                 sseEmitterRegistry.removeWithError(emitter, e);

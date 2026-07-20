@@ -1,7 +1,9 @@
 package com.yagubogu.sse;
 
 import com.yagubogu.checkin.service.CheckInService;
+import com.yagubogu.prediction.service.GamePredictionService;
 import com.yagubogu.sse.dto.event.CheckInCreatedEvent;
+import com.yagubogu.sse.dto.event.PredictionCreatedEvent;
 import com.yagubogu.sse.repository.SseEmitterRegistry;
 import java.time.LocalDate;
 import java.util.List;
@@ -21,13 +23,15 @@ class SseEventHandlerTest {
 
     private SseEmitterRegistry repository;
     private CheckInService checkInService;
+    private GamePredictionService gamePredictionService;
     private SseEventHandler handler;
 
     @BeforeEach
     void setUp() {
         repository = new SseEmitterRegistry();
         checkInService = mock(CheckInService.class);
-        handler = new SseEventHandler(repository, checkInService);
+        gamePredictionService = mock(GamePredictionService.class);
+        handler = new SseEventHandler(repository, checkInService, gamePredictionService);
     }
 
     @DisplayName("특정 날짜로 이벤트가 들어오면 Repository의 모든 Emitter에 이벤트가 전달된다")
@@ -51,6 +55,29 @@ class SseEventHandlerTest {
         verify(checkInService).buildCheckInEventData(captor.capture());
         assertSoftly(softAssertions -> {
             softAssertions.assertThat(captor.getValue()).isEqualTo(date);
+            softAssertions.assertThat(e1.sendCount).isEqualTo(1);
+            softAssertions.assertThat(e2.sendCount).isEqualTo(1);
+        });
+    }
+
+    @DisplayName("예측 생성 이벤트가 들어오면 Repository의 모든 Emitter에 이벤트가 전달된다")
+    @Test
+    void onPredictionCreated_shouldSendEventToAllEmitters() {
+        // given
+        when(gamePredictionService.buildPredictionEventData())
+                .thenReturn(List.of());
+
+        RecordingEmitter e1 = new RecordingEmitter();
+        RecordingEmitter e2 = new RecordingEmitter();
+        repository.add(e1);
+        repository.add(e2);
+
+        // when
+        handler.onPredictionCreated(new PredictionCreatedEvent());
+
+        // then
+        verify(gamePredictionService).buildPredictionEventData();
+        assertSoftly(softAssertions -> {
             softAssertions.assertThat(e1.sendCount).isEqualTo(1);
             softAssertions.assertThat(e2.sendCount).isEqualTo(1);
         });

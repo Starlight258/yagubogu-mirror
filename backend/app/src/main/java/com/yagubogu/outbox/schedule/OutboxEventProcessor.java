@@ -6,6 +6,7 @@ import com.yagubogu.outbox.domain.OutboxEvent;
 import com.yagubogu.outbox.dto.GameCompletedOutboxPayload;
 import com.yagubogu.outbox.exception.UnsupportedOutboxEventTypeException;
 import com.yagubogu.outbox.service.OutboxEventService;
+import com.yagubogu.prediction.service.PredictionResultService;
 import com.yagubogu.stat.service.StatSyncService;
 import java.time.Duration;
 import java.util.List;
@@ -21,6 +22,7 @@ public class OutboxEventProcessor {
     private final OutboxEventService outboxEventService;
     private final ObjectMapper objectMapper;
     private final StatSyncService statSyncService;
+    private final PredictionResultService predictionResultService;
     private final int batchSize;
     private final int recoveryBatchSize;
     private final Duration processingTimeout;
@@ -29,6 +31,7 @@ public class OutboxEventProcessor {
             final OutboxEventService outboxEventService,
             final ObjectMapper objectMapper,
             final StatSyncService statSyncService,
+            final PredictionResultService predictionResultService,
             @Value("${outbox.worker.batch-size:20}") final int batchSize,
             @Value("${outbox.worker.recovery-batch-size:50}") final int recoveryBatchSize,
             @Value("${outbox.worker.processing-timeout-minutes:30}") final long processingTimeoutMinutes
@@ -36,6 +39,7 @@ public class OutboxEventProcessor {
         this.outboxEventService = outboxEventService;
         this.objectMapper = objectMapper;
         this.statSyncService = statSyncService;
+        this.predictionResultService = predictionResultService;
         this.batchSize = batchSize;
         this.recoveryBatchSize = recoveryBatchSize;
         this.processingTimeout = Duration.ofMinutes(processingTimeoutMinutes);
@@ -71,6 +75,7 @@ public class OutboxEventProcessor {
 
             GameCompletedOutboxPayload payload = readPayload(event);
             statSyncService.updateRankings(payload.date());
+            predictionResultService.gradePredictionsForGame(payload.gameCode());
             outboxEventService.markProcessed(event.getId());
             log.info("[OUTBOX] Processed event: id={}, type={}, aggregateId={}",
                     event.getId(), event.getEventType(), event.getAggregateId());
