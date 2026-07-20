@@ -45,6 +45,9 @@ class WeeklyRewardDrawServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
     private WeeklyRewardDrawService weeklyRewardDrawService;
 
     @Autowired
+    private WeeklyRewardDrawBatchService weeklyRewardDrawBatchService;
+
+    @Autowired
     private PredictionResultService predictionResultService;
 
     @Autowired
@@ -233,6 +236,28 @@ class WeeklyRewardDrawServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
         assertSoftly(softAssertions -> {
             softAssertions.assertThat(result).isEqualTo(WeeklyRewardDrawResult.UNGRADED_PREDICTIONS_EXIST);
             softAssertions.assertThat(weeklyTopScoreRepository.findByWeekStart(monday)).isEmpty();
+        });
+    }
+
+    @DisplayName("주간 배치는 미채점 예측을 보정한 후 같은 실행에서 당첨자를 추첨한다")
+    @Test
+    void reconcilePredictionsAndDrawWinners_reconcilesBeforeDraw() {
+        // given
+        Member twoWins = memberFactory.save(b -> b.team(homeTeam));
+        Member oneWin = memberFactory.save(b -> b.team(homeTeam));
+        saveSubmittedPredictions(twoWins, oneWin);
+
+        // when
+        WeeklyRewardDrawResult result = weeklyRewardDrawBatchService.reconcilePredictionsAndDrawWinners();
+
+        // then
+        WeeklyTopScore weeklyTopScore = weeklyTopScoreRepository.findByWeekStart(monday).orElseThrow();
+        List<GifticonIssuance> issuances = gifticonIssuanceRepository.findAllByWeeklyTopScore(weeklyTopScore);
+        assertSoftly(softAssertions -> {
+            softAssertions.assertThat(result).isEqualTo(WeeklyRewardDrawResult.DRAWN);
+            softAssertions.assertThat(weeklyTopScore.getTopScore()).isEqualTo(2);
+            softAssertions.assertThat(issuances).hasSize(1);
+            softAssertions.assertThat(issuances.get(0).getMember().getId()).isEqualTo(twoWins.getId());
         });
     }
 
