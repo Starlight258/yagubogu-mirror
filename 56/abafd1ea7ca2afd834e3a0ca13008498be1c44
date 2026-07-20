@@ -1,0 +1,24 @@
+backend/app/src/test/java/com/yagubogu/prediction/service/GamePredictionServiceUsingMysqlTest.java
+  s_79d2c7e768085d::t_63b0a66a7df177 21,51-53,56,60,72,104,126
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "56abafd1ea7ca2afd834e3a0ca13008498be1c44",
+  "prompts": {},
+  "humans": {
+    "h_3dcfd613e97439": {
+      "author": "Mint <audwl03071@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_79d2c7e768085d": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f7e75-ebb0-7f91-8c6f-08e660ffd78e",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    }
+  }
+}
