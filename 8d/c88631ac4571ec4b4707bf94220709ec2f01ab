@@ -1,0 +1,35 @@
+backend/docs/prediction-prd.md
+  s_c6ec3fd67f5b20::t_dd5527288515da 54-60,62,64,66,68,70-80,83,85-96,98,100-111,115-147,149-194,196-221,225-247,251,253-261,263,265,267-290
+  s_c6ec3fd67f5b20::t_bb1380092700fb 52-53
+  s_c6ec3fd67f5b20::t_4b55d07987566b 1,3,5,9,11,13,15,19,21-26,30,32,34-39,41,43-48,50,301,303-304
+backend/docs/pr-description.md
+  s_c6ec3fd67f5b20::t_c8e79e45ba17f2 9,46,49-75,99-100,112-113
+  h_3dcfd613e97439 5-6
+  s_c6ec3fd67f5b20::t_ba79cafb8e7c6d 1-4,7-8,10-45,47-48,76-98,101-111
+backend/docs/prediction-reward-design.md
+  s_c6ec3fd67f5b20::t_dd5527288515da 87-89,100-101,143,145-148,151,169-171,253-255,262
+  s_c6ec3fd67f5b20::t_0a34f7f30d7d8a 133,157,162,194,202-206
+  s_c6ec3fd67f5b20::t_6b20b37d886deb 1-86,90-99,102-132,134-142,144,149-150,152-156,158-161,163-168,172-193,195-201,207-240,242-252,256-261,263-297
+  s_c6ec3fd67f5b20::t_8bd989733e375f 241
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "8dc88631ac4571ec4b4707bf94220709ec2f01ab",
+  "prompts": {},
+  "humans": {
+    "h_3dcfd613e97439": {
+      "author": "Mint <audwl03071@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_c6ec3fd67f5b20": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f7de7-66d1-79c3-bfdb-14cf429769a7",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Mint <audwl03071@gmail.com>"
+    }
+  }
+}
