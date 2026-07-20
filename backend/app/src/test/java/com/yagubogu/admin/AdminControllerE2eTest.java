@@ -12,7 +12,9 @@ import com.yagubogu.prediction.domain.GamePrediction;
 import com.yagubogu.prediction.domain.PredictionPick;
 import com.yagubogu.prediction.domain.PredictionStatus;
 import com.yagubogu.prediction.repository.GamePredictionRepository;
+import com.yagubogu.reward.domain.GifticonIssuanceStatus;
 import com.yagubogu.reward.domain.WeeklyTopScore;
+import com.yagubogu.reward.repository.GifticonIssuanceRepository;
 import com.yagubogu.reward.repository.WeeklyTopScoreRepository;
 import com.yagubogu.stadium.domain.Stadium;
 import com.yagubogu.stadium.repository.StadiumRepository;
@@ -58,6 +60,9 @@ class AdminControllerE2eTest extends E2eTestBase {
 
     @Autowired
     private WeeklyTopScoreRepository weeklyTopScoreRepository;
+
+    @Autowired
+    private GifticonIssuanceRepository gifticonIssuanceRepository;
 
     private Team homeTeam;
     private Team awayTeam;
@@ -176,6 +181,22 @@ class AdminControllerE2eTest extends E2eTestBase {
         // then
         WeeklyTopScore actual = weeklyTopScoreRepository.findByWeekStart(monday).orElseThrow();
         assertThat(actual.getTopScore()).isEqualTo(1);
+        assertThat(gifticonIssuanceRepository.findAll())
+                .singleElement()
+                .satisfies(issuance -> {
+                    assertThat(issuance.getStatus()).isEqualTo(GifticonIssuanceStatus.READY);
+                    assertThat(issuance.getMember().getId()).isEqualTo(participant.getId());
+                });
+
+        RestAssured.given().log().all()
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
+                .queryParam("monday", monday.toString())
+                .when()
+                .post("/admin/rewards/weekly-draws")
+                .then().log().all()
+                .statusCode(409);
+
+        assertThat(gifticonIssuanceRepository.findAll()).hasSize(1);
     }
 
     @DisplayName("일반 사용자가 관리자 API를 호출하면 403을 반환한다")
