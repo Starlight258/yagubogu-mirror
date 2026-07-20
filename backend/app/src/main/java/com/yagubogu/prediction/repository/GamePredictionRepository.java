@@ -27,19 +27,19 @@ public interface GamePredictionRepository extends JpaRepository<GamePrediction, 
 
     @Query("SELECT DISTINCT p.game FROM GamePrediction p "
             + "WHERE p.status = :status AND p.game.gameState IN :gameStates")
-    List<Game> findFinalizedGamesWithPendingPredictions(
+    List<Game> findFinalizedGamesWithUngradedPredictions(
             @Param("status") PredictionStatus status,
             @Param("gameStates") Collection<GameState> gameStates
     );
 
     @Query("SELECT new com.yagubogu.prediction.dto.WeeklyScoreParam(p.member.id, COUNT(p)) "
             + "FROM GamePrediction p "
-            + "WHERE p.status = :status AND p.game.date BETWEEN :weekStart AND :weekEnd "
+            + "WHERE p.status = :status AND p.game.date BETWEEN :monday AND :sunday "
             + "GROUP BY p.member.id")
     List<WeeklyScoreParam> findWeeklyScores(
             @Param("status") PredictionStatus status,
-            @Param("weekStart") LocalDate weekStart,
-            @Param("weekEnd") LocalDate weekEnd
+            @Param("monday") LocalDate monday,
+            @Param("sunday") LocalDate sunday
     );
 
     @Query("""

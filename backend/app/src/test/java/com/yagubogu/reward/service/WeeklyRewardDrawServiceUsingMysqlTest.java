@@ -117,7 +117,7 @@ class WeeklyRewardDrawServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
             Member member = memberFactory.save(b -> b.team(homeTeam));
             gamePredictionRepository.save(new GamePrediction(member, game, PredictionPick.HOME));
         }
-        predictionResultService.finalizePendingPredictions();
+        predictionResultService.reconcileUngradedPredictions();
 
         // when
         weeklyRewardDrawService.drawWinners();
@@ -149,7 +149,7 @@ class WeeklyRewardDrawServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
             Member member = memberFactory.save(b -> b.team(homeTeam));
             gamePredictionRepository.save(new GamePrediction(member, game, PredictionPick.HOME));
         }
-        predictionResultService.finalizePendingPredictions();
+        predictionResultService.reconcileUngradedPredictions();
 
         // when
         weeklyRewardDrawService.drawWinners();
@@ -222,6 +222,6 @@ class WeeklyRewardDrawServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
         gamePredictionRepository.save(new GamePrediction(twoWins, game2, PredictionPick.HOME));
         gamePredictionRepository.save(new GamePrediction(oneWin, game1, PredictionPick.HOME));
 
-        predictionResultService.finalizePendingPredictions();
+        predictionResultService.reconcileUngradedPredictions();
     }
 }

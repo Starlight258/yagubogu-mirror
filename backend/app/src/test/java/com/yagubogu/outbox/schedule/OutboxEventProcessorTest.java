@@ -15,6 +15,7 @@ import com.yagubogu.outbox.domain.OutboxEvent;
 import com.yagubogu.outbox.dto.GameCompletedOutboxPayload;
 import com.yagubogu.outbox.exception.UnsupportedOutboxEventTypeException;
 import com.yagubogu.outbox.service.OutboxEventService;
+import com.yagubogu.prediction.service.PredictionResultService;
 import com.yagubogu.stat.service.StatSyncService;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -42,6 +43,9 @@ class OutboxEventProcessorTest {
     @Mock
     private StatSyncService statSyncService;
 
+    @Mock
+    private PredictionResultService predictionResultService;
+
     private ObjectMapper objectMapper;
     private OutboxEventProcessor outboxEventProcessor;
 
@@ -52,22 +56,25 @@ class OutboxEventProcessorTest {
                 outboxEventService,
                 objectMapper,
                 statSyncService,
+                predictionResultService,
                 BATCH_SIZE,
                 RECOVERY_BATCH_SIZE,
                 PROCESSING_TIMEOUT_MINUTES
         );
     }
 
-    @DisplayName("GAME_COMPLETED outbox를 처리하면 랭킹을 갱신하고 처리 완료로 표시한다")
+    @DisplayName("GAME_COMPLETED outbox를 처리하면 랭킹을 갱신하고 예측을 채점하고 처리 완료로 표시한다")
     @Test
     void processPendingEvents_success() throws Exception {
         LocalDate date = LocalDate.of(2025, 7, 21);
-        OutboxEvent event = gameCompletedEvent(1L, "20250721HTLT0", date);
+        String gameCode = "20250721HTLT0";
+        OutboxEvent event = gameCompletedEvent(1L, gameCode, date);
         when(outboxEventService.claimPendingEvents(BATCH_SIZE)).thenReturn(List.of(event));
 
         outboxEventProcessor.processPendingEvents();
 
         verify(statSyncService).updateRankings(date);
+        verify(predictionResultService).gradePredictionsForGame(gameCode);
         verify(outboxEventService).markProcessed(1L);
         verify(outboxEventService, never()).markFailed(any(), any());
     }
@@ -80,6 +87,23 @@ class OutboxEventProcessorTest {
         IllegalStateException failure = new IllegalStateException("ranking sync failed");
         when(outboxEventService.claimPendingEvents(BATCH_SIZE)).thenReturn(List.of(event));
         doThrow(failure).when(statSyncService).updateRankings(date);
+
+        outboxEventProcessor.processPendingEvents();
+
+        verify(outboxEventService).markFailed(1L, failure);
+        verify(outboxEventService, never()).markProcessed(1L);
+        verify(predictionResultService, never()).gradePredictionsForGame(any());
+    }
+
+    @DisplayName("예측 채점에 실패하면 outbox 이벤트를 재시도 대상으로 표시한다")
+    @Test
+    void processPendingEvents_predictionResultFailure() throws Exception {
+        LocalDate date = LocalDate.of(2025, 7, 21);
+        String gameCode = "20250721HTLT0";
+        OutboxEvent event = gameCompletedEvent(1L, gameCode, date);
+        IllegalStateException failure = new IllegalStateException("game not finalized yet");
+        when(outboxEventService.claimPendingEvents(BATCH_SIZE)).thenReturn(List.of(event));
+        doThrow(failure).when(predictionResultService).gradePredictionsForGame(gameCode);
 
         outboxEventProcessor.processPendingEvents();
 
@@ -99,6 +123,7 @@ class OutboxEventProcessorTest {
         verify(outboxEventService).markFailed(eq(1L), exceptionCaptor.capture());
         assertThat(exceptionCaptor.getValue()).isExactlyInstanceOf(UnsupportedOutboxEventTypeException.class);
         verify(statSyncService, never()).updateRankings(any());
+        verify(predictionResultService, never()).gradePredictionsForGame(any());
         verify(outboxEventService, never()).markProcessed(1L);
     }
 
@@ -120,6 +145,7 @@ class OutboxEventProcessorTest {
         verify(outboxEventService).markFailed(eq(1L), exceptionCaptor.capture());
         assertThat(exceptionCaptor.getValue()).isInstanceOf(JsonProcessingException.class);
         verify(statSyncService, never()).updateRankings(any());
+        verify(predictionResultService, never()).gradePredictionsForGame(any());
         verify(outboxEventService, never()).markProcessed(1L);
     }
 

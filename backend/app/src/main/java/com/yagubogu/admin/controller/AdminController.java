@@ -57,9 +57,9 @@ public class AdminController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/predictions/{gameCode}/result-recalculation")
-    public ResponseEntity<Void> recalculatePredictionResults(@PathVariable final String gameCode) {
-        predictionResultService.recalculateGamePredictionResults(gameCode);
+    @PostMapping("/predictions/{gameCode}/grading")
+    public ResponseEntity<Void> gradePredictionsForGame(@PathVariable final String gameCode) {
+        predictionResultService.gradePredictionsForGame(gameCode);
 
         return ResponseEntity.ok().build();
     }

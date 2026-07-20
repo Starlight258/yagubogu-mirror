@@ -9,17 +9,17 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class PredictionResultScheduler {
+public class PredictionResultReconciliationScheduler {
 
     private final PredictionResultService predictionResultService;
 
     @Scheduled(cron = "0 0 23 * * SUN", zone = "Asia/Seoul")
-    public void finalizePendingPredictions() {
+    public void reconcileUngradedPredictions() {
         try {
-            log.info("[PREDICTION] Weekly prediction result finalization triggered by scheduler");
-            predictionResultService.finalizePendingPredictions();
+            log.info("[PREDICTION] Weekly prediction result reconciliation triggered by scheduler");
+            predictionResultService.reconcileUngradedPredictions();
         } catch (RuntimeException e) {
-            log.error("[PREDICTION] Weekly prediction result finalization failed", e);
+            log.error("[PREDICTION] Weekly prediction result reconciliation failed", e);
             throw e;
         }
     }

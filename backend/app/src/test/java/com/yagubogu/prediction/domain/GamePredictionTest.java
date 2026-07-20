@@ -11,71 +11,71 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class GamePredictionTest {
 
-    @DisplayName("무승부 경기는 예측을 VOID로 확정한다")
+    @DisplayName("무승부 경기는 예측을 VOID로 채점한다")
     @Test
-    void updateResult_marksVoid_whenDraw() {
+    void grade_marksVoid_whenDraw() {
         // given
         Game game = newCompletedGame(3, 3);
         GamePrediction prediction = new GamePrediction(null, game, PredictionPick.HOME);
 
         // when
-        prediction.updateResult(game);
+        prediction.grade(game);
 
         // then
         assertThat(prediction.getStatus()).isEqualTo(PredictionStatus.VOID);
     }
 
-    @DisplayName("승리 팀을 맞춘 예측은 WON으로 확정한다")
+    @DisplayName("승리 팀을 맞춘 예측은 WON으로 채점한다")
     @Test
-    void updateResult_marksWon_whenPickMatchesWinner() {
+    void grade_marksWon_whenPickMatchesWinner() {
         // given
         Game game = newCompletedGame(5, 3);
         GamePrediction prediction = new GamePrediction(null, game, PredictionPick.HOME);
 
         // when
-        prediction.updateResult(game);
+        prediction.grade(game);
 
         // then
         assertThat(prediction.getStatus()).isEqualTo(PredictionStatus.WON);
     }
 
-    @DisplayName("패배 팀을 고른 예측은 LOST로 확정한다")
+    @DisplayName("패배 팀을 고른 예측은 LOST로 채점한다")
     @Test
-    void updateResult_marksLost_whenPickMismatchesWinner() {
+    void grade_marksLost_whenPickMismatchesWinner() {
         // given
         Game game = newCompletedGame(5, 3);
         GamePrediction prediction = new GamePrediction(null, game, PredictionPick.AWAY);
 
         // when
-        prediction.updateResult(game);
+        prediction.grade(game);
 
         // then
         assertThat(prediction.getStatus()).isEqualTo(PredictionStatus.LOST);
     }
 
-    @DisplayName("원정팀 승리를 맞춘 예측은 WON으로 확정한다")
+    @DisplayName("원정팀 승리를 맞춘 예측은 WON으로 채점한다")
     @Test
-    void updateResult_marksWon_whenAwayPickMatchesAwayWin() {
+    void grade_marksWon_whenAwayPickMatchesAwayWin() {
         // given
         Game game = newCompletedGame(3, 5);
         GamePrediction prediction = new GamePrediction(null, game, PredictionPick.AWAY);
 
         // when
-        prediction.updateResult(game);
+        prediction.grade(game);
 
         // then
         assertThat(prediction.getStatus()).isEqualTo(PredictionStatus.WON);
     }
 
-    @DisplayName("경기가 취소되면 예측을 VOID로 확정한다")
+    @DisplayName("경기가 취소되면 예측을 VOID로 채점한다")
     @Test
-    void updateResult_marksVoid_whenCanceled() {
+    void grade_marksVoid_whenCanceled() {
         // given
         Game game = newCanceledGame();
         GamePrediction prediction = new GamePrediction(null, game, PredictionPick.HOME);
 
         // when
-        prediction.updateResult(game);
+        prediction.grade(game);
 
         // then
         assertThat(prediction.getStatus()).isEqualTo(PredictionStatus.VOID);

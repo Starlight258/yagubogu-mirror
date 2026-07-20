@@ -66,9 +66,9 @@ class PredictionResultServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
         stadium = stadiumRepository.findByShortName("챔피언스필드").orElseThrow();
     }
 
-    @DisplayName("경기가 종료되면 승리 예측은 WON, 패배 예측은 LOST로 확정된다")
+    @DisplayName("경기가 종료되면 승리 예측은 WON, 패배 예측은 LOST로 채점된다")
     @Test
-    void finalizePendingPredictions_marksWonAndLost() {
+    void reconcileUngradedPredictions_marksWonAndLost() {
         // given
         Game game = gameFactory.save(b -> b.stadium(stadium)
                 .homeTeam(homeTeam).awayTeam(awayTeam)
@@ -85,7 +85,7 @@ class PredictionResultServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
                 new GamePrediction(awayPicker, game, PredictionPick.AWAY));
 
         // when
-        predictionResultService.finalizePendingPredictions();
+        predictionResultService.reconcileUngradedPredictions();
 
         // then
         GamePrediction actualWon = gamePredictionRepository.findById(wonPrediction.getId()).orElseThrow();
@@ -97,9 +97,9 @@ class PredictionResultServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
         });
     }
 
-    @DisplayName("경기가 취소되면 예측은 VOID로 확정된다")
+    @DisplayName("경기가 취소되면 예측은 VOID로 채점된다")
     @Test
-    void finalizePendingPredictions_marksVoid() {
+    void reconcileUngradedPredictions_marksVoid() {
         // given
         Game game = gameFactory.save(b -> b.stadium(stadium)
                 .homeTeam(homeTeam).awayTeam(awayTeam)
@@ -111,16 +111,16 @@ class PredictionResultServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
                 new GamePrediction(member, game, PredictionPick.HOME));
 
         // when
-        predictionResultService.finalizePendingPredictions();
+        predictionResultService.reconcileUngradedPredictions();
 
         // then
         GamePrediction actual = gamePredictionRepository.findById(prediction.getId()).orElseThrow();
         assertThat(actual.getStatus()).isEqualTo(PredictionStatus.VOID);
     }
 
-    @DisplayName("경기가 무승부로 종료되면 예측은 VOID로 확정된다")
+    @DisplayName("경기가 무승부로 종료되면 예측은 VOID로 채점된다")
     @Test
-    void finalizePendingPredictions_marksVoid_whenDraw() {
+    void reconcileUngradedPredictions_marksVoid_whenDraw() {
         // given
         Game game = gameFactory.save(b -> b.stadium(stadium)
                 .homeTeam(homeTeam).awayTeam(awayTeam)
@@ -133,16 +133,16 @@ class PredictionResultServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
                 new GamePrediction(member, game, PredictionPick.HOME));
 
         // when
-        predictionResultService.finalizePendingPredictions();
+        predictionResultService.reconcileUngradedPredictions();
 
         // then
         GamePrediction actual = gamePredictionRepository.findById(prediction.getId()).orElseThrow();
         assertThat(actual.getStatus()).isEqualTo(PredictionStatus.VOID);
     }
 
-    @DisplayName("아직 종료되지 않은 경기의 예측은 확정하지 않는다")
+    @DisplayName("아직 종료되지 않은 경기의 예측은 채점하지 않는다")
     @Test
-    void finalizePendingPredictions_ignoresScheduledGames() {
+    void reconcileUngradedPredictions_ignoresScheduledGames() {
         // given
         Game game = gameFactory.save(b -> b.stadium(stadium)
                 .homeTeam(homeTeam).awayTeam(awayTeam)
@@ -154,16 +154,16 @@ class PredictionResultServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
                 new GamePrediction(member, game, PredictionPick.HOME));
 
         // when
-        predictionResultService.finalizePendingPredictions();
+        predictionResultService.reconcileUngradedPredictions();
 
         // then
         GamePrediction actual = gamePredictionRepository.findById(prediction.getId()).orElseThrow();
         assertThat(actual.getStatus()).isEqualTo(PredictionStatus.SUBMITTED);
     }
 
-    @DisplayName("두 번 실행해도 확정 결과는 그대로 유지된다")
+    @DisplayName("두 번 실행해도 채점 결과는 그대로 유지된다")
     @Test
-    void finalizePendingPredictions_idempotent() {
+    void reconcileUngradedPredictions_idempotent() {
         // given
         Game game = gameFactory.save(b -> b.stadium(stadium)
                 .homeTeam(homeTeam).awayTeam(awayTeam)
@@ -176,8 +176,8 @@ class PredictionResultServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
                 new GamePrediction(member, game, PredictionPick.HOME));
 
         // when
-        predictionResultService.finalizePendingPredictions();
-        predictionResultService.finalizePendingPredictions();
+        predictionResultService.reconcileUngradedPredictions();
+        predictionResultService.reconcileUngradedPredictions();
 
         // then
         GamePrediction actual = gamePredictionRepository.findById(prediction.getId()).orElseThrow();
@@ -215,7 +215,7 @@ class PredictionResultServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
         gamePredictionRepository.save(new GamePrediction(oneWin, game1, PredictionPick.HOME));
         gamePredictionRepository.save(new GamePrediction(oneWin, gameOutsideWeek, PredictionPick.HOME));
 
-        predictionResultService.finalizePendingPredictions();
+        predictionResultService.reconcileUngradedPredictions();
 
         // when
         List<WeeklyScoreParam> results = predictionResultService.findWeeklyScores(monday, sunday);
@@ -234,14 +234,14 @@ class PredictionResultServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
         });
     }
 
-    @DisplayName("경기 결과가 정정되면 이미 WON/LOST로 확정된 예측 결과도 다시 계산한다")
+    @DisplayName("경기 결과가 정정되면 이미 WON/LOST로 채점된 예측도 다시 채점한다")
     @Test
-    void recalculateGamePredictionResults_recalculatesFinalizedPredictions() {
+    void gradePredictionsForGame_updatesGradedPredictions() {
         // given
         Game game = gameFactory.save(b -> b.stadium(stadium)
                 .homeTeam(homeTeam).awayTeam(awayTeam)
                 .date(LocalDate.of(2025, 7, 21))
-                .gameCode("recalculate-game")
+                .gameCode("grade-game")
                 .homeScore(5).awayScore(3)
                 .gameState(GameState.COMPLETED));
 
@@ -253,7 +253,7 @@ class PredictionResultServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
         GamePrediction awayPrediction = gamePredictionRepository.save(
                 new GamePrediction(awayPicker, game, PredictionPick.AWAY));
 
-        predictionResultService.finalizePendingPredictions();
+        predictionResultService.reconcileUngradedPredictions();
 
         // when: 결과 정정 (홈 5:3 승 -> 원정 2:5 승으로 스코어보드 재수집)
         game.update(
@@ -264,7 +264,7 @@ class PredictionResultServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
         );
         gameRepository.save(game);
 
-        predictionResultService.recalculateGamePredictionResults("recalculate-game");
+        predictionResultService.gradePredictionsForGame("grade-game");
 
         // then
         GamePrediction actualHome = gamePredictionRepository.findById(homePrediction.getId()).orElseThrow();
@@ -276,16 +276,16 @@ class PredictionResultServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
         });
     }
 
-    @DisplayName("존재하지 않는 gameCode의 예측 결과를 다시 계산하면 예외가 발생한다")
+    @DisplayName("존재하지 않는 gameCode의 예측을 채점하면 예외가 발생한다")
     @Test
-    void recalculateGamePredictionResults_throwsException_whenGameNotFound() {
-        assertThatThrownBy(() -> predictionResultService.recalculateGamePredictionResults("not-exists"))
+    void gradePredictionsForGame_throwsException_whenGameNotFound() {
+        assertThatThrownBy(() -> predictionResultService.gradePredictionsForGame("not-exists"))
                 .isInstanceOf(NotFoundException.class);
     }
 
-    @DisplayName("아직 종료되지 않은 경기의 예측 결과를 다시 계산하면 예외가 발생한다")
+    @DisplayName("아직 종료되지 않은 경기의 예측을 채점하면 예외가 발생한다")
     @Test
-    void recalculateGamePredictionResults_throwsException_whenGameNotFinalized() {
+    void gradePredictionsForGame_throwsException_whenGameNotFinalized() {
         // given
         gameFactory.save(b -> b.stadium(stadium)
                 .homeTeam(homeTeam).awayTeam(awayTeam)
@@ -294,7 +294,7 @@ class PredictionResultServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
                 .gameState(GameState.LIVE));
 
         // when & then
-        assertThatThrownBy(() -> predictionResultService.recalculateGamePredictionResults("not-finalized-game"))
+        assertThatThrownBy(() -> predictionResultService.gradePredictionsForGame("not-finalized-game"))
                 .isInstanceOf(UnprocessableEntityException.class);
     }
 }
