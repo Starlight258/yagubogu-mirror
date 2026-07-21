@@ -184,7 +184,8 @@ class AdminControllerE2eTest extends E2eTestBase {
         assertThat(gifticonIssuanceRepository.findAll())
                 .singleElement()
                 .satisfies(issuance -> {
-                    assertThat(issuance.getStatus()).isEqualTo(GifticonIssuanceStatus.READY);
+                    assertThat(issuance.getStatus())
+                            .isEqualTo(GifticonIssuanceStatus.AWAITING_RECIPIENT_INFO);
                     assertThat(issuance.getMember().getId()).isEqualTo(participant.getId());
                 });
 
