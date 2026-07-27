@@ -91,7 +91,7 @@ class WeeklyRewardDrawServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
         monday = mostRecentSunday.minusDays(6);
     }
 
-    @DisplayName("이번 주 최고 점수 달성자 중 3명을 추첨해 READY 상태로 발급한다")
+    @DisplayName("이번 주 최고 점수 달성자 중 3명을 추첨해 수신자 정보 대기 상태로 발급한다")
     @Test
     void drawWinners_picksTopScorers() {
         // given: twoWins가 최고점(2), oneWin은 1점
@@ -111,7 +111,8 @@ class WeeklyRewardDrawServiceUsingMysqlTest extends ServiceUsingMysqlTestBase {
             softAssertions.assertThat(weeklyTopScore.getTopScore()).isEqualTo(2);
             softAssertions.assertThat(issuances).hasSize(1);
             softAssertions.assertThat(issuances.get(0).getMember().getId()).isEqualTo(twoWins.getId());
-            softAssertions.assertThat(issuances.get(0).getStatus()).isEqualTo(GifticonIssuanceStatus.READY);
+            softAssertions.assertThat(issuances.get(0).getStatus())
+                    .isEqualTo(GifticonIssuanceStatus.AWAITING_RECIPIENT_INFO);
             softAssertions.assertThat(issuances.get(0).getExternalOrderId()).isNotBlank();
         });
     }

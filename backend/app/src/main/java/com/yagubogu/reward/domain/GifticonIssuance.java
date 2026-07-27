@@ -2,6 +2,7 @@ package com.yagubogu.reward.domain;
 
 import com.yagubogu.member.domain.Member;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -12,6 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -41,9 +43,19 @@ public class GifticonIssuance {
     @Column(name = "external_order_id", nullable = false, length = 70)
     private String externalOrderId;
 
+    @Embedded
+    private RecipientPhoneNumber recipientPhoneNumber;
+
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, length = 20)
+    @Column(name = "status", nullable = false, length = 30)
     private GifticonIssuanceStatus status;
+
+    @Column(name = "reserve_trace_id")
+    private Long reserveTraceId;
+
+    @Version
+    @Column(name = "version", nullable = false)
+    private long version;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -56,8 +68,40 @@ public class GifticonIssuance {
         this.weeklyTopScore = weeklyTopScore;
         this.member = member;
         this.externalOrderId = externalOrderId;
-        this.status = GifticonIssuanceStatus.READY;
+        this.status = GifticonIssuanceStatus.AWAITING_RECIPIENT_INFO;
         this.createdAt = now;
         this.updatedAt = now;
+    }
+
+    public void prepareRequest(final RecipientPhoneNumber recipientPhoneNumber, final LocalDateTime now) {
+        if (recipientPhoneNumber == null) {
+            throw new IllegalArgumentException("Recipient phone number must not be null");
+        }
+        if (status != GifticonIssuanceStatus.AWAITING_RECIPIENT_INFO
+                && status != GifticonIssuanceStatus.REQUEST_RETRYABLE) {
+            throw new InvalidGifticonIssuanceStateException("prepare request", status);
+        }
+        this.recipientPhoneNumber = recipientPhoneNumber;
+        this.status = GifticonIssuanceStatus.REQUEST_IN_PROGRESS;
+        this.updatedAt = now;
+    }
+
+    public void markRequestAccepted(final long reserveTraceId, final LocalDateTime now) {
+        validateStatus(GifticonIssuanceStatus.REQUEST_IN_PROGRESS);
+        this.reserveTraceId = reserveTraceId;
+        this.status = GifticonIssuanceStatus.REQUEST_ACCEPTED;
+        this.updatedAt = now;
+    }
+
+    public void markRequestRetryable(final LocalDateTime now) {
+        validateStatus(GifticonIssuanceStatus.REQUEST_IN_PROGRESS);
+        this.status = GifticonIssuanceStatus.REQUEST_RETRYABLE;
+        this.updatedAt = now;
+    }
+
+    private void validateStatus(final GifticonIssuanceStatus expected) {
+        if (status != expected) {
+            throw new InvalidGifticonIssuanceStateException("transition status", expected, status);
+        }
     }
 }
