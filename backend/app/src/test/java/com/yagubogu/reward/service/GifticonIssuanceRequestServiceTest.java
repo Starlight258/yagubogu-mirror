@@ -62,7 +62,11 @@ class GifticonIssuanceRequestServiceTest {
                 giftOrderClient,
                 transactionTemplate,
                 clock,
-                new GifticonReconciliationProperties(Duration.ofMinutes(1))
+                new GifticonReconciliationProperties(
+                        Duration.ofMinutes(1),
+                        20,
+                        Duration.ofHours(6)
+                )
         );
         WeeklyTopScore weeklyTopScore = new WeeklyTopScore(
                 LocalDate.of(2026, 7, 13),

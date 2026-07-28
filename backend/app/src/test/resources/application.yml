@@ -33,6 +33,8 @@ reward:
   gifticon:
     reconciliation:
       initial-delay: 1m
+      batch-size: 20
+      max-backoff: 6h
 
 security:
   token:

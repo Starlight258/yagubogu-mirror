@@ -74,6 +74,8 @@ reward:
   gifticon:
     reconciliation:
       initial-delay: ${GIFTICON_RECONCILIATION_INITIAL_DELAY:1m}
+      batch-size: ${GIFTICON_RECONCILIATION_BATCH_SIZE:20}
+      max-backoff: ${GIFTICON_RECONCILIATION_MAX_BACKOFF:6h}
 
 security:
   token:
