@@ -52,9 +52,9 @@
 | 상태 | 의미 | 현재 동작 |
 | --------------------- | -------------------------------------- | -------------------------- |
 | `AWAITING_RECIPIENT_INFO` | 당첨자이지만 수신자 전화번호가 아직 입력되지 않음 | 추첨 시 생성됨 |
-| `REQUEST_RETRYABLE` | 전화번호를 다시 입력해 발급 요청을 재시도할 수 있음 | 현재는 429를 제외한 카카오 4xx 응답 시 전환 |
+| `REQUEST_RETRYABLE` | 전화번호를 다시 입력해 발급 요청을 재시도할 수 있음 | 명시적 4xx 또는 주문 생성 실패 확인 시 전환 |
 | `REQUEST_IN_PROGRESS` | 발급 요청을 선점했거나 접수 결과 확인이 필요함 | 전화번호 저장과 함께 전환 |
-| `REQUEST_ACCEPTED` | 카카오가 외부 발급 요청을 접수함 | `reserve_trace_id`가 있는 정상 응답을 받으면 전환 |
+| `REQUEST_ACCEPTED` | 카카오가 외부 발급 요청을 접수함 | 요청 응답이나 주문 조회에서 `reserve_trace_id`를 확인하면 전환 |
 | `DELIVERED` | 기프티콘 전달 완료 | 상태만 미리 정의함 |
 | `FAILED` | 발급 실패 | 상태만 미리 정의함 |
 | `CANCELED` | 지급 취소 | 상태만 미리 정의함 |
@@ -107,13 +107,20 @@ flowchart LR
     B --> C{본인의 미등록 발급 건인가?}
     C -- 아니오 --> D[요청 거부]
     C -- 예 --> E[전화번호 저장 및 REQUEST_IN_PROGRESS 선점]
-    E --> G[카카오 발송 요청]
+    E --> F[첫 대사 시각 저장]
+    F --> G[카카오 발송 요청]
     G -- 접수 성공 --> H[reserve_trace_id 저장 및 REQUEST_ACCEPTED]
     G -- 429 제외 4xx --> I[REQUEST_RETRYABLE로 전환]
     G -- 429 / 5xx / 통신 실패 / 응답 누락 --> J[REQUEST_IN_PROGRESS 유지]
+    J --> K[1분 간격 대사 스케줄러]
+    K --> L[external_order_id로 주문 조회]
+    L -- 주문 확인 --> H
+    L -- 생성 실패 확인 --> I
+    L -- 조회 대상 없음 또는 결과 불명 --> M[REQUEST_IN_PROGRESS 유지 및 다음 조회 예약]
+    M --> K
 ```
 
-당첨자는 본인의 당첨 기록을 확인한 뒤 휴대폰 번호를 입력할 수 있습니다. 수신자 정보 대기 또는 요청 재시도 가능 상태에서만 번호를 입력할 수 있으며, 전화번호 저장과 발급 요청 선점은 하나의 트랜잭션으로 처리됩니다. 카카오가 `reserve_trace_id`를 포함한 응답을 반환하면 `REQUEST_ACCEPTED`로 전환합니다. 현재는 429를 제외한 4xx 응답만 `REQUEST_RETRYABLE`로 전환하고, 주문 생성 여부가 불확실한 응답은 `REQUEST_IN_PROGRESS`에 남깁니다. 불확실 주문의 자동 조회·보정은 아직 구현하지 않았습니다.
+당첨자는 본인의 당첨 기록을 확인한 뒤 휴대폰 번호를 입력할 수 있습니다. 수신자 정보 대기 또는 요청 재시도 가능 상태에서만 번호를 입력할 수 있으며, 전화번호 저장·발급 요청 선점·첫 대사 시각 저장은 하나의 트랜잭션으로 처리됩니다. 카카오가 `reserve_trace_id`를 포함한 응답을 반환하면 `REQUEST_ACCEPTED`로 전환합니다. 주문 생성 여부가 불확실한 응답은 `REQUEST_IN_PROGRESS`에 남기고, 스케줄러가 `external_order_id`로 주문을 조회해 접수 여부를 보정합니다.
 
 ---
 ## 5. 기능 요구사항과 구현
@@ -265,8 +272,9 @@ POST /admin/rewards/weekly-draws?monday=YYYY-MM-DD
 - 입력은 `010`으로 시작하는 국내 휴대전화 번호만 허용하며, 하이픈이나 공백을 제거한 11자리 숫자로 저장합니다.
     - DTO와 도메인 값 객체에서 각각 형식을 검증합니다.
     - 수신자 전화번호가 없으면 발급 요청을 선점할 수 없습니다.
-- 전화번호 저장과 `REQUEST_IN_PROGRESS` 선점을 하나의 트랜잭션으로 처리합니다.
+- 전화번호 저장, `REQUEST_IN_PROGRESS` 선점, 첫 대사 시각 저장을 하나의 트랜잭션으로 처리합니다.
     - 낙관적 락 충돌은 `409 Conflict`로 변환해 동시 중복 요청을 막습니다.
+    - 외부 호출 직후 서버가 종료되거나 응답이 유실돼도 대사 대상에 남습니다.
     - 카카오 API 호출은 DB 트랜잭션 밖에서 수행합니다.
 - 카카오 발송 요청은 `POST /v1/template/order`로 진행합니다.
     - `external_order_id`는 발급 건에서 생성된 값을 그대로 사용합니다.
@@ -278,7 +286,14 @@ POST /admin/rewards/weekly-draws?monday=YYYY-MM-DD
     - 어떤 4xx를 실제로 재시도할 수 있는지 세분화하는 작업은 [#7](https://github.com/Starlight258/yagubogu-mirror/issues/7)에서 추적합니다.
 - 429, 5xx, 연결·읽기 실패, 빈 응답 또는 `reserve_trace_id` 누락은 주문 결과가 불확실한 것으로 분류합니다.
     - 이 경우 `502 Bad Gateway`를 반환하되 상태는 `REQUEST_IN_PROGRESS`로 유지합니다.
-    - 주문 조회·콜백을 이용한 자동 대사와 장기 정체 건 알림은 [#6](https://github.com/Starlight258/yagubogu-mirror/issues/6)에서 추적합니다.
+    - 1분 간격 스케줄러가 대사 시각이 지난 발급 건을 한 번에 최대 20건 조회합니다.
+    - `GET /v1/template/order/reserve/status`에 `external_order_id`를 전달해 주문 상태를 확인합니다.
+    - 주문과 양수인 `reserve_trace_id`가 확인되면 `REQUEST_ACCEPTED`로 전환합니다.
+    - 주문 생성 실패가 확인되면 `REQUEST_RETRYABLE`로 전환합니다.
+    - 조회 대상이 없거나 응답을 판단할 수 없으면 `REQUEST_IN_PROGRESS`를 유지합니다.
+    - 다음 조회는 1분, 5분, 30분, 2시간 순으로 늦추고 이후에는 기본 6시간 간격을 사용합니다.
+    - 중복 조회 결과는 현재 상태와 낙관적 락을 다시 확인한 뒤 반영합니다.
+- 장기 정체 건 알림과 관리자 수동 대사 API는 다음 운영 보강 PR에서 추가합니다.
 - 한 번 `REQUEST_IN_PROGRESS`로 넘어가면 전화번호를 다시 수정할 수 없습니다.
 - 당첨 내역 응답에는 전화번호를 `010-****-1234` 형식으로 마스킹합니다.
 
@@ -304,7 +319,7 @@ POST /admin/rewards/weekly-draws?monday=YYYY-MM-DD
 | 누락 추첨 복구    | 관리자 API로 최초 추첨                           |
 | 재추첨            | 허용하지 않음                                  |
 | 명시적 요청 거절  | 현재 429 제외 4xx를 `REQUEST_RETRYABLE`로 전환; 세분화는 #7 |
-| 결과 불확실       | `REQUEST_IN_PROGRESS` 유지; 자동 대사·알림은 #6 |
+| 결과 불확실       | `REQUEST_IN_PROGRESS` 유지 후 주문 조회; 조회 대상 없음·조회 오류는 백오프 |
 | 전달 결과 확정    | 현재 미지원                                    |
 | 발급 대상 정보    | 당첨자가 직접 전화번호를 입력                    |
 | 발급 요청         | 전화번호 등록 후 카카오 API로 바로 호출           |
