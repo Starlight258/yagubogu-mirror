@@ -29,6 +29,15 @@ kakao:
     connect-timeout: 1s
     read-timeout: 1s
 
+reward:
+  gifticon:
+    reconciliation:
+      initial-delay: 1m
+      batch-size: 20
+      max-backoff: 6h
+      scheduler-delay: 1m
+      scheduler-initial-delay: 1m
+
 security:
   token:
     access-token:

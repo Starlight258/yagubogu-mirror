@@ -70,6 +70,15 @@ kakao:
     connect-timeout: ${KAKAO_GIFT_CONNECT_TIMEOUT:3s}
     read-timeout: ${KAKAO_GIFT_READ_TIMEOUT:5s}
 
+reward:
+  gifticon:
+    reconciliation:
+      initial-delay: ${GIFTICON_RECONCILIATION_INITIAL_DELAY:1m}
+      batch-size: ${GIFTICON_RECONCILIATION_BATCH_SIZE:20}
+      max-backoff: ${GIFTICON_RECONCILIATION_MAX_BACKOFF:6h}
+      scheduler-delay: ${GIFTICON_RECONCILIATION_SCHEDULER_DELAY:1m}
+      scheduler-initial-delay: ${GIFTICON_RECONCILIATION_SCHEDULER_INITIAL_DELAY:1m}
+
 security:
   token:
     access-token:
