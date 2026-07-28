@@ -76,6 +76,8 @@ reward:
       initial-delay: ${GIFTICON_RECONCILIATION_INITIAL_DELAY:1m}
       batch-size: ${GIFTICON_RECONCILIATION_BATCH_SIZE:20}
       max-backoff: ${GIFTICON_RECONCILIATION_MAX_BACKOFF:6h}
+      scheduler-delay: ${GIFTICON_RECONCILIATION_SCHEDULER_DELAY:1m}
+      scheduler-initial-delay: ${GIFTICON_RECONCILIATION_SCHEDULER_INITIAL_DELAY:1m}
 
 security:
   token:
